@@ -1,11 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 declare global {
-  interface Window {
-    Razorpay: any
-  }
+  interface Window { Razorpay: any }
 }
 
 export default function BookPage() {
@@ -30,6 +34,19 @@ export default function BookPage() {
     })
   }
 
+  const saveBooking = async (paymentId: string) => {
+    const { error } = await supabase.from('bookings').insert({
+      name,
+      email,
+      date: selectedDate,
+      time_slot: selectedTime,
+      payment_id: paymentId,
+      amount: 299,
+      type: 'mentorship',
+    })
+    if (error) console.error('Booking save error:', error)
+  }
+
   const handleBook = async () => {
     if (!selectedDate || !selectedTime) {
       alert('Please select both a date and time.')
@@ -45,7 +62,7 @@ export default function BookPage() {
     try {
       const loaded = await loadRazorpay()
       if (!loaded) {
-        alert('Failed to load payment gateway. Check your internet connection.')
+        alert('Failed to load payment gateway.')
         setIsLoading(false)
         return
       }
@@ -67,13 +84,12 @@ export default function BookPage() {
         order_id: orderId,
         prefill: { name, email },
         theme: { color: '#4f46e5' },
-        handler: function () {
+        handler: async function (response: any) {
+          await saveBooking(response.razorpay_payment_id)
           setIsBooked(true)
           setIsLoading(false)
         },
-        modal: {
-          ondismiss: () => setIsLoading(false),
-        },
+        modal: { ondismiss: () => setIsLoading(false) },
       }
 
       const rzp = new window.Razorpay(options)
@@ -101,20 +117,10 @@ export default function BookPage() {
 
         <h2 className="text-xl font-semibold text-gray-900 mb-3">Your Details</h2>
         <div className="flex flex-col gap-3 mb-6">
-          <input
-            type="text"
-            placeholder="Your Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          />
-          <input
-            type="email"
-            placeholder="Your Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          />
+          <input type="text" placeholder="Your Name" value={name} onChange={(e) => setName(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+          <input type="email" placeholder="Your Email" value={email} onChange={(e) => setEmail(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
         </div>
 
         <h2 className="text-xl font-semibold text-gray-900 mb-3">Select a Date</h2>
