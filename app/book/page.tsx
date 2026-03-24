@@ -45,6 +45,19 @@ export default function BookPage() {
       type: 'mentorship',
     })
     if (error) console.error('Booking save error:', error)
+
+    await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        email,
+        date: selectedDate,
+        timeSlot: selectedTime,
+        type: 'mentorship',
+        amount: 299,
+      }),
+    })
   }
 
   const handleBook = async () => {
@@ -150,7 +163,7 @@ export default function BookPage() {
 
         {isBooked && (
           <p className="text-green-600 text-center font-medium mt-4">
-            🎉 Booking confirmed! You'll receive a confirmation email at <strong>{email}</strong>.
+            🎉 Booking confirmed! Check your email at <strong>{email}</strong> for confirmation.
           </p>
         )}
       </div>
