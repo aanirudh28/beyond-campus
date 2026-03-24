@@ -16,8 +16,10 @@ export const metadata: Metadata = {
   title: "Beyond Campus — Land Your Dream Job Without Campus Placements",
   description: "Get mentorship, referrals, and proven strategies to break into top jobs off-campus. 2500+ students placed at Amazon, CRED, Razorpay and more.",
   icons: {
-    icon: '/favicon.svg',
-  },
+  icon: [
+    { url: '/icon.svg', type: 'image/svg+xml' },
+  ],
+},
   openGraph: {
     title: "Beyond Campus — Land Your Dream Job",
     description: "Break into top jobs without campus placements.",
