@@ -1,5 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#4F7CFF"/>
-  <path d="M18 16 L18 48 L30 48 Q42 48 42 38 Q42 32 36 30 Q41 28 41 22 Q41 16 30 16 Z M24 22 L29 22 Q35 22 35 26 Q35 30 29 30 L24 30 Z M24 36 L30 36 Q37 36 37 41 Q37 46 30 46 L24 46 Z" fill="white"/>
-  <polygon points="44,32 52,26 52,38" fill="white"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#4F7CFF"/><path d="M18 16 L18 48 L30 48 Q42 48 42 38 Q42 32 36 30 Q41 28 41 22 Q41 16 30 16 Z M24 22 L29 22 Q35 22 35 26 Q35 30 29 30 L24 30 Z M24 36 L30 36 Q37 36 37 41 Q37 46 30 46 L24 46 Z" fill="white"/><polygon points="44,32 52,26 52,38" fill="white"/></svg>
