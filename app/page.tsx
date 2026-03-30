@@ -397,7 +397,7 @@ export default function Home() {
 
           {/* CTAs */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 56, flexWrap: 'wrap' }}>
-            <a href="/book" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 36px', borderRadius: 100, background: 'linear-gradient(135deg, #FF6B35, #FF4500)', color: 'white', fontWeight: 700, fontSize: 16, boxShadow: '0 0 36px rgba(255,107,53,0.4)', transition: 'all 0.3s', textDecoration: 'none' }}>
+            <a href="/get-started" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 36px', borderRadius: 100, background: 'linear-gradient(135deg, #FF6B35, #FF4500)', color: 'white', fontWeight: 700, fontSize: 16, boxShadow: '0 0 36px rgba(255,107,53,0.4)', transition: 'all 0.3s', textDecoration: 'none' }}>
               Get Started →
             </a>
             <a href="/internship" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '15px 36px', borderRadius: 100, background: 'transparent', color: 'white', fontWeight: 600, fontSize: 16, border: '1.5px solid rgba(255,255,255,0.2)', transition: 'all 0.3s', textDecoration: 'none' }}>
