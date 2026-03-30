@@ -38,12 +38,11 @@ const INCLUSIONS = [
 ]
 
 const FAQS = [
-  { q: 'Do I need prior work experience to join?', a: 'No. Most students who join are freshers or recent graduates with little to no work experience. The program is specifically designed for people starting from scratch.' },
-  { q: 'What domains do you help with?', a: "Consulting, finance, Founder's Office, marketing, business development, and operations. We focus exclusively on non-tech business roles." },
-  { q: 'How is this different from an MBA coaching class?', a: "MBA coaching prepares you for an exam. We prepare you for a job — specifically the off-campus job hunt that nobody teaches you how to navigate. The skills are completely different." },
+  { q: 'What domains do you help with?', a: "Consulting, finance, Founder's Office, marketing, business development, and operations. We focus exclusively on non-tech business roles — no coding, no SDE prep." },
   { q: "I'm from a tier-2 or tier-3 college. Will this work for me?", a: "Yes — that's exactly who we built this for. Most of our students come from colleges outside the top 10 and break into roles their college placement cell couldn't get them." },
-  { q: "What if I'm already applying and getting some responses?", a: "Even better. The program will help you convert those responses into offers faster, and open up companies you haven't reached yet." },
-  { q: 'How do I get started?', a: 'Click "Join the Cohort" for the full 8-week program, or "Book a Session" for a 1:1 call first. Either way, you\'ll get access within 2 minutes of payment.' },
+  { q: "What if I'm already applying and getting some responses?", a: "That's genuinely a good sign — keep going. Resilience and consistency eventually show results. If you feel your current approach is working, stick with it. The program is for students who feel stuck or want to add more structure and reach to what they're already doing." },
+  { q: "I want to explore before committing. Where do I start?", a: "Start with our free resources — cold email templates, LinkedIn DM scripts, and the target company spreadsheet are all available without paying anything. Try them, see if they work for your situation, and decide from there." },
+  { q: "Is the live session schedule flexible?", a: "Sessions are scheduled for evenings and weekends to work around college or work hours. If you miss a session, a recording is shared with the group." },
 ]
 
 function Section({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
@@ -146,11 +145,11 @@ export default function ProgramPage() {
             Not a course. Not a workshop. A complete placement system built for students who are done waiting.
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 32 }}>
-            <a href="/cohort" className="btn-orange large">Join the Cohort — ₹999 →</a>
-            <a href="/book" className="btn-outlined" style={{ padding: '17px 36px', fontSize: 16 }}>Book a Session First — ₹299</a>
+            <a href="/cohort" className="btn-orange large">Join the Next Cohort →</a>
+            <a href="/book" className="btn-outlined" style={{ padding: '17px 36px', fontSize: 16 }}>Start with a 1:1 Session</a>
           </div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', letterSpacing: 0.3 }}>
-            ⚡ Instant access after payment · 📱 WhatsApp support · 🌍 Students from 50+ colleges · 📅 Next batch April 1
+            📱 WhatsApp support · 🌍 Students from 50+ colleges · 📅 Next batch starts April 1 · 🔒 Secure checkout via Razorpay
           </div>
         </div>
       </section>
@@ -210,20 +209,26 @@ export default function ProgramPage() {
         <Section style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 52 }}>
             <span className="section-label">IS THIS FOR YOU?</span>
-            <h2 className="section-title">Built specifically for non-tech students</h2>
+            <h2 className="section-title">Built for anyone chasing<br />non-tech business roles</h2>
+            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 16, maxWidth: 520, margin: '16px auto 0', lineHeight: 1.7 }}>
+              Commerce, humanities, science, engineering — background doesn't matter. If you're going after business roles off-campus, this is for you.
+            </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 40 }}>
             {[
-              "You're a commerce, BBA, BCom, or MBA student",
-              "You're targeting consulting, finance, Founder's Office, marketing, or operations roles",
-              "Your college doesn't get top companies on campus",
-              "You've been applying for weeks or months with little to show for it",
-              "You want a structured system, not just motivation",
-              "You're willing to put in the work if someone shows you exactly what to do",
+              { icon: '🎓', text: "You're a recent grad or final-year student without strong campus placements" },
+              { icon: '🎯', text: "You're targeting consulting, finance, Founder's Office, marketing, BD, or operations" },
+              { icon: '🏫', text: "Your college doesn't get top companies walking in for placements" },
+              { icon: '📬', text: "You've been applying for weeks or months with little to show for it" },
+              { icon: '🗂️', text: "You want a structured system, not just motivation or generic advice" },
+              { icon: '💪', text: "You're willing to put in the work if someone shows you exactly what to do" },
             ].map((t, i) => (
-              <div key={i} style={{ background: '#111827', border: '1px solid rgba(79,124,255,0.15)', borderRadius: 16, padding: '18px 20px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>✅</span>
-                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>{t}</span>
+              <div key={i} style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: '20px 22px', display: 'flex', alignItems: 'flex-start', gap: 14, transition: 'border-color 0.3s, transform 0.3s', cursor: 'default' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(79,124,255,0.35)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}
+              >
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,rgba(79,124,255,0.2),rgba(123,97,255,0.15))', border: '1px solid rgba(79,124,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, flexShrink: 0 }}>{t.icon}</div>
+                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.78)', lineHeight: 1.65, paddingTop: 2 }}>{t.text}</span>
               </div>
             ))}
           </div>
@@ -403,11 +408,11 @@ export default function ProgramPage() {
             Every week you spend without a strategy is a week someone else gets the role you wanted. The next batch starts April 1.
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
-            <a href="/cohort" className="btn-orange large">Join the Cohort — ₹999 →</a>
-            <a href="/book" className="btn-outlined" style={{ padding: '17px 36px', fontSize: 16 }}>Book a Session First — ₹299</a>
+            <a href="/cohort" className="btn-orange large">Join the Next Cohort →</a>
+            <a href="/book" className="btn-outlined" style={{ padding: '17px 36px', fontSize: 16 }}>Start with a 1:1 Session</a>
           </div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)', letterSpacing: 0.3 }}>
-            ⚡ Instant access · 📱 WhatsApp support · 🌍 50+ colleges · 🔒 Secure payment via Razorpay
+            📱 WhatsApp support · 🌍 50+ colleges · 📅 Next batch April 1 · 🔒 Secure checkout via Razorpay
           </div>
         </Section>
       </section>
