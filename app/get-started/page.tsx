@@ -24,6 +24,13 @@ function getRecommendation(q1: number) {
       highlight: 'cohort',
     }
   }
+  if (q1 === 1) {
+    return {
+      product: 'Cohort or 1:1 Session — either works',
+      reason: 'Placements are live, so speed matters — but so does having the right system. A 1:1 session gets you moving fast with a personalized plan. The cohort gives you the full toolkit plus weekly accountability to keep pushing through the season. Both are strong choices here.',
+      highlight: 'both',
+    }
+  }
   return {
     product: '1:1 Mentorship Session',
     reason: 'Your situation is urgent and specific. A personalized session gets you an action plan, a reviewed resume, and a cold outreach strategy in one hour — exactly what you need to start moving fast.',
@@ -293,9 +300,9 @@ export default function GetStarted() {
           {/* Both product cards */}
           <div className="products-row" style={{ display: 'flex', gap: 24, alignItems: 'stretch' }}>
             {/* 1:1 Session */}
-            <div className={`product-card${rec.highlight === 'session' ? ' recommended' : ''}`}>
-              {rec.highlight === 'session' && (
-                <div style={{ position: 'absolute', top: -1, left: 28, padding: '5px 16px', background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', borderRadius: '0 0 12px 12px', fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase' }}>Recommended for you</div>
+            <div className={`product-card${rec.highlight === 'session' || rec.highlight === 'both' ? ' recommended' : ''}`}>
+              {(rec.highlight === 'session' || rec.highlight === 'both') && (
+                <div style={{ position: 'absolute', top: -1, left: 28, padding: '5px 16px', background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', borderRadius: '0 0 12px 12px', fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase' }}>{rec.highlight === 'both' ? 'Great starting point' : 'Recommended for you'}</div>
               )}
               <div style={{ marginTop: rec.highlight === 'session' ? 20 : 0 }}>
                 <div style={{ display: 'inline-flex', padding: '5px 14px', background: 'rgba(79,124,255,0.12)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, color: '#93BBFF', marginBottom: 20, letterSpacing: 1, textTransform: 'uppercase' }}>Best for urgent situations</div>
@@ -328,9 +335,9 @@ export default function GetStarted() {
             </div>
 
             {/* Cohort */}
-            <div className={`product-card${rec.highlight === 'cohort' ? ' recommended' : ''}`} style={{ background: rec.highlight === 'cohort' ? 'linear-gradient(135deg, rgba(79,124,255,0.07), rgba(123,97,255,0.04))' : '#111827' }}>
-              <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '5px 18px', background: rec.highlight === 'cohort' ? 'linear-gradient(135deg,#4F7CFF,#7B61FF)' : 'rgba(123,97,255,0.2)', borderRadius: '0 0 12px 12px', fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', whiteSpace: 'nowrap', color: 'white' }}>
-                {rec.highlight === 'cohort' ? 'Recommended for you' : 'Most Popular'}
+            <div className={`product-card${rec.highlight === 'cohort' || rec.highlight === 'both' ? ' recommended' : ''}`} style={{ background: rec.highlight === 'cohort' || rec.highlight === 'both' ? 'linear-gradient(135deg, rgba(79,124,255,0.07), rgba(123,97,255,0.04))' : '#111827' }}>
+              <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '5px 18px', background: rec.highlight === 'cohort' || rec.highlight === 'both' ? 'linear-gradient(135deg,#4F7CFF,#7B61FF)' : 'rgba(123,97,255,0.2)', borderRadius: '0 0 12px 12px', fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', whiteSpace: 'nowrap', color: 'white' }}>
+                {rec.highlight === 'cohort' ? 'Recommended for you' : rec.highlight === 'both' ? 'Also a great fit' : 'Most Popular'}
               </div>
               <div style={{ marginTop: 28 }}>
                 <div style={{ display: 'inline-flex', padding: '5px 14px', background: 'rgba(123,97,255,0.12)', border: '1px solid rgba(123,97,255,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, color: '#C4B5FD', marginBottom: 20, letterSpacing: 1, textTransform: 'uppercase' }}>Cohort Program</div>
