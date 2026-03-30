@@ -107,6 +107,14 @@ export default function ProgramPage() {
         .faq-body{overflow:hidden;transition:max-height 0.35s ease}
         .timeline-dot{width:16px;height:16px;border-radius:50%;background:#4F7CFF;border:3px solid #0B0B0F;flex-shrink:0;position:relative;z-index:2;animation:dot-pulse 2.5s ease-in-out infinite}
         .mobile-sticky{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:16px 20px;background:rgba(11,11,15,0.96);backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,0.08);animation:slideUp 0.35s ease both}
+        .x-dot{width:24px;height:24px;border-radius:50%;background:rgba(239,68,68,0.1);border:1.5px solid rgba(239,68,68,0.28);display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(239,68,68,0.65);flex-shrink:0;font-weight:700;line-height:1}
+        .arr-dot{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,rgba(79,124,255,0.18),rgba(123,97,255,0.12));border:1.5px solid rgba(79,124,255,0.38);display:flex;align-items:center;justify-content:center;font-size:12px;color:#6fa3ff;flex-shrink:0;font-weight:700;line-height:1}
+        .compare-row{display:flex;align-items:flex-start;gap:14px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.045)}
+        .compare-row:last-child{border-bottom:none;padding-bottom:0}
+        .compare-row:first-child{padding-top:0}
+        .for-card{background:#0f1520;border:1px solid rgba(255,255,255,0.07);border-radius:22px;padding:28px 26px;transition:border-color 0.35s,transform 0.35s,box-shadow 0.35s;cursor:default}
+        .for-card:hover{border-color:rgba(79,124,255,0.38);transform:translateY(-3px);box-shadow:0 16px 48px rgba(79,124,255,0.12)}
+        .notfor-pill{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:100px;font-size:13px;color:rgba(255,255,255,0.4)}
         @media(max-width:768px){
           .nav{padding:16px 20px}
           .nav.scrolled{padding:12px 20px}
@@ -114,6 +122,7 @@ export default function ProgramPage() {
           .three-col{grid-template-columns:1fr 1fr!important}
           .products-row{flex-direction:column!important}
           .timeline-row.right .timeline-content{margin-left:0!important;margin-right:0!important}
+          .notfor-pills{flex-direction:column!important;align-items:flex-start!important}
         }
         @media(min-width:769px){
           .mobile-sticky{display:none!important}
@@ -157,96 +166,114 @@ export default function ProgramPage() {
       {/* SECTION 2 — THE PROBLEM */}
       <section style={{ padding: '80px 24px', maxWidth: 1100, margin: '0 auto' }}>
         <Section>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <span className="section-label">WHY THIS EXISTS</span>
             <h2 className="section-title">The system was not built for you.<br />So we built a new one.</h2>
           </div>
-          <div className="two-col" style={{ display: 'flex', gap: 20 }}>
-            {/* Old Way */}
-            <div style={{ flex: 1, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.18)', borderRadius: 24, padding: '36px 32px' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(239,68,68,0.8)', marginBottom: 24 }}>The Old Way</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {[
-                  'Applying on Naukri and LinkedIn with no strategy',
-                  'Waiting for campus placements that never come',
-                  'Sending cold emails that get zero replies',
-                  'Watching peers get placed through referrals you don\'t have',
-                  'Generic YouTube advice that doesn\'t apply to your situation',
-                  'Months of effort with nothing to show for it',
-                ].map((t, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                    <span style={{ fontSize: 15, flexShrink: 0, marginTop: 2 }}>❌</span>
-                    <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6 }}>{t}</span>
-                  </div>
-                ))}
+          <div className="two-col" style={{ display: 'flex', gap: 16, alignItems: 'stretch' }}>
+
+            {/* Old Way panel */}
+            <div style={{ flex: 1, background: 'rgba(20,10,10,0.7)', border: '1px solid rgba(239,68,68,0.14)', borderRadius: 28, padding: '36px 32px', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, right: 0, width: 200, height: 200, background: 'radial-gradient(circle, rgba(239,68,68,0.07), transparent)', pointerEvents: 'none' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 32 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(239,68,68,0.7)', boxShadow: '0 0 8px rgba(239,68,68,0.5)' }} />
+                <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: 'rgba(239,68,68,0.7)' }}>Before</span>
               </div>
+              {[
+                'Applying everywhere with no clear strategy',
+                'Waiting for campus placements that never come',
+                'Cold emails that go nowhere — no replies, no feedback',
+                'Watching peers get placed through referrals you don\'t have',
+                'Generic YouTube advice that doesn\'t fit your situation',
+                'Months of effort with nothing to show for it',
+              ].map((t, i) => (
+                <div key={i} className="compare-row">
+                  <div className="x-dot">✕</div>
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', lineHeight: 1.65, textDecoration: 'none' }}>{t}</span>
+                </div>
+              ))}
             </div>
-            {/* BC Way */}
-            <div style={{ flex: 1, background: 'rgba(79,124,255,0.06)', border: '1px solid rgba(79,124,255,0.22)', borderRadius: 24, padding: '36px 32px' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#4F7CFF', marginBottom: 24 }}>The Beyond Campus Way</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {[
-                  'A personalized strategy built around your background and target roles',
-                  'Cold emails that get replies within 24 hours using proven templates',
-                  'Direct introductions to people at your target companies',
-                  'Weekly accountability so you never lose momentum',
-                  'A community of students going through the same journey',
-                  'A clear path from stuck to placed in 30 days',
-                ].map((t, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                    <span style={{ fontSize: 15, flexShrink: 0, marginTop: 2 }}>✅</span>
-                    <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.82)', lineHeight: 1.6 }}>{t}</span>
-                  </div>
-                ))}
+
+            {/* Center VS */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, width: 40 }}>
+              <div style={{ writingMode: 'vertical-rl', fontSize: 11, fontWeight: 800, letterSpacing: 4, color: 'rgba(255,255,255,0.12)', textTransform: 'uppercase' }}>VS</div>
+            </div>
+
+            {/* BC Way panel */}
+            <div style={{ flex: 1, background: 'rgba(8,12,22,0.9)', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 28, padding: '36px 32px', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, right: 0, width: 200, height: 200, background: 'radial-gradient(circle, rgba(79,124,255,0.1), transparent)', pointerEvents: 'none' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 32 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#4F7CFF', boxShadow: '0 0 10px rgba(79,124,255,0.8)' }} />
+                <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#4F7CFF' }}>With Beyond Campus</span>
               </div>
+              {[
+                'A personalised strategy built around your background and goals',
+                'Cold emails using our templates get replies within 24 hours',
+                'Direct introductions to people at your target companies',
+                'Weekly accountability so you never lose momentum',
+                'A community of students going through the exact same journey',
+                'A clear path from stuck to placed in 30 days',
+              ].map((t, i) => (
+                <div key={i} className="compare-row">
+                  <div className="arr-dot">→</div>
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.88)', lineHeight: 1.65, fontWeight: 500 }}>{t}</span>
+                </div>
+              ))}
             </div>
+
           </div>
         </Section>
       </section>
 
       {/* SECTION 3 — WHO IT'S FOR */}
-      <section style={{ padding: '80px 24px', background: 'rgba(255,255,255,0.015)' }}>
-        <Section style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 52 }}>
+      <section style={{ padding: '80px 24px', background: 'rgba(255,255,255,0.012)' }}>
+        <Section style={{ maxWidth: 960, margin: '0 auto' }}>
+
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <span className="section-label">IS THIS FOR YOU?</span>
             <h2 className="section-title">Built for anyone chasing<br />non-tech business roles</h2>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 16, maxWidth: 520, margin: '16px auto 0', lineHeight: 1.7 }}>
-              Commerce, humanities, science, engineering — background doesn't matter. If you're going after business roles off-campus, this is for you.
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 16, maxWidth: 480, margin: '18px auto 0', lineHeight: 1.75 }}>
+              Commerce, humanities, science, engineering — your background doesn't define your ceiling. If you're going after business roles off-campus, read on.
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 40 }}>
+
+          {/* For-you cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginBottom: 48 }}>
             {[
-              { icon: '🎓', text: "You're a recent grad or final-year student without strong campus placements" },
-              { icon: '🎯', text: "You're targeting consulting, finance, Founder's Office, marketing, BD, or operations" },
-              { icon: '🏫', text: "Your college doesn't get top companies walking in for placements" },
-              { icon: '📬', text: "You've been applying for weeks or months with little to show for it" },
-              { icon: '🗂️', text: "You want a structured system, not just motivation or generic advice" },
-              { icon: '💪', text: "You're willing to put in the work if someone shows you exactly what to do" },
-            ].map((t, i) => (
-              <div key={i} style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: '20px 22px', display: 'flex', alignItems: 'flex-start', gap: 14, transition: 'border-color 0.3s, transform 0.3s', cursor: 'default' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(79,124,255,0.35)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}
-              >
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,rgba(79,124,255,0.2),rgba(123,97,255,0.15))', border: '1px solid rgba(79,124,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, flexShrink: 0 }}>{t.icon}</div>
-                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.78)', lineHeight: 1.65, paddingTop: 2 }}>{t.text}</span>
+              { icon: '🎓', title: 'Final year or recent grad', desc: "You're entering the job market without a strong campus placement system backing you." },
+              { icon: '🎯', title: 'Targeting business roles', desc: "Consulting, finance, Founder's Office, marketing, BD, or operations — any non-tech domain." },
+              { icon: '🏫', title: 'Tier-2 or tier-3 college', desc: "Top companies don't come to your campus. You know you have to find your own way in." },
+              { icon: '📬', title: 'Applying but not hearing back', desc: "You're putting in the effort — applications, emails — but getting little to no response." },
+              { icon: '🗂️', title: 'Want a system, not just advice', desc: "You're done with vague motivation. You want a step-by-step process that actually moves the needle." },
+              { icon: '💪', title: 'Ready to do the work', desc: "You're not looking for magic. You'll send the emails and make the calls — if someone shows you exactly how." },
+            ].map((c, i) => (
+              <div key={i} className="for-card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 14, background: 'linear-gradient(135deg, rgba(79,124,255,0.18), rgba(123,97,255,0.12))', border: '1px solid rgba(79,124,255,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>{c.icon}</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'white', lineHeight: 1.3 }}>{c.title}</div>
+                </div>
+                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.48)', lineHeight: 1.7 }}>{c.desc}</div>
               </div>
             ))}
           </div>
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: '28px 28px' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 18 }}>This is NOT for you if…</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+          {/* Not for you — pill strip */}
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: 'rgba(255,255,255,0.22)', marginBottom: 16 }}>Not for you if —</div>
+            <div className="notfor-pills" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
               {[
-                "You're looking for a shortcut that requires zero effort",
-                "You want a recorded course you can watch at 2x speed and forget",
-                "You're not willing to send cold emails or reach out to strangers",
+                "You want zero-effort shortcuts",
+                "You prefer passive video courses",
+                "You won't send cold emails or DMs",
               ].map((t, i) => (
-                <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>❌</span>
-                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.42)', lineHeight: 1.6 }}>{t}</span>
-                </div>
+                <span key={i} className="notfor-pill">
+                  <span style={{ fontSize: 11, color: 'rgba(239,68,68,0.5)' }}>✕</span>
+                  {t}
+                </span>
               ))}
             </div>
           </div>
+
         </Section>
       </section>
 
