@@ -20,8 +20,7 @@ export default function Home() {
     { q: 'How long will it take to see results?', a: 'Most students see their first meaningful result — a reply to a cold email, a LinkedIn connection with a hiring manager, or a referral introduction — within the first 2 weeks. By week 4, most students have at least one interview conversation in progress. The full transformation — from stuck to placed — typically takes 30 days of consistent execution.' },
     { q: 'What happens immediately after I pay?', a: "You'll receive a confirmation email within 2 minutes with your login details for the student dashboard. For the cohort, you'll also get added to the private WhatsApp group where onboarding starts immediately." },
     { q: 'How is this different from watching YouTube videos or buying a course?', a: "Three things: personalization, accountability, and referrals. We review YOUR resume, build YOUR target list, and introduce YOU to people at your target companies. No YouTube video does that." },
-    { q: 'Can I book a 1:1 session before joining the cohort?', a: "Absolutely — that's what most students do. Book a ₹299 session first, see how it goes, then decide on the cohort. No pressure at all." },
-    { q: 'Is my payment secure?', a: "Yes — payments are processed by Razorpay, India's most trusted payment gateway. We never store your card details." },
+{ q: 'Is my payment secure?', a: "Yes — payments are processed by Razorpay, India's most trusted payment gateway. We never store your card details." },
   ]
 
   useEffect(() => {
