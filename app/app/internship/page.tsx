@@ -100,17 +100,10 @@ export default function InternshipPage() {
           <span className="bg-orange-500 text-white text-sm font-semibold px-3 py-1 rounded-full mb-4 inline-block">🔥 Next Batch Starting April 1 — Only 30 Seats</span>
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight">Land an Internship in 8 Weeks — Without Campus Placement</h1>
           <p className="text-indigo-200 text-lg mb-8">A structured cohort with real mentors, proven strategies, and weekly accountability — designed for Indian students who want results.</p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
-            <input type="text" placeholder="Your Name" value={name} onChange={e => setName(e.target.value)}
-              className="px-4 py-3 rounded-lg text-gray-900 w-full sm:w-64 focus:outline-none" />
-            <input type="email" placeholder="Your Email" value={email} onChange={e => setEmail(e.target.value)}
-              className="px-4 py-3 rounded-lg text-gray-900 w-full sm:w-64 focus:outline-none" />
-          </div>
-          <button onClick={handleJoin} disabled={isLoading || isJoined}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-10 py-4 rounded-xl text-lg transition disabled:opacity-60">
-            {isJoined ? '✅ You\'re In!' : isLoading ? '⏳ Processing...' : 'Join Cohort – ₹999'}
-          </button>
-          {isJoined && <p className="text-green-300 mt-4 font-medium">🎉 Welcome aboard! Check your email for next steps.</p>}
+          <a href="/cohort"
+            className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold px-10 py-4 rounded-xl text-lg transition">
+            Join Cohort – ₹999
+          </a>
           <p className="text-indigo-300 text-sm mt-3">One-time payment • Lifetime access • 100% practical</p>
         </div>
       </section>
@@ -215,10 +208,10 @@ export default function InternshipPage() {
           <p className="text-indigo-200 mb-6">Join 2,500+ students who stopped waiting and started getting offers.</p>
           <p className="text-2xl font-bold mb-1">₹999 <span className="text-indigo-300 line-through text-lg ml-2">₹4,999</span></p>
           <p className="text-indigo-300 text-sm mb-6">Limited seats • Next batch April 1</p>
-          <button onClick={handleJoin} disabled={isLoading || isJoined}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-10 py-4 rounded-xl text-lg transition disabled:opacity-60">
-            {isJoined ? '✅ You\'re In!' : isLoading ? '⏳ Processing...' : 'Join Now – ₹999'}
-          </button>
+          <a href="/cohort"
+            className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold px-10 py-4 rounded-xl text-lg transition">
+            Join Now – ₹999
+          </a>
         </div>
       </section>
 

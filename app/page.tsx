@@ -136,7 +136,7 @@ export default function Home() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <a href="/book" className="btn-secondary" style={{ padding: '10px 24px', fontSize: 14 }}>Book Session</a>
-          <a href="/internship" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>
+          <a href="/cohort" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>
             <span>Join Cohort</span>
             <span style={{ position: 'relative', zIndex: 1 }}>→</span>
           </a>
@@ -167,7 +167,7 @@ export default function Home() {
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 56 }}>
             <a href="/book" className="btn-primary"><span>Book 1:1 Mentorship</span><span style={{ position: 'relative', zIndex: 1 }}>→</span></a>
-            <a href="/internship" className="btn-secondary">Join Next Cohort — ₹999</a>
+            <a href="/cohort" className="btn-secondary">Join Next Cohort — ₹999</a>
           </div>
 
           {/* Social proof row */}
@@ -304,7 +304,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <a href="/internship" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s' }}>
+            <a href="/cohort" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s' }}>
               Join Next Cohort →
             </a>
             <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>Only 30 seats · April 1 start</p>
@@ -414,7 +414,7 @@ export default function Home() {
           </div>
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/internship" className="btn-primary" style={{ fontSize: 17, padding: '18px 40px' }}>
+            <a href="/cohort" className="btn-primary" style={{ fontSize: 17, padding: '18px 40px' }}>
               <span>Join Cohort — ₹999</span>
               <span style={{ position: 'relative', zIndex: 1 }}>→</span>
             </a>
@@ -433,7 +433,7 @@ export default function Home() {
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
             <a href="/book" className="btn-secondary" style={{ padding: '12px 24px', fontSize: 14 }}>Book Session</a>
-            <a href="/internship" className="btn-primary" style={{ padding: '12px 24px', fontSize: 14 }}>
+            <a href="/cohort" className="btn-primary" style={{ padding: '12px 24px', fontSize: 14 }}>
               <span>Join Cohort</span>
               <span style={{ position: 'relative', zIndex: 1 }}>→</span>
             </a>
