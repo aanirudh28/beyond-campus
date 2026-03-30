@@ -165,7 +165,7 @@ export default function DashboardPage() {
 
         {/* Top bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#4F7CFF' }}>Beyond Campus</div>
+          <a href="/" style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#4F7CFF', textDecoration: 'none' }}>← Beyond Campus</a>
           <button onClick={handleSignOut} style={{ padding: '8px 18px', borderRadius: 100, background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)', fontSize: 13, cursor: 'pointer' }}>
             Sign out
           </button>
