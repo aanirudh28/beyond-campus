@@ -29,7 +29,6 @@ type Student = {
   name: string
   email: string
   stage: number
-  credits: number
   cold_emails_sent: number
   interview_calls: number
   is_placed: boolean
@@ -202,7 +201,6 @@ export default function AdminPage() {
                       <tr>
                         <th>Student</th>
                         <th>Stage</th>
-                        <th>Credits</th>
                         <th>Cold Emails</th>
                         <th>Interviews</th>
                         <th>Status</th>
@@ -221,7 +219,6 @@ export default function AdminPage() {
                               {STAGE_LABELS[s.stage - 1] ?? 'Joined'}
                             </span>
                           </td>
-                          <td style={{ fontWeight: 700, color: '#4F7CFF' }}>⭐ {s.credits}</td>
                           <td style={{ color: 'rgba(255,255,255,0.7)' }}>{s.cold_emails_sent}</td>
                           <td style={{ color: 'rgba(255,255,255,0.7)' }}>{s.interview_calls}</td>
                           <td>

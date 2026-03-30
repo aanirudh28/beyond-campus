@@ -9,18 +9,10 @@ type Profile = {
   name: string
   email: string
   stage: number
-  credits: number
   cold_emails_sent: number
   interview_calls: number
   is_placed: boolean
   joined_at: string
-}
-
-type CreditEntry = {
-  id: string
-  action: string
-  credits: number
-  created_at: string
 }
 
 type Booking = {
@@ -65,7 +57,6 @@ const getMotivationalLine = (stage: number, firstName: string) => {
 export default function DashboardPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [bookings, setBookings] = useState<Booking[]>([])
-  const [creditHistory, setCreditHistory] = useState<CreditEntry[]>([])
   const [hasCheckedIn, setHasCheckedIn] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -84,16 +75,14 @@ export default function DashboardPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { router.push('/login'); return }
 
-    const [profileRes, bookingsRes, creditsRes, checkinRes] = await Promise.all([
+    const [profileRes, bookingsRes, checkinRes] = await Promise.all([
       supabase.from('profiles').select('*').eq('id', user.id).single(),
       supabase.from('bookings').select('id, type, amount, created_at').eq('email', user.email).order('created_at', { ascending: false }),
-      supabase.from('credit_history').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
       supabase.from('checkins').select('id').eq('user_id', user.id).eq('week_start', getMonday()).maybeSingle(),
     ])
 
     if (profileRes.data) setProfile(profileRes.data)
     if (bookingsRes.data) setBookings(bookingsRes.data)
-    if (creditsRes.data) setCreditHistory(creditsRes.data)
     if (checkinRes.data) setHasCheckedIn(true)
     setLoading(false)
   }
@@ -104,13 +93,12 @@ export default function DashboardPage() {
     if (!profile) return
     setCheckingIn(true)
 
-    let creditsEarned = 2
     let newStage = profile.stage
     const newColdEmails = profile.cold_emails_sent + coldEmails
     const newInterviewCalls = gotInterview ? profile.interview_calls + 1 : profile.interview_calls
 
     if (newColdEmails > 0 && newStage < 3) newStage = 3
-    if (gotInterview && newStage < 4) { newStage = 4; creditsEarned += 15 }
+    if (gotInterview && newStage < 4) newStage = 4
 
     await Promise.all([
       supabase.from('checkins').insert({
@@ -124,13 +112,7 @@ export default function DashboardPage() {
         cold_emails_sent: newColdEmails,
         interview_calls: newInterviewCalls,
         stage: newStage,
-        credits: profile.credits + creditsEarned,
       }).eq('id', profile.id),
-      supabase.from('credit_history').insert({
-        user_id: profile.id,
-        action: `Weekly check-in${gotInterview ? ' + interview call! 📞' : ''}`,
-        credits: creditsEarned,
-      }),
     ])
 
     setCheckinDone(true)
@@ -147,10 +129,7 @@ export default function DashboardPage() {
 
   const handleMarkPlaced = async () => {
     if (!profile) return
-    await Promise.all([
-      supabase.from('profiles').update({ stage: 5, is_placed: true, credits: profile.credits + 50 }).eq('id', profile.id),
-      supabase.from('credit_history').insert({ user_id: profile.id, action: '🎉 Got placed!', credits: 50 }),
-    ])
+    await supabase.from('profiles').update({ stage: 5, is_placed: true }).eq('id', profile.id)
     loadData()
   }
 
@@ -176,7 +155,6 @@ export default function DashboardPage() {
     <main style={{ minHeight: '100vh', background: '#0B0B0F', fontFamily: "'DM Sans', sans-serif", padding: '32px 20px' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
-        @keyframes pulse-credit { 0%, 100% { box-shadow: 0 0 0 0 rgba(79,124,255,0.35); } 50% { box-shadow: 0 0 0 10px rgba(79,124,255,0); } }
         * { box-sizing: border-box; }
         input::placeholder { color: rgba(255,255,255,0.3); }
         input[type=number] { -moz-appearance: textfield; }
@@ -243,7 +221,6 @@ export default function DashboardPage() {
             })}
           </div>
 
-          {/* Stage action buttons */}
           <div style={{ marginTop: 20, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             {profile.stage === 1 && (
               <button onClick={handleMarkResumeReviewed} style={{ padding: '9px 18px', borderRadius: 100, background: 'rgba(79,124,255,0.08)', border: '1px solid rgba(79,124,255,0.25)', color: '#93BBFF', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
@@ -255,7 +232,7 @@ export default function DashboardPage() {
             )}
             {profile.stage === 4 && !profile.is_placed && (
               <button onClick={handleMarkPlaced} style={{ padding: '9px 18px', borderRadius: 100, background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)', color: '#4ade80', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                🎉 I got placed! (+50 credits)
+                🎉 I got placed!
               </button>
             )}
             {profile.stage === 5 && (
@@ -280,60 +257,7 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* ── Section 4: Credits ── */}
-        <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 24, padding: '32px 36px', marginBottom: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
-            <div>
-              <h2 style={{ fontSize: 15, fontWeight: 700, color: 'white', margin: '0 0 4px' }}>Credits</h2>
-              <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, margin: 0 }}>Earn by taking actions. Redeem for discounts.</p>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 10, padding: '14px 22px', borderRadius: 100,
-                background: 'rgba(79,124,255,0.08)', border: '1px solid rgba(79,124,255,0.25)',
-                animation: 'pulse-credit 2.5s ease-in-out infinite',
-              }}>
-                <span style={{ fontSize: 20 }}>⭐</span>
-                <span style={{ fontSize: 30, fontWeight: 800, color: '#4F7CFF', lineHeight: 1 }}>{profile.credits}</span>
-                <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>credits</span>
-              </div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', marginTop: 8 }}>Redeem: ₹50 off your next session</div>
-            </div>
-          </div>
-
-          {/* How to earn */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 8, marginBottom: 28 }}>
-            {[
-              { action: 'Book a session', credits: '+10', done: bookings.some(b => b.type === 'mentorship') },
-              { action: 'Join cohort', credits: '+25', done: bookings.some(b => b.type === 'cohort') },
-              { action: 'Weekly check-in', credits: '+2', done: hasCheckedIn },
-              { action: 'Get an interview call', credits: '+15', done: profile.interview_calls > 0 },
-              { action: 'Get placed!', credits: '+50', done: profile.is_placed },
-            ].map(item => (
-              <div key={item.action} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', borderRadius: 12, background: item.done ? 'rgba(34,197,94,0.04)' : 'rgba(255,255,255,0.02)', border: `1px solid ${item.done ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.05)'}` }}>
-                <span style={{ fontSize: 13, color: item.done ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.65)', textDecoration: item.done ? 'line-through' : 'none' }}>{item.action}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: item.done ? '#4ade80' : '#4F7CFF' }}>{item.done ? '✓' : item.credits}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Credit history */}
-          {creditHistory.length > 0 && (
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 12 }}>Recent activity</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {creditHistory.map(entry => (
-                  <div key={entry.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                    <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }}>{entry.action}</span>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: '#4F7CFF' }}>+{entry.credits}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* ── Section 5: Resources ── */}
+        {/* ── Section 4: Resources ── */}
         <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 24, padding: '32px 36px', marginBottom: 16 }}>
           <h2 style={{ fontSize: 15, fontWeight: 700, color: 'white', margin: '0 0 20px' }}>My Resources</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(196px, 1fr))', gap: 14 }}>
@@ -350,21 +274,20 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* ── Section 6: Weekly Check-in ── */}
+        {/* ── Section 5: Weekly Check-in ── */}
         <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 24, padding: '32px 36px', marginBottom: 48 }}>
           <h2 style={{ fontSize: 15, fontWeight: 700, color: 'white', margin: '0 0 4px' }}>Weekly Check-in</h2>
-          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, margin: '0 0 28px' }}>30 seconds · earns you 2 credits (+ 15 if you got an interview call)</p>
+          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, margin: '0 0 28px' }}>Takes 30 seconds. Keeps your journey on track.</p>
 
           {hasCheckedIn ? (
             <div style={{ textAlign: 'center', padding: '28px 0' }}>
               <div style={{ fontSize: 44, marginBottom: 14 }}>✅</div>
               <div style={{ fontSize: 17, fontWeight: 700, color: 'white', marginBottom: 8 }}>You've checked in this week!</div>
               <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)' }}>Come back next Monday for your next check-in.</div>
-              {checkinDone && <p style={{ color: '#4ade80', fontWeight: 600, marginTop: 14 }}>Check-in saved! You earned credits 🎉</p>}
+              {checkinDone && <p style={{ color: '#4ade80', fontWeight: 600, marginTop: 14 }}>Check-in saved! Keep going 💪</p>}
             </div>
           ) : (
             <div>
-              {/* Q1 */}
               <div style={{ marginBottom: 24 }}>
                 <label style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: 10, fontWeight: 500 }}>
                   How many cold emails did you send this week?
@@ -378,7 +301,6 @@ export default function DashboardPage() {
                 />
               </div>
 
-              {/* Q2 */}
               <div style={{ marginBottom: 24 }}>
                 <label style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: 10, fontWeight: 500 }}>
                   Did you get any interview calls?
@@ -393,7 +315,6 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Q3 */}
               <div style={{ marginBottom: 32 }}>
                 <label style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: 10, fontWeight: 500 }}>
                   How are you feeling about your search?

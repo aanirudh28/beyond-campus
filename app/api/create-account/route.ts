@@ -20,7 +20,6 @@ export async function POST(req: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 
-    const initialCredits = type === 'cohort' ? 25 : 10
     const tempPassword = email.split('@')[0]
 
     // Check if profile already exists — don't recreate
@@ -50,17 +49,9 @@ export async function POST(req: Request) {
       name,
       email,
       stage: 1,
-      credits: initialCredits,
       cold_emails_sent: 0,
       interview_calls: 0,
       is_placed: false,
-    })
-
-    // Log initial credits
-    await supabaseAdmin.from('credit_history').insert({
-      user_id: authData.user.id,
-      action: type === 'cohort' ? 'Joined cohort 🚀' : 'Booked mentorship session 📅',
-      credits: initialCredits,
     })
 
     // Send dashboard welcome email
@@ -99,10 +90,6 @@ export async function POST(req: Request) {
                 <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
                   <span style="color:rgba(255,255,255,0.5);font-size:14px;">Temp Password</span>
                   <span style="color:white;font-size:14px;font-weight:700;font-family:monospace;letter-spacing:1px;">${tempPassword}</span>
-                </div>
-                <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:4px;">
-                  <span style="color:rgba(255,255,255,0.5);font-size:14px;">Starting credits</span>
-                  <span style="color:#4F7CFF;font-size:14px;font-weight:700;float:right;">⭐ ${initialCredits} credits</span>
                 </div>
               </div>
 
