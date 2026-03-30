@@ -14,6 +14,8 @@ type Booking = {
   id: string
   name: string
   email: string
+  phone: string
+  resume_status: string
   date: string
   time_slot: string
   payment_id: string
@@ -183,6 +185,14 @@ export default function AdminPage() {
                       <td>
                         <div style={{ fontWeight: 600, color: 'white', marginBottom: 2 }}>{b.name}</div>
                         <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{b.email}</div>
+                        {b.phone && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{b.phone}</div>}
+                        {b.resume_status && (
+                          <div style={{ marginTop: 4 }}>
+                            <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 100, background: b.resume_status === 'has_resume' ? 'rgba(34,197,94,0.1)' : 'rgba(251,146,60,0.1)', color: b.resume_status === 'has_resume' ? '#4ade80' : '#fb923c', border: `1px solid ${b.resume_status === 'has_resume' ? 'rgba(34,197,94,0.2)' : 'rgba(251,146,60,0.2)'}`, fontWeight: 600 }}>
+                              {b.resume_status === 'has_resume' ? 'Has resume' : 'Needs resume'}
+                            </span>
+                          </div>
+                        )}
                       </td>
                       <td>
                         <div style={{ fontWeight: 500 }}>{b.date}</div>
