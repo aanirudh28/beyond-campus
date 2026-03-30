@@ -613,65 +613,117 @@ export default function Home() {
       </section>
 
       {/* FOUNDERS */}
-      <section style={{ padding: '100px 24px', maxWidth: 960, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+      <section style={{ padding: '100px 24px', maxWidth: 1000, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <span className="section-label">WHO WE ARE</span>
           <h2 className="section-title">Built by people who've been exactly where you are</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 17, maxWidth: 560, margin: '16px auto 0', lineHeight: 1.7 }}>
-            No professors. No career coaches who've never applied. Just two people who cracked off-campus hiring from non-IIT backgrounds — and built a system so you don't have to figure it out alone.
+          <p style={{ color: 'var(--muted)', fontSize: 16, maxWidth: 520, margin: '16px auto 0', lineHeight: 1.8 }}>
+            No professors. No career coaches who've never applied. Just two people who cracked off-campus hiring — and built a system so you don't have to figure it out alone.
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24, marginBottom: 40 }}>
-          {/* Founder 1 */}
-          <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 28, padding: '40px', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, background: 'radial-gradient(circle, rgba(79,124,255,0.12), transparent)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-            <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', marginBottom: 24 }}>
-              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, #4F46E5, #7B61FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 800, flexShrink: 0, color: 'white' }}>AA</div>
-              <div>
-                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, marginBottom: 2 }}>Anirudh Agarwal</div>
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>Associate Consultant @ Aon · Christ University, Bangalore</div>
-                <a href="https://www.linkedin.com/in/anirudh-agarwal-36591220b/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#4F7CFF', textDecoration: 'none', fontWeight: 600 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                  LinkedIn
-                </a>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 2, marginBottom: 56 }}>
+
+          {/* ── Founder 1 ── */}
+          <div style={{ padding: 2, borderRadius: 32, background: 'linear-gradient(145deg, rgba(79,70,229,0.6) 0%, rgba(123,97,255,0.25) 50%, rgba(255,255,255,0.04) 100%)' }}>
+            <div style={{ background: 'linear-gradient(160deg, #131020 0%, #0c0b15 100%)', borderRadius: 30, padding: '44px 40px', height: '100%', position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
+
+              {/* ambient glows */}
+              <div style={{ position: 'absolute', top: -100, left: -60, width: 260, height: 260, background: 'radial-gradient(circle, rgba(79,70,229,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', bottom: -80, right: -80, width: 220, height: 220, background: 'radial-gradient(circle, rgba(123,97,255,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+              {/* decorative large quote */}
+              <div style={{ position: 'absolute', top: 16, right: 24, fontFamily: 'Georgia,serif', fontSize: 140, lineHeight: 1, color: 'rgba(79,70,229,0.07)', userSelect: 'none', pointerEvents: 'none' }}>"</div>
+
+              {/* avatar */}
+              <div style={{ width: 84, height: 84, borderRadius: '50%', background: 'linear-gradient(135deg, #4F46E5, #7B61FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 800, color: 'white', marginBottom: 24, boxShadow: '0 0 0 5px rgba(79,70,229,0.18), 0 0 40px rgba(79,70,229,0.28)' }}>AA</div>
+
+              {/* name */}
+              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, fontWeight: 400, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>Anirudh Agarwal</div>
+
+              {/* role badge */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', background: 'rgba(79,70,229,0.18)', border: '1px solid rgba(79,70,229,0.35)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#a5b4fc', marginBottom: 6, letterSpacing: '0.3px' }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#a5b4fc', display: 'inline-block' }} />
+                Associate Consultant @ Aon
               </div>
-            </div>
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.8, marginBottom: 20 }}>
-              Placed off-campus into consulting from a non-IIM background. Spent months reverse-engineering what actually gets you interviews — cold outreach, positioning, and showing up before others even start applying.
-            </p>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {['Consulting', 'Off-Campus Strategy', 'Cold Outreach'].map(tag => (
-                <span key={tag} style={{ padding: '4px 12px', background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.25)', borderRadius: 100, fontSize: 12, color: '#4F7CFF', fontWeight: 600 }}>{tag}</span>
-              ))}
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 28, letterSpacing: '0.2px' }}>Christ University, Bangalore</div>
+
+              {/* divider */}
+              <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(79,70,229,0.4), rgba(123,97,255,0.15), transparent)', marginBottom: 28 }} />
+
+              {/* bio */}
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.85, marginBottom: 28, position: 'relative', zIndex: 1 }}>
+                Placed off-campus into consulting from a non-IIM background. Spent months reverse-engineering what actually gets you interviews — cold outreach, positioning, and showing up before others even start applying.
+              </p>
+
+              {/* tags */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
+                {['Consulting', 'Off-Campus Strategy', 'Cold Outreach'].map(tag => (
+                  <span key={tag} style={{ padding: '5px 13px', background: 'rgba(79,70,229,0.12)', border: '1px solid rgba(79,70,229,0.22)', borderRadius: 100, fontSize: 12, color: '#a5b4fc', fontWeight: 600 }}>{tag}</span>
+                ))}
+              </div>
+
+              {/* LinkedIn button */}
+              <a href="https://www.linkedin.com/in/anirudh-agarwal-36591220b/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', background: 'rgba(79,70,229,0.14)', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 12, fontSize: 13, color: '#a5b4fc', textDecoration: 'none', fontWeight: 600 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                View LinkedIn
+              </a>
             </div>
           </div>
 
-          {/* Founder 2 */}
-          <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 28, padding: '40px', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, background: 'radial-gradient(circle, rgba(6,182,212,0.12), transparent)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-            <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', marginBottom: 24 }}>
-              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, #0891B2, #4F7CFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 800, flexShrink: 0, color: 'white' }}>SS</div>
-              <div>
-                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, marginBottom: 2 }}>Sanya Srivastava</div>
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>FP&A @ Palo Alto Networks</div>
+          {/* ── Founder 2 ── */}
+          <div style={{ padding: 2, borderRadius: 32, background: 'linear-gradient(145deg, rgba(6,182,212,0.5) 0%, rgba(8,145,178,0.2) 50%, rgba(255,255,255,0.04) 100%)' }}>
+            <div style={{ background: 'linear-gradient(160deg, #0a1418 0%, #0b0f14 100%)', borderRadius: 30, padding: '44px 40px', height: '100%', position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
+
+              {/* ambient glows */}
+              <div style={{ position: 'absolute', top: -100, left: -60, width: 260, height: 260, background: 'radial-gradient(circle, rgba(6,182,212,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', bottom: -80, right: -80, width: 220, height: 220, background: 'radial-gradient(circle, rgba(8,145,178,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+              {/* decorative large quote */}
+              <div style={{ position: 'absolute', top: 16, right: 24, fontFamily: 'Georgia,serif', fontSize: 140, lineHeight: 1, color: 'rgba(6,182,212,0.07)', userSelect: 'none', pointerEvents: 'none' }}>"</div>
+
+              {/* avatar */}
+              <div style={{ width: 84, height: 84, borderRadius: '50%', background: 'linear-gradient(135deg, #0891B2, #06b6d4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 800, color: 'white', marginBottom: 24, boxShadow: '0 0 0 5px rgba(6,182,212,0.15), 0 0 40px rgba(6,182,212,0.22)' }}>SS</div>
+
+              {/* name */}
+              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, fontWeight: 400, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>Sanya Srivastava</div>
+
+              {/* role badge */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#67e8f9', marginBottom: 6, letterSpacing: '0.3px' }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#67e8f9', display: 'inline-block' }} />
+                FP&A @ Palo Alto Networks
               </div>
-            </div>
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.8, marginBottom: 20 }}>
-              Built a career in finance and corporate strategy at a global tech company — without the "right" pedigree. Knows exactly what finance and strategy roles look for, and how to get there when no one hands you a roadmap.
-            </p>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {['Finance', 'FP&A', 'Corporate Strategy'].map(tag => (
-                <span key={tag} style={{ padding: '4px 12px', background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.25)', borderRadius: 100, fontSize: 12, color: '#06b6d4', fontWeight: 600 }}>{tag}</span>
-              ))}
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 28, letterSpacing: '0.2px' }}>Finance · Corporate Strategy</div>
+
+              {/* divider */}
+              <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(6,182,212,0.4), rgba(8,145,178,0.15), transparent)', marginBottom: 28 }} />
+
+              {/* bio */}
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.85, marginBottom: 28, position: 'relative', zIndex: 1 }}>
+                Built a career in finance and corporate strategy at a global tech company — without the "right" pedigree. Knows exactly what finance and strategy roles look for, and how to get there when no one hands you a roadmap.
+              </p>
+
+              {/* tags */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {['Finance', 'FP&A', 'Corporate Strategy'].map(tag => (
+                  <span key={tag} style={{ padding: '5px 13px', background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.22)', borderRadius: 100, fontSize: 12, color: '#67e8f9', fontWeight: 600 }}>{tag}</span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Shared quote */}
-        <div style={{ textAlign: 'center', padding: '32px 24px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20 }}>
-          <p style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(17px, 2.5vw, 22px)', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontStyle: 'italic', margin: 0 }}>
-            "We built this because the system wasn't built for us. Now it's built for you."
+        {/* shared quote */}
+        <div style={{ textAlign: 'center', padding: '0 16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
+            <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1))' }} />
+            <div style={{ display: 'flex', gap: 6 }}>
+              {[0,1,2].map(i => <div key={i} style={{ width: 4, height: 4, borderRadius: '50%', background: i === 1 ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)' }} />)}
+            </div>
+            <div style={{ flex: 1, height: 1, background: 'linear-gradient(270deg, transparent, rgba(255,255,255,0.1))' }} />
+          </div>
+          <p style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(20px, 3vw, 28px)', color: 'rgba(255,255,255,0.82)', lineHeight: 1.55, fontStyle: 'italic', maxWidth: 600, margin: '0 auto' }}>
+            "We built this because the system wasn't built for us.<br />Now it's built for you."
           </p>
         </div>
       </section>
