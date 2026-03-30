@@ -19,6 +19,8 @@ export default function BookPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [resumeStatus, setResumeStatus] = useState('')
 
   const dates = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
   const timeSlots = ['10 AM – 11 AM', '11 AM – 12 PM', '2 PM – 3 PM', '4 PM – 5 PM', '6 PM – 7 PM']
@@ -38,6 +40,8 @@ export default function BookPage() {
     const { error } = await supabase.from('bookings').insert({
       name,
       email,
+      phone,
+      resume_status: resumeStatus,
       date: selectedDate,
       time_slot: selectedTime,
       payment_id: paymentId,
@@ -65,8 +69,12 @@ export default function BookPage() {
       alert('Please select both a date and time.')
       return
     }
-    if (!name || !email) {
-      alert('Please enter your name and email.')
+    if (!name || !email || !phone) {
+      alert('Please enter your name, email, and phone number.')
+      return
+    }
+    if (!resumeStatus) {
+      alert('Please answer the resume question.')
       return
     }
 
@@ -134,6 +142,21 @@ export default function BookPage() {
             className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
           <input type="email" placeholder="Your Email" value={email} onChange={(e) => setEmail(e.target.value)}
             className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+          <input type="tel" placeholder="Your Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+        </div>
+
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">Do you have a resume?</h2>
+        <div className="flex flex-col gap-3 mb-6">
+          {[
+            { value: 'has_resume', label: 'Yes, I have an existing resume' },
+            { value: 'needs_resume', label: 'No, I need help building my resume from scratch' },
+          ].map((option) => (
+            <button key={option.value} onClick={() => setResumeStatus(option.value)}
+              className={`text-left px-4 py-3 rounded-lg border text-sm font-medium transition ${resumeStatus === option.value ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
+              {option.label}
+            </button>
+          ))}
         </div>
 
         <h2 className="text-xl font-semibold text-gray-900 mb-3">Select a Date</h2>

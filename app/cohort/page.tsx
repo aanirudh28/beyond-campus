@@ -15,6 +15,8 @@ declare global {
 export default function CohortPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [resumeStatus, setResumeStatus] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isJoined, setIsJoined] = useState(false)
 
@@ -33,6 +35,8 @@ export default function CohortPage() {
     const { error } = await supabase.from('bookings').insert({
       name,
       email,
+      phone,
+      resume_status: resumeStatus,
       date: 'April 1',
       time_slot: '8-Week Cohort',
       payment_id: paymentId,
@@ -56,8 +60,12 @@ export default function CohortPage() {
   }
 
   const handleJoin = async () => {
-    if (!name || !email) {
-      alert('Please enter your name and email.')
+    if (!name || !email || !phone) {
+      alert('Please enter your name, email, and phone number.')
+      return
+    }
+    if (!resumeStatus) {
+      alert('Please answer the resume question.')
       return
     }
 
@@ -166,6 +174,26 @@ export default function CohortPage() {
               onChange={(e) => setEmail(e.target.value)}
               className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
+            <input
+              type="tel"
+              placeholder="Your Phone Number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
+          </div>
+
+          <p className="text-sm font-medium text-gray-700 mb-2">Do you have a resume?</p>
+          <div className="flex flex-col gap-2 mb-5">
+            {[
+              { value: 'has_resume', label: 'Yes, I have an existing resume' },
+              { value: 'needs_resume', label: 'No, I need help building my resume from scratch' },
+            ].map((option) => (
+              <button key={option.value} onClick={() => setResumeStatus(option.value)}
+                className={`text-left px-4 py-3 rounded-lg border text-sm font-medium transition ${resumeStatus === option.value ? 'bg-purple-600 border-purple-600 text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
+                {option.label}
+              </button>
+            ))}
           </div>
 
           <button
