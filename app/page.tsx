@@ -8,8 +8,10 @@ export default function Home() {
   const [timeLeft, setTimeLeft] = useState({ h: 11, m: 47, s: 33 })
   const [counters, setCounters] = useState({ salary: 0, placed: 0, rate: 0 })
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [howItWorksVisible, setHowItWorksVisible] = useState(false)
   const statsRef = useRef<HTMLDivElement>(null)
   const statsStarted = useRef(false)
+  const howItWorksRef = useRef<HTMLDivElement>(null)
 
   const FAQS = [
     { q: 'Is this a recorded course or live sessions?', a: 'Everything is live. The cohort has weekly live sessions directly with your mentor — no pre-recorded lectures. 1:1 sessions are live calls scheduled at your convenience.' },
@@ -62,6 +64,14 @@ export default function Home() {
       }
     }, { threshold: 0.3 })
     if (statsRef.current) observer.observe(statsRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setHowItWorksVisible(true)
+    }, { threshold: 0.15 })
+    if (howItWorksRef.current) observer.observe(howItWorksRef.current)
     return () => observer.disconnect()
   }, [])
 
@@ -132,10 +142,27 @@ export default function Home() {
         .feature-pill { display: flex; align-items: center; gap: 10px; padding: 12px 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; font-size: 14px; font-weight: 500; }
         .logo-pill { padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; font-size: 13px; font-weight: 700; color: var(--muted); transition: all 0.3s; white-space: nowrap; }
         .logo-pill:hover { background: rgba(79,124,255,0.1); border-color: rgba(79,124,255,0.3); color: white; }
+        @keyframes dash-move { 0%{stroke-dashoffset:0} 100%{stroke-dashoffset:-400} }
+        @keyframes dot-travel { 0%{left:0%;opacity:0} 5%{opacity:1} 95%{opacity:1} 100%{left:100%;opacity:0} }
+        @keyframes dot-travel-v { 0%{top:0%;opacity:0} 5%{opacity:1} 95%{opacity:1} 100%{top:100%;opacity:0} }
+        .hiw-card { background:#111827; border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:40px 32px; position:relative; overflow:hidden; transition:border-color 0.4s, transform 0.4s, box-shadow 0.4s; opacity:0; transform:translateY(40px); }
+        .hiw-card.visible { opacity:1; transform:translateY(0); }
+        .hiw-card:hover { border-color:rgba(79,124,255,0.45); transform:translateY(-8px); box-shadow:0 24px 64px rgba(79,124,255,0.18); }
+        .hiw-step-num { position:absolute; top:-20px; right:16px; font-family:'DM Serif Display',serif; font-size:140px; font-weight:800; color:rgba(255,255,255,0.025); line-height:1; pointer-events:none; user-select:none; }
+        .hiw-icon-wrap { width:56px; height:56px; border-radius:16px; background:linear-gradient(135deg,#4F7CFF,#7B61FF); display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:24px; box-shadow:0 8px 24px rgba(79,124,255,0.35); flex-shrink:0; }
+        .hiw-connector { position:relative; flex:1; height:2px; margin:0 8px; align-self:center; }
+        .hiw-connector-line { width:100%; height:2px; background:repeating-linear-gradient(90deg,rgba(79,124,255,0.5) 0,rgba(79,124,255,0.5) 8px,transparent 8px,transparent 16px); }
+        .hiw-dot { position:absolute; top:50%; transform:translateY(-50%); width:10px; height:10px; border-radius:50%; background:#4F7CFF; box-shadow:0 0 10px rgba(79,124,255,0.9); animation:dot-travel 2.4s ease-in-out infinite; }
+        .hiw-connector-v { position:relative; width:2px; height:64px; margin:4px auto; }
+        .hiw-connector-v-line { width:2px; height:100%; background:repeating-linear-gradient(180deg,rgba(79,124,255,0.5) 0,rgba(79,124,255,0.5) 8px,transparent 8px,transparent 16px); }
+        .hiw-dot-v { position:absolute; left:50%; transform:translateX(-50%); width:10px; height:10px; border-radius:50%; background:#4F7CFF; box-shadow:0 0 10px rgba(79,124,255,0.9); animation:dot-travel-v 2.4s ease-in-out infinite; }
+        .proof-strip-card { background:#111827; border-left:4px solid #4F7CFF; border-radius:16px; padding:24px 28px; display:flex; align-items:flex-start; gap:14px; transition:transform 0.3s; }
+        .proof-strip-card:hover { transform:translateX(4px); }
         @media(max-width:768px) {
           .sticky-nav { padding: 16px 20px; }
           .sticky-nav.scrolled { padding: 12px 20px; }
           .hero-headline { font-size: clamp(36px, 10vw, 56px); }
+          .hiw-step-num { font-size:100px; }
         }
       `}</style>
 
@@ -268,6 +295,116 @@ export default function Home() {
               <div style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.7 }}>{s.desc}</div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section ref={howItWorksRef} style={{ padding: '120px 24px', background: '#0B0B0F', position: 'relative', overflow: 'hidden' }}>
+        {/* Background orbs */}
+        <div style={{ position: 'absolute', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,124,255,0.07), transparent)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', pointerEvents: 'none' }} />
+
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: 72 }}>
+            <span className="section-label">THE PROCESS</span>
+            <h2 className="section-title" style={{ maxWidth: 640, margin: '0 auto 20px' }}>From stuck to placed —<br />here's how it works</h2>
+            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 17, maxWidth: 500, margin: '0 auto', lineHeight: 1.7 }}>
+              A proven system built for students who don't have the luxury of campus placements
+            </p>
+          </div>
+          {/* Desktop row */}
+          <div style={{ display: 'flex', alignItems: 'stretch', gap: 0 }} className="hiw-desktop-row">
+            {[
+              { num: '01', icon: '🎯', title: 'Diagnose What\'s Blocking You', desc: 'We start by understanding exactly where you\'re stuck — resume, LinkedIn, cold outreach, or targeting. No generic advice. Just a sharp, honest assessment of what needs to change.', delay: '0s' },
+              { num: '02', icon: '🛠️', title: 'Build Your Unfair Advantage', desc: 'We rebuild your profile and strategy from scratch for the roles you want — consulting, finance, Founder\'s Office, marketing, operations. You get scripts, templates, a target list, and warm introductions.', delay: '0.18s' },
+              { num: '03', icon: '🎉', title: 'Execute Until You\'re Placed', desc: "Weekly accountability, live sessions, and direct support until you have an offer. We don't disappear after onboarding. We stay in your corner until the job is done.", delay: '0.36s' },
+            ].flatMap((step, i) => {
+              const card = (
+                <div
+                  key={step.num}
+                  className={`hiw-card${howItWorksVisible ? ' visible' : ''}`}
+                  style={{ flex: 1, transitionDelay: step.delay, transitionDuration: '0.7s' }}
+                >
+                  <div className="hiw-step-num">{step.num}</div>
+                  <div className="hiw-icon-wrap">{step.icon}</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: '#4F7CFF', textTransform: 'uppercase', marginBottom: 12 }}>Step {step.num}</div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: 'white', lineHeight: 1.3, marginBottom: 16 }}>{step.title}</div>
+                  <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.85 }}>{step.desc}</div>
+                </div>
+              )
+              if (i < 2) {
+                return [card, (
+                  <div key={`conn-${i}`} style={{ width: 40, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                    <div style={{ width: '100%', height: 2, background: 'repeating-linear-gradient(90deg,rgba(79,124,255,0.5) 0,rgba(79,124,255,0.5) 8px,transparent 8px,transparent 16px)', position: 'relative' }}>
+                      <div className="hiw-dot" style={{ animationDelay: `${i * 0.8}s` }} />
+                    </div>
+                  </div>
+                )]
+              }
+              return [card]
+            })}
+          </div>
+
+          {/* Mobile vertical stack */}
+          <div className="hiw-mobile-col" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 0 }}>
+            {[
+              { num: '01', icon: '🎯', title: 'Diagnose What\'s Blocking You', desc: 'We start by understanding exactly where you\'re stuck — resume, LinkedIn, cold outreach, or targeting. No generic advice. Just a sharp, honest assessment of what needs to change.', delay: '0s' },
+              { num: '02', icon: '🛠️', title: 'Build Your Unfair Advantage', desc: 'We rebuild your profile and strategy from scratch for the roles you want — consulting, finance, Founder\'s Office, marketing, operations. You get scripts, templates, a target list, and warm introductions.', delay: '0.18s' },
+              { num: '03', icon: '🎉', title: 'Execute Until You\'re Placed', desc: "Weekly accountability, live sessions, and direct support until you have an offer. We don't disappear after onboarding. We stay in your corner until the job is done.", delay: '0.36s' },
+            ].map((step, i) => (
+              <div key={step.num}>
+                <div
+                  className={`hiw-card${howItWorksVisible ? ' visible' : ''}`}
+                  style={{ transitionDelay: step.delay, transitionDuration: '0.7s' }}
+                >
+                  <div className="hiw-step-num">{step.num}</div>
+                  <div className="hiw-icon-wrap">{step.icon}</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: '#4F7CFF', textTransform: 'uppercase', marginBottom: 12 }}>Step {step.num}</div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: 'white', lineHeight: 1.3, marginBottom: 16 }}>{step.title}</div>
+                  <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.85 }}>{step.desc}</div>
+                </div>
+                {i < 2 && (
+                  <div className="hiw-connector-v">
+                    <div className="hiw-connector-v-line" />
+                    <div className="hiw-dot-v" style={{ animationDelay: `${i * 0.8}s` }} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <style>{`
+            .hiw-desktop-row { display: flex; }
+            .hiw-mobile-col { display: none; }
+            @media(max-width: 768px) {
+              .hiw-desktop-row { display: none; }
+              .hiw-mobile-col { display: flex; }
+            }
+          `}</style>
+
+          {/* Proof strip */}
+          <div style={{ marginTop: 64, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[
+              { icon: '⚡', text: 'Cold emails using our templates get replies within 24 hours on average' },
+              { icon: '📅', text: 'Most students land their first interview conversation within 30 days' },
+              { icon: '🌍', text: 'Students from 50+ colleges across India have used this system' },
+            ].map((fact, i) => (
+              <div key={i} className="proof-strip-card">
+                <span style={{ fontSize: 22, flexShrink: 0, marginTop: 2 }}>{fact.icon}</span>
+                <span style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>{fact.text}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* CTAs */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 56, flexWrap: 'wrap' }}>
+            <a href="/book" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 36px', borderRadius: 100, background: 'linear-gradient(135deg, #FF6B35, #FF4500)', color: 'white', fontWeight: 700, fontSize: 16, boxShadow: '0 0 36px rgba(255,107,53,0.4)', transition: 'all 0.3s', textDecoration: 'none' }}>
+              Get Started →
+            </a>
+            <a href="/internship" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '15px 36px', borderRadius: 100, background: 'transparent', color: 'white', fontWeight: 600, fontSize: 16, border: '1.5px solid rgba(255,255,255,0.2)', transition: 'all 0.3s', textDecoration: 'none' }}>
+              See the Full Program
+            </a>
+          </div>
         </div>
       </section>
 
