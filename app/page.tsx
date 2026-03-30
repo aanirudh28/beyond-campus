@@ -239,7 +239,7 @@ export default function Home() {
       <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '14px 0', background: 'rgba(79,124,255,0.04)', overflow: 'hidden' }}>
         <div className="ticker">
           {[...Array(2)].map((_, ri) => (
-            ['🎉 Priya landed a Marketing role at a D2C startup', '⚡ Arjun cracked Business Development at a Series B fintech', '🚀 Sneha got an Analyst role at a Big 4 firm', '💼 Rohan joined the Founder\'s Office at a leading startup', '🔥 Meera cracked a Consulting role off-campus', '✅ Karan secured an Operations role at a top FMCG company'].map((item, i) => (
+            ["🎉 A commerce student from Delhi landed a Founder's Office role at a leading startup", "⚡ A BBA student cracked a Big 4 analyst role without a single referral", "🚀 A tier-3 college student got a BD internship at a Series B fintech", "💼 A BCom graduate secured 3 competing offers in 30 days", "🔥 A student with no network broke into consulting off-campus", "✅ A finance student cracked their dream company in 29 days"].map((item, i) => (
               <span key={`${ri}-${i}`} className="ticker-item">
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>◆</span>
                 {item}
@@ -538,12 +538,12 @@ export default function Home() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
           {[
-            { name: 'Priya S.', role: "BD Analyst @ a Series B Fintech", days: '38 days', quote: 'I had given up on off-campus. After week 2 of the cohort, I got 3 replies from cold emails. Got my offer in 38 days.', color: '#4F7CFF', result: '₹12 LPA offer' },
-            { name: 'Arjun P.', role: "Founder's Office @ a D2C Startup", days: '45 days', quote: 'The mentor reviewed my resume and gave me a company hit list. I had an offer in 45 days. Best ₹999 I ever spent.', color: '#7B61FF', result: 'Offer Secured' },
-            { name: 'Sneha R.', role: 'Operations @ Swiggy', days: '52 days', quote: 'Nobody from my college had ever cracked Swiggy. The LinkedIn DM strategy changed everything.', color: '#06b6d4', result: '3 Competing Offers' },
-            { name: 'Rohan M.', role: 'Consulting Analyst @ Big 4', days: '60 days', quote: 'Tier-3 college. No DU or top college tag. But with the right outreach strategy, I cracked a Big 4 offer. This program is real.', color: '#10b981', result: '₹14 LPA package' },
-            { name: 'Aditya K.', role: 'Marketing @ a Fast-Growing Startup', days: '41 days', quote: 'I switched from finance to marketing through this cohort. The mentor connections and referrals made it happen.', color: '#f59e0b', result: 'Career Switch Success' },
-            { name: 'Meera J.', role: 'Analyst @ EY', days: '29 days', quote: "EY wasn't even on my radar. My mentor pushed me to apply and helped me prep. Got the call in 29 days.", color: '#ec4899', result: 'Dream Company Cracked' },
+            { initial: 'P', name: 'Commerce student, Delhi', role: 'Marketing Intern at a D2C Startup', days: '38 days', quote: 'I had zero replies for months. After week 2 of the cohort, I got 3 responses from cold emails. Got my internship offer in 38 days.', color: '#4F7CFF', result: 'Dream internship secured' },
+            { initial: 'A', name: 'BBA student, Tier-2 college', role: 'Analyst at a Big 4 Firm', days: '45 days', quote: 'My mentor rebuilt my resume and gave me a target company list. I had an offer in 45 days. Best ₹999 I ever spent.', color: '#7B61FF', result: 'Big 4 offer without referral' },
+            { initial: 'S', name: 'BCom student, Tier-3 college', role: 'BD Intern at a Series B Startup', days: '52 days', quote: 'Nobody from my college had ever cracked a startup this good. The LinkedIn DM strategy completely changed the game for me.', color: '#06b6d4', result: '3 competing offers' },
+            { initial: 'R', name: 'BBA graduate, Tier-2 college', role: "Founder's Office at a Leading Startup", days: '60 days', quote: 'No campus placements, no referrals, no IIM tag. But with the right outreach strategy, I landed my dream role. This program is real.', color: '#10b981', result: "Founder's Office role" },
+            { initial: 'A', name: 'MBA student, Delhi', role: 'Consulting Intern at a Boutique Firm', days: '41 days', quote: 'I switched my target from finance to consulting through this cohort. The mentor connections and the strategy made it happen.', color: '#f59e0b', result: 'Career pivot successful' },
+            { initial: 'M', name: 'Commerce graduate, Tier-2 college', role: 'Finance Intern at a Fast-Growing Fintech', days: '29 days', quote: "This company wasn't even on my radar. My mentor pushed me to apply and helped me prep. Got the call in 29 days.", color: '#ec4899', result: 'Dream company cracked' },
           ].map((t, i) => (
             <div key={i} className="proof-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
@@ -552,7 +552,7 @@ export default function Home() {
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: 24, fontStyle: 'italic' }}>"{t.quote}"</p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg, ${t.color}, #0B0B0F)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, flexShrink: 0 }}>{t.name[0]}</div>
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg, ${t.color}, #0B0B0F)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, flexShrink: 0 }}>{t.initial}</div>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: 13 }}>{t.name}</div>
                     <div style={{ fontSize: 12, color: 'var(--muted)' }}>{t.role}</div>
@@ -612,27 +612,67 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOUNDER */}
-      <section style={{ padding: '100px 24px', maxWidth: 800, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <span className="section-label">Our Story</span>
-          <h2 className="section-title">Built by someone who figured it out the hard way</h2>
+      {/* FOUNDERS */}
+      <section style={{ padding: '100px 24px', maxWidth: 960, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <span className="section-label">WHO WE ARE</span>
+          <h2 className="section-title">Built by people who've been exactly where you are</h2>
+          <p style={{ color: 'var(--muted)', fontSize: 17, maxWidth: 560, margin: '16px auto 0', lineHeight: 1.7 }}>
+            No professors. No career coaches who've never applied. Just two people who cracked off-campus hiring from non-IIT backgrounds — and built a system so you don't have to figure it out alone.
+          </p>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 28, padding: '48px', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, background: 'radial-gradient(circle, rgba(79,124,255,0.15), transparent)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-          <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-            <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 800, flexShrink: 0 }}>R</div>
-            <div style={{ flex: 1, minWidth: 200 }}>
-              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, marginBottom: 4 }}>The Founder</div>
-              <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 24 }}>Placed off-campus · Tier-3 college · Now at a leading MNC</div>
-              <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, marginBottom: 16 }}>
-                "I graduated from a tier-3 college with no placements, no network, and no idea what to do. I spent 6 months figuring out cold outreach, LinkedIn, and resume strategy on my own — and eventually landed roles at companies that never came to my campus."
-              </p>
-              <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8 }}>
-                "I built Beyond Campus so you don't have to spend 6 months figuring it out alone. You can do it in 8 weeks."
-              </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24, marginBottom: 40 }}>
+          {/* Founder 1 */}
+          <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 28, padding: '40px', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, background: 'radial-gradient(circle, rgba(79,124,255,0.12), transparent)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+            <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', marginBottom: 24 }}>
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, #4F46E5, #7B61FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 800, flexShrink: 0, color: 'white' }}>AA</div>
+              <div>
+                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, marginBottom: 2 }}>Anirudh Agarwal</div>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>Associate Consultant @ Aon · Christ University, Bangalore</div>
+                <a href="https://www.linkedin.com/in/anirudh-agarwal-36591220b/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#4F7CFF', textDecoration: 'none', fontWeight: 600 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                  LinkedIn
+                </a>
+              </div>
+            </div>
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.8, marginBottom: 20 }}>
+              Placed off-campus into consulting from a non-IIM background. Spent months reverse-engineering what actually gets you interviews — cold outreach, positioning, and showing up before others even start applying.
+            </p>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {['Consulting', 'Off-Campus Strategy', 'Cold Outreach'].map(tag => (
+                <span key={tag} style={{ padding: '4px 12px', background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.25)', borderRadius: 100, fontSize: 12, color: '#4F7CFF', fontWeight: 600 }}>{tag}</span>
+              ))}
             </div>
           </div>
+
+          {/* Founder 2 */}
+          <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 28, padding: '40px', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, background: 'radial-gradient(circle, rgba(6,182,212,0.12), transparent)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+            <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', marginBottom: 24 }}>
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, #0891B2, #4F7CFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 800, flexShrink: 0, color: 'white' }}>SS</div>
+              <div>
+                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, marginBottom: 2 }}>Sanya Srivastava</div>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>FP&A @ Palo Alto Networks</div>
+              </div>
+            </div>
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.8, marginBottom: 20 }}>
+              Built a career in finance and corporate strategy at a global tech company — without the "right" pedigree. Knows exactly what finance and strategy roles look for, and how to get there when no one hands you a roadmap.
+            </p>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {['Finance', 'FP&A', 'Corporate Strategy'].map(tag => (
+                <span key={tag} style={{ padding: '4px 12px', background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.25)', borderRadius: 100, fontSize: 12, color: '#06b6d4', fontWeight: 600 }}>{tag}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Shared quote */}
+        <div style={{ textAlign: 'center', padding: '32px 24px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20 }}>
+          <p style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(17px, 2.5vw, 22px)', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontStyle: 'italic', margin: 0 }}>
+            "We built this because the system wasn't built for us. Now it's built for you."
+          </p>
         </div>
       </section>
 
