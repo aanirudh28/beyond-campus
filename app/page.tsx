@@ -7,8 +7,20 @@ export default function Home() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [timeLeft, setTimeLeft] = useState({ h: 11, m: 47, s: 33 })
   const [counters, setCounters] = useState({ salary: 0, placed: 0, rate: 0 })
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
   const statsRef = useRef<HTMLDivElement>(null)
   const statsStarted = useRef(false)
+
+  const FAQS = [
+    { q: 'Is this a recorded course or live sessions?', a: 'Everything is live. The cohort has weekly live sessions directly with your mentor — no pre-recorded lectures. 1:1 sessions are live calls scheduled at your convenience.' },
+    { q: "I'm from a tier-2 or tier-3 college. Will this actually work for me?", a: "Most of our students are from tier-2 and tier-3 colleges. The strategies we teach work regardless of college name — they're built specifically for students who don't get top companies walking onto their campus. Off-campus hiring is about strategy, not your college rank." },
+    { q: 'What kind of roles do your students get placed in?', a: "Most students get placed in the domains they're targeting. Consulting and finance remain the most sought-after, with a strong and rising inclination towards Founder's Office roles at leading startups. We also place students in marketing, operations, and business development across fast-growing companies." },
+    { q: 'How long will it take to see results?', a: 'Most students see their first meaningful result — a reply to a cold email, a LinkedIn connection with a hiring manager, or a referral introduction — within the first 2 weeks. By week 4, most students have at least one interview conversation in progress. The full transformation — from stuck to placed — typically takes 30 days of consistent execution.' },
+    { q: 'What happens immediately after I pay?', a: "You'll receive a confirmation email within 2 minutes with your login details for the student dashboard. For the cohort, you'll also get added to the private WhatsApp group where onboarding starts immediately." },
+    { q: 'How is this different from watching YouTube videos or buying a course?', a: "Three things: personalization, accountability, and referrals. We review YOUR resume, build YOUR target list, and introduce YOU to people at your target companies. No YouTube video does that." },
+    { q: 'Can I book a 1:1 session before joining the cohort?', a: "Absolutely — that's what most students do. Book a ₹299 session first, see how it goes, then decide on the cohort. No pressure at all." },
+    { q: 'Is my payment secure?', a: "Yes — payments are processed by Razorpay, India's most trusted payment gateway. We never store your card details." },
+  ]
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY)
@@ -200,7 +212,7 @@ export default function Home() {
       <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '14px 0', background: 'rgba(79,124,255,0.04)', overflow: 'hidden' }}>
         <div className="ticker">
           {[...Array(2)].map((_, ri) => (
-            ['🎉 Rohan got placed at Amazon — ₹18LPA', '⚡ Priya cracked EY in 45 days', '🚀 Arjun landed CRED without referrals', '💼 Sneha got 3 offers in 1 month', '🔥 Aditya broke into Razorpay cold', '✅ Meera secured Swiggy PM role'].map((item, i) => (
+            ['🎉 Priya landed a Marketing role at a D2C startup', '⚡ Arjun cracked Business Development at a Series B fintech', '🚀 Sneha got an Analyst role at a Big 4 firm', '💼 Rohan joined the Founder\'s Office at a leading startup', '🔥 Meera cracked a Consulting role off-campus', '✅ Karan secured an Operations role at a top FMCG company'].map((item, i) => (
               <span key={`${ri}-${i}`} className="ticker-item">
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>◆</span>
                 {item}
@@ -322,12 +334,12 @@ export default function Home() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
           {[
-            { name: 'Priya Sharma', role: 'SDE Intern @ Razorpay', days: '38 days', quote: 'I had given up on off-campus. After week 2 of the cohort, I got 3 replies from cold emails. Got my offer in 38 days.', color: '#4F7CFF', result: '₹12 LPA offer' },
-            { name: 'Arjun Patel', role: 'Product Intern @ CRED', days: '45 days', quote: 'The mentor reviewed my resume and gave me a company hit list. I had a PPO offer in 45 days. Best ₹999 I ever spent.', color: '#7B61FF', result: 'PPO Secured' },
-            { name: 'Sneha Reddy', role: 'Data Science @ Swiggy', days: '52 days', quote: 'Nobody from my college had ever cracked Swiggy. The LinkedIn DM strategy changed everything.', color: '#06b6d4', result: '3 Competing Offers' },
-            { name: 'Rohan Mehta', role: 'SDE @ Amazon', days: '60 days', quote: 'Tier-3 college. No IIT tag. But with the right outreach strategy, I landed Amazon. This program is real.', color: '#10b981', result: '₹22 LPA package' },
-            { name: 'Aditya Kumar', role: 'PM @ Razorpay', days: '41 days', quote: 'I switched from engineering to product management through this cohort. The mentor connections made it happen.', color: '#f59e0b', result: 'Career Switch Success' },
-            { name: 'Meera Joshi', role: 'Data Analyst @ EY', days: '29 days', quote: 'EY wasn\'t even on my radar. My mentor pushed me to apply and helped me prep. Got the call in 29 days.', color: '#ec4899', result: 'Dream Company Cracked' },
+            { name: 'Priya S.', role: "BD Analyst @ a Series B Fintech", days: '38 days', quote: 'I had given up on off-campus. After week 2 of the cohort, I got 3 replies from cold emails. Got my offer in 38 days.', color: '#4F7CFF', result: '₹12 LPA offer' },
+            { name: 'Arjun P.', role: "Founder's Office @ a D2C Startup", days: '45 days', quote: 'The mentor reviewed my resume and gave me a company hit list. I had an offer in 45 days. Best ₹999 I ever spent.', color: '#7B61FF', result: 'Offer Secured' },
+            { name: 'Sneha R.', role: 'Operations @ Swiggy', days: '52 days', quote: 'Nobody from my college had ever cracked Swiggy. The LinkedIn DM strategy changed everything.', color: '#06b6d4', result: '3 Competing Offers' },
+            { name: 'Rohan M.', role: 'Consulting Analyst @ Big 4', days: '60 days', quote: 'Tier-3 college. No DU or top college tag. But with the right outreach strategy, I cracked a Big 4 offer. This program is real.', color: '#10b981', result: '₹14 LPA package' },
+            { name: 'Aditya K.', role: 'Marketing @ a Fast-Growing Startup', days: '41 days', quote: 'I switched from finance to marketing through this cohort. The mentor connections and referrals made it happen.', color: '#f59e0b', result: 'Career Switch Success' },
+            { name: 'Meera J.', role: 'Analyst @ EY', days: '29 days', quote: "EY wasn't even on my radar. My mentor pushed me to apply and helped me prep. Got the call in 29 days.", color: '#ec4899', result: 'Dream Company Cracked' },
           ].map((t, i) => (
             <div key={i} className="proof-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
@@ -370,6 +382,32 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section style={{ padding: '100px 24px', maxWidth: 800, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <span className="section-label">FAQ</span>
+          <h2 className="section-title">Questions we always get</h2>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {FAQS.map((faq, i) => (
+            <div key={i} style={{ background: '#111827', border: `1px solid ${openFaq === i ? 'rgba(79,124,255,0.35)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 16, overflow: 'hidden', transition: 'border-color 0.3s' }}>
+              <button
+                onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                style={{ width: '100%', padding: '22px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', gap: 16 }}
+              >
+                <span style={{ fontSize: 15, fontWeight: 600, color: openFaq === i ? 'white' : 'rgba(255,255,255,0.85)', lineHeight: 1.5 }}>{faq.q}</span>
+                <span style={{ fontSize: 22, color: '#4F7CFF', flexShrink: 0, transition: 'transform 0.3s', transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0deg)', display: 'inline-block', lineHeight: 1 }}>+</span>
+              </button>
+              <div style={{ maxHeight: openFaq === i ? 300 : 0, overflow: 'hidden', transition: 'max-height 0.35s ease' }}>
+                <div style={{ padding: '0 28px 24px', fontSize: 15, color: 'rgba(255,255,255,0.55)', lineHeight: 1.85 }}>
+                  {faq.a}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* FOUNDER */}
       <section style={{ padding: '100px 24px', maxWidth: 800, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
@@ -381,10 +419,10 @@ export default function Home() {
           <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start', flexWrap: 'wrap' }}>
             <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 800, flexShrink: 0 }}>R</div>
             <div style={{ flex: 1, minWidth: 200 }}>
-              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, marginBottom: 4 }}>Rahul Verma</div>
-              <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 24 }}>Senior SDE @ Microsoft · Ex-Razorpay · IIT Bombay</div>
+              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, marginBottom: 4 }}>The Founder</div>
+              <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 24 }}>Placed off-campus · Tier-3 college · Now at a leading MNC</div>
               <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, marginBottom: 16 }}>
-                "I graduated from a tier-3 college with no placements, no network, and no idea what to do. I spent 6 months figuring out cold outreach, LinkedIn, and resume strategy on my own — and eventually landed Razorpay, then Microsoft."
+                "I graduated from a tier-3 college with no placements, no network, and no idea what to do. I spent 6 months figuring out cold outreach, LinkedIn, and resume strategy on my own — and eventually landed roles at companies that never came to my campus."
               </p>
               <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8 }}>
                 "I built Beyond Campus so you don't have to spend 6 months figuring it out alone. You can do it in 8 weeks."
