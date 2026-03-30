@@ -24,22 +24,52 @@ type Booking = {
   created_at: string
 }
 
+type Student = {
+  id: string
+  name: string
+  email: string
+  stage: number
+  credits: number
+  cold_emails_sent: number
+  interview_calls: number
+  is_placed: boolean
+  joined_at: string
+}
+
+const STAGE_LABELS = ['Joined', 'Resume Reviewed', 'Started Outreach', 'Got Interview', 'Placed!']
+
 export default function AdminPage() {
   const [bookings, setBookings] = useState<Booking[]>([])
+  const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
+  const [studentsLoading, setStudentsLoading] = useState(false)
   const [authed, setAuthed] = useState(false)
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students'>('bookings')
 
   const login = () => {
     if (password === ADMIN_PASSWORD) {
       setAuthed(true)
       fetchBookings()
+      fetchStudents()
     } else {
       setError('Incorrect password')
     }
+  }
+
+  const fetchStudents = async () => {
+    setStudentsLoading(true)
+    const res = await fetch('/api/admin/students', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: ADMIN_PASSWORD }),
+    })
+    const json = await res.json()
+    if (json.data) setStudents(json.data)
+    setStudentsLoading(false)
   }
 
   const fetchBookings = async () => {
@@ -143,6 +173,77 @@ export default function AdminPage() {
           </div>
         </div>
 
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+          {(['bookings', 'students'] as const).map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: activeTab === tab ? '#4F7CFF' : 'rgba(255,255,255,0.1)', background: activeTab === tab ? 'rgba(79,124,255,0.15)' : 'transparent', color: activeTab === tab ? '#93BBFF' : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer', textTransform: 'capitalize' }}>
+              {tab} {tab === 'bookings' ? `(${bookings.length})` : `(${students.length})`}
+            </button>
+          ))}
+        </div>
+
+        {/* Students Tab */}
+        {activeTab === 'students' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+              <button onClick={fetchStudents} style={{ padding: '10px 20px', borderRadius: 100, background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                ↻ Refresh
+              </button>
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden' }}>
+              {studentsLoading ? (
+                <div style={{ padding: 60, textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>Loading students...</div>
+              ) : students.length === 0 ? (
+                <div style={{ padding: 60, textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>No students yet</div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Student</th>
+                        <th>Stage</th>
+                        <th>Credits</th>
+                        <th>Cold Emails</th>
+                        <th>Interviews</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {students.map(s => (
+                        <tr key={s.id}>
+                          <td>
+                            <div style={{ fontWeight: 600, color: 'white', marginBottom: 2 }}>{s.name}</div>
+                            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{s.email}</div>
+                          </td>
+                          <td>
+                            <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 100, background: s.stage === 5 ? 'rgba(34,197,94,0.12)' : 'rgba(79,124,255,0.12)', color: s.stage === 5 ? '#4ade80' : '#93BBFF', border: `1px solid ${s.stage === 5 ? 'rgba(34,197,94,0.2)' : 'rgba(79,124,255,0.2)'}`, fontWeight: 600 }}>
+                              {STAGE_LABELS[s.stage - 1] ?? 'Joined'}
+                            </span>
+                          </td>
+                          <td style={{ fontWeight: 700, color: '#4F7CFF' }}>⭐ {s.credits}</td>
+                          <td style={{ color: 'rgba(255,255,255,0.7)' }}>{s.cold_emails_sent}</td>
+                          <td style={{ color: 'rgba(255,255,255,0.7)' }}>{s.interview_calls}</td>
+                          <td>
+                            {s.is_placed
+                              ? <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 100, background: 'rgba(34,197,94,0.12)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.2)', fontWeight: 600 }}>🎉 Placed</span>
+                              : <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>In progress</span>
+                            }
+                          </td>
+                          <td style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{formatDate(s.joined_at)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Bookings Tab */}
+        {activeTab === 'bookings' && <>
+
         {/* Filters */}
         <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
           <input
@@ -217,6 +318,8 @@ export default function AdminPage() {
         <div style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: 'rgba(255,255,255,0.2)' }}>
           Showing {filtered.length} of {bookings.length} bookings
         </div>
+        </>}
+
       </div>
     </main>
   )

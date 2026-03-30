@@ -45,6 +45,12 @@ export default function CohortPage() {
     })
     if (error) console.error('Booking save error:', error)
 
+    await fetch('/api/create-account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, type: 'cohort' }),
+    })
+
     await fetch('/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

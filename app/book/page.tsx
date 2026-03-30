@@ -50,6 +50,12 @@ export default function BookPage() {
     })
     if (error) console.error('Booking save error:', error)
 
+    await fetch('/api/create-account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, type: 'mentorship' }),
+    })
+
     await fetch('/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
