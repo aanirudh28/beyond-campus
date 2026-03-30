@@ -174,6 +174,7 @@ export default function Home() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', transition: 'all 0.2s' }}>Dashboard</a>
+          <a href="/summer" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: '#f59e0b', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.08)', transition: 'all 0.2s' }}>Summer ☀️</a>
           <a href="/book" className="btn-secondary" style={{ padding: '10px 24px', fontSize: 14 }}>Book Session</a>
           <a href="/cohort" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>
             <span>Join Cohort</span>
@@ -407,13 +408,55 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SUMMER HIGHLIGHT */}
+      <section style={{ padding: '80px 24px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(245,158,11,0.06), rgba(249,115,22,0.04), transparent)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(245,158,11,0.08), transparent)', top: '50%', right: '-10%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+        <div style={{ maxWidth: 1000, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#f59e0b' }}>SUMMER 2025</span>
+            <span style={{ padding: '3px 12px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, color: '#fcd34d' }}>NEW 🌟</span>
+          </div>
+          <div style={{ display: 'flex', gap: 48, alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 280 }}>
+              <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px,4vw,48px)', lineHeight: 1.1, letterSpacing: -1, marginBottom: 16 }}>
+                Land Your First<br />
+                <span style={{ background: 'linear-gradient(135deg,#f59e0b,#f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Internship This Summer</span>
+              </h2>
+              <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, marginBottom: 28, maxWidth: 440 }}>
+                A focused 4-week program for students who want a real internship — not just another rejection email.
+              </p>
+              <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 36px', borderRadius: 100, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 32px rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none' }}>
+                Join Summer Program →
+              </a>
+              <div style={{ marginTop: 14, fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>Next batch starts May 1 · Only 25 seats · ₹599</div>
+            </div>
+            <div style={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {[
+                { icon: '🗓️', title: '4-Week Program', desc: 'Intensive, focused, and built around the summer hiring calendar' },
+                { icon: '🎯', title: 'Internship-First Strategy', desc: 'Everything is optimized for internship applications, not full-time roles' },
+                { icon: '⚡', title: 'Fast Results', desc: 'First outreach in week 1. First replies within days. Internship secured by end of program.' },
+              ].map((f, i) => (
+                <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start', background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.12)', borderRadius: 16, padding: '18px 20px' }}>
+                  <span style={{ fontSize: 22, flexShrink: 0 }}>{f.icon}</span>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'white', marginBottom: 4 }}>{f.title}</div>
+                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>{f.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* PRODUCTS */}
-      <section style={{ padding: '80px 24px', maxWidth: 1000, margin: '0 auto' }}>
+      <section style={{ padding: '80px 24px', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <span className="section-label">Our Programs</span>
           <h2 className="section-title">Pick your path to placement</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
           {/* Mentorship */}
           <div className="product-card">
             <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#93BBFF', marginBottom: 24, letterSpacing: 1 }}>1:1 MENTORSHIP</div>
@@ -458,6 +501,31 @@ export default function Home() {
             </a>
             <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>Only 30 seats · April 1 start</p>
           </div>
+
+          {/* Summer Internship */}
+          <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(249,115,22,0.05))', border: '1px solid rgba(245,158,11,0.25)', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: 'nowrap' }}>NEW 🌟</div>
+            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#fcd34d', marginBottom: 24, letterSpacing: 1, marginTop: 20 }}>SUMMER INTERNSHIP PROGRAM</div>
+            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, marginBottom: 6, lineHeight: 1.1 }}>Summer Internship<br />Accelerator</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>4 weeks. Built for students who want their first internship this summer.</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '20px 0' }}>
+              <span style={{ fontSize: 42, fontWeight: 800, color: '#f59e0b' }}>₹599</span>
+              <span style={{ color: 'var(--muted)', fontSize: 15, textDecoration: 'line-through' }}>₹2,999</span>
+              <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ program</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
+              {['Resume built for internship applications', 'Cold email strategy for summer hiring season', 'Target startup and corporate list for internships', 'LinkedIn profile optimized for internship search', 'Live weekly sessions (4 weeks)', 'Private WhatsApp community access'].map(f => (
+                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
+                  <span style={{ color: '#f59e0b', fontSize: 16, flexShrink: 0 }}>✓</span>{f}
+                </div>
+              ))}
+            </div>
+            <a href="/summer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none' }}>
+              Apply for Summer Program →
+            </a>
+            <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>Applications open now · Summer 2025 batch</p>
+          </div>
+
         </div>
       </section>
 

@@ -35,6 +35,18 @@ type Student = {
   joined_at: string
 }
 
+type SummerReg = {
+  id: string
+  name: string
+  email: string
+  phone: string
+  college: string
+  year: string
+  domain: string
+  payment_status: string
+  created_at: string
+}
+
 const STAGE_LABELS = ['Joined', 'Resume Reviewed', 'Started Outreach', 'Got Interview', 'Placed!']
 
 export default function AdminPage() {
@@ -47,13 +59,24 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState<'bookings' | 'students'>('bookings')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer'>('bookings')
+  const [summerRegs, setSummerRegs] = useState<SummerReg[]>([])
+  const [summerLoading, setSummerLoading] = useState(false)
+  const [summerFilter, setSummerFilter] = useState<'all' | 'paid' | 'pending'>('all')
+
+  const fetchSummerRegs = async () => {
+    setSummerLoading(true)
+    const { data } = await supabase.from('summer_registrations').select('*').order('created_at', { ascending: false })
+    if (data) setSummerRegs(data)
+    setSummerLoading(false)
+  }
 
   const login = () => {
     if (password === ADMIN_PASSWORD) {
       setAuthed(true)
       fetchBookings()
       fetchStudents()
+      fetchSummerRegs()
     } else {
       setError('Incorrect password')
     }
@@ -173,10 +196,14 @@ export default function AdminPage() {
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-          {(['bookings', 'students'] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: activeTab === tab ? '#4F7CFF' : 'rgba(255,255,255,0.1)', background: activeTab === tab ? 'rgba(79,124,255,0.15)' : 'transparent', color: activeTab === tab ? '#93BBFF' : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer', textTransform: 'capitalize' }}>
-              {tab} {tab === 'bookings' ? `(${bookings.length})` : `(${students.length})`}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+          {[
+            { key: 'bookings', label: `Bookings (${bookings.length})`, active: activeTab === 'bookings', color: '#4F7CFF', bg: 'rgba(79,124,255,0.15)' },
+            { key: 'students', label: `Students (${students.length})`, active: activeTab === 'students', color: '#4F7CFF', bg: 'rgba(79,124,255,0.15)' },
+            { key: 'summer', label: `☀️ Summer (${summerRegs.length})`, active: activeTab === 'summer', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+          ].map(tab => (
+            <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: tab.active ? tab.color : 'rgba(255,255,255,0.1)', background: tab.active ? tab.bg : 'transparent', color: tab.active ? tab.color : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+              {tab.label}
             </button>
           ))}
         </div>
@@ -228,6 +255,66 @@ export default function AdminPage() {
                             }
                           </td>
                           <td style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{formatDate(s.joined_at)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Summer Tab */}
+        {activeTab === 'summer' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {(['all', 'paid', 'pending'] as const).map(f => (
+                  <button key={f} onClick={() => setSummerFilter(f)} style={{ padding: '8px 16px', borderRadius: 100, border: '1px solid', borderColor: summerFilter === f ? '#f59e0b' : 'rgba(255,255,255,0.1)', background: summerFilter === f ? 'rgba(245,158,11,0.15)' : 'transparent', color: summerFilter === f ? '#f59e0b' : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer', textTransform: 'capitalize' }}>
+                    {f}
+                  </button>
+                ))}
+              </div>
+              <button onClick={fetchSummerRegs} style={{ padding: '10px 20px', borderRadius: 100, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: '#f59e0b', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                ↻ Refresh
+              </button>
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden' }}>
+              {summerLoading ? (
+                <div style={{ padding: 60, textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>Loading registrations...</div>
+              ) : summerRegs.filter(r => summerFilter === 'all' || r.payment_status === summerFilter).length === 0 ? (
+                <div style={{ padding: 60, textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>No registrations yet</div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Student</th>
+                        <th>College</th>
+                        <th>Year</th>
+                        <th>Domain</th>
+                        <th>Payment</th>
+                        <th>Registered At</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {summerRegs.filter(r => summerFilter === 'all' || r.payment_status === summerFilter).map(r => (
+                        <tr key={r.id}>
+                          <td>
+                            <div style={{ fontWeight: 600, color: 'white', marginBottom: 2 }}>{r.name}</div>
+                            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{r.email}</div>
+                            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>{r.phone}</div>
+                          </td>
+                          <td style={{ color: 'rgba(255,255,255,0.7)' }}>{r.college}</td>
+                          <td style={{ color: 'rgba(255,255,255,0.7)' }}>{r.year}</td>
+                          <td style={{ color: 'rgba(255,255,255,0.7)' }}>{r.domain}</td>
+                          <td>
+                            <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 100, background: r.payment_status === 'paid' ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)', color: r.payment_status === 'paid' ? '#4ade80' : '#f59e0b', border: `1px solid ${r.payment_status === 'paid' ? 'rgba(34,197,94,0.2)' : 'rgba(245,158,11,0.2)'}`, fontWeight: 600, textTransform: 'capitalize' }}>
+                              {r.payment_status === 'paid' ? '✓ Paid' : '⏳ Pending'}
+                            </span>
+                          </td>
+                          <td style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{formatDate(r.created_at)}</td>
                         </tr>
                       ))}
                     </tbody>
