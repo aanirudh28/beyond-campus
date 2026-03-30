@@ -8,8 +8,10 @@ export async function POST(req: Request) {
   try {
     const { name, email, type } = await req.json()
 
+    console.log('[create-account] called for:', email, '| type:', type)
+
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      console.error('SUPABASE_SERVICE_ROLE_KEY is not set')
+      console.error('[create-account] SUPABASE_SERVICE_ROLE_KEY is not set')
       return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 })
     }
 

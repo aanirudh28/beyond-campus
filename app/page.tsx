@@ -135,6 +135,7 @@ export default function Home() {
           Beyond<span style={{ color: 'var(--blue)' }}>Campus</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', transition: 'all 0.2s' }}>Dashboard</a>
           <a href="/book" className="btn-secondary" style={{ padding: '10px 24px', fontSize: 14 }}>Book Session</a>
           <a href="/cohort" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>
             <span>Join Cohort</span>
