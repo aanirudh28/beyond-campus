@@ -186,6 +186,17 @@ export default function BookPage() {
     <main style={{ minHeight: '100vh', background: '#0a0a0f', padding: '60px 24px 80px' }}>
       <div style={{ maxWidth: 680, margin: '0 auto' }}>
 
+        {/* Nav */}
+        <div style={{ marginBottom: 40 }}>
+          <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 100, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', transition: 'all 0.15s ease' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; e.currentTarget.style.color = 'rgba(255,255,255,0.9)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Beyond Campus
+          </a>
+        </div>
+
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 52 }}>
           <div style={{ display: 'inline-flex', padding: '5px 16px', background: 'rgba(79,70,229,0.14)', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, color: '#a5b4fc', letterSpacing: 1, marginBottom: 20 }}>
