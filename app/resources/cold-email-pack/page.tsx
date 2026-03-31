@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 type Template = {
   id: number
@@ -326,6 +326,20 @@ export default function ColdEmailPackPage() {
   const [activeFilter, setActiveFilter] = useState('All')
   const [copiedId, setCopiedId]         = useState<string | null>(null)
   const [copiedAll, setCopiedAll]       = useState(false)
+  const [unlocked, setUnlocked]         = useState(false)
+  const [showPopup, setShowPopup]       = useState(false)
+  const [popupEmail, setPopupEmail]     = useState('')
+  const [popupSubmitting, setPopupSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (localStorage.getItem('coldEmailUnlocked') === 'true') setUnlocked(true)
+  }, [])
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowPopup(false) }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
 
   const copy = (text: string, id: string) => {
     navigator.clipboard.writeText(text).catch(() => {})
@@ -334,6 +348,7 @@ export default function ColdEmailPackPage() {
   }
 
   const copyAll = () => {
+    if (!unlocked) { setShowPopup(true); return }
     const allText = [
       ...TEMPLATES.map(buildCopyText),
       ...LINKEDIN_SCRIPTS.map(buildScriptCopyText),
@@ -341,6 +356,23 @@ export default function ColdEmailPackPage() {
     navigator.clipboard.writeText(allText).catch(() => {})
     setCopiedAll(true)
     setTimeout(() => setCopiedAll(false), 2000)
+  }
+
+  const handleUnlock = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!popupEmail) return
+    setPopupSubmitting(true)
+    try {
+      await fetch('/api/capture-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: popupEmail, resource: 'Cold Email Pack - Popup Unlock' }),
+      })
+    } catch {}
+    localStorage.setItem('coldEmailUnlocked', 'true')
+    setUnlocked(true)
+    setShowPopup(false)
+    setPopupSubmitting(false)
   }
 
   const showTemplates = activeFilter !== 'LinkedIn Scripts'
@@ -365,14 +397,100 @@ export default function ColdEmailPackPage() {
         .filter-pill{padding:8px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.45);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s;font-family:"DM Sans",sans-serif}
         .filter-pill:hover{border-color:rgba(255,255,255,0.25);color:rgba(255,255,255,0.75)}
         .filter-pill.active{background:rgba(79,124,255,0.15);border-color:rgba(79,124,255,0.4);color:#93BBFF}
-        .code-block{background:rgba(255,255,255,0.04);border-radius:10px;padding:16px 18px;font-family:'Courier New',Courier,monospace;font-size:13px;line-height:1.75;color:rgba(255,255,255,0.85);white-space:pre-wrap;word-break:break-word;margin-top:14px;border:1px solid rgba(255,255,255,0.06)}
+        .code-block{background:rgba(255,255,255,0.04);border-radius:10px;padding:16px 18px;font-family:'Courier New',Courier,monospace;font-size:13px;line-height:1.75;color:rgba(255,255,255,0.85);white-space:pre-wrap;word-break:break-word;margin-top:14px;border:1px solid rgba(255,255,255,0.06);transition:filter 0.5s ease}
+        .code-block.blurred{filter:blur(4px);user-select:none;pointer-events:none}
         .section-divider{display:flex;align-items:center;gap:16px;margin:40px 0 28px}
         .section-divider-line{flex:1;height:1px;background:rgba(255,255,255,0.07)}
+        .lock-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;border-radius:10px}
+        .unlock-banner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.18);border-radius:10px;padding:10px 16px;margin-bottom:16px}
+        .unlock-banner-btn{padding:5px 14px;border-radius:100px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#fcd34d;font-size:12px;font-weight:700;cursor:pointer;font-family:"DM Sans",sans-serif;flex-shrink:0}
+        .unlock-banner-btn:hover{background:rgba(245,158,11,0.2)}
+        .popup-input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:white;font-size:14px;font-family:"DM Sans",sans-serif;outline:none;transition:border-color 0.2s}
+        .popup-input:focus{border-color:rgba(79,124,255,0.4)}
+        .popup-input::placeholder{color:rgba(255,255,255,0.25)}
         @media(max-width:640px){
           .top-bar-title{display:none}
           .stat-pills{flex-wrap:wrap}
+          .popup-overlay{align-items:flex-end !important}
+          .popup-modal{border-radius:24px 24px 0 0 !important;max-width:100% !important;padding:32px 20px 40px !important;max-height:92vh;overflow-y:auto}
+          .popup-options{flex-direction:column !important}
+          .popup-or{flex-direction:row !important;padding:0 !important}
         }
       `}</style>
+
+      {/* UNLOCK POPUP */}
+      {showPopup && (
+        <div
+          className="popup-overlay"
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+          onClick={e => { if (e.target === e.currentTarget) setShowPopup(false) }}
+        >
+          <div className="popup-modal" style={{ background: '#111827', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 24, padding: 48, maxWidth: 480, width: '100%', position: 'relative' }}>
+            <button onClick={() => setShowPopup(false)} style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', fontSize: 24, cursor: 'pointer', lineHeight: 1, padding: 4 }}>×</button>
+
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg,#f59e0b,#f97316)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, margin: '0 auto 16px' }}>⭐</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#f59e0b', textTransform: 'uppercase', marginBottom: 10 }}>UNLOCK EVERYTHING</div>
+              <h2 style={{ fontSize: 24, fontWeight: 800, color: 'white', lineHeight: 1.2, marginBottom: 12 }}>Get all 50 templates + 20 scripts free</h2>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
+                Join our Summer Internship Program and get the full Cold Email Pack, LinkedIn Scripts, Resume Template, Company List, and Playbook — completely unlocked.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
+              {['All 50 cold email templates', 'All 20 LinkedIn DM scripts', 'Resume template + guide', '100+ company target list'].map(item => (
+                <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
+                  <span style={{ color: '#f59e0b', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                  {item}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 24 }} />
+
+            <div className="popup-options" style={{ display: 'flex', gap: 16 }}>
+              {/* Free option */}
+              <div style={{ flex: 1, minWidth: 0, padding: 20, border: '1px solid rgba(255,255,255,0.12)', borderRadius: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 14, textTransform: 'uppercase', letterSpacing: 1 }}>Just want the templates?</div>
+                <form onSubmit={handleUnlock} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <input
+                    type="email"
+                    required
+                    placeholder="your@email.com"
+                    value={popupEmail}
+                    onChange={e => setPopupEmail(e.target.value)}
+                    className="popup-input"
+                  />
+                  <button
+                    type="submit"
+                    disabled={popupSubmitting}
+                    style={{ width: '100%', padding: '11px 0', borderRadius: 10, border: '1.5px solid rgba(255,255,255,0.25)', background: 'transparent', color: 'white', fontWeight: 700, fontSize: 14, cursor: popupSubmitting ? 'wait' : 'pointer', fontFamily: "'DM Sans',sans-serif", transition: 'all 0.15s' }}
+                  >
+                    {popupSubmitting ? 'Unlocking...' : 'Unlock Free →'}
+                  </button>
+                </form>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 10, textAlign: 'center' }}>No spam. One email, instant access.</div>
+              </div>
+
+              {/* OR divider */}
+              <div className="popup-or" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 2px' }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.2)', letterSpacing: 1 }}>OR</span>
+              </div>
+
+              {/* Paid option */}
+              <div style={{ flex: 1, minWidth: 0, padding: 20, background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', marginBottom: 14, textTransform: 'uppercase', letterSpacing: 1 }}>Want everything + mentorship?</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: 'white', marginBottom: 4 }}>Summer Internship Program</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: '#f59e0b', marginBottom: 6 }}>₹599</div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: 14 }}>All resources unlocked + 4-week live program + mentor support</div>
+                <a href="/summer" style={{ display: 'block', textAlign: 'center', padding: '11px 0', borderRadius: 10, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: 'white', fontWeight: 700, fontSize: 14 }}>
+                  Join Summer Program →
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* STICKY TOP BAR */}
       <div style={{ position: 'sticky', top: 0, zIndex: 100, background: 'rgba(11,11,15,0.95)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '0 24px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
@@ -382,9 +500,9 @@ export default function ColdEmailPackPage() {
         <span className="top-bar-title" style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.45)', textAlign: 'center' }}>Cold Email Pack — 50 Templates + 20 LinkedIn Scripts</span>
         <button
           onClick={copyAll}
-          style={{ flexShrink: 0, padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(79,124,255,0.35)', background: copiedAll ? 'rgba(16,185,129,0.15)' : 'rgba(79,124,255,0.12)', color: copiedAll ? '#6ee7b7' : '#93BBFF', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s', fontFamily: "'DM Sans',sans-serif", whiteSpace: 'nowrap' }}
+          style={{ flexShrink: 0, padding: '8px 16px', borderRadius: 8, border: `1px solid ${copiedAll ? 'rgba(16,185,129,0.35)' : unlocked ? 'rgba(79,124,255,0.35)' : 'rgba(245,158,11,0.3)'}`, background: copiedAll ? 'rgba(16,185,129,0.15)' : unlocked ? 'rgba(79,124,255,0.12)' : 'rgba(245,158,11,0.08)', color: copiedAll ? '#6ee7b7' : unlocked ? '#93BBFF' : '#fcd34d', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s', fontFamily: "'DM Sans',sans-serif", whiteSpace: 'nowrap' }}
         >
-          {copiedAll ? 'Copied ✓' : 'Copy All'}
+          {copiedAll ? 'Copied ✓' : unlocked ? 'Copy All' : 'Unlock to Copy All'}
         </button>
       </div>
 
@@ -399,7 +517,7 @@ export default function ColdEmailPackPage() {
         <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, marginBottom: 32, maxWidth: 560, margin: '0 auto 32px' }}>
           50 proven templates + 20 LinkedIn DM scripts used by students to get replies from HRs, founders, and hiring managers at top companies.
         </p>
-        <div className="stat-pills" style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <div className="stat-pills" style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 24 }}>
           {[
             { label: '50 Email Templates', color: '#4F7CFF', bg: 'rgba(79,124,255,0.1)', border: 'rgba(79,124,255,0.25)' },
             { label: '20 LinkedIn Scripts', color: '#7dd3fc', bg: 'rgba(14,165,233,0.1)', border: 'rgba(14,165,233,0.25)' },
@@ -407,6 +525,22 @@ export default function ColdEmailPackPage() {
           ].map(p => (
             <span key={p.label} style={{ padding: '8px 18px', borderRadius: 100, background: p.bg, border: `1px solid ${p.border}`, color: p.color, fontSize: 13, fontWeight: 700 }}>{p.label}</span>
           ))}
+        </div>
+        {/* Counter */}
+        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>
+          {unlocked ? (
+            <span style={{ color: '#10b981', fontWeight: 600 }}>All 50 templates unlocked ✓</span>
+          ) : (
+            <span>
+              Showing 12 of 50 templates ·{' '}
+              <button
+                onClick={() => setShowPopup(true)}
+                style={{ background: 'none', border: 'none', color: '#4F7CFF', cursor: 'pointer', fontWeight: 600, fontSize: 14, fontFamily: "'DM Sans',sans-serif", textDecoration: 'underline', padding: 0 }}
+              >
+                Unlock all free →
+              </button>
+            </span>
+          )}
         </div>
       </section>
 
@@ -426,7 +560,6 @@ export default function ColdEmailPackPage() {
 
         {/* Templates */}
         {showTemplates && visibleTemplates.length > 0 && (() => {
-          // Group by category for section headers when showing All
           const groups: Record<string, Template[]> = {}
           visibleTemplates.forEach(t => {
             if (!groups[t.category]) groups[t.category] = []
@@ -435,6 +568,8 @@ export default function ColdEmailPackPage() {
 
           return Object.entries(groups).map(([cat, items]) => {
             const catColor = CATEGORY_COLORS[cat] ?? CATEGORY_COLORS['HR & Talent Acquisition']
+            const lockedCount = !unlocked ? Math.max(0, items.length - 2) : 0
+
             return (
               <div key={cat}>
                 {activeFilter === 'All' && (
@@ -444,15 +579,24 @@ export default function ColdEmailPackPage() {
                     <div className="section-divider-line" />
                   </div>
                 )}
+                {!unlocked && lockedCount > 0 && (
+                  <div className="unlock-banner">
+                    <span style={{ fontSize: 13, color: '#fcd34d', fontWeight: 600 }}>
+                      🔒 2 of {items.length} templates shown · Unlock all 50 for free below ↓
+                    </span>
+                    <button className="unlock-banner-btn" onClick={() => setShowPopup(true)}>Unlock Free →</button>
+                  </div>
+                )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  {items.map(t => {
+                  {items.map((t, idx) => {
+                    const isLocked = !unlocked && idx >= 2
                     const copyId = `template-${t.id}`
                     const wasCopied = copiedId === copyId
                     const copyText = buildCopyText(t)
 
                     return (
                       <div key={t.id} className="template-card">
-                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: t.subject || !t.isSubjectLine ? 0 : 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
                           <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.2)', fontVariantNumeric: 'tabular-nums', flexShrink: 0, marginTop: 2 }}>
                             {String(t.id).padStart(2, '0')}
                           </span>
@@ -470,9 +614,11 @@ export default function ColdEmailPackPage() {
                               </span>
                             )}
                           </div>
-                          <button className={`copy-btn${wasCopied ? ' copied' : ''}`} onClick={() => copy(copyText, copyId)}>
-                            {wasCopied ? 'Copied ✓' : 'Copy'}
-                          </button>
+                          {!isLocked && (
+                            <button className={`copy-btn${wasCopied ? ' copied' : ''}`} onClick={() => copy(copyText, copyId)}>
+                              {wasCopied ? 'Copied ✓' : 'Copy'}
+                            </button>
+                          )}
                         </div>
 
                         {t.subject && (
@@ -481,15 +627,31 @@ export default function ColdEmailPackPage() {
                           </div>
                         )}
 
-                        {t.isSubjectLine ? (
-                          <div style={{ marginTop: 14, marginLeft: 28 }}>
-                            <div className="code-block" style={{ fontSize: 14, fontFamily: "'Courier New',Courier,monospace" }}>{t.body}</div>
-                          </div>
-                        ) : (
-                          <div className="code-block" style={{ marginLeft: 0, marginTop: t.subject ? 10 : 14 }}>
-                            {t.body}
-                          </div>
-                        )}
+                        <div style={{ position: 'relative' }}>
+                          {t.isSubjectLine ? (
+                            <div style={{ marginTop: 14, marginLeft: 28 }}>
+                              <div className={`code-block${isLocked ? ' blurred' : ''}`} style={{ fontSize: 14, fontFamily: "'Courier New',Courier,monospace" }}>
+                                {t.body}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className={`code-block${isLocked ? ' blurred' : ''}`} style={{ marginLeft: 0, marginTop: t.subject ? 10 : 14 }}>
+                              {t.body}
+                            </div>
+                          )}
+                          {isLocked && (
+                            <div className="lock-overlay" onClick={() => setShowPopup(true)}>
+                              <span style={{ fontSize: 22 }}>🔒</span>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>Unlock all 50 templates</span>
+                              <button
+                                style={{ padding: '6px 18px', borderRadius: 100, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.35)', color: '#fcd34d', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
+                                onClick={e => { e.stopPropagation(); setShowPopup(true) }}
+                              >
+                                Get Access →
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )
                   })}
@@ -507,8 +669,17 @@ export default function ColdEmailPackPage() {
               <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#7dd3fc', whiteSpace: 'nowrap' }}>LinkedIn Scripts</span>
               <div className="section-divider-line" />
             </div>
+            {!unlocked && (
+              <div className="unlock-banner">
+                <span style={{ fontSize: 13, color: '#fcd34d', fontWeight: 600 }}>
+                  🔒 2 of 20 scripts shown · Unlock all for free below ↓
+                </span>
+                <button className="unlock-banner-btn" onClick={() => setShowPopup(true)}>Unlock Free →</button>
+              </div>
+            )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {LINKEDIN_SCRIPTS.map(s => {
+              {LINKEDIN_SCRIPTS.map((s, idx) => {
+                const isLocked = !unlocked && idx >= 2
                 const copyId = `script-${s.id}`
                 const wasCopied = copiedId === copyId
                 const catColor = CATEGORY_COLORS['LinkedIn Scripts']
@@ -526,11 +697,27 @@ export default function ColdEmailPackPage() {
                           <span style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>{s.title}</span>
                         </div>
                       </div>
-                      <button className={`copy-btn${wasCopied ? ' copied' : ''}`} onClick={() => copy(buildScriptCopyText(s), copyId)}>
-                        {wasCopied ? 'Copied ✓' : 'Copy'}
-                      </button>
+                      {!isLocked && (
+                        <button className={`copy-btn${wasCopied ? ' copied' : ''}`} onClick={() => copy(buildScriptCopyText(s), copyId)}>
+                          {wasCopied ? 'Copied ✓' : 'Copy'}
+                        </button>
+                      )}
                     </div>
-                    <div className="code-block" style={{ marginTop: 14 }}>{s.body}</div>
+                    <div style={{ position: 'relative' }}>
+                      <div className={`code-block${isLocked ? ' blurred' : ''}`} style={{ marginTop: 14 }}>{s.body}</div>
+                      {isLocked && (
+                        <div className="lock-overlay" onClick={() => setShowPopup(true)}>
+                          <span style={{ fontSize: 22 }}>🔒</span>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>Unlock all 20 scripts</span>
+                          <button
+                            style={{ padding: '6px 18px', borderRadius: 100, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.35)', color: '#fcd34d', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
+                            onClick={e => { e.stopPropagation(); setShowPopup(true) }}
+                          >
+                            Get Access →
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )
               })}
