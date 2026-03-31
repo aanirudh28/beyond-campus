@@ -190,8 +190,8 @@ export default function Home() {
         <div className="orb" style={{ width: 300, height: 300, background: 'radial-gradient(circle, rgba(0,210,255,0.1), transparent)', top: '40%', left: '60%', animation: 'float 8s ease-in-out infinite' }} />
 
         <div style={{ maxWidth: 900, textAlign: 'center', position: 'relative', zIndex: 2, animation: 'fadeUp 0.8s ease both' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 13, fontWeight: 600, color: '#93BBFF', marginBottom: 32, animation: 'border-glow 3s ease-in-out infinite' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4F7CFF', display: 'inline-block', animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 100, fontSize: 13, fontWeight: 600, color: '#fcd34d', marginBottom: 32 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b', display: 'inline-block', animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
             Summer batch open — 25 seats · ₹599
           </div>
 
