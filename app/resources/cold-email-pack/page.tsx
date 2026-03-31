@@ -87,7 +87,7 @@ const TEMPLATES: Template[] = [
   },
   {
     id: 14, category: 'Founders & Leadership',
-    subject: 'Your mission at [Company] — this is why I'm reaching out',
+    subject: "Your mission at [Company] — this is why I'm reaching out",
     body: `Hi [Name],\n\n[Company]'s mission to [their stated mission] is something I care about personally — [one sentence on why it connects to you].\n\nI'm [Your Name], a [Year] student at [College] exploring summer internships. I want to spend this summer at a company whose work I believe in — not just one with a recognizable name.\n\n[Company] is at the top of my list. Is there space for an intern this summer?\n\n[Your Name]\n[LinkedIn]`,
   },
   {
@@ -271,7 +271,7 @@ const TEMPLATES: Template[] = [
   },
   {
     id: 50, category: 'Subject Lines', isSubjectLine: true,
-    body: '[Company] is my first choice — here's why | [Your Name]',
+    body: "[Company] is my first choice — here's why | [Your Name]",
   },
 ]
 
