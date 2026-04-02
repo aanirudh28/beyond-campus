@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import UnlockPopup from '../../components/UnlockPopup'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 
 /* ─────────────────────────────────────────────
    TYPES & DEFAULTS
@@ -373,7 +375,7 @@ export default function ResumeBuilderPage() {
   const [toasts, setToasts] = useState<Toast[]>([])
   const [showATS, setShowATS] = useState(false)
   const [savedTime, setSavedTime] = useState<Date | null>(null)
-  const [showPrintModal, setShowPrintModal] = useState(false)
+
   const [showPopup, setShowPopup] = useState(false)
   const [zoom, setZoom] = useState(90)
   const [showTips, setShowTips] = useState(false)
@@ -515,6 +517,61 @@ export default function ResumeBuilderPage() {
     addToast('All fields cleared')
   }
 
+  const handleDownloadPDF = async () => {
+    const el = document.getElementById('resume-print-target')
+    if (!el) return
+    addToast('Generating PDF…')
+    // Temporarily remove scale transform so html2canvas captures at full resolution
+    const prevTransform = (el as HTMLElement).style.transform
+    const prevTransformOrigin = (el as HTMLElement).style.transformOrigin;
+    (el as HTMLElement).style.transform = 'none';
+    (el as HTMLElement).style.transformOrigin = 'top left'
+    try {
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        windowWidth: el.scrollWidth,
+        windowHeight: el.scrollHeight,
+      })
+      const imgData = canvas.toDataURL('image/jpeg', 0.98)
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const pdfWidth = pdf.internal.pageSize.getWidth()
+      const pdfHeight = pdf.internal.pageSize.getHeight()
+      const imgWidth = canvas.width
+      const imgHeight = canvas.height
+      const ratio = pdfWidth / (imgWidth / 2) // scale2 → divide by 2 for mm mapping
+      const scaledHeight = (imgHeight / 2) * ratio
+      if (scaledHeight <= pdfHeight) {
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, scaledHeight)
+      } else {
+        // Multi-page: slice canvas into A4-height chunks
+        const pageHeightPx = (pdfHeight / ratio) * 2
+        let yOffset = 0
+        while (yOffset < imgHeight) {
+          const sliceCanvas = document.createElement('canvas')
+          sliceCanvas.width = imgWidth
+          sliceCanvas.height = Math.min(pageHeightPx, imgHeight - yOffset)
+          const ctx = sliceCanvas.getContext('2d')!
+          ctx.drawImage(canvas, 0, yOffset, imgWidth, sliceCanvas.height, 0, 0, imgWidth, sliceCanvas.height)
+          const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.98)
+          if (yOffset > 0) pdf.addPage()
+          pdf.addImage(sliceData, 'JPEG', 0, 0, pdfWidth, (sliceCanvas.height / 2) * ratio)
+          yOffset += pageHeightPx
+        }
+      }
+      const name = (formData.name || 'resume').replace(/\s+/g, '_')
+      pdf.save(`${name}_resume.pdf`)
+      addToast('PDF downloaded ✓')
+    } catch {
+      addToast('Download failed — try again')
+    } finally {
+      (el as HTMLElement).style.transform = prevTransform;
+      (el as HTMLElement).style.transformOrigin = prevTransformOrigin
+    }
+  }
+
   const savedAgo = savedTime ? `Saved ${Math.max(0, Math.floor((Date.now() - savedTime.getTime()) / 60000))} min ago` : ''
 
   const strength = calcStrength(formData)
@@ -576,28 +633,6 @@ export default function ResumeBuilderPage() {
 
       <UnlockPopup isOpen={showPopup} onClose={() => setShowPopup(false)} onEmailUnlock={() => {}} resourceName="Resume Templates" localStorageKey="resumeTemplates" showEmailOption={false} emailAlreadySubmitted={false} />
 
-      {/* Print Modal */}
-      {showPrintModal && (
-        <div onClick={e => { if (e.target === e.currentTarget) setShowPrintModal(false) }} style={{ position: 'fixed', inset: 0, zIndex: 1100, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: '#111827', borderRadius: 20, padding: 32, maxWidth: 420, width: '100%', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Download as PDF</h3>
-            <ol style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 2, paddingLeft: 20, marginBottom: 24 }}>
-              <li>A print dialog will open.</li>
-              <li>Set destination to &quot;Save as PDF&quot;.</li>
-              <li>Set margins to &quot;None&quot;.</li>
-              <li>Disable background graphics.</li>
-            </ol>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => { window.print(); setShowPrintModal(false) }} style={{ flex: 1, padding: '12px 20px', borderRadius: 10, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', color: '#fff', fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
-                Open Print Dialog →
-              </button>
-              <button onClick={() => setShowPrintModal(false)} style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* TOASTS */}
       <div className="no-print" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1200, display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -618,7 +653,7 @@ export default function ResumeBuilderPage() {
           {savedAgo && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginRight: 4 }}>{savedAgo}</span>}
           <button onClick={handleSave} style={{ padding: '7px 14px', borderRadius: 8, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', color: '#6ee7b7', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Save Draft</button>
           <button onClick={handleFillExample} style={{ padding: '7px 14px', borderRadius: 8, background: 'rgba(79,124,255,0.06)', border: '1px solid rgba(79,124,255,0.2)', color: '#93BBFF', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Fill Example</button>
-          <button onClick={() => setShowPrintModal(true)} style={{ padding: '7px 14px', borderRadius: 8, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Download PDF</button>
+          <button onClick={handleDownloadPDF} style={{ padding: '7px 14px', borderRadius: 8, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Download PDF</button>
           <button onClick={handleReset} style={{ padding: '7px 14px', borderRadius: 8, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', color: 'rgba(239,68,68,0.6)', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Reset</button>
         </div>
       </div>
