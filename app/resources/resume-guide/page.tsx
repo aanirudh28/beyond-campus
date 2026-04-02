@@ -212,113 +212,207 @@ export default function ResumeGuidePage() {
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none;color:inherit}
+
+        /* Chapter cards */
         .chapter-card{
           background:#111827;
           border:1px solid rgba(255,255,255,0.07);
-          border-radius:20px;
-          padding:28px;
-          margin-bottom:16px;
-          transition:border-color 0.2s;
+          border-radius:24px;
+          padding:40px 44px;
+          margin-bottom:20px;
+          transition:border-color 0.25s,box-shadow 0.25s;
           position:relative;
           overflow:hidden;
         }
-        .chapter-card.expanded{border-color:rgba(79,124,255,0.25)}
+        .chapter-card.expanded{
+          border-color:rgba(79,124,255,0.3);
+          box-shadow:0 8px 48px rgba(79,124,255,0.06);
+        }
         .chapter-card.locked{
-          background:#0f1623;
+          background:#0e1520;
           border-color:rgba(255,255,255,0.04);
-          opacity:0.7;
         }
         .chapter-card:hover:not(.locked){border-color:rgba(79,124,255,0.2)}
+
+        /* Chapter watermark number */
         .ch-watermark{
           position:absolute;
-          right:20px;
+          right:32px;
           top:50%;
           transform:translateY(-50%);
           font-family:'DM Serif Display',serif;
-          font-size:80px;
-          color:rgba(255,255,255,0.06);
+          font-size:120px;
+          color:rgba(255,255,255,0.04);
           pointer-events:none;
           user-select:none;
           line-height:1;
         }
+
+        /* Rule cards (Chapter 1) */
         .rule-card{
-          background:rgba(255,255,255,0.03);
-          border:1px solid rgba(255,255,255,0.06);
-          border-radius:14px;
-          padding:20px 22px;
-          position:relative;
-          overflow:hidden;
-        }
-        .rule-num{
-          position:absolute;
-          right:16px;
-          top:50%;
-          transform:translateY(-50%);
-          font-family:'DM Serif Display',serif;
-          font-size:56px;
-          color:rgba(255,255,255,0.05);
-          line-height:1;
-          pointer-events:none;
-          user-select:none;
-        }
-        .section-lock{
-          background:rgba(15,22,35,0.95);
-          border:1px solid rgba(255,255,255,0.07);
-          border-radius:14px;
-          padding:24px;
           display:flex;
-          flex-direction:column;
-          align-items:center;
-          justify-content:center;
-          gap:10px;
+          gap:24px;
+          align-items:flex-start;
+          background:rgba(255,255,255,0.025);
+          border:1px solid rgba(255,255,255,0.06);
+          border-radius:18px;
+          padding:28px 32px;
+          transition:border-color 0.2s;
+        }
+        .rule-card:hover{border-color:rgba(79,124,255,0.2)}
+        .rule-num-large{
+          font-family:'DM Serif Display',serif;
+          font-size:48px;
+          line-height:1;
+          color:rgba(79,124,255,0.25);
+          flex-shrink:0;
+          width:52px;
           text-align:center;
-          margin-top:16px;
+          padding-top:2px;
         }
-        .pill{
-          display:inline-block;
-          padding:4px 12px;
-          border-radius:100px;
-          font-size:12px;
-          font-weight:700;
-          margin:4px;
+
+        /* Section header inside chapter */
+        .ch-section-header{
+          font-size:11px;
+          font-weight:800;
+          letter-spacing:2.5px;
+          text-transform:uppercase;
+          color:rgba(255,255,255,0.25);
+          margin-bottom:18px;
+          margin-top:36px;
+          display:flex;
+          align-items:center;
+          gap:12px;
         }
+        .ch-section-header::after{
+          content:'';
+          flex:1;
+          height:1px;
+          background:rgba(255,255,255,0.06);
+        }
+        .ch-section-header:first-child{margin-top:0}
+
+        /* Section 2–6 label */
+        .section-badge-row{
+          display:flex;
+          align-items:center;
+          gap:10px;
+          margin-bottom:16px;
+        }
+
+        /* Include / Never include grid */
+        .include-grid{
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:20px;
+          margin:20px 0 24px;
+        }
+        @media(max-width:600px){.include-grid{grid-template-columns:1fr}}
+        .include-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+        .include-list li{
+          font-size:15px;
+          color:rgba(255,255,255,0.7);
+          display:flex;
+          align-items:flex-start;
+          gap:10px;
+          line-height:1.6;
+          padding:2px 0;
+        }
+
+        /* Before/after */
         .before-after{
           display:grid;
           grid-template-columns:1fr 1fr;
-          gap:12px;
-          margin:16px 0;
+          gap:16px;
+          margin:24px 0;
         }
-        @media(max-width:680px){
-          .before-after{grid-template-columns:1fr}
-        }
+        @media(max-width:640px){.before-after{grid-template-columns:1fr}}
         .before-box{
-          background:rgba(239,68,68,0.06);
-          border:1px solid rgba(239,68,68,0.2);
-          border-radius:12px;
-          padding:14px 16px;
+          background:rgba(239,68,68,0.05);
+          border:1px solid rgba(239,68,68,0.18);
+          border-radius:16px;
+          padding:22px 24px;
         }
         .after-box{
-          background:rgba(16,185,129,0.06);
-          border:1px solid rgba(16,185,129,0.2);
+          background:rgba(16,185,129,0.05);
+          border:1px solid rgba(16,185,129,0.18);
+          border-radius:16px;
+          padding:22px 24px;
+        }
+
+        /* Code block */
+        .code-block{
+          background:rgba(255,255,255,0.04);
           border-radius:12px;
-          padding:14px 16px;
+          padding:20px 24px;
+          font-family:'Courier New',Courier,monospace;
+          font-size:14px;
+          line-height:1.85;
+          color:rgba(255,255,255,0.85);
+          white-space:pre-wrap;
+          word-break:break-word;
+          border:1px solid rgba(255,255,255,0.07);
+          margin-top:12px;
         }
-        .fmt-table{width:100%;border-collapse:collapse;font-size:13.5px}
-        .fmt-table th{text-align:left;padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);border-bottom:1px solid rgba(255,255,255,0.07)}
-        .fmt-table td{padding:10px 14px;color:rgba(255,255,255,0.75);vertical-align:top;border-bottom:1px solid rgba(255,255,255,0.05)}
-        .fmt-table td:first-child{font-weight:700;color:rgba(255,255,255,0.9);white-space:nowrap}
+
+        /* Formula block */
+        .formula-block{
+          background:rgba(79,124,255,0.06);
+          border:1px solid rgba(79,124,255,0.18);
+          border-radius:12px;
+          padding:18px 24px;
+          font-family:'Courier New',Courier,monospace;
+          font-size:14px;
+          line-height:1.75;
+          color:#93BBFF;
+          margin-top:12px;
+        }
+
+        /* Formatting table */
+        .fmt-table{width:100%;border-collapse:collapse}
+        .fmt-table th{
+          text-align:left;
+          padding:12px 20px;
+          font-size:10px;
+          font-weight:800;
+          letter-spacing:2px;
+          text-transform:uppercase;
+          color:rgba(255,255,255,0.3);
+          border-bottom:1px solid rgba(255,255,255,0.08);
+        }
+        .fmt-table td{
+          padding:16px 20px;
+          font-size:15px;
+          color:rgba(255,255,255,0.75);
+          vertical-align:top;
+          border-bottom:1px solid rgba(255,255,255,0.05);
+          line-height:1.6;
+        }
+        .fmt-table td:first-child{
+          font-weight:700;
+          color:rgba(255,255,255,0.95);
+          white-space:nowrap;
+          width:180px;
+        }
         .fmt-table tr:last-child td{border-bottom:none}
+        .fmt-table tr:nth-child(even) td{background:rgba(255,255,255,0.015)}
+
+        /* Mistake cards */
         .mistake-card{
-          background:rgba(255,255,255,0.03);
-          border:1px solid rgba(255,255,255,0.06);
-          border-radius:14px;
-          padding:18px 20px;
+          background:rgba(255,255,255,0.025);
+          border:1px solid rgba(255,255,255,0.07);
+          border-radius:16px;
+          padding:24px 28px;
           display:flex;
-          gap:14px;
+          gap:20px;
           align-items:flex-start;
+          transition:border-color 0.2s;
         }
+        .mistake-card:hover{border-color:rgba(239,68,68,0.25)}
+
+        /* Domain tabs */
         .domain-tab{
-          padding:8px 16px;
+          padding:9px 20px;
           border-radius:100px;
           font-size:13px;
           font-weight:700;
@@ -339,21 +433,24 @@ export default function ResumeGuidePage() {
           background:rgba(255,255,255,0.05);
           color:rgba(255,255,255,0.7);
         }
+
+        /* Checklist */
         .checklist-row{
           display:flex;
           align-items:flex-start;
-          gap:12px;
-          padding:10px 0;
+          gap:14px;
+          padding:14px 0;
           border-bottom:1px solid rgba(255,255,255,0.05);
           cursor:pointer;
+          transition:opacity 0.15s;
         }
         .checklist-row:last-child{border-bottom:none}
-        .checklist-row:hover .check-box{border-color:rgba(79,124,255,0.5)}
+        .checklist-row:hover{opacity:0.85}
         .check-box{
-          width:20px;
-          height:20px;
-          border-radius:6px;
-          border:2px solid rgba(255,255,255,0.2);
+          width:22px;
+          height:22px;
+          border-radius:7px;
+          border:2px solid rgba(255,255,255,0.18);
           flex-shrink:0;
           display:flex;
           align-items:center;
@@ -365,58 +462,61 @@ export default function ResumeGuidePage() {
           background:rgba(16,185,129,0.2);
           border-color:rgba(16,185,129,0.6);
         }
-        .sidebar{width:260px;flex-shrink:0}
-        @media(max-width:960px){.sidebar{display:none}}
-        @media(max-width:640px){.top-bar-title{display:none}}
-        .code-block{
-          background:rgba(255,255,255,0.04);
-          border-radius:10px;
-          padding:14px 18px;
-          font-family:'Courier New',Courier,monospace;
+
+        /* Pill */
+        .pill{
+          display:inline-block;
+          padding:5px 14px;
+          border-radius:100px;
           font-size:13px;
-          line-height:1.75;
-          color:rgba(255,255,255,0.85);
-          white-space:pre-wrap;
-          word-break:break-word;
-          border:1px solid rgba(255,255,255,0.06);
-        }
-        .section-header{
-          font-size:11px;
           font-weight:700;
-          letter-spacing:1.5px;
-          text-transform:uppercase;
-          color:rgba(255,255,255,0.3);
-          margin-bottom:12px;
-          margin-top:24px;
+          margin:4px 4px 4px 0;
         }
-        .section-header:first-child{margin-top:0}
-        .what-list{
-          list-style:none;
-          display:flex;
-          flex-direction:column;
-          gap:6px;
-          margin:10px 0;
-        }
-        .what-list li{
-          font-size:14px;
-          color:rgba(255,255,255,0.7);
-          display:flex;
-          align-items:flex-start;
-          gap:8px;
-          line-height:1.6;
-        }
+
+        /* Sidebar */
+        .sidebar{width:272px;flex-shrink:0}
+        @media(max-width:1000px){.sidebar{display:none}}
+        @media(max-width:640px){.top-bar-title{display:none}}
+
+        /* Progress bar */
         .progress-bar-track{
           height:6px;
           background:rgba(255,255,255,0.08);
           border-radius:100px;
           overflow:hidden;
-          margin-bottom:6px;
+          margin:8px 0 4px;
         }
-        .domain-tabs-scroll{
+
+        /* ATS rule rows */
+        .ats-rule{
           display:flex;
-          gap:8px;
-          flex-wrap:wrap;
-          margin-bottom:20px;
+          gap:20px;
+          align-items:flex-start;
+          padding:24px 0;
+          border-bottom:1px solid rgba(255,255,255,0.05);
+        }
+        .ats-rule:first-child{padding-top:0}
+        .ats-rule:last-child{border-bottom:none;padding-bottom:0}
+        .ats-num{
+          font-family:'DM Serif Display',serif;
+          font-size:40px;
+          color:rgba(79,124,255,0.2);
+          line-height:1;
+          flex-shrink:0;
+          width:44px;
+          text-align:center;
+          padding-top:2px;
+        }
+
+        /* Verb domain group */
+        .verb-group{margin-bottom:24px}
+        .verb-group-label{
+          font-size:11px;
+          font-weight:800;
+          letter-spacing:2px;
+          text-transform:uppercase;
+          color:rgba(255,255,255,0.3);
+          margin-bottom:10px;
         }
       `}</style>
 
@@ -450,17 +550,17 @@ export default function ResumeGuidePage() {
       </div>
 
       {/* ── HERO ── */}
-      <section style={{ padding: '64px 24px 48px', textAlign: 'center', maxWidth: 680, margin: '0 auto' }}>
-        <div style={{ display: 'inline-flex', padding: '4px 14px', background: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#7dd3fc', textTransform: 'uppercase', marginBottom: 20 }}>
+      <section style={{ padding: '80px 24px 56px', textAlign: 'center', maxWidth: 680, margin: '0 auto' }}>
+        <div style={{ display: 'inline-flex', padding: '4px 14px', background: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#7dd3fc', textTransform: 'uppercase', marginBottom: 24 }}>
           Free Resource
         </div>
-        <h1 style={{ fontSize: 'clamp(32px,5vw,52px)', fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.05, marginBottom: 16 }}>
+        <h1 style={{ fontSize: 'clamp(36px,5vw,56px)', fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.05, marginBottom: 20 }}>
           The Resume Guide
         </h1>
-        <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, marginBottom: 28, maxWidth: 520, margin: '0 auto 28px' }}>
+        <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.55)', lineHeight: 1.85, marginBottom: 36, maxWidth: 520, margin: '0 auto 36px' }}>
           Everything you need to build a resume that gets you shortlisted for consulting, finance, Founder's Office, marketing, and BD roles — off campus.
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 24 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 28 }}>
           {[
             { label: '7 Chapters', color: '#7dd3fc', bg: 'rgba(14,165,233,0.1)', border: 'rgba(14,165,233,0.25)' },
             { label: '10-Minute Checklist', color: '#93BBFF', bg: 'rgba(79,124,255,0.1)', border: 'rgba(79,124,255,0.25)' },
@@ -479,7 +579,7 @@ export default function ResumeGuidePage() {
       </section>
 
       {/* ── MAIN LAYOUT ── */}
-      <div style={{ maxWidth: 1120, margin: '0 auto', padding: '0 24px 100px', display: 'flex', gap: 40, alignItems: 'flex-start' }}>
+      <div style={{ maxWidth: 1120, margin: '0 auto', padding: '0 24px 100px', display: 'flex', gap: 48, alignItems: 'flex-start' }}>
 
         {/* LEFT — Chapters */}
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -493,7 +593,7 @@ export default function ResumeGuidePage() {
             onToggle={() => toggleExpand(1)}
             preview="Most students start writing their resume before they understand what a resume actually does. These 6 rules fix that."
           >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
                 { title: 'One page. Always.', body: 'Recruiters spend 6–10 seconds on a resume. A second page doesn\'t get read — it signals poor editing. Every line must earn its place.' },
                 { title: 'ATS first, human second.', body: 'Most companies run resumes through Applicant Tracking Systems before a human sees them. If your formatting breaks ATS parsing, you\'re out before you\'re even considered.' },
@@ -503,12 +603,11 @@ export default function ResumeGuidePage() {
                 { title: 'Simple formatting wins.', body: 'No tables, text boxes, columns, or graphics. They break ATS. Use a clean single-column layout with standard section headers.' },
               ].map((rule, i) => (
                 <div key={i} className="rule-card">
-                  <span className="rule-num">{i + 1}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                    <span style={{ width: 26, height: 26, borderRadius: 8, background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#93BBFF', flexShrink: 0 }}>{i + 1}</span>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>{rule.title}</span>
+                  <div className="rule-num-large">{i + 1}</div>
+                  <div>
+                    <div style={{ fontSize: 17, fontWeight: 800, color: '#fff', marginBottom: 10, letterSpacing: -0.2 }}>{rule.title}</div>
+                    <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.62)', lineHeight: 1.85 }}>{rule.body}</p>
                   </div>
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, paddingRight: 40 }}>{rule.body}</p>
                 </div>
               ))}
             </div>
@@ -524,32 +623,32 @@ export default function ResumeGuidePage() {
             preview="A strong resume has exactly these 6 sections — no more, no less. Here's what goes in each one and what to never include."
           >
             {/* Section 1: Header — always free */}
-            <div style={{ marginBottom: 24 }}>
+            <div>
               <SectionBadge num={1} title="Header" free />
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 14 }}>
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85, marginBottom: 16 }}>
                 The header is the first thing a recruiter sees. Keep it clean, complete, and scannable in under 3 seconds.
               </p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 16 }}>
+              <div className="include-grid">
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#6ee7b7', textTransform: 'uppercase', marginBottom: 8 }}>Include</div>
-                  <ul className="what-list">
-                    {['Full name (large, top of page)', 'Phone number (Indian format)', 'Professional email address', 'LinkedIn URL (shortened)', 'City (just city, no full address)', 'Portfolio/GitHub (if relevant to role)'].map(i => (
-                      <li key={i}><span style={{ color: '#6ee7b7', fontWeight: 700, flexShrink: 0 }}>✓</span>{i}</li>
+                  <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#6ee7b7', textTransform: 'uppercase', marginBottom: 10 }}>Include</div>
+                  <ul className="include-list">
+                    {['Full name (large, top of page)', 'Phone number (Indian format)', 'Professional email address', 'LinkedIn URL (shortened)', 'City (just city, no full address)', 'Portfolio/GitHub (if relevant to role)'].map(item => (
+                      <li key={item}><span style={{ color: '#6ee7b7', fontWeight: 800, flexShrink: 0 }}>✓</span>{item}</li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#f87171', textTransform: 'uppercase', marginBottom: 8 }}>Never Include</div>
-                  <ul className="what-list">
-                    {['Date of birth', 'Photo', '"Objective" statements', 'Full home address', 'Marital status'].map(i => (
-                      <li key={i}><span style={{ color: '#f87171', fontWeight: 700, flexShrink: 0 }}>✗</span>{i}</li>
+                  <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#f87171', textTransform: 'uppercase', marginBottom: 10 }}>Never Include</div>
+                  <ul className="include-list">
+                    {['Date of birth', 'Photo', '"Objective" statements', 'Full home address', 'Marital status'].map(item => (
+                      <li key={item}><span style={{ color: '#f87171', fontWeight: 800, flexShrink: 0 }}>✗</span>{item}</li>
                     ))}
                   </ul>
                 </div>
               </div>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 8 }}>Formula</div>
+              <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 8 }}>Formula</div>
               <div className="code-block">[Full Name] | [Phone] | [Email] | [LinkedIn] | [City]</div>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', margin: '14px 0 8px' }}>Example</div>
+              <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', margin: '20px 0 8px' }}>Example</div>
               <div className="code-block">{`Priya Sharma\n+91 98765 43210 · priya.sharma@gmail.com · linkedin.com/in/priyasharma · Mumbai`}</div>
             </div>
 
@@ -557,110 +656,112 @@ export default function ResumeGuidePage() {
             {ch2SectionUnlocked ? (
               <>
                 {/* Section 2: Education */}
-                <div style={{ marginBottom: 24, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ paddingTop: 32, marginTop: 32, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                   <SectionBadge num={2} title="Education" />
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 14 }}>Strong for recent grads. Show it confidently if your numbers are good.</p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 16 }}>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85, marginBottom: 16 }}>Strong for recent grads. Show it confidently if your numbers are good.</p>
+                  <div className="include-grid">
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#6ee7b7', textTransform: 'uppercase', marginBottom: 8 }}>Include</div>
-                      <ul className="what-list">
-                        {['College name', 'Degree + major', 'Year of graduation (or expected)', 'CGPA (if 7.5+)', 'Relevant coursework (2–3 max, only if relevant)', 'Academic achievements (if strong)'].map(i => (
-                          <li key={i}><span style={{ color: '#6ee7b7', fontWeight: 700, flexShrink: 0 }}>✓</span>{i}</li>
+                      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#6ee7b7', textTransform: 'uppercase', marginBottom: 10 }}>Include</div>
+                      <ul className="include-list">
+                        {['College name', 'Degree + major', 'Year of graduation (or expected)', 'CGPA (if 7.5+)', 'Relevant coursework (2–3 max, only if relevant)', 'Academic achievements (if strong)'].map(item => (
+                          <li key={item}><span style={{ color: '#6ee7b7', fontWeight: 800, flexShrink: 0 }}>✓</span>{item}</li>
                         ))}
                       </ul>
                     </div>
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#f87171', textTransform: 'uppercase', marginBottom: 8 }}>Never Include</div>
-                      <ul className="what-list">
-                        {['School (10th/12th) unless exceptional board result', 'CGPA below 7.0', 'Every course you\'ve taken'].map(i => (
-                          <li key={i}><span style={{ color: '#f87171', fontWeight: 700, flexShrink: 0 }}>✗</span>{i}</li>
+                      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#f87171', textTransform: 'uppercase', marginBottom: 10 }}>Never Include</div>
+                      <ul className="include-list">
+                        {['School (10th/12th) unless exceptional board result', 'CGPA below 7.0', 'Every course you\'ve taken'].map(item => (
+                          <li key={item}><span style={{ color: '#f87171', fontWeight: 800, flexShrink: 0 }}>✗</span>{item}</li>
                         ))}
                       </ul>
                     </div>
                   </div>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 8 }}>Formula</div>
+                  <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 8 }}>Formula</div>
                   <div className="code-block">[College Name] | [Degree], [Major] | [Year] | CGPA: [X.X]</div>
                 </div>
 
                 {/* Section 3: Experience */}
-                <div style={{ marginBottom: 24, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ paddingTop: 32, marginTop: 32, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                   <SectionBadge num={3} title="Experience" />
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 14 }}>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85, marginBottom: 16 }}>
                     The most important section. Each entry: Company name + role title + dates + location. 2–4 bullets using the formula: <strong style={{ color: '#fff' }}>Action verb + what you did + result/impact.</strong>
                   </p>
 
                   {/* Before/after */}
                   <div className="before-after">
                     <div className="before-box">
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: '#f87171', marginBottom: 10, textTransform: 'uppercase' }}>Weak</div>
-                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 10 }}>Worked on social media marketing for the brand</p>
-                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>Helped with financial analysis</p>
+                      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#f87171', marginBottom: 12, textTransform: 'uppercase' }}>Weak</div>
+                      <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.75, marginBottom: 12 }}>Worked on social media marketing for the brand</p>
+                      <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.75 }}>Helped with financial analysis</p>
                     </div>
                     <div className="after-box">
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: '#6ee7b7', marginBottom: 10, textTransform: 'uppercase' }}>Strong</div>
-                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: 10 }}>Grew brand's Instagram engagement rate from 2.1% to 5.8% over 8 weeks by restructuring content calendar and A/B testing caption formats</p>
-                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6 }}>Built 3-statement financial model for Series B fintech startup; identified ₹12L cost optimisation opportunity presented to CFO</p>
+                      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#6ee7b7', marginBottom: 12, textTransform: 'uppercase' }}>Strong</div>
+                      <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.75, marginBottom: 12 }}>Grew brand's Instagram engagement rate from 2.1% to 5.8% over 8 weeks by restructuring content calendar and A/B testing caption formats</p>
+                      <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.75 }}>Built 3-statement financial model for Series B fintech startup; identified ₹12L cost optimisation opportunity presented to CFO</p>
                     </div>
                   </div>
 
-                  {/* Action verb pills */}
-                  <div style={{ marginTop: 20 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 12 }}>Action Verbs by Domain</div>
-                    {[
-                      { domain: 'Consulting', verbs: ['Analysed', 'Structured', 'Synthesised', 'Benchmarked', 'Mapped', 'Recommended', 'Evaluated', 'Optimised'], color: '#93BBFF', bg: 'rgba(79,124,255,0.12)', border: 'rgba(79,124,255,0.3)' },
-                      { domain: 'Finance', verbs: ['Modelled', 'Forecasted', 'Valued', 'Audited', 'Reconciled', 'Projected', 'Stress-tested', 'Calculated'], color: '#c4b5fd', bg: 'rgba(139,92,246,0.12)', border: 'rgba(139,92,246,0.3)' },
-                      { domain: 'Marketing', verbs: ['Grew', 'Launched', 'Campaigned', 'Scaled', 'Tested', 'Optimised', 'Converted', 'Tracked'], color: '#fcd34d', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.3)' },
-                      { domain: 'BD', verbs: ['Sourced', 'Pitched', 'Closed', 'Negotiated', 'Onboarded', 'Prospected', 'Partnered', 'Generated'], color: '#5eead4', bg: 'rgba(20,184,166,0.12)', border: 'rgba(20,184,166,0.3)' },
-                      { domain: 'Operations', verbs: ['Streamlined', 'Automated', 'Reduced', 'Improved', 'Coordinated', 'Deployed', 'Managed', 'Delivered'], color: '#86efac', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)' },
-                      { domain: "Founder's Office", verbs: ['Led', 'Drove', 'Built', 'Designed', 'Executed', 'Owned', 'Shipped', 'Scaled'], color: '#a5b4fc', bg: 'rgba(99,102,241,0.12)', border: 'rgba(99,102,241,0.3)' },
-                    ].map(row => (
-                      <div key={row.domain} style={{ marginBottom: 10 }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: row.color, marginRight: 8 }}>{row.domain}:</span>
-                        <span style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 4 }}>
-                          {row.verbs.map(v => (
-                            <span key={v} className="pill" style={{ background: row.bg, border: `1px solid ${row.border}`, color: row.color }}>{v}</span>
-                          ))}
-                        </span>
-                      </div>
-                    ))}
+                  {/* Action verb pills — 2-col grid of domain groups */}
+                  <div style={{ marginTop: 24 }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 16 }}>Action Verbs by Domain</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                      {[
+                        { domain: 'Consulting', verbs: ['Analysed', 'Structured', 'Synthesised', 'Benchmarked', 'Mapped', 'Recommended', 'Evaluated', 'Optimised'], color: '#93BBFF', bg: 'rgba(79,124,255,0.12)', border: 'rgba(79,124,255,0.3)' },
+                        { domain: 'Finance', verbs: ['Modelled', 'Forecasted', 'Valued', 'Audited', 'Reconciled', 'Projected', 'Stress-tested', 'Calculated'], color: '#c4b5fd', bg: 'rgba(139,92,246,0.12)', border: 'rgba(139,92,246,0.3)' },
+                        { domain: 'Marketing', verbs: ['Grew', 'Launched', 'Campaigned', 'Scaled', 'Tested', 'Optimised', 'Converted', 'Tracked'], color: '#fcd34d', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.3)' },
+                        { domain: 'BD', verbs: ['Sourced', 'Pitched', 'Closed', 'Negotiated', 'Onboarded', 'Prospected', 'Partnered', 'Generated'], color: '#5eead4', bg: 'rgba(20,184,166,0.12)', border: 'rgba(20,184,166,0.3)' },
+                        { domain: 'Operations', verbs: ['Streamlined', 'Automated', 'Reduced', 'Improved', 'Coordinated', 'Deployed', 'Managed', 'Delivered'], color: '#86efac', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)' },
+                        { domain: "Founder's Office", verbs: ['Led', 'Drove', 'Built', 'Designed', 'Executed', 'Owned', 'Shipped', 'Scaled'], color: '#a5b4fc', bg: 'rgba(99,102,241,0.12)', border: 'rgba(99,102,241,0.3)' },
+                      ].map(row => (
+                        <div key={row.domain} className="verb-group">
+                          <div className="verb-group-label" style={{ color: row.color }}>{row.domain}</div>
+                          <div>
+                            {row.verbs.map(v => (
+                              <span key={v} className="pill" style={{ background: row.bg, border: `1px solid ${row.border}`, color: row.color }}>{v}</span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
                 {/* Section 4: Projects */}
-                <div style={{ marginBottom: 24, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ paddingTop: 32, marginTop: 32, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                   <SectionBadge num={4} title="Projects" />
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 12 }}>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85, marginBottom: 14 }}>
                     For students without internship experience, projects carry the section.
                   </p>
-                  <ul className="what-list">
+                  <ul className="include-list">
                     {[
                       'Project name + what it was + result',
                       '2–3 bullet points max',
                       'Only include if genuinely relevant — a random college fest project weakens the resume',
-                    ].map(i => (
-                      <li key={i}><span style={{ color: '#93BBFF', fontWeight: 700, flexShrink: 0 }}>→</span>{i}</li>
+                    ].map(item => (
+                      <li key={item}><span style={{ color: '#93BBFF', fontWeight: 800, flexShrink: 0 }}>→</span>{item}</li>
                     ))}
                   </ul>
                 </div>
 
                 {/* Section 5: Skills */}
-                <div style={{ marginBottom: 24, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ paddingTop: 32, marginTop: 32, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                   <SectionBadge num={5} title="Skills" />
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 12 }}>Keep it clean and scannable. Only list skills you can be tested on.</p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85, marginBottom: 16 }}>Keep it clean and scannable. Only list skills you can be tested on.</p>
+                  <div className="include-grid">
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#6ee7b7', textTransform: 'uppercase', marginBottom: 8 }}>Include</div>
-                      <ul className="what-list">
-                        {['Technical: Excel, Python, SQL, Tableau', 'Languages: English (Professional), Hindi (Native)', 'Certifications: CFA Level 1 (if relevant)'].map(i => (
-                          <li key={i}><span style={{ color: '#6ee7b7', fontWeight: 700, flexShrink: 0 }}>✓</span>{i}</li>
+                      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#6ee7b7', textTransform: 'uppercase', marginBottom: 10 }}>Include</div>
+                      <ul className="include-list">
+                        {['Technical: Excel, Python, SQL, Tableau', 'Languages: English (Professional), Hindi (Native)', 'Certifications: CFA Level 1 (if relevant)'].map(item => (
+                          <li key={item}><span style={{ color: '#6ee7b7', fontWeight: 800, flexShrink: 0 }}>✓</span>{item}</li>
                         ))}
                       </ul>
                     </div>
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#f87171', textTransform: 'uppercase', marginBottom: 8 }}>Never Write</div>
-                      <ul className="what-list">
-                        {['"Microsoft Office"', '"Communication skills"', '"Team player"', '"Leadership"'].map(i => (
-                          <li key={i}><span style={{ color: '#f87171', fontWeight: 700, flexShrink: 0 }}>✗</span>{i}</li>
+                      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#f87171', textTransform: 'uppercase', marginBottom: 10 }}>Never Write</div>
+                      <ul className="include-list">
+                        {['"Microsoft Office"', '"Communication skills"', '"Team player"', '"Leadership"'].map(item => (
+                          <li key={item}><span style={{ color: '#f87171', fontWeight: 800, flexShrink: 0 }}>✗</span>{item}</li>
                         ))}
                       </ul>
                     </div>
@@ -668,28 +769,28 @@ export default function ResumeGuidePage() {
                 </div>
 
                 {/* Section 6: Activities */}
-                <div style={{ paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ paddingTop: 32, marginTop: 32, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                   <SectionBadge num={6} title="Activities & Achievements" />
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 12 }}>Optional but powerful if strong. Leave it out if you don't have strong entries — a weak activities section hurts more than it helps.</p>
-                  <ul className="what-list">
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85, marginBottom: 14 }}>Optional but powerful if strong. Leave it out if you don't have strong entries — a weak activities section hurts more than it helps.</p>
+                  <ul className="include-list">
                     {[
                       'Case competition wins (mention rank + participants)',
                       'Club leadership positions (with measurable impact)',
                       'Publications, patents, national-level achievements',
-                    ].map(i => (
-                      <li key={i}><span style={{ color: '#93BBFF', fontWeight: 700, flexShrink: 0 }}>→</span>{i}</li>
+                    ].map(item => (
+                      <li key={item}><span style={{ color: '#93BBFF', fontWeight: 800, flexShrink: 0 }}>→</span>{item}</li>
                     ))}
                   </ul>
                 </div>
               </>
             ) : (
-              <div className="section-lock">
-                <span style={{ fontSize: 28 }}>🔒</span>
-                <div style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Sections 2–6 locked</div>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, maxWidth: 320 }}>Enter your email to unlock Education, Experience, Projects, Skills, and Activities sections for free.</p>
+              <div style={{ background: 'rgba(15,22,35,0.95)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '32px 28px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, textAlign: 'center', marginTop: 24 }}>
+                <span style={{ fontSize: 32 }}>🔒</span>
+                <div style={{ fontSize: 17, fontWeight: 800, color: '#fff' }}>Sections 2–6 locked</div>
+                <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', lineHeight: 1.75, maxWidth: 340 }}>Enter your email to unlock Education, Experience, Projects, Skills, and Activities sections for free.</p>
                 <button
                   onClick={() => setShowPopup(true)}
-                  style={{ padding: '10px 24px', borderRadius: 100, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.35)', color: '#fcd34d', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
+                  style={{ padding: '12px 28px', borderRadius: 100, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.35)', color: '#fcd34d', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", marginTop: 4 }}
                 >
                   Unlock Free →
                 </button>
@@ -707,7 +808,7 @@ export default function ResumeGuidePage() {
               onToggle={() => toggleExpand(3)}
               preview="ATS rejects 75% of resumes before a human sees them. These 5 rules keep you in the game."
             >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
                 {[
                   { title: 'Use standard section headers.', body: 'Write "Experience", "Education", "Skills" — not "My Journey", "Where I\'ve Been", "Things I Can Do". ATS looks for standard keywords.' },
                   { title: 'No tables, columns, or text boxes.', body: 'ATS parsers read left to right, top to bottom. Two-column layouts get scrambled. Tables cause parsing failures. Use a single-column layout.' },
@@ -715,13 +816,12 @@ export default function ResumeGuidePage() {
                   { title: 'Mirror the job description.', body: 'If the JD says "financial modelling", write "financial modelling" — not "financial analysis" or "FM". ATS does keyword matching. Use their exact language.' },
                   { title: 'No images, logos, or graphics.', body: 'They don\'t parse. A company logo or decorative line in your header can corrupt the parsed output.' },
                 ].map((rule, i) => (
-                  <div key={i} className="rule-card">
-                    <span className="rule-num">{i + 1}</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                      <span style={{ width: 26, height: 26, borderRadius: 8, background: 'rgba(20,184,166,0.15)', border: '1px solid rgba(20,184,166,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#5eead4', flexShrink: 0 }}>{i + 1}</span>
-                      <span style={{ fontSize: 15, fontWeight: 700, color: '#fff', paddingRight: 40 }}>{rule.title}</span>
+                  <div key={i} className="ats-rule">
+                    <div className="ats-num">{i + 1}</div>
+                    <div>
+                      <div style={{ fontSize: 17, fontWeight: 800, color: '#fff', marginBottom: 10 }}>{rule.title}</div>
+                      <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.62)', lineHeight: 1.85 }}>{rule.body}</p>
                     </div>
-                    <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, paddingRight: 40 }}>{rule.body}</p>
                   </div>
                 ))}
               </div>
@@ -740,11 +840,14 @@ export default function ResumeGuidePage() {
               onToggle={() => toggleExpand(4)}
               preview="The formatting decisions that separate a professional resume from a student resume."
             >
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, marginBottom: 24 }}>
+                Every formatting decision on your resume sends a signal. These are the rules that separate a professional resume from a student one.
+              </p>
               <div style={{ overflowX: 'auto' }}>
                 <table className="fmt-table">
                   <thead>
                     <tr>
-                      <th style={{ width: 120 }}>Rule</th>
+                      <th style={{ width: 180 }}>Rule</th>
                       <th>What to do</th>
                     </tr>
                   </thead>
@@ -783,7 +886,7 @@ export default function ResumeGuidePage() {
               onToggle={() => toggleExpand(5)}
               preview="These 8 mistakes are why strong candidates get rejected before anyone reads their resume."
             >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {[
                   { title: 'Responsibilities instead of results', body: 'Writing what you were supposed to do, not what you actually achieved. Every bullet should have a number or a clear outcome.' },
                   { title: 'Generic objective statements', body: '"Seeking a challenging opportunity to grow in a dynamic organisation" tells the recruiter nothing about you. Delete the objective section entirely.' },
@@ -795,10 +898,10 @@ export default function ResumeGuidePage() {
                   { title: 'Not tailoring for the role', body: 'Sending the same resume to a consulting firm, a fintech startup, and a marketing agency is lazy and ineffective. Tailor your language, section order, and highlights for each application.' },
                 ].map((m, i) => (
                   <div key={i} className="mistake-card">
-                    <span style={{ fontSize: 20, flexShrink: 0, marginTop: 1 }}>⚠️</span>
+                    <span style={{ fontSize: 22, flexShrink: 0, marginTop: 2 }}>⚠️</span>
                     <div>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 6 }}>{m.title}</div>
-                      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}>{m.body}</p>
+                      <div style={{ fontSize: 17, fontWeight: 800, color: '#f87171', marginBottom: 10 }}>{m.title}</div>
+                      <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.62)', lineHeight: 1.85 }}>{m.body}</p>
                     </div>
                   </div>
                 ))}
@@ -819,7 +922,7 @@ export default function ResumeGuidePage() {
               preview="What actually gets you shortlisted varies by domain. These tips are specific to each."
             >
               {/* Domain tabs */}
-              <div className="domain-tabs-scroll">
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 28 }}>
                 {domains.map(d => (
                   <button
                     key={d}
@@ -831,18 +934,22 @@ export default function ResumeGuidePage() {
                 ))}
               </div>
               {/* Domain content */}
-              <div style={{ background: 'rgba(79,124,255,0.04)', border: '1px solid rgba(79,124,255,0.12)', borderRadius: 14, padding: 20 }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 14 }}>{domainTab}</div>
-                <ul className="what-list" style={{ marginBottom: 16 }}>
+              <div style={{ background: 'rgba(79,124,255,0.04)', border: '1px solid rgba(79,124,255,0.12)', borderRadius: 16, padding: '28px 28px 24px' }}>
+                <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 20, letterSpacing: -0.3 }}>{domainTab}</div>
+                <div style={{ marginBottom: 24 }}>
                   {DOMAIN_TIPS[domainTab].tips.map((tip, i) => (
-                    <li key={i}><span style={{ color: '#93BBFF', fontWeight: 700, flexShrink: 0 }}>→</span>{tip}</li>
+                    <p key={i} style={{ fontSize: 15, lineHeight: 1.85, color: 'rgba(255,255,255,0.7)', marginBottom: 14 }}>
+                      → {tip}
+                    </p>
                   ))}
-                </ul>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 10 }}>Action Verbs</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {DOMAIN_TIPS[domainTab].verbs.map(v => (
-                    <span key={v} className="pill" style={{ background: 'rgba(79,124,255,0.12)', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF' }}>{v}</span>
-                  ))}
+                </div>
+                <div className="verb-group">
+                  <div className="verb-group-label">Action Verbs</div>
+                  <div>
+                    {DOMAIN_TIPS[domainTab].verbs.map(v => (
+                      <span key={v} className="pill" style={{ background: 'rgba(79,124,255,0.12)', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF' }}>{v}</span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </ChapterCard>
@@ -861,12 +968,12 @@ export default function ResumeGuidePage() {
               preview="Run through this before you send any resume. 4 categories, 20 checks."
             >
               {/* Progress bar */}
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: completedCount === TOTAL_CHECKS ? '#6ee7b7' : '#fcd34d' }}>
+              <div style={{ marginBottom: 28 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: completedCount === TOTAL_CHECKS ? '#6ee7b7' : '#fcd34d' }}>
                     {completedCount} / {TOTAL_CHECKS} complete
                   </span>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>{progressPct}%</span>
+                  <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>{progressPct}%</span>
                 </div>
                 <div className="progress-bar-track">
                   <div style={{ height: '100%', width: `${progressPct}%`, background: completedCount === TOTAL_CHECKS ? 'linear-gradient(90deg,#10b981,#6ee7b7)' : 'linear-gradient(90deg,#f59e0b,#fcd34d)', borderRadius: 100, transition: 'width 0.3s ease' }} />
@@ -874,9 +981,9 @@ export default function ResumeGuidePage() {
               </div>
 
               {/* Checklist categories */}
-              {CHECKLIST.map(cat => (
-                <div key={cat.category} style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 4 }}>{cat.category}</div>
+              {CHECKLIST.map((cat, catIdx) => (
+                <div key={cat.category}>
+                  <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 8, marginTop: catIdx === 0 ? 0 : 28 }}>{cat.category}</div>
                   {cat.items.map(item => (
                     <div
                       key={item.key}
@@ -884,9 +991,9 @@ export default function ResumeGuidePage() {
                       onClick={() => toggleCheck(item.key)}
                     >
                       <div className={`check-box${checklist[item.key] ? ' checked' : ''}`}>
-                        {checklist[item.key] && <span style={{ fontSize: 12, color: '#6ee7b7', fontWeight: 800, lineHeight: 1 }}>✓</span>}
+                        {checklist[item.key] && <span style={{ fontSize: 13, color: '#6ee7b7', fontWeight: 800, lineHeight: 1 }}>✓</span>}
                       </div>
-                      <span style={{ fontSize: 14, color: checklist[item.key] ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.75)', lineHeight: 1.55, textDecoration: checklist[item.key] ? 'line-through' : 'none', transition: 'color 0.15s' }}>
+                      <span style={{ fontSize: 15, color: checklist[item.key] ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.72)', lineHeight: 1.6, textDecoration: checklist[item.key] ? 'line-through' : 'none', transition: 'color 0.15s' }}>
                         {item.label}
                       </span>
                     </div>
@@ -902,8 +1009,8 @@ export default function ResumeGuidePage() {
         {/* ── SIDEBAR ── */}
         <div className="sidebar">
           <div style={{ position: 'sticky', top: 72 }}>
-            <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 16 }}>Chapters</div>
+            <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 28 }}>
+              <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 18 }}>Chapters</div>
 
               {/* Chapter list */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 20 }}>
@@ -917,14 +1024,13 @@ export default function ResumeGuidePage() {
                       onClick={() => {
                         if (!accessible) { setShowPopup(true); return }
                         toggleExpand(ch)
-                        // scroll to chapter
                       }}
-                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 10, background: isExpanded && accessible ? 'rgba(79,124,255,0.1)' : 'transparent', border: `1px solid ${isExpanded && accessible ? 'rgba(79,124,255,0.25)' : 'transparent'}`, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", textAlign: 'left', width: '100%', transition: 'all 0.15s' }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10, background: isExpanded && accessible ? 'rgba(79,124,255,0.1)' : 'transparent', border: `1px solid ${isExpanded && accessible ? 'rgba(79,124,255,0.25)' : 'transparent'}`, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", textAlign: 'left', width: '100%', transition: 'all 0.15s' }}
                     >
-                      <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.25)', width: 16, flexShrink: 0 }}>{ch}</span>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: accessible ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</span>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.25)', width: 18, flexShrink: 0 }}>{ch}</span>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: accessible ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 170 }}>{title}</span>
                       <span style={{ fontSize: 12, flexShrink: 0 }}>
-                        {accessible ? (isExpanded ? <span style={{ color: '#93BBFF' }}>↑</span> : <span style={{ color: 'rgba(255,255,255,0.25)' }}>↓</span>) : <span style={{ opacity: 0.4 }}>🔒</span>}
+                        {accessible ? (isExpanded ? <span style={{ color: '#93BBFF' }}>✓</span> : <span style={{ color: 'rgba(255,255,255,0.25)' }}>↓</span>) : <span style={{ opacity: 0.4 }}>🔒</span>}
                       </span>
                     </button>
                   )
@@ -934,24 +1040,24 @@ export default function ResumeGuidePage() {
               {/* Sidebar unlock section */}
               {!emailUnlocked && !fullyUnlocked && (
                 <div>
-                  <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', marginBottom: 16 }} />
-                  <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: 12 }}>Enter your email to unlock Chapters 2–3 for free.</div>
+                  <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', marginBottom: 18 }} />
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, marginBottom: 14 }}>Enter your email to unlock Chapters 2–3 for free.</div>
                   {sidebarDone ? (
-                    <div style={{ fontSize: 13, color: '#6ee7b7', fontWeight: 600 }}>✅ Chapters 2–3 unlocked!</div>
+                    <div style={{ fontSize: 14, color: '#6ee7b7', fontWeight: 700 }}>✅ Chapters 2–3 unlocked!</div>
                   ) : (
-                    <form onSubmit={handleSidebarEmailSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <form onSubmit={handleSidebarEmailSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                       <input
                         type="email"
                         required
                         placeholder="your@email.com"
                         value={sidebarEmail}
                         onChange={e => setSidebarEmail(e.target.value)}
-                        style={{ padding: '9px 12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: 'white', fontSize: 13, fontFamily: "'DM Sans',sans-serif", outline: 'none', width: '100%' }}
+                        style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: 'white', fontSize: 13, fontFamily: "'DM Sans',sans-serif", outline: 'none', width: '100%' }}
                       />
                       <button
                         type="submit"
                         disabled={sidebarLoading}
-                        style={{ padding: '9px 14px', borderRadius: 10, background: 'rgba(245,158,11,0.12)', border: '1.5px solid rgba(245,158,11,0.35)', color: '#fcd34d', fontWeight: 700, fontSize: 13, cursor: sidebarLoading ? 'wait' : 'pointer', fontFamily: "'DM Sans',sans-serif" }}
+                        style={{ padding: '10px 0', borderRadius: 10, background: 'rgba(245,158,11,0.12)', border: '1.5px solid rgba(245,158,11,0.35)', color: '#fcd34d', fontWeight: 700, fontSize: 13, cursor: sidebarLoading ? 'wait' : 'pointer', fontFamily: "'DM Sans',sans-serif" }}
                       >
                         {sidebarLoading ? '...' : 'Unlock Free →'}
                       </button>
@@ -963,10 +1069,10 @@ export default function ResumeGuidePage() {
 
               {emailUnlocked && !fullyUnlocked && (
                 <div>
-                  <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', marginBottom: 16 }} />
+                  <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', marginBottom: 18 }} />
                   <button
                     onClick={() => setShowPopup(true)}
-                    style={{ width: '100%', padding: '11px 14px', borderRadius: 12, background: 'linear-gradient(135deg,rgba(79,124,255,0.18),rgba(123,97,255,0.12))', border: '1.5px solid rgba(79,124,255,0.4)', color: '#93BBFF', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: 10, background: 'linear-gradient(135deg,rgba(79,124,255,0.18),rgba(123,97,255,0.12))', border: '1.5px solid rgba(79,124,255,0.4)', color: '#93BBFF', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
                   >
                     Unlock all 7 — ₹199 →
                   </button>
@@ -975,7 +1081,7 @@ export default function ResumeGuidePage() {
 
               {fullyUnlocked && (
                 <div>
-                  <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', marginBottom: 16 }} />
+                  <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', marginBottom: 18 }} />
                   <div style={{ fontSize: 13, color: '#6ee7b7', fontWeight: 700, textAlign: 'center' }}>All chapters unlocked ✓</div>
                 </div>
               )}
@@ -1029,43 +1135,32 @@ function ChapterCard({
   children?: React.ReactNode
 }) {
   const colors = [
-    { badge: 'rgba(14,165,233,0.15)', border: 'rgba(14,165,233,0.35)', text: '#7dd3fc' },
-    { badge: 'rgba(79,124,255,0.15)', border: 'rgba(79,124,255,0.35)', text: '#93BBFF' },
-    { badge: 'rgba(20,184,166,0.15)', border: 'rgba(20,184,166,0.35)', text: '#5eead4' },
-    { badge: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.35)', text: '#fcd34d' },
-    { badge: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.35)', text: '#f87171' },
-    { badge: 'rgba(99,102,241,0.15)', border: 'rgba(99,102,241,0.35)', text: '#a5b4fc' },
-    { badge: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.35)', text: '#6ee7b7' },
+    { bg: 'rgba(14,165,233,0.12)', border: 'rgba(14,165,233,0.3)', text: '#7dd3fc' },
+    { bg: 'rgba(79,124,255,0.12)', border: 'rgba(79,124,255,0.3)', text: '#93BBFF' },
+    { bg: 'rgba(20,184,166,0.12)', border: 'rgba(20,184,166,0.3)', text: '#5eead4' },
+    { bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.3)', text: '#fcd34d' },
+    { bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.3)', text: '#f87171' },
+    { bg: 'rgba(99,102,241,0.12)', border: 'rgba(99,102,241,0.3)', text: '#a5b4fc' },
+    { bg: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.3)', text: '#6ee7b7' },
   ]
   const c = colors[(num - 1) % colors.length]
 
   return (
     <div className={`chapter-card${locked ? ' locked' : expanded ? ' expanded' : ''}`}>
-      <span className="ch-watermark">{num}</span>
-
-      {/* Header */}
-      <button
-        onClick={onToggle}
-        style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0, fontFamily: "'DM Sans',sans-serif" }}
-      >
-        <span style={{ width: 28, height: 28, borderRadius: 8, background: c.badge, border: `1px solid ${c.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: c.text, flexShrink: 0 }}>
-          {num}
-        </span>
-        <span style={{ fontSize: 18, fontWeight: 700, color: '#fff', flex: 1, lineHeight: 1.3, paddingRight: 40 }}>{title}</span>
-        <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.3)', flexShrink: 0, transition: 'transform 0.2s', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>⌄</span>
-      </button>
-
-      {/* Preview (when collapsed) */}
-      {!expanded && (
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.65, marginTop: 10, paddingRight: 24 }}>{preview}</p>
-      )}
-
-      {/* Content (when expanded) */}
-      {expanded && (
-        <div style={{ marginTop: 24 }}>
-          {children}
+      <span className="ch-watermark">{String(num).padStart(2, '0')}</span>
+      <button onClick={onToggle} style={{ display: 'flex', alignItems: 'center', gap: 16, width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0, fontFamily: "'DM Sans',sans-serif" }}>
+        {/* Chapter label + number badge */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+          <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: c.text, textTransform: 'uppercase', opacity: 0.8 }}>CH</span>
+          <span style={{ width: 36, height: 36, borderRadius: 10, background: c.bg, border: `1px solid ${c.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 800, color: c.text }}>{num}</span>
         </div>
-      )}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 20, fontWeight: 800, color: '#fff', lineHeight: 1.25, letterSpacing: -0.3, paddingRight: 48 }}>{title}</div>
+          {!expanded && <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, marginTop: 6, paddingRight: 48 }}>{preview}</div>}
+        </div>
+        <span style={{ fontSize: 18, color: 'rgba(255,255,255,0.25)', flexShrink: 0, transition: 'transform 0.25s', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', marginTop: 2 }}>⌄</span>
+      </button>
+      {expanded && <div style={{ marginTop: 36, paddingTop: 32, borderTop: '1px solid rgba(255,255,255,0.06)' }}>{children}</div>}
     </div>
   )
 }
@@ -1086,28 +1181,33 @@ function LockedChapterCard({
   isPaid?: boolean
 }) {
   const colors = [
-    { badge: 'rgba(14,165,233,0.1)', border: 'rgba(14,165,233,0.2)', text: 'rgba(125,211,252,0.4)' },
-    { badge: 'rgba(79,124,255,0.1)', border: 'rgba(79,124,255,0.2)', text: 'rgba(147,187,255,0.4)' },
-    { badge: 'rgba(20,184,166,0.1)', border: 'rgba(20,184,166,0.2)', text: 'rgba(94,234,212,0.4)' },
-    { badge: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.2)', text: 'rgba(252,211,77,0.4)' },
-    { badge: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.2)', text: 'rgba(248,113,113,0.4)' },
-    { badge: 'rgba(99,102,241,0.1)', border: 'rgba(99,102,241,0.2)', text: 'rgba(165,180,252,0.4)' },
-    { badge: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.2)', text: 'rgba(110,231,183,0.4)' },
+    { bg: 'rgba(14,165,233,0.1)', border: 'rgba(14,165,233,0.2)', text: 'rgba(125,211,252,0.4)' },
+    { bg: 'rgba(79,124,255,0.1)', border: 'rgba(79,124,255,0.2)', text: 'rgba(147,187,255,0.4)' },
+    { bg: 'rgba(20,184,166,0.1)', border: 'rgba(20,184,166,0.2)', text: 'rgba(94,234,212,0.4)' },
+    { bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.2)', text: 'rgba(252,211,77,0.4)' },
+    { bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.2)', text: 'rgba(248,113,113,0.4)' },
+    { bg: 'rgba(99,102,241,0.1)', border: 'rgba(99,102,241,0.2)', text: 'rgba(165,180,252,0.4)' },
+    { bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.2)', text: 'rgba(110,231,183,0.4)' },
   ]
   const c = colors[(num - 1) % colors.length]
 
   return (
     <div className="chapter-card locked">
-      <span className="ch-watermark">{num}</span>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-        <span style={{ width: 28, height: 28, borderRadius: 8, background: c.badge, border: `1px solid ${c.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: c.text, flexShrink: 0 }}>{num}</span>
-        <span style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.4)', flex: 1, paddingRight: 40 }}>{title}</span>
-        <span style={{ fontSize: 16 }}>🔒</span>
+      <span className="ch-watermark">{String(num).padStart(2, '0')}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+          <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: c.text, textTransform: 'uppercase', opacity: 0.6 }}>CH</span>
+          <span style={{ width: 36, height: 36, borderRadius: 10, background: c.bg, border: `1px solid ${c.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 800, color: c.text }}>{num}</span>
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 20, fontWeight: 800, color: 'rgba(255,255,255,0.35)', lineHeight: 1.25, letterSpacing: -0.3, paddingRight: 48 }}>{title}</div>
+        </div>
+        <span style={{ fontSize: 18, flexShrink: 0 }}>🔒</span>
       </div>
-      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', lineHeight: 1.65, marginBottom: 14, paddingRight: 24 }}>{preview}</p>
+      <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.25)', lineHeight: 1.75, marginBottom: 18, paddingRight: 24 }}>{preview}</p>
       <button
         onClick={onUnlock}
-        style={{ padding: '8px 20px', borderRadius: 100, background: isPaid ? 'rgba(79,124,255,0.12)' : 'rgba(245,158,11,0.1)', border: `1px solid ${isPaid ? 'rgba(79,124,255,0.3)' : 'rgba(245,158,11,0.25)'}`, color: isPaid ? '#93BBFF' : '#fcd34d', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
+        style={{ padding: '10px 24px', borderRadius: 100, background: isPaid ? 'rgba(79,124,255,0.12)' : 'rgba(245,158,11,0.1)', border: `1px solid ${isPaid ? 'rgba(79,124,255,0.3)' : 'rgba(245,158,11,0.25)'}`, color: isPaid ? '#93BBFF' : '#fcd34d', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
       >
         {label}
       </button>
@@ -1117,10 +1217,10 @@ function LockedChapterCard({
 
 function SectionBadge({ num, title, free = false }: { num: number; title: string; free?: boolean }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-      <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 100, background: 'rgba(79,124,255,0.12)', border: '1px solid rgba(79,124,255,0.25)', color: '#93BBFF' }}>Section {num}</span>
-      <span style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{title}</span>
-      {free && <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 100, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', color: '#6ee7b7', letterSpacing: 0.5 }}>FREE</span>}
+    <div className="section-badge-row">
+      <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, padding: '4px 11px', borderRadius: 100, background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.22)', color: '#93BBFF', textTransform: 'uppercase' }}>Section {num}</span>
+      <span style={{ fontSize: 18, fontWeight: 800, color: '#fff', letterSpacing: -0.2 }}>{title}</span>
+      {free && <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 10px', borderRadius: 100, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', color: '#6ee7b7', letterSpacing: 0.5 }}>ALWAYS FREE</span>}
     </div>
   )
 }
