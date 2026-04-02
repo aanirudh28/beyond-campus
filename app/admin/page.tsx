@@ -47,6 +47,21 @@ type SummerReg = {
   created_at: string
 }
 
+type ResourcePurchase = {
+  id: string
+  email: string
+  payment_id: string
+  amount: number
+  created_at: string
+}
+
+type Lead = {
+  id: string
+  email: string
+  resource: string
+  created_at: string
+}
+
 const STAGE_LABELS = ['Joined', 'Resume Reviewed', 'Started Outreach', 'Got Interview', 'Placed!']
 
 export default function AdminPage() {
@@ -59,10 +74,24 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer'>('bookings')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources'>('bookings')
   const [summerRegs, setSummerRegs] = useState<SummerReg[]>([])
   const [summerLoading, setSummerLoading] = useState(false)
   const [summerFilter, setSummerFilter] = useState<'all' | 'paid' | 'pending'>('all')
+  const [resourcePurchases, setResourcePurchases] = useState<ResourcePurchase[]>([])
+  const [leads, setLeads] = useState<Lead[]>([])
+  const [resourcesLoading, setResourcesLoading] = useState(false)
+
+  const fetchResources = async () => {
+    setResourcesLoading(true)
+    const [purchasesRes, leadsRes] = await Promise.all([
+      supabase.from('resource_purchases').select('*').order('created_at', { ascending: false }),
+      supabase.from('leads').select('*').order('created_at', { ascending: false }),
+    ])
+    if (purchasesRes.data) setResourcePurchases(purchasesRes.data)
+    if (leadsRes.data) setLeads(leadsRes.data)
+    setResourcesLoading(false)
+  }
 
   const fetchSummerRegs = async () => {
     setSummerLoading(true)
@@ -77,6 +106,7 @@ export default function AdminPage() {
       fetchBookings()
       fetchStudents()
       fetchSummerRegs()
+      fetchResources()
     } else {
       setError('Incorrect password')
     }
@@ -201,6 +231,7 @@ export default function AdminPage() {
             { key: 'bookings', label: `Bookings (${bookings.length})`, active: activeTab === 'bookings', color: '#4F7CFF', bg: 'rgba(79,124,255,0.15)' },
             { key: 'students', label: `Students (${students.length})`, active: activeTab === 'students', color: '#4F7CFF', bg: 'rgba(79,124,255,0.15)' },
             { key: 'summer', label: `☀️ Summer (${summerRegs.length})`, active: activeTab === 'summer', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+            { key: 'resources', label: `📦 Resources (${resourcePurchases.length})`, active: activeTab === 'resources', color: '#4F7CFF', bg: 'rgba(79,124,255,0.15)' },
           ].map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: tab.active ? tab.color : 'rgba(255,255,255,0.1)', background: tab.active ? tab.bg : 'transparent', color: tab.active ? tab.color : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               {tab.label}
@@ -321,6 +352,87 @@ export default function AdminPage() {
                   </table>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Resources Tab */}
+        {activeTab === 'resources' && (
+          <div>
+            {/* Stats row */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 24 }}>
+              <div className="stat-card">
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 8, fontWeight: 600 }}>RESOURCE PACK SALES</div>
+                <div style={{ fontSize: 36, fontWeight: 800, color: '#4F7CFF' }}>{resourcePurchases.length}</div>
+              </div>
+              <div className="stat-card">
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 8, fontWeight: 600 }}>RESOURCE REVENUE</div>
+                <div style={{ fontSize: 36, fontWeight: 800, color: '#10b981' }}>₹{resourcePurchases.reduce((s, r) => s + r.amount, 0).toLocaleString()}</div>
+              </div>
+              <div className="stat-card">
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 8, fontWeight: 600 }}>EMAIL LEADS</div>
+                <div style={{ fontSize: 36, fontWeight: 800, color: '#f59e0b' }}>{leads.length}</div>
+              </div>
+            </div>
+
+            {/* Purchases table */}
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'white', marginBottom: 12 }}>Resource Pack Purchases</div>
+            {resourcesLoading ? (
+              <div style={{ color: 'rgba(255,255,255,0.4)', padding: 40, textAlign: 'center' }}>Loading...</div>
+            ) : (
+              <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden', marginBottom: 32 }}>
+                <div style={{ overflowX: 'auto' }}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Email</th>
+                        <th>Payment ID</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {resourcePurchases.length === 0 ? (
+                        <tr><td colSpan={4} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', padding: 32 }}>No purchases yet</td></tr>
+                      ) : resourcePurchases.map(p => (
+                        <tr key={p.id}>
+                          <td>{p.email || '—'}</td>
+                          <td style={{ fontFamily: 'monospace', fontSize: 12 }}>{p.payment_id}</td>
+                          <td style={{ color: '#10b981', fontWeight: 700 }}>₹{p.amount}</td>
+                          <td style={{ color: 'rgba(255,255,255,0.4)' }}>{formatDate(p.created_at)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Leads table */}
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'white', marginBottom: 12 }}>Email Leads</div>
+            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden' }}>
+              <div style={{ overflowX: 'auto' }}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Email</th>
+                      <th>Resource</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {leads.length === 0 ? (
+                      <tr><td colSpan={3} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', padding: 32 }}>No leads yet</td></tr>
+                    ) : leads.map(l => (
+                      <tr key={l.id}>
+                        <td>{l.email}</td>
+                        <td style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>{l.resource}</td>
+                        <td style={{ color: 'rgba(255,255,255,0.4)' }}>{formatDate(l.created_at)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}

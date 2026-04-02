@@ -8,6 +8,7 @@ export default function Home() {
   const [timeLeft, setTimeLeft] = useState({ h: 11, m: 47, s: 33 })
   const [counters, setCounters] = useState({ salary: 0, placed: 0, rate: 0 })
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [resourcesOpen, setResourcesOpen] = useState(false)
   const [howItWorksVisible, setHowItWorksVisible] = useState(false)
   const statsRef = useRef<HTMLDivElement>(null)
   const statsStarted = useRef(false)
@@ -174,7 +175,42 @@ export default function Home() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <a href="/summer" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: '#f59e0b', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.08)', transition: 'all 0.2s' }}>Summer ☀️</a>
-          <a href="/free" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', transition: 'all 0.2s' }}>Free Resources</a>
+          <div
+            style={{ position: 'relative' }}
+            onMouseEnter={() => setResourcesOpen(true)}
+            onMouseLeave={() => setResourcesOpen(false)}
+          >
+            <button style={{ padding: '10px 20px', fontSize: 14, fontWeight: 600, color: resourcesOpen ? 'white' : 'rgba(255,255,255,0.6)', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 100, cursor: 'pointer', fontFamily: "'DM Sans','Inter',sans-serif", transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 6 }}>
+              Free Resources <span style={{ fontSize: 10, opacity: 0.6 }}>▾</span>
+            </button>
+            {resourcesOpen && (
+              <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 8, background: '#111827', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: 8, minWidth: 240, boxShadow: '0 20px 60px rgba(0,0,0,0.5)', zIndex: 200 }}>
+                <div style={{ padding: '6px 12px 4px', fontSize: 10, fontWeight: 700, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>Resources</div>
+                <a href="/resources/cold-email-pack" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: 10, color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, textDecoration: 'none', transition: 'background 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(79,124,255,0.1)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <span>Cold Email Pack</span>
+                  <span style={{ fontSize: 11, color: '#93BBFF', fontWeight: 700 }}>50 templates</span>
+                </a>
+                <a href="/resources/linkedin-scripts" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: 10, color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, textDecoration: 'none', transition: 'background 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(79,124,255,0.1)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <span>LinkedIn Scripts</span>
+                  <span style={{ fontSize: 11, color: '#7dd3fc', fontWeight: 700 }}>20 scripts</span>
+                </a>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: 10, color: 'rgba(255,255,255,0.35)', fontSize: 14, fontWeight: 600 }}>
+                  <span>Company List</span>
+                  <span style={{ fontSize: 11, color: '#f59e0b', fontWeight: 700 }}>🔒 ₹199</span>
+                </div>
+                <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '6px 0' }} />
+                <a href="/free" style={{ display: 'block', padding: '10px 12px', borderRadius: 10, textAlign: 'center', background: 'linear-gradient(135deg,rgba(79,124,255,0.15),rgba(123,97,255,0.1))', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+                  Unlock Everything — ₹199 →
+                </a>
+              </div>
+            )}
+          </div>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', transition: 'all 0.2s' }}>Dashboard</a>
           <a href="/book" className="btn-secondary" style={{ padding: '10px 24px', fontSize: 14 }}>Book Session</a>
           <a href="/cohort" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>

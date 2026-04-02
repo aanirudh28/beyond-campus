@@ -1,56 +1,54 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-type ResourceCard = {
-  id: string
-  badge: string
-  badgeColor: { bg: string; border: string; color: string }
-  title: string
-  description: string
-  stats: { label: string; color: string; bg: string; border: string }[]
-  ctaLabel: string
-  resourcePath: string
-  viewLabel: string
-}
-
-const RESOURCES: ResourceCard[] = [
-  {
-    id: 'cold-email-pack',
-    badge: 'Free Download',
-    badgeColor: { bg: 'rgba(79,124,255,0.1)', border: 'rgba(79,124,255,0.3)', color: '#93BBFF' },
-    title: 'Cold Email Pack',
-    description: '50 proven email templates + 20 LinkedIn DM scripts used by students to get replies from HRs, founders, and hiring managers — across 6 categories.',
-    stats: [
-      { label: '50 Templates', color: '#93BBFF', bg: 'rgba(79,124,255,0.1)', border: 'rgba(79,124,255,0.25)' },
-      { label: '20 LinkedIn Scripts', color: '#7dd3fc', bg: 'rgba(14,165,233,0.1)', border: 'rgba(14,165,233,0.25)' },
-      { label: '6 Categories', color: '#fcd34d', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.25)' },
-    ],
-    ctaLabel: 'Get Free Access →',
-    resourcePath: '/resources/cold-email-pack',
-    viewLabel: 'View Templates →',
-  },
-]
 
 export default function FreePage() {
-  const [emailMap, setEmailMap] = useState<Record<string, string>>({})
-  const [submittingMap, setSubmittingMap] = useState<Record<string, boolean>>({})
-  const [successMap, setSuccessMap] = useState<Record<string, boolean>>({})
+  const [payLoading, setPayLoading] = useState(false)
+  const [paid, setPaid] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent, resourceId: string, resourceName: string) => {
-    e.preventDefault()
-    const email = emailMap[resourceId]
-    if (!email) return
-    setSubmittingMap(p => ({ ...p, [resourceId]: true }))
+  useEffect(() => {
+    if (localStorage.getItem('resourcePackUnlocked') === 'true') {
+      setPaid(true)
+    }
+    if (!document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
+      const script = document.createElement('script')
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+      script.async = true
+      document.body.appendChild(script)
+    }
+  }, [])
+
+  const handleUnlockPack = async () => {
+    setPayLoading(true)
     try {
-      await fetch('/api/capture-lead', {
+      const res = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, resource: resourceName }),
+        body: JSON.stringify({ amount: 199 }),
       })
-    } catch {}
-    setSuccessMap(p => ({ ...p, [resourceId]: true }))
-    setSubmittingMap(p => ({ ...p, [resourceId]: false }))
+      const { orderId, amount } = await res.json()
+      new window.Razorpay({
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount,
+        currency: 'INR',
+        order_id: orderId,
+        name: 'Beyond Campus',
+        description: 'Resource Pack — All 5 Resources',
+        theme: { color: '#4F7CFF' },
+        handler: async (response: { razorpay_payment_id: string }) => {
+          await fetch('/api/save-resource-purchase', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: '', paymentId: response.razorpay_payment_id }),
+          })
+          localStorage.setItem('resourcePackUnlocked', 'true')
+          setPaid(true)
+        },
+      }).open()
+    } finally {
+      setPayLoading(false)
+    }
   }
 
   return (
@@ -59,18 +57,76 @@ export default function FreePage() {
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none;color:inherit}
-        .resource-card{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:24px;padding:36px;transition:border-color 0.2s,box-shadow 0.2s}
-        .resource-card:hover{border-color:rgba(79,124,255,0.25);box-shadow:0 12px 48px rgba(79,124,255,0.07)}
-        .email-input{width:100%;padding:13px 18px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#fff;font-size:15px;font-family:"DM Sans",sans-serif;outline:none;transition:border-color 0.2s}
-        .email-input:focus{border-color:rgba(79,124,255,0.4)}
-        .email-input::placeholder{color:rgba(255,255,255,0.25)}
-        .cta-btn{width:100%;padding:14px 0;border-radius:12px;background:linear-gradient(135deg,#4F7CFF,#7B61FF);color:#fff;font-weight:700;font-size:15px;font-family:"DM Sans",sans-serif;border:none;cursor:pointer;transition:opacity 0.2s,box-shadow 0.2s;box-shadow:0 4px 20px rgba(79,124,255,0.25)}
-        .cta-btn:hover{opacity:0.9;box-shadow:0 6px 28px rgba(79,124,255,0.35)}
-        .cta-btn:disabled{opacity:0.6;cursor:wait}
-        .view-btn{display:inline-flex;align-items:center;justify-content:center;width:100%;padding:13px 0;border-radius:12px;border:1.5px solid rgba(79,124,255,0.35);background:rgba(79,124,255,0.08);color:#93BBFF;font-weight:700;font-size:15px;font-family:"DM Sans",sans-serif;cursor:pointer;transition:all 0.2s;text-decoration:none}
-        .view-btn:hover{background:rgba(79,124,255,0.15);border-color:rgba(79,124,255,0.5)}
+
+        .hero-card{
+          border-radius:24px;
+          padding:40px;
+          background:linear-gradient(135deg,rgba(79,124,255,0.07),rgba(123,97,255,0.07));
+          position:relative;
+        }
+        .hero-card::before{
+          content:'';
+          position:absolute;
+          inset:0;
+          border-radius:24px;
+          padding:1.5px;
+          background:linear-gradient(135deg,rgba(79,124,255,0.6),rgba(123,97,255,0.6));
+          -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+          -webkit-mask-composite:xor;
+          mask-composite:exclude;
+          pointer-events:none;
+        }
+
+        .resource-card{
+          background:#111827;
+          border:1px solid rgba(255,255,255,0.07);
+          border-radius:20px;
+          padding:32px;
+          transition:border-color 0.2s,box-shadow 0.2s;
+        }
+        .resource-card:hover{
+          border-color:rgba(79,124,255,0.25);
+          box-shadow:0 12px 48px rgba(79,124,255,0.07);
+        }
+        .resource-card.dim{
+          opacity:0.45;
+        }
+
+        .unlock-btn{
+          display:inline-flex;align-items:center;justify-content:center;
+          padding:15px 32px;border-radius:12px;
+          background:linear-gradient(135deg,#4F7CFF,#7B61FF);
+          color:#fff;font-weight:700;font-size:15px;
+          font-family:"DM Sans",sans-serif;border:none;cursor:pointer;
+          transition:opacity 0.2s,box-shadow 0.2s;
+          box-shadow:0 4px 24px rgba(79,124,255,0.35);
+        }
+        .unlock-btn:hover{opacity:0.9;box-shadow:0 6px 32px rgba(79,124,255,0.45)}
+        .unlock-btn:disabled{opacity:0.6;cursor:wait}
+
+        .unlock-btn-sm{
+          display:inline-flex;align-items:center;justify-content:center;
+          padding:13px 24px;border-radius:12px;
+          background:linear-gradient(135deg,#4F7CFF,#7B61FF);
+          color:#fff;font-weight:700;font-size:14px;
+          font-family:"DM Sans",sans-serif;border:none;cursor:pointer;
+          transition:opacity 0.2s,box-shadow 0.2s;
+          box-shadow:0 4px 16px rgba(79,124,255,0.3);
+        }
+        .unlock-btn-sm:hover{opacity:0.9}
+        .unlock-btn-sm:disabled{opacity:0.6;cursor:wait}
+
+        .view-link{
+          display:inline-flex;align-items:center;
+          font-size:14px;font-weight:700;color:#93BBFF;
+          text-decoration:none;transition:opacity 0.2s;
+        }
+        .view-link:hover{opacity:0.75}
+
         @media(max-width:640px){
-          .page-hero h1{font-size:32px !important}
+          .hero-card{padding:28px 22px}
+          .resource-card{padding:24px 18px}
+          .hero-bullets{flex-direction:column !important}
         }
       `}</style>
 
@@ -84,81 +140,203 @@ export default function FreePage() {
         </a>
       </div>
 
-      {/* HERO */}
-      <section className="page-hero" style={{ padding: '64px 24px 52px', textAlign: 'center', maxWidth: 680, margin: '0 auto' }}>
-        <div style={{ display: 'inline-flex', padding: '4px 14px', background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#93BBFF', textTransform: 'uppercase', marginBottom: 20 }}>
-          Free Resources
+      <div style={{ maxWidth: 800, margin: '0 auto', padding: '48px 24px 100px' }}>
+
+        {/* ── RESOURCE PACK HERO CARD ── */}
+        <div className="hero-card" style={{ marginBottom: 52 }}>
+          {/* Badge */}
+          <div style={{ marginBottom: 18 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', padding: '5px 14px', borderRadius: 100, background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.4)', color: '#93BBFF' }}>
+              BEST VALUE — ₹199
+            </span>
+          </div>
+
+          <h2 style={{ fontSize: 'clamp(22px,4vw,30px)', fontWeight: 800, letterSpacing: -0.75, marginBottom: 12, lineHeight: 1.2 }}>
+            Resource Pack — Unlock Everything
+          </h2>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, marginBottom: 28, maxWidth: 600 }}>
+            Get all 5 resources for ₹199 — Cold Email Pack (50 templates), LinkedIn Scripts (20 DMs), Company List (500+ companies), Resume Template, and the Off-Campus Playbook.
+          </p>
+
+          {/* Feature bullets */}
+          <div className="hero-bullets" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 24px', marginBottom: 32 }}>
+            {[
+              'All 50 cold email templates',
+              'All 20 LinkedIn DM scripts',
+              'Company List — 500+ companies',
+              'Resume template + playbook',
+            ].map(bullet => (
+              <div key={bullet} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.75)' }}>
+                <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(79,124,255,0.2)', border: '1px solid rgba(79,124,255,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#93BBFF', flexShrink: 0 }}>✓</span>
+                {bullet}
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          {paid ? (
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '14px 24px', borderRadius: 12, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7', fontWeight: 700, fontSize: 15 }}>
+              <span style={{ fontSize: 18 }}>✓</span>
+              Resource Pack Unlocked
+            </div>
+          ) : (
+            <button className="unlock-btn" onClick={handleUnlockPack} disabled={payLoading}>
+              {payLoading ? 'Processing...' : 'Unlock Everything — ₹199'}
+            </button>
+          )}
         </div>
-        <h1 style={{ fontSize: 'clamp(32px,5vw,48px)', fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.1, marginBottom: 16 }}>
-          Tools to help you land your internship
-        </h1>
-        <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, maxWidth: 520, margin: '0 auto' }}>
-          Free templates, scripts, and playbooks built by the Beyond Campus team. No fluff, no paywalls — just the good stuff.
-        </p>
-      </section>
 
-      {/* RESOURCE CARDS */}
-      <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px 100px', display: 'flex', flexDirection: 'column', gap: 24 }}>
-        {RESOURCES.map(r => {
-          const isSuccess = successMap[r.id]
-          const isSubmitting = submittingMap[r.id]
-          const email = emailMap[r.id] ?? ''
+        {/* ── SECTION TITLE ── */}
+        <h2 style={{ fontSize: 'clamp(20px,3vw,26px)', fontWeight: 800, letterSpacing: -0.5, marginBottom: 24 }}>
+          Free Resources
+        </h2>
 
-          return (
-            <div key={r.id} className="resource-card">
-              {/* Badge */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: r.badgeColor.bg, border: `1px solid ${r.badgeColor.border}`, color: r.badgeColor.color }}>
-                  {r.badge}
+        {/* ── RESOURCE CARDS ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+          {/* Card 1: Cold Email Pack */}
+          <div className="resource-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF' }}>
+                  Free
                 </span>
-                <a href={r.resourcePath} style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.35)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  {r.viewLabel}
-                </a>
-              </div>
-
-              <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: -0.5, marginBottom: 10 }}>{r.title}</h2>
-              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, marginBottom: 20 }}>{r.description}</p>
-
-              {/* Stats */}
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 28 }}>
-                {r.stats.map(s => (
-                  <span key={s.label} style={{ padding: '6px 14px', borderRadius: 100, background: s.bg, border: `1px solid ${s.border}`, color: s.color, fontSize: 12, fontWeight: 700 }}>
-                    {s.label}
+                {paid && (
+                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7' }}>
+                    Unlocked ✓
                   </span>
-                ))}
+                )}
               </div>
+              <a href="/resources/cold-email-pack" className="view-link">View Templates →</a>
+            </div>
 
-              {/* CTA */}
-              {isSuccess ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <div style={{ padding: '16px 20px', borderRadius: 12, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', textAlign: 'center', fontSize: 15, fontWeight: 600, color: '#6ee7b7' }}>
-                    Check your inbox! 📬
-                  </div>
-                  <a href={r.resourcePath} className="view-btn">
-                    View Templates Now →
-                  </a>
-                </div>
-              ) : (
-                <form onSubmit={e => handleSubmit(e, r.id, r.title)} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <input
-                    type="email"
-                    required
-                    placeholder="Enter your email for instant access"
-                    className="email-input"
-                    value={email}
-                    onChange={e => setEmailMap(p => ({ ...p, [r.id]: e.target.value }))}
-                  />
-                  <button type="submit" className="cta-btn" disabled={isSubmitting}>
-                    {isSubmitting ? 'Sending...' : r.ctaLabel}
-                  </button>
-                  <a href={r.resourcePath} style={{ textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.3)', fontWeight: 500 }}>
-                    or browse directly without email →
-                  </a>
-                </form>
+            <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.4, marginBottom: 8 }}>Cold Email Pack</h3>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, marginBottom: 16 }}>
+              50 email templates across 7 categories — HR &amp; Talent Acquisition, Founders, Alumni, Domain Specific, Follow-Ups, and Subject Lines.
+            </p>
+
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
+              {[
+                { label: '50 Templates', color: '#93BBFF', bg: 'rgba(79,124,255,0.1)', border: 'rgba(79,124,255,0.25)' },
+                { label: '7 Categories', color: '#fcd34d', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.25)' },
+              ].map(s => (
+                <span key={s.label} style={{ padding: '5px 14px', borderRadius: 100, background: s.bg, border: `1px solid ${s.border}`, color: s.color, fontSize: 12, fontWeight: 700 }}>
+                  {s.label}
+                </span>
+              ))}
+            </div>
+
+            <a href="/resources/cold-email-pack" className="view-link" style={{ fontSize: 15 }}>
+              View Templates →
+            </a>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 10, fontWeight: 500 }}>
+              2 free &bull; 4 with email &bull; 50 with Resource Pack
+            </p>
+          </div>
+
+          {/* Card 2: LinkedIn DM Scripts */}
+          <div className="resource-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF' }}>
+                  Free
+                </span>
+                {paid && (
+                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7' }}>
+                    Unlocked ✓
+                  </span>
+                )}
+              </div>
+              <a href="/resources/linkedin-scripts" className="view-link">View Scripts →</a>
+            </div>
+
+            <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.4, marginBottom: 8 }}>LinkedIn DM Scripts</h3>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, marginBottom: 16 }}>
+              20 message templates to start conversations with HRs, founders, alumni, and hiring managers — short, direct, and effective.
+            </p>
+
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
+              <span style={{ padding: '5px 14px', borderRadius: 100, background: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.25)', color: '#7dd3fc', fontSize: 12, fontWeight: 700 }}>
+                20 Scripts
+              </span>
+            </div>
+
+            <a href="/resources/linkedin-scripts" className="view-link" style={{ fontSize: 15 }}>
+              View Scripts →
+            </a>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 10, fontWeight: 500 }}>
+              2 free &bull; 4 with email &bull; 20 with Resource Pack
+            </p>
+          </div>
+
+          {/* Card 3: Company List */}
+          <div className="resource-card">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', color: '#fcd34d' }}>
+                Resource Pack
+              </span>
+              {paid && (
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7' }}>
+                  Unlocked ✓
+                </span>
               )}
             </div>
-          )
-        })}
+
+            <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.4, marginBottom: 8 }}>Company List</h3>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, marginBottom: 16 }}>
+              500+ off-campus friendly companies with contact details, hiring patterns, and notes — sorted by domain and size.
+            </p>
+
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+              {[
+                { label: '500+ Companies', color: '#fcd34d', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.25)' },
+                { label: 'Hiring notes', color: '#c4b5fd', bg: 'rgba(139,92,246,0.1)', border: 'rgba(139,92,246,0.25)' },
+              ].map(s => (
+                <span key={s.label} style={{ padding: '5px 14px', borderRadius: 100, background: s.bg, border: `1px solid ${s.border}`, color: s.color, fontSize: 12, fontWeight: 700 }}>
+                  {s.label}
+                </span>
+              ))}
+            </div>
+
+            {!paid && (
+              <button className="unlock-btn-sm" onClick={handleUnlockPack} disabled={payLoading}>
+                {payLoading ? 'Processing...' : 'Unlock for ₹199 →'}
+              </button>
+            )}
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: paid ? 0 : 10, fontWeight: 500 }}>
+              Available in the Resource Pack only
+            </p>
+          </div>
+
+          {/* Card 4: Resume Template — Coming Soon */}
+          <div className="resource-card dim">
+            <div style={{ marginBottom: 18 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)' }}>
+                Coming Soon
+              </span>
+            </div>
+
+            <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.4, marginBottom: 8 }}>Resume Template</h3>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.75 }}>
+              A clean, ATS-friendly resume template designed for students going off-campus — used by placed Beyond Campus students.
+            </p>
+          </div>
+
+          {/* Card 5: Off-Campus Playbook — Coming Soon */}
+          <div className="resource-card dim">
+            <div style={{ marginBottom: 18 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)' }}>
+                Coming Soon
+              </span>
+            </div>
+
+            <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.4, marginBottom: 8 }}>Off-Campus Playbook</h3>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.75 }}>
+              The full strategy guide — how to find companies, how to research them, when to email vs DM, how to handle follow-ups, and how to convert a reply into an offer.
+            </p>
+          </div>
+
+        </div>
       </div>
     </main>
   )

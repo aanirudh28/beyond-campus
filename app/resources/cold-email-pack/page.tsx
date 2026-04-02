@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import UnlockPopup from '../../components/UnlockPopup'
 
 type Template = {
   id: number
@@ -8,12 +9,6 @@ type Template = {
   subject?: string
   body: string
   isSubjectLine?: boolean
-}
-
-type Script = {
-  id: number
-  title: string
-  body: string
 }
 
 const TEMPLATES: Template[] = [
@@ -275,30 +270,7 @@ const TEMPLATES: Template[] = [
   },
 ]
 
-const LINKEDIN_SCRIPTS: Script[] = [
-  { id: 1, title: 'Cold HR DM', body: `Hi [Name], I came across [Company] while researching summer internship opportunities in [Domain]. I'm a [Year] [Degree] student at [College] — genuinely interested in your team specifically because [one reason]. Would you be open to a quick 10-minute call? Happy to share my resume.` },
-  { id: 2, title: 'Founder DM', body: `Hi [Name], been following [Company] since [milestone] — what you're building in [space] is genuinely exciting. I'm looking for a summer internship where I can do real work at a company that's moving fast. Any chance there's room for someone like me on the team?` },
-  { id: 3, title: 'Alumni DM', body: `Hi [Name], I noticed you went to [College] — I'm currently in [Year] year there. I've been targeting [Company] for my summer internship and your experience there stood out. Would you be open to a 10-minute call? Any perspective you can share would mean a lot.` },
-  { id: 4, title: 'Second Degree Connection', body: `Hi [Name], [Mutual connection] suggested I reach out. I'm a [Degree] student at [College] looking for a summer internship in [Domain]. Would love to learn about your experience at [Company] and whether there might be an opening.` },
-  { id: 5, title: 'Post Engagement DM', body: `Hi [Name], I've been following your posts on [topic] for a while — your perspective on [specific post] really resonated. I'm exploring summer internships in [Domain] and [Company] is high on my list. Would you be open to a quick chat?` },
-  { id: 6, title: 'After Connecting', body: `Hi [Name], thanks for connecting! I reached out because I've been targeting [Company] for a summer internship in [Domain]. Would you be open to sharing any insight about the team or pointing me toward the right person to speak to?` },
-  { id: 7, title: 'The One-Liner DM', body: `Hi [Name] — [Year] [Degree] student at [College], looking for a summer internship at [Company]. Worth a 10-minute call?` },
-  { id: 8, title: 'The Specific Ask', body: `Hi [Name], I'm [Your Name] from [College]. I've been researching [Company]'s [team/product/market] and I have a few specific questions I think only someone with your experience could answer. Would you have 10 minutes this week?` },
-  { id: 9, title: 'The Career Pivot DM', body: `Hi [Name], your journey from [background] to [Domain] at [Company] is exactly the path I'm trying to build. I'm a [Year] student at [College] trying to make a similar move. Would you be open to sharing how you got there?` },
-  { id: 10, title: 'The Event Follow-Up', body: `Hi [Name], I attended [event/webinar] where you spoke on [topic] — your point about [specific thing] really stuck with me. I'm looking for a summer internship in [Domain] and [Company] is high on my list. Would love to connect properly.` },
-  { id: 11, title: 'The Referral Ask', body: `Hi [Name], I'll be direct — I'm looking for a summer internship at [Company] and I was hoping you'd be open to either a referral or pointing me toward the right person. I've done [one relevant thing]. Happy to share my resume.` },
-  { id: 12, title: "The 'I've Done My Research' DM", body: `Hi [Name], I've spent the last month researching [Company] — your [product/approach/market] is something I genuinely find fascinating. I'm a [Year] student at [College] looking for a summer internship where I can go deep on [area]. Any chance we could chat?` },
-  { id: 13, title: 'The Mutual Interest DM', body: `Hi [Name], I noticed we're both interested in [topic/industry] — your work at [Company] on [specific thing] caught my attention. I'm a student exploring this space for my summer internship. Would you have 10 minutes to share your perspective?` },
-  { id: 14, title: 'The City Connection', body: `Hi [Name], I noticed you're based in [City] — I'll be there this summer. I've been targeting [Company] for my internship search and your profile came up. Would you be open to a coffee or quick call?` },
-  { id: 15, title: "The 'No Opening' DM", body: `Hi [Name], I know [Company] may not have a formal internship opening — but I wanted to reach out anyway. I'm a [Year] student at [College] willing to work on a project basis if that's what makes sense. Any chance there's a way to contribute this summer?` },
-  { id: 16, title: 'The Follow-Up DM', body: `Hi [Name], I sent a connection request last week along with a note about a summer internship at [Company]. Just wanted to follow up — still very interested and happy to share more about my background.` },
-  { id: 17, title: 'The Gratitude DM', body: `Hi [Name], I just read your article/post on [topic] — genuinely one of the most useful things I've read on [subject]. I'm a student exploring [Domain] for my career and I'd love to ask you a few questions if you ever have 10 minutes.` },
-  { id: 18, title: 'Peer-to-Peer DM', body: `Hi [Name], I saw you graduated from [College] last year and landed at [Company] — that's exactly the path I'm trying to build. I'm in [Year] year now and would love to hear how you approached the internship search. Would you be open to a quick chat?` },
-  { id: 19, title: 'The Bold DM', body: `Hi [Name], I want to intern at [Company] this summer. I've done my research, I know what your team works on, and I genuinely think I can contribute. Would you be the right person to speak to, or can you point me in the right direction?` },
-  { id: 20, title: 'The Last Resort DM', body: `Hi [Name], I tried reaching you by email but it may have bounced. I'm [Your Name], a [Year] student at [College] looking for a summer internship at [Company]. Would you be open to connecting here instead?` },
-]
-
-const FILTERS = ['All', 'HR & Talent Acquisition', 'Founders & Leadership', 'Alumni & Network', 'Domain Specific', 'Follow-Ups', 'Subject Lines', 'LinkedIn Scripts']
+const FILTERS = ['All', 'HR & Talent Acquisition', 'Founders & Leadership', 'Alumni & Network', 'Domain Specific', 'Follow-Ups', 'Subject Lines']
 
 const CATEGORY_COLORS: Record<string, { bg: string; border: string; color: string }> = {
   'HR & Talent Acquisition': { bg: 'rgba(79,124,255,0.12)', border: 'rgba(79,124,255,0.28)', color: '#93BBFF' },
@@ -307,7 +279,6 @@ const CATEGORY_COLORS: Record<string, { bg: string; border: string; color: strin
   'Domain Specific':         { bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.28)', color: '#fcd34d' },
   'Follow-Ups':              { bg: 'rgba(236,72,153,0.12)', border: 'rgba(236,72,153,0.28)', color: '#f9a8d4' },
   'Subject Lines':           { bg: 'rgba(99,102,241,0.12)', border: 'rgba(99,102,241,0.28)', color: '#c7d2fe' },
-  'LinkedIn Scripts':        { bg: 'rgba(14,165,233,0.12)', border: 'rgba(14,165,233,0.28)', color: '#7dd3fc' },
 }
 
 function buildCopyText(t: Template) {
@@ -318,28 +289,20 @@ function buildCopyText(t: Template) {
   return out
 }
 
-function buildScriptCopyText(s: Script) {
-  return `LinkedIn Script ${String(s.id).padStart(2, '0')} — ${s.title}\n\n${s.body}`
-}
-
 export default function ColdEmailPackPage() {
-  const [activeFilter, setActiveFilter] = useState('All')
-  const [copiedId, setCopiedId]         = useState<string | null>(null)
-  const [copiedAll, setCopiedAll]       = useState(false)
-  const [unlocked, setUnlocked]         = useState(false)
-  const [showPopup, setShowPopup]       = useState(false)
-  const [popupEmail, setPopupEmail]     = useState('')
-  const [popupSubmitting, setPopupSubmitting] = useState(false)
+  const [activeFilter, setActiveFilter]   = useState('All')
+  const [copiedId, setCopiedId]           = useState<string | null>(null)
+  const [copiedAll, setCopiedAll]         = useState(false)
+  const [emailUnlocked, setEmailUnlocked] = useState(false)
+  const [fullyUnlocked, setFullyUnlocked] = useState(false)
+  const [showPopup, setShowPopup]         = useState(false)
 
   useEffect(() => {
-    if (localStorage.getItem('coldEmailUnlocked') === 'true') setUnlocked(true)
+    setEmailUnlocked(localStorage.getItem('coldEmailPackEmailUnlocked') === 'true')
+    setFullyUnlocked(localStorage.getItem('resourcePackUnlocked') === 'true')
   }, [])
 
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowPopup(false) }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [])
+  const visibleCount = fullyUnlocked ? Infinity : emailUnlocked ? 4 : 2
 
   const copy = (text: string, id: string) => {
     navigator.clipboard.writeText(text).catch(() => {})
@@ -348,35 +311,12 @@ export default function ColdEmailPackPage() {
   }
 
   const copyAll = () => {
-    if (!unlocked) { setShowPopup(true); return }
-    const allText = [
-      ...TEMPLATES.map(buildCopyText),
-      ...LINKEDIN_SCRIPTS.map(buildScriptCopyText),
-    ].join('\n\n' + '─'.repeat(60) + '\n\n')
+    if (!fullyUnlocked) { setShowPopup(true); return }
+    const allText = TEMPLATES.map(buildCopyText).join('\n\n' + '─'.repeat(60) + '\n\n')
     navigator.clipboard.writeText(allText).catch(() => {})
     setCopiedAll(true)
     setTimeout(() => setCopiedAll(false), 2000)
   }
-
-  const handleUnlock = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!popupEmail) return
-    setPopupSubmitting(true)
-    try {
-      await fetch('/api/capture-lead', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: popupEmail, resource: 'Cold Email Pack - Popup Unlock' }),
-      })
-    } catch {}
-    localStorage.setItem('coldEmailUnlocked', 'true')
-    setUnlocked(true)
-    setShowPopup(false)
-    setPopupSubmitting(false)
-  }
-
-  const showTemplates = activeFilter !== 'LinkedIn Scripts'
-  const showScripts   = activeFilter === 'All' || activeFilter === 'LinkedIn Scripts'
 
   const visibleTemplates = activeFilter === 'All'
     ? TEMPLATES
@@ -402,107 +342,36 @@ export default function ColdEmailPackPage() {
         .section-divider{display:flex;align-items:center;gap:16px;margin:40px 0 28px}
         .section-divider-line{flex:1;height:1px;background:rgba(255,255,255,0.07)}
         .lock-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;border-radius:10px}
-        .unlock-banner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.18);border-radius:10px;padding:10px 16px;margin-bottom:16px}
-        .unlock-banner-btn{padding:5px 14px;border-radius:100px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#fcd34d;font-size:12px;font-weight:700;cursor:pointer;font-family:"DM Sans",sans-serif;flex-shrink:0}
-        .unlock-banner-btn:hover{background:rgba(245,158,11,0.2)}
-        .popup-input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:white;font-size:14px;font-family:"DM Sans",sans-serif;outline:none;transition:border-color 0.2s}
-        .popup-input:focus{border-color:rgba(79,124,255,0.4)}
-        .popup-input::placeholder{color:rgba(255,255,255,0.25)}
+        .unlock-banner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:rgba(79,124,255,0.06);border:1px solid rgba(79,124,255,0.18);border-radius:10px;padding:10px 16px;margin-bottom:16px}
+        .unlock-banner-btn{padding:5px 14px;border-radius:100px;background:rgba(79,124,255,0.12);border:1px solid rgba(79,124,255,0.3);color:#93BBFF;font-size:12px;font-weight:700;cursor:pointer;font-family:"DM Sans",sans-serif;flex-shrink:0}
+        .unlock-banner-btn:hover{background:rgba(79,124,255,0.2)}
         @media(max-width:640px){
           .top-bar-title{display:none}
           .stat-pills{flex-wrap:wrap}
-          .popup-overlay{align-items:flex-end !important}
-          .popup-modal{border-radius:24px 24px 0 0 !important;max-width:100% !important;padding:32px 20px 40px !important;max-height:92vh;overflow-y:auto}
-          .popup-options{flex-direction:column !important}
-          .popup-or{flex-direction:row !important;padding:0 !important}
         }
       `}</style>
 
-      {/* UNLOCK POPUP */}
-      {showPopup && (
-        <div
-          className="popup-overlay"
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
-          onClick={e => { if (e.target === e.currentTarget) setShowPopup(false) }}
-        >
-          <div className="popup-modal" style={{ background: '#111827', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 24, padding: 48, maxWidth: 480, width: '100%', position: 'relative' }}>
-            <button onClick={() => setShowPopup(false)} style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', fontSize: 24, cursor: 'pointer', lineHeight: 1, padding: 4 }}>×</button>
-
-            <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg,#f59e0b,#f97316)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, margin: '0 auto 16px' }}>⭐</div>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#f59e0b', textTransform: 'uppercase', marginBottom: 10 }}>UNLOCK EVERYTHING</div>
-              <h2 style={{ fontSize: 24, fontWeight: 800, color: 'white', lineHeight: 1.2, marginBottom: 12 }}>Get all 50 templates + 20 scripts free</h2>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
-                Join our Summer Internship Program and get the full Cold Email Pack, LinkedIn Scripts, Resume Template, Company List, and Playbook — completely unlocked.
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
-              {['All 50 cold email templates', 'All 20 LinkedIn DM scripts', 'Resume template + guide', '100+ company target list'].map(item => (
-                <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
-                  <span style={{ color: '#f59e0b', fontWeight: 700, flexShrink: 0 }}>✓</span>
-                  {item}
-                </div>
-              ))}
-            </div>
-
-            <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 24 }} />
-
-            <div className="popup-options" style={{ display: 'flex', gap: 16 }}>
-              {/* Free option */}
-              <div style={{ flex: 1, minWidth: 0, padding: 20, border: '1px solid rgba(255,255,255,0.12)', borderRadius: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 14, textTransform: 'uppercase', letterSpacing: 1 }}>Just want the templates?</div>
-                <form onSubmit={handleUnlock} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <input
-                    type="email"
-                    required
-                    placeholder="your@email.com"
-                    value={popupEmail}
-                    onChange={e => setPopupEmail(e.target.value)}
-                    className="popup-input"
-                  />
-                  <button
-                    type="submit"
-                    disabled={popupSubmitting}
-                    style={{ width: '100%', padding: '11px 0', borderRadius: 10, border: '1.5px solid rgba(255,255,255,0.25)', background: 'transparent', color: 'white', fontWeight: 700, fontSize: 14, cursor: popupSubmitting ? 'wait' : 'pointer', fontFamily: "'DM Sans',sans-serif", transition: 'all 0.15s' }}
-                  >
-                    {popupSubmitting ? 'Unlocking...' : 'Unlock Free →'}
-                  </button>
-                </form>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 10, textAlign: 'center' }}>No spam. One email, instant access.</div>
-              </div>
-
-              {/* OR divider */}
-              <div className="popup-or" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 2px' }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.2)', letterSpacing: 1 }}>OR</span>
-              </div>
-
-              {/* Paid option */}
-              <div style={{ flex: 1, minWidth: 0, padding: 20, background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', marginBottom: 14, textTransform: 'uppercase', letterSpacing: 1 }}>Want everything + mentorship?</div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: 'white', marginBottom: 4 }}>Summer Internship Program</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#f59e0b', marginBottom: 6 }}>₹599</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: 14 }}>All resources unlocked + 4-week live program + mentor support</div>
-                <a href="/summer" style={{ display: 'block', textAlign: 'center', padding: '11px 0', borderRadius: 10, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: 'white', fontWeight: 700, fontSize: 14 }}>
-                  Join Summer Program →
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <UnlockPopup
+        isOpen={showPopup}
+        onClose={() => setShowPopup(false)}
+        onEmailUnlock={() => setEmailUnlocked(true)}
+        resourceName="Cold Email Pack"
+        localStorageKey="coldEmailPack"
+        showEmailOption={true}
+        emailAlreadySubmitted={emailUnlocked}
+      />
 
       {/* STICKY TOP BAR */}
       <div style={{ position: 'sticky', top: 0, zIndex: 100, background: 'rgba(11,11,15,0.95)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '0 24px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <a href="/" style={{ fontFamily: "'DM Serif Display',serif", fontSize: 18, letterSpacing: -0.5, flexShrink: 0 }}>
           Beyond<span style={{ color: '#4F7CFF' }}>Campus</span>
         </a>
-        <span className="top-bar-title" style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.45)', textAlign: 'center' }}>Cold Email Pack — 50 Templates + 20 LinkedIn Scripts</span>
+        <span className="top-bar-title" style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.45)', textAlign: 'center' }}>Cold Email Pack — 50 Templates</span>
         <button
           onClick={copyAll}
-          style={{ flexShrink: 0, padding: '8px 16px', borderRadius: 8, border: `1px solid ${copiedAll ? 'rgba(16,185,129,0.35)' : unlocked ? 'rgba(79,124,255,0.35)' : 'rgba(245,158,11,0.3)'}`, background: copiedAll ? 'rgba(16,185,129,0.15)' : unlocked ? 'rgba(79,124,255,0.12)' : 'rgba(245,158,11,0.08)', color: copiedAll ? '#6ee7b7' : unlocked ? '#93BBFF' : '#fcd34d', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s', fontFamily: "'DM Sans',sans-serif", whiteSpace: 'nowrap' }}
+          style={{ flexShrink: 0, padding: '8px 16px', borderRadius: 8, border: `1px solid ${copiedAll ? 'rgba(16,185,129,0.35)' : 'rgba(79,124,255,0.25)'}`, background: copiedAll ? 'rgba(16,185,129,0.15)' : 'rgba(79,124,255,0.06)', color: copiedAll ? '#6ee7b7' : '#93BBFF', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s', fontFamily: "'DM Sans',sans-serif", whiteSpace: 'nowrap' }}
         >
-          {copiedAll ? 'Copied ✓' : unlocked ? 'Copy All' : 'Unlock to Copy All'}
+          {copiedAll ? 'Copied ✓' : fullyUnlocked ? 'Copy All 50' : 'Unlock to Copy All'}
         </button>
       </div>
 
@@ -515,29 +384,32 @@ export default function ColdEmailPackPage() {
           The Cold Email Pack
         </h1>
         <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, marginBottom: 32, maxWidth: 560, margin: '0 auto 32px' }}>
-          50 proven templates + 20 LinkedIn DM scripts used by students to get replies from HRs, founders, and hiring managers at top companies.
+          50 proven templates used by students to get replies from HRs, founders, and hiring managers at top companies — off campus.
         </p>
         <div className="stat-pills" style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 24 }}>
           {[
             { label: '50 Email Templates', color: '#4F7CFF', bg: 'rgba(79,124,255,0.1)', border: 'rgba(79,124,255,0.25)' },
-            { label: '20 LinkedIn Scripts', color: '#7dd3fc', bg: 'rgba(14,165,233,0.1)', border: 'rgba(14,165,233,0.25)' },
-            { label: '6 Categories', color: '#fcd34d', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.25)' },
+            { label: '7 Categories', color: '#fcd34d', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.25)' },
+            { label: 'Copy-paste ready', color: '#6ee7b7', bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.25)' },
           ].map(p => (
             <span key={p.label} style={{ padding: '8px 18px', borderRadius: 100, background: p.bg, border: `1px solid ${p.border}`, color: p.color, fontSize: 13, fontWeight: 700 }}>{p.label}</span>
           ))}
         </div>
-        {/* Counter */}
         <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>
-          {unlocked ? (
+          {fullyUnlocked ? (
             <span style={{ color: '#10b981', fontWeight: 600 }}>All 50 templates unlocked ✓</span>
+          ) : emailUnlocked ? (
+            <span>
+              Showing 4 per category ·{' '}
+              <button onClick={() => setShowPopup(true)} style={{ background: 'none', border: 'none', color: '#4F7CFF', cursor: 'pointer', fontWeight: 600, fontSize: 14, fontFamily: "'DM Sans',sans-serif", textDecoration: 'underline', padding: 0 }}>
+                Get all 50 for ₹199 →
+              </button>
+            </span>
           ) : (
             <span>
-              Showing 12 of 50 templates ·{' '}
-              <button
-                onClick={() => setShowPopup(true)}
-                style={{ background: 'none', border: 'none', color: '#4F7CFF', cursor: 'pointer', fontWeight: 600, fontSize: 14, fontFamily: "'DM Sans',sans-serif", textDecoration: 'underline', padding: 0 }}
-              >
-                Unlock all free →
+              Showing 2 per category ·{' '}
+              <button onClick={() => setShowPopup(true)} style={{ background: 'none', border: 'none', color: '#4F7CFF', cursor: 'pointer', fontWeight: 600, fontSize: 14, fontFamily: "'DM Sans',sans-serif", textDecoration: 'underline', padding: 0 }}>
+                Unlock more free →
               </button>
             </span>
           )}
@@ -557,9 +429,7 @@ export default function ColdEmailPackPage() {
 
       {/* CONTENT */}
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '40px 24px 80px' }}>
-
-        {/* Templates */}
-        {showTemplates && visibleTemplates.length > 0 && (() => {
+        {visibleTemplates.length > 0 && (() => {
           const groups: Record<string, Template[]> = {}
           visibleTemplates.forEach(t => {
             if (!groups[t.category]) groups[t.category] = []
@@ -568,7 +438,8 @@ export default function ColdEmailPackPage() {
 
           return Object.entries(groups).map(([cat, items]) => {
             const catColor = CATEGORY_COLORS[cat] ?? CATEGORY_COLORS['HR & Talent Acquisition']
-            const lockedCount = !unlocked ? Math.max(0, items.length - 2) : 0
+            const shown = visibleCount === Infinity ? items.length : Math.min(visibleCount, items.length)
+            const locked = items.length - shown
 
             return (
               <div key={cat}>
@@ -579,17 +450,28 @@ export default function ColdEmailPackPage() {
                     <div className="section-divider-line" />
                   </div>
                 )}
-                {!unlocked && lockedCount > 0 && (
+                {locked > 0 && (
                   <div className="unlock-banner">
-                    <span style={{ fontSize: 13, color: '#fcd34d', fontWeight: 600 }}>
-                      🔒 2 of {items.length} templates shown · Unlock all 50 for free below ↓
-                    </span>
-                    <button className="unlock-banner-btn" onClick={() => setShowPopup(true)}>Unlock Free →</button>
+                    {emailUnlocked ? (
+                      <>
+                        <span style={{ fontSize: 13, color: '#93BBFF', fontWeight: 600 }}>
+                          Showing {shown} of {items.length} · Unlock all 50 for ₹199
+                        </span>
+                        <button className="unlock-banner-btn" onClick={() => setShowPopup(true)}>Unlock All →</button>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{ fontSize: 13, color: '#93BBFF', fontWeight: 600 }}>
+                          🔒 Showing {shown} of {items.length} · Enter email to unlock {Math.min(4, items.length) - shown} more free
+                        </span>
+                        <button className="unlock-banner-btn" onClick={() => setShowPopup(true)}>Unlock Free →</button>
+                      </>
+                    )}
                   </div>
                 )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {items.map((t, idx) => {
-                    const isLocked = !unlocked && idx >= 2
+                    const isLocked = visibleCount !== Infinity && idx >= visibleCount
                     const copyId = `template-${t.id}`
                     const wasCopied = copiedId === copyId
                     const copyText = buildCopyText(t)
@@ -642,12 +524,14 @@ export default function ColdEmailPackPage() {
                           {isLocked && (
                             <div className="lock-overlay" onClick={() => setShowPopup(true)}>
                               <span style={{ fontSize: 22 }}>🔒</span>
-                              <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>Unlock all 50 templates</span>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>
+                                {emailUnlocked ? 'Unlock all 50 for ₹199' : 'Enter email to unlock 2 more free'}
+                              </span>
                               <button
-                                style={{ padding: '6px 18px', borderRadius: 100, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.35)', color: '#fcd34d', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
+                                style={{ padding: '6px 18px', borderRadius: 100, background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.35)', color: '#93BBFF', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
                                 onClick={e => { e.stopPropagation(); setShowPopup(true) }}
                               >
-                                Get Access →
+                                {emailUnlocked ? 'Unlock All →' : 'Get Access →'}
                               </button>
                             </div>
                           )}
@@ -661,69 +545,17 @@ export default function ColdEmailPackPage() {
           })
         })()}
 
-        {/* LinkedIn Scripts */}
-        {showScripts && (
+        {/* LinkedIn Scripts crosslink */}
+        <div style={{ marginTop: 56, padding: 24, background: 'linear-gradient(135deg,rgba(14,165,233,0.08),rgba(99,102,241,0.05))', border: '1px solid rgba(14,165,233,0.2)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <div className="section-divider" style={{ marginTop: showTemplates && visibleTemplates.length > 0 ? 56 : 0 }}>
-              <div className="section-divider-line" />
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#7dd3fc', whiteSpace: 'nowrap' }}>LinkedIn Scripts</span>
-              <div className="section-divider-line" />
-            </div>
-            {!unlocked && (
-              <div className="unlock-banner">
-                <span style={{ fontSize: 13, color: '#fcd34d', fontWeight: 600 }}>
-                  🔒 2 of 20 scripts shown · Unlock all for free below ↓
-                </span>
-                <button className="unlock-banner-btn" onClick={() => setShowPopup(true)}>Unlock Free →</button>
-              </div>
-            )}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {LINKEDIN_SCRIPTS.map((s, idx) => {
-                const isLocked = !unlocked && idx >= 2
-                const copyId = `script-${s.id}`
-                const wasCopied = copiedId === copyId
-                const catColor = CATEGORY_COLORS['LinkedIn Scripts']
-                return (
-                  <div key={s.id} className="template-card">
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.2)', fontVariantNumeric: 'tabular-nums', flexShrink: 0, marginTop: 2 }}>
-                        {String(s.id).padStart(2, '0')}
-                      </span>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: catColor.bg, border: `1px solid ${catColor.border}`, color: catColor.color }}>
-                            LinkedIn Script
-                          </span>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>{s.title}</span>
-                        </div>
-                      </div>
-                      {!isLocked && (
-                        <button className={`copy-btn${wasCopied ? ' copied' : ''}`} onClick={() => copy(buildScriptCopyText(s), copyId)}>
-                          {wasCopied ? 'Copied ✓' : 'Copy'}
-                        </button>
-                      )}
-                    </div>
-                    <div style={{ position: 'relative' }}>
-                      <div className={`code-block${isLocked ? ' blurred' : ''}`} style={{ marginTop: 14 }}>{s.body}</div>
-                      {isLocked && (
-                        <div className="lock-overlay" onClick={() => setShowPopup(true)}>
-                          <span style={{ fontSize: 22 }}>🔒</span>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>Unlock all 20 scripts</span>
-                          <button
-                            style={{ padding: '6px 18px', borderRadius: 100, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.35)', color: '#fcd34d', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
-                            onClick={e => { e.stopPropagation(); setShowPopup(true) }}
-                          >
-                            Get Access →
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#7dd3fc', textTransform: 'uppercase', marginBottom: 8 }}>Also Available</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'white', marginBottom: 4 }}>20 LinkedIn DM Scripts</div>
+            <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}>Message templates for HRs, founders, alumni, and more.</div>
           </div>
-        )}
+          <a href="/resources/linkedin-scripts" style={{ padding: '12px 22px', borderRadius: 12, background: 'rgba(14,165,233,0.12)', border: '1px solid rgba(14,165,233,0.3)', color: '#7dd3fc', fontWeight: 700, fontSize: 14, textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
+            View Scripts →
+          </a>
+        </div>
       </div>
 
       {/* BOTTOM CTA */}
