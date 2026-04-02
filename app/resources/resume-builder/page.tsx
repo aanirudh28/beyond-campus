@@ -240,7 +240,7 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
                   <span>{e.duration}{e.location ? ` \u00B7 ${e.location}` : ''}</span>
                 </div>
                 {e.role && <div style={{ fontStyle: 'italic' }}>{e.role}</div>}
-                {e.bullets.filter(Boolean).map((b, j) => <div key={j}>\u2014 {b}</div>)}
+                {e.bullets.filter(Boolean).map((b, j) => <div key={j}>— {b}</div>)}
               </div>
             )
           })}
@@ -257,7 +257,7 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
                 <div style={{ fontWeight: 'bold' }}>
                   {p.name}{p.context && <span style={{ fontWeight: 'normal', fontStyle: 'italic' }}> | {p.context}</span>}
                 </div>
-                {p.bullets.filter(Boolean).map((b, j) => <div key={j}>\u2014 {b}</div>)}
+                {p.bullets.filter(Boolean).map((b, j) => <div key={j}>— {b}</div>)}
               </div>
             )
           })}
@@ -589,7 +589,7 @@ export default function ResumeBuilderPage() {
             </ol>
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => { window.print(); setShowPrintModal(false) }} style={{ flex: 1, padding: '12px 20px', borderRadius: 10, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', color: '#fff', fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
-                Open Print Dialog \u2192
+                Open Print Dialog →
               </button>
               <button onClick={() => setShowPrintModal(false)} style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
                 Cancel
@@ -692,7 +692,7 @@ export default function ResumeBuilderPage() {
               </button>
               {showTips && (
                 <div style={{ marginTop: 8, padding: '10px 14px', borderRadius: 8, background: 'rgba(79,124,255,0.06)', border: '1px solid rgba(79,124,255,0.15)', fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
-                  Write 2\u20133 lines. Include: what you are, what you want, what makes you different. Avoid: &quot;seeking a challenging opportunity&quot;.
+                  Write 2–3 lines. Include: what you are, what you want, what makes you different. Avoid: &quot;seeking a challenging opportunity&quot;.
                 </div>
               )}
             </SectionCard>
