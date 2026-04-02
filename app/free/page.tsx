@@ -308,18 +308,28 @@ export default function FreePage() {
             </p>
           </div>
 
-          {/* Card 4: Resume Template — Coming Soon */}
-          <div className="resource-card dim">
-            <div style={{ marginBottom: 18 }}>
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)' }}>
-                Coming Soon
+          {/* Card 4: Resume Guide — Active */}
+          <div className="resource-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF' }}>
+                Free
               </span>
+              {paid && <span style={{ fontSize: 12, fontWeight: 700, color: '#10b981' }}>Unlocked ✓</span>}
             </div>
 
-            <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.4, marginBottom: 8 }}>Resume Template</h3>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.75 }}>
-              A clean, ATS-friendly resume template designed for students going off-campus — used by placed Beyond Campus students.
+            <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.4, marginBottom: 8 }}>Resume Guide</h3>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, marginBottom: 16 }}>
+              A complete chapter-by-chapter guide to building a resume that gets shortlisted for consulting, finance, Founder&apos;s Office, and startup roles.
             </p>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+              {['7 Chapters', 'Domain Tips', '10-Min Checklist'].map(s => (
+                <span key={s} style={{ padding: '5px 12px', borderRadius: 100, background: 'rgba(79,124,255,0.08)', border: '1px solid rgba(79,124,255,0.2)', color: '#93BBFF', fontSize: 12, fontWeight: 700 }}>{s}</span>
+              ))}
+            </div>
+            <a href="/resources/resume-guide" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 0', borderRadius: 12, border: '1.5px solid rgba(79,124,255,0.35)', background: 'rgba(79,124,255,0.08)', color: '#93BBFF', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
+              Read the Guide →
+            </a>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', marginTop: 10, textAlign: 'center' }}>2 chapters free · 2 more with email · all 7 with Resource Pack</div>
           </div>
 
           {/* Card 5: Off-Campus Playbook — Coming Soon */}

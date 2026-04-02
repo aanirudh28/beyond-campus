@@ -207,6 +207,13 @@ export default function Home() {
                   <span>LinkedIn Scripts</span>
                   <span style={{ fontSize: 11, color: '#7dd3fc', fontWeight: 700 }}>20 scripts</span>
                 </a>
+                <a href="/resources/resume-guide" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: 10, color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, textDecoration: 'none', transition: 'background 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(79,124,255,0.1)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <span>📄 Resume Guide</span>
+                  <span style={{ fontSize: 11, color: '#93BBFF', fontWeight: 700 }}>7 chapters</span>
+                </a>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: 10, color: 'rgba(255,255,255,0.35)', fontSize: 14, fontWeight: 600 }}>
                   <span>Company List</span>
                   <span style={{ fontSize: 11, color: '#f59e0b', fontWeight: 700 }}>🔒 ₹199</span>
