@@ -133,18 +133,13 @@ const CHAPTER_TITLES = [
    PAGE
 ───────────────────────────────────────────── */
 export default function ResumeGuidePage() {
-  const [emailUnlocked, setEmailUnlocked] = useState(false)
   const [fullyUnlocked, setFullyUnlocked] = useState(false)
   const [showPopup, setShowPopup] = useState(false)
-  const [expanded, setExpanded] = useState<Set<number>>(new Set([1]))
+  const [expanded, setExpanded] = useState<Set<number>>(new Set([2]))
   const [domainTab, setDomainTab] = useState<DomainKey>('Consulting')
   const [checklist, setChecklist] = useState<Record<string, boolean>>({})
-  const [sidebarEmail, setSidebarEmail] = useState('')
-  const [sidebarLoading, setSidebarLoading] = useState(false)
-  const [sidebarDone, setSidebarDone] = useState(false)
 
   useEffect(() => {
-    setEmailUnlocked(localStorage.getItem('resumeGuideEmailUnlocked') === 'true')
     setFullyUnlocked(localStorage.getItem('resourcePackUnlocked') === 'true')
     const saved = localStorage.getItem('resumeChecklist')
     if (saved) {
@@ -168,43 +163,20 @@ export default function ResumeGuidePage() {
     })
   }
 
-  const canAccess = (ch: number): boolean => {
-    if (fullyUnlocked) return true
-    if (ch === 1) return true
-    if (ch <= 3 && emailUnlocked) return true
-    return false
-  }
-
-  const handleSidebarEmailSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!sidebarEmail) return
-    setSidebarLoading(true)
-    try {
-      await fetch('/api/capture-lead', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: sidebarEmail, resource: 'Resume Guide - Email Unlock' }),
-      })
-    } catch {}
-    localStorage.setItem('resumeGuideEmailUnlocked', 'true')
-    setEmailUnlocked(true)
-    setSidebarDone(true)
-    setSidebarLoading(false)
-  }
+  // Chapter 2 ("The 6 Sections") is always free; all others require paid unlock
+  const canAccess = (ch: number): boolean => fullyUnlocked || ch === 2
 
   const completedCount = Object.values(checklist).filter(Boolean).length
   const progressPct = Math.round((completedCount / TOTAL_CHECKS) * 100)
 
   const bannerText = fullyUnlocked
     ? 'All 7 chapters unlocked ✓'
-    : emailUnlocked
-    ? 'Chapters 1–3 unlocked · Get all 7 for ₹199 →'
-    : 'Showing Chapters 1–2 (partial) · Enter email to unlock Chapters 2–3 →'
+    : 'Chapter 2 free · Unlock all 7 →'
 
   const domains: DomainKey[] = ['Consulting', 'Finance', "Founder's Office", 'Marketing', 'Business Development', 'Operations']
 
-  /* chapter access lock for ch2 section-level */
-  const ch2SectionUnlocked = emailUnlocked || fullyUnlocked
+  /* chapter 2 sections are always accessible now */
+  const ch2SectionUnlocked = true
 
   return (
     <main style={{ background: '#0B0B0F', color: '#fff', minHeight: '100vh', fontFamily: "'DM Sans','Inter',sans-serif" }}>
@@ -523,11 +495,11 @@ export default function ResumeGuidePage() {
       <UnlockPopup
         isOpen={showPopup}
         onClose={() => setShowPopup(false)}
-        onEmailUnlock={() => setEmailUnlocked(true)}
+        onEmailUnlock={() => {}}
         resourceName="Resume Guide"
         localStorageKey="resumeGuide"
-        showEmailOption={!emailUnlocked}
-        emailAlreadySubmitted={emailUnlocked}
+        showEmailOption={false}
+        emailAlreadySubmitted={false}
       />
 
       {/* ── TOP BAR ── */}
@@ -585,6 +557,7 @@ export default function ResumeGuidePage() {
         <div style={{ flex: 1, minWidth: 0 }}>
 
           {/* ══ CHAPTER 1 ══ */}
+          {canAccess(1) ? (
           <ChapterCard
             num={1}
             title={CHAPTER_TITLES[0]}
@@ -593,25 +566,174 @@ export default function ResumeGuidePage() {
             onToggle={() => toggleExpand(1)}
             preview="Most students start writing their resume before they understand what a resume actually does. These 6 rules fix that."
           >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {[
-                { title: 'One page. Always.', body: 'Recruiters spend 6–10 seconds on a resume. A second page doesn\'t get read — it signals poor editing. Every line must earn its place.' },
-                { title: 'ATS first, human second.', body: 'Most companies run resumes through Applicant Tracking Systems before a human sees them. If your formatting breaks ATS parsing, you\'re out before you\'re even considered.' },
-                { title: 'Tailor every application.', body: 'A generic resume performs worse than a tailored one every single time. Take 10 minutes per application to match your language to the job description.' },
-                { title: 'Outcomes, not activities.', body: '"Managed social media" tells a recruiter nothing. "Grew Instagram from 800 to 4,200 followers in 3 months" tells them everything. Always quantify.' },
-                { title: 'Specificity beats impressiveness.', body: '"Passionate about finance" is forgettable. "Built a DCF model for a listed FMCG company as part of a case competition — won 2nd place out of 47 teams" is memorable. Be specific.' },
-                { title: 'Simple formatting wins.', body: 'No tables, text boxes, columns, or graphics. They break ATS. Use a clean single-column layout with standard section headers.' },
-              ].map((rule, i) => (
-                <div key={i} className="rule-card">
-                  <div className="rule-num-large">{i + 1}</div>
-                  <div>
-                    <div style={{ fontSize: 17, fontWeight: 800, color: '#fff', marginBottom: 10, letterSpacing: -0.2 }}>{rule.title}</div>
-                    <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.62)', lineHeight: 1.85 }}>{rule.body}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+              {/* Rule 1 */}
+              <div className="rule-card">
+                <div className="rule-num-large">1</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 12, letterSpacing: -0.3 }}>One page. Always.</div>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.9, marginBottom: 16 }}>
+                    Recruiters spend 6–10 seconds on a resume at first pass. A second page doesn't get read — it gets your resume put to the bottom of the pile. It signals one thing clearly: this person couldn't edit their own work. Every single line on your resume must justify its existence.
+                  </p>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.9, marginBottom: 20 }}>
+                    The most common reason students go to page 2 is that they include everything they've ever done, instead of the best things they've done. A curated list of 6 strong bullets beats a sprawling list of 14 average ones, every time.
+                  </p>
+                  <div style={{ background: 'rgba(79,124,255,0.07)', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 12, padding: '16px 20px' }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#93BBFF', textTransform: 'uppercase', marginBottom: 8 }}>How to fit it on one page</div>
+                    <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {[
+                        'Remove every bullet that doesn\'t quantify something or show a specific skill',
+                        'Reduce font size to 10pt and margins to 0.5" if needed',
+                        'Cut your Skills section to only what\'s directly relevant to this application',
+                        'If still over: the problem is content, not formatting — something doesn\'t belong',
+                      ].map(t => <li key={t} style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, display: 'flex', gap: 10 }}><span style={{ color: '#93BBFF', flexShrink: 0, fontWeight: 700 }}>→</span>{t}</li>)}
+                    </ul>
                   </div>
                 </div>
-              ))}
+              </div>
+
+              {/* Rule 2 */}
+              <div className="rule-card">
+                <div className="rule-num-large">2</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 12, letterSpacing: -0.3 }}>ATS first, human second.</div>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.9, marginBottom: 16 }}>
+                    Companies like Deloitte, Goldman Sachs, Unilever, and most mid-size startups receive hundreds to thousands of applications per role. They cannot read every one manually. Applicant Tracking Systems (ATS) scan your resume first — parsing the text, extracting keywords, and scoring your fit before any human sees it.
+                  </p>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.9, marginBottom: 20 }}>
+                    If your formatting is incompatible with ATS — tables, columns, text boxes, graphics — the system fails to parse your content correctly, and your resume is either scored poorly or rejected automatically. You never knew you were in the running.
+                  </p>
+                  <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.18)', borderRadius: 12, padding: '16px 20px' }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#f87171', textTransform: 'uppercase', marginBottom: 8 }}>Signs your resume is failing ATS</div>
+                    <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {[
+                        'You\'re applying to many roles and getting zero responses',
+                        'Your resume has a two-column layout, table, or text box',
+                        'You\'re using a Canva or Zety template',
+                        'Your section headers say "Experience" but with a decorative icon before them',
+                        'You have a photo or company logos embedded',
+                      ].map(t => <li key={t} style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, display: 'flex', gap: 10 }}><span style={{ color: '#f87171', flexShrink: 0, fontWeight: 700 }}>✗</span>{t}</li>)}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rule 3 */}
+              <div className="rule-card">
+                <div className="rule-num-large">3</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 12, letterSpacing: -0.3 }}>Tailor every application.</div>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.9, marginBottom: 16 }}>
+                    Sending the same resume to every company is the single most common — and most costly — mistake students make. A generic resume doesn't perform better because it appeals to everyone. It performs worse because it speaks to no one specifically.
+                  </p>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.9, marginBottom: 20 }}>
+                    Tailoring doesn't mean rewriting your resume from scratch for each application. It takes 10–15 minutes per role and makes a measurable difference in your response rate.
+                  </p>
+                  <div style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.18)', borderRadius: 12, padding: '16px 20px' }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#6ee7b7', textTransform: 'uppercase', marginBottom: 8 }}>The 3-step tailoring process</div>
+                    <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {[
+                        ['Match their exact language', 'If the JD says "stakeholder management", use that phrase — not "managing relationships" or "cross-functional coordination"'],
+                        ['Lead with the most relevant experience', 'Reorder your bullets to put the experience most relevant to this role first within each section'],
+                        ['Adjust your Skills section', 'Add the specific tools and skills they mention in the JD; remove skills that aren\'t relevant to this role'],
+                      ].map(([title, body]) => <li key={title} style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}><span style={{ color: '#6ee7b7', fontWeight: 800 }}>{title} — </span>{body}</li>)}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rule 4 */}
+              <div className="rule-card">
+                <div className="rule-num-large">4</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 12, letterSpacing: -0.3 }}>Outcomes, not activities.</div>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.9, marginBottom: 16 }}>
+                    This is the most impactful change most students can make to their resume today. The difference between a forgettable resume and a shortlisted one is usually not the experiences — it's how those experiences are described.
+                  </p>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.9, marginBottom: 20 }}>
+                    Activities describe what your role required. Outcomes describe what you actually delivered. Recruiters can't hire your job description — they hire what you actually accomplished.
+                  </p>
+                  <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 14 }}>Before → After</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {[
+                      ['Managed social media for the company', 'Grew Instagram following from 800 to 4,200 in 3 months by restructuring content calendar and A/B testing caption formats'],
+                      ['Helped with financial analysis', 'Built 3-statement financial model for a Series B fintech startup; identified ₹12L cost optimisation opportunity, presented to CFO'],
+                      ['Was part of the events team', 'Co-led annual cultural fest with a ₹6L budget; coordinated 14 vendors and drove 40% increase in ticketed attendance YoY'],
+                      ['Worked on research projects', 'Authored 3,000-word market entry report on D2C beauty sector; analysis cited in company\'s Q3 strategy deck'],
+                    ].map(([weak, strong]) => (
+                      <div key={weak} className="before-after" style={{ margin: 0 }}>
+                        <div className="before-box" style={{ padding: '14px 18px' }}>
+                          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, color: '#f87171', marginBottom: 8, textTransform: 'uppercase' }}>✗ Weak</div>
+                          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>{weak}</p>
+                        </div>
+                        <div className="after-box" style={{ padding: '14px 18px' }}>
+                          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, color: '#6ee7b7', marginBottom: 8, textTransform: 'uppercase' }}>✓ Strong</div>
+                          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>{strong}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, marginTop: 16, fontStyle: 'italic' }}>
+                    Note: "I don't have any numbers" is almost never true. You managed X people, grew Y by Z%, worked across N teams, reduced time by X hours/week, or served Y customers. Dig for the number. It's there.
+                  </p>
+                </div>
+              </div>
+
+              {/* Rule 5 */}
+              <div className="rule-card">
+                <div className="rule-num-large">5</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 12, letterSpacing: -0.3 }}>Specificity beats impressiveness.</div>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.9, marginBottom: 16 }}>
+                    Students try to sound impressive with broad, sweeping claims. Recruiters have learned to tune these out entirely. Specific, concrete details are actually harder to fake — which is exactly why they're more credible and more memorable.
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
+                    {[
+                      { label: 'Generic (Forgettable)', color: '#f87171', items: ['"Passionate about finance"', '"Strong leadership skills"', '"Experience in marketing"', '"Interested in consulting"'] },
+                      { label: 'Specific (Memorable)', color: '#6ee7b7', items: ['"Built a DCF model for a listed FMCG company — won 2nd at IIM A case comp (47 teams)"', '"Led a 12-person team for college fest; ₹6L P&L responsibility"', '"Grew client\'s email open rate from 18% to 34% over 6-week campaign"', '"Structured a market entry memo for an EdTech startup looking to expand to SEA"'] },
+                    ].map(col => (
+                      <div key={col.label}>
+                        <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: col.color, textTransform: 'uppercase', marginBottom: 10 }}>{col.label}</div>
+                        {col.items.map(item => <p key={item} style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.65, marginBottom: 8, fontStyle: 'italic' }}>{item}</p>)}
+                      </div>
+                    ))}
+                  </div>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.9 }}>
+                    The rule: if a sentence could appear on anyone's resume — or on a LinkedIn profile with no edits — it's too generic. Push until it can only be yours.
+                  </p>
+                </div>
+              </div>
+
+              {/* Rule 6 */}
+              <div className="rule-card">
+                <div className="rule-num-large">6</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 12, letterSpacing: -0.3 }}>Simple formatting wins.</div>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.9, marginBottom: 16 }}>
+                    The most common formatting mistake is treating your resume like a design project. Canva templates, multi-column layouts, colour gradients, custom icons — these feel polished when you're building them. When a recruiter opens them, or when ATS tries to parse them, they become a liability.
+                  </p>
+                  <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.9, marginBottom: 20 }}>
+                    ATS systems parse text linearly — left to right, top to bottom. A two-column layout often produces garbled output where your education section gets mixed up with your skills section. Tables cause outright parsing failures. Graphics don't parse at all.
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                    <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 12, padding: '16px 18px' }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#f87171', marginBottom: 10, textTransform: 'uppercase' }}>Avoid</div>
+                      {['Two-column layouts', 'Tables for any content', 'Text boxes or shapes', 'Canva / Zety / Novoresume templates', 'Coloured section headers', 'Photos or icons', 'Horizontal dividers made of graphics'].map(i => <p key={i} style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 4 }}>✗ {i}</p>)}
+                    </div>
+                    <div style={{ background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.15)', borderRadius: 12, padding: '16px 18px' }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#6ee7b7', marginBottom: 10, textTransform: 'uppercase' }}>Use instead</div>
+                      {['Single-column layout', 'Standard section headers (Experience, Education, Skills)', 'Calibri, Arial, or Garamond', 'Simple horizontal lines (text, not graphic)', 'Black or very dark grey text only', 'Word or Google Docs (not Canva)', 'Export as PDF once complete'].map(i => <p key={i} style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.7, marginBottom: 4 }}>✓ {i}</p>)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </ChapterCard>
+          ) : (
+            <LockedChapterCard num={1} title={CHAPTER_TITLES[0]} preview="Most students start writing their resume before they understand what a resume actually does. These 6 rules fix that." onUnlock={() => setShowPopup(true)} label="Unlock via Summer Program or Cohort →" />
+          )}
 
           {/* ══ CHAPTER 2 ══ */}
           <ChapterCard
@@ -652,10 +774,9 @@ export default function ResumeGuidePage() {
               <div className="code-block">{`Priya Sharma\n+91 98765 43210 · priya.sharma@gmail.com · linkedin.com/in/priyasharma · Mumbai`}</div>
             </div>
 
-            {/* Sections 2–6: email-locked */}
-            {ch2SectionUnlocked ? (
-              <>
-                {/* Section 2: Education */}
+            {/* Sections 2–6 */}
+            <>
+              {/* Section 2: Education */}
                 <div style={{ paddingTop: 32, marginTop: 32, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                   <SectionBadge num={2} title="Education" />
                   <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85, marginBottom: 16 }}>Strong for recent grads. Show it confidently if your numbers are good.</p>
@@ -782,20 +903,7 @@ export default function ResumeGuidePage() {
                     ))}
                   </ul>
                 </div>
-              </>
-            ) : (
-              <div style={{ background: 'rgba(15,22,35,0.95)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '32px 28px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, textAlign: 'center', marginTop: 24 }}>
-                <span style={{ fontSize: 32 }}>🔒</span>
-                <div style={{ fontSize: 17, fontWeight: 800, color: '#fff' }}>Sections 2–6 locked</div>
-                <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', lineHeight: 1.75, maxWidth: 340 }}>Enter your email to unlock Education, Experience, Projects, Skills, and Activities sections for free.</p>
-                <button
-                  onClick={() => setShowPopup(true)}
-                  style={{ padding: '12px 28px', borderRadius: 100, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.35)', color: '#fcd34d', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", marginTop: 4 }}
-                >
-                  Unlock Free →
-                </button>
-              </div>
-            )}
+            </>
           </ChapterCard>
 
           {/* ══ CHAPTER 3 ══ */}
@@ -827,7 +935,7 @@ export default function ResumeGuidePage() {
               </div>
             </ChapterCard>
           ) : (
-            <LockedChapterCard num={3} title={CHAPTER_TITLES[2]} preview="ATS rejects 75% of resumes before a human sees them. These 5 rules keep you in the game." onUnlock={() => setShowPopup(true)} label="Enter email to unlock free →" />
+            <LockedChapterCard num={3} title={CHAPTER_TITLES[2]} preview="ATS rejects 75% of resumes before a human sees them. These 5 rules keep you in the game." onUnlock={() => setShowPopup(true)} label="Unlock via Summer Program or Cohort →" />
           )}
 
           {/* ══ CHAPTER 4 ══ */}
@@ -873,7 +981,7 @@ export default function ResumeGuidePage() {
               </div>
             </ChapterCard>
           ) : (
-            <LockedChapterCard num={4} title={CHAPTER_TITLES[3]} preview="The formatting decisions that separate a professional resume from a student resume." onUnlock={() => setShowPopup(true)} label="Enter email to unlock free →" />
+            <LockedChapterCard num={4} title={CHAPTER_TITLES[3]} preview="The formatting decisions that separate a professional resume from a student resume." onUnlock={() => setShowPopup(true)} label="Unlock via Summer Program or Cohort →" />
           )}
 
           {/* ══ CHAPTER 5 ══ */}
@@ -1038,43 +1146,15 @@ export default function ResumeGuidePage() {
               </div>
 
               {/* Sidebar unlock section */}
-              {!emailUnlocked && !fullyUnlocked && (
+              {!fullyUnlocked && (
                 <div>
                   <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', marginBottom: 18 }} />
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, marginBottom: 14 }}>Enter your email to unlock Chapters 2–3 for free.</div>
-                  {sidebarDone ? (
-                    <div style={{ fontSize: 14, color: '#6ee7b7', fontWeight: 700 }}>✅ Chapters 2–3 unlocked!</div>
-                  ) : (
-                    <form onSubmit={handleSidebarEmailSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      <input
-                        type="email"
-                        required
-                        placeholder="your@email.com"
-                        value={sidebarEmail}
-                        onChange={e => setSidebarEmail(e.target.value)}
-                        style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: 'white', fontSize: 13, fontFamily: "'DM Sans',sans-serif", outline: 'none', width: '100%' }}
-                      />
-                      <button
-                        type="submit"
-                        disabled={sidebarLoading}
-                        style={{ padding: '10px 0', borderRadius: 10, background: 'rgba(245,158,11,0.12)', border: '1.5px solid rgba(245,158,11,0.35)', color: '#fcd34d', fontWeight: 700, fontSize: 13, cursor: sidebarLoading ? 'wait' : 'pointer', fontFamily: "'DM Sans',sans-serif" }}
-                      >
-                        {sidebarLoading ? '...' : 'Unlock Free →'}
-                      </button>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>✓ Instant · No spam</div>
-                    </form>
-                  )}
-                </div>
-              )}
-
-              {emailUnlocked && !fullyUnlocked && (
-                <div>
-                  <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', marginBottom: 18 }} />
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, marginBottom: 14 }}>Chapters 3–7 are unlocked via Summer Program or Full Cohort.</div>
                   <button
                     onClick={() => setShowPopup(true)}
                     style={{ width: '100%', padding: '10px 14px', borderRadius: 10, background: 'linear-gradient(135deg,rgba(79,124,255,0.18),rgba(123,97,255,0.12))', border: '1.5px solid rgba(79,124,255,0.4)', color: '#93BBFF', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
                   >
-                    Unlock all 7 — ₹199 →
+                    Unlock all 7 →
                   </button>
                 </div>
               )}
