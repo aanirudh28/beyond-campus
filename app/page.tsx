@@ -175,7 +175,7 @@ export default function Home() {
           Beyond<span style={{ color: 'var(--blue)' }}>Campus</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <a href="/summer" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: '#f59e0b', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.08)', transition: 'all 0.2s' }}>Summer ☀️</a>
+          <a href="/summer" style={{ padding: '10px 22px', fontSize: 14, fontWeight: 800, color: '#fff', textDecoration: 'none', borderRadius: 100, background: 'linear-gradient(135deg, #f59e0b, #f97316)', boxShadow: '0 0 18px rgba(245,158,11,0.45)', transition: 'all 0.2s', letterSpacing: 0.2 }}>Summer ☀️</a>
           <div
             style={{ position: 'relative' }}
             onMouseEnter={() => {
@@ -186,8 +186,8 @@ export default function Home() {
               resourcesCloseTimer.current = setTimeout(() => setResourcesOpen(false), 120)
             }}
           >
-            <a href="/free" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 600, color: resourcesOpen ? 'white' : 'rgba(255,255,255,0.6)', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 100, cursor: 'pointer', fontFamily: "'DM Sans','Inter',sans-serif", transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
-              Free Resources <span style={{ fontSize: 10, opacity: 0.6 }}>▾</span>
+            <a href="/free" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: resourcesOpen ? '#93BBFF' : 'rgba(255,255,255,0.75)', background: resourcesOpen ? 'rgba(79,124,255,0.12)' : 'rgba(79,124,255,0.07)', border: `1px solid ${resourcesOpen ? 'rgba(79,124,255,0.45)' : 'rgba(79,124,255,0.2)'}`, borderRadius: 100, cursor: 'pointer', fontFamily: "'DM Sans','Inter',sans-serif", transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
+              Free Resources <span style={{ fontSize: 10, opacity: 0.5 }}>▾</span>
             </a>
             {resourcesOpen && (
               <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 8, zIndex: 200 }}>
@@ -219,7 +219,7 @@ export default function Home() {
               </div>
             )}
           </div>
-          <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', transition: 'all 0.2s' }}>Dashboard</a>
+          <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
           <a href="/book" className="btn-secondary" style={{ padding: '10px 24px', fontSize: 14 }}>Book Session</a>
           <a href="/cohort" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>
             <span>Join Cohort</span>
