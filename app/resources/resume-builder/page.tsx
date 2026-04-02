@@ -300,7 +300,7 @@ function SectionCard({ id, icon, title, status, expanded, onToggle, children }: 
         <span style={{ width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, background: status === 'complete' ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.05)', color: status === 'complete' ? '#10b981' : 'rgba(255,255,255,0.3)', border: `1px solid ${status === 'complete' ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.1)'}` }}>
           {status === 'complete' ? '\u2713' : '\u25CB'}
         </span>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', transition: 'transform 0.2s', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>\u25BC</span>
+        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', transition: 'transform 0.2s', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
       </button>
       {expanded && (
         <div style={{ padding: '0 18px 18px' }}>
@@ -332,7 +332,7 @@ function TagInput({ tags, onChange, inputValue, onInputChange, placeholder, max,
         {tags.map((tag, i) => (
           <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 100, background: 'rgba(79,124,255,0.12)', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF', fontSize: 12, fontWeight: 600 }}>
             {tag}
-            <button onClick={() => removeTag(i)} style={{ background: 'none', border: 'none', color: '#93BBFF', cursor: 'pointer', fontSize: 14, padding: 0, lineHeight: 1 }}>\u00D7</button>
+            <button onClick={() => removeTag(i)} style={{ background: 'none', border: 'none', color: '#93BBFF', cursor: 'pointer', fontSize: 14, padding: 0, lineHeight: 1 }}>×</button>
           </span>
         ))}
       </div>
@@ -741,7 +741,7 @@ export default function ResumeBuilderPage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.4)' }}>{exp.company || `Experience ${i + 1}`}</span>
                     {formData.experiences.length > 1 && (
-                      <button onClick={() => removeExperience(i)} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.5)', fontSize: 16, cursor: 'pointer', padding: '2px 6px' }}>\u00D7</button>
+                      <button onClick={() => removeExperience(i)} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.5)', fontSize: 16, cursor: 'pointer', padding: '2px 6px' }}>×</button>
                     )}
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
@@ -761,7 +761,7 @@ export default function ResumeBuilderPage() {
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             <label style={{ ...labelStyle, flex: 1, marginBottom: 0 }}>Achievement {bIdx + 1}</label>
                             {b && (
-                              <button onClick={() => toggleBulletTip(tipKey)} style={{ background: 'none', border: 'none', color: '#f59e0b', cursor: 'pointer', fontSize: 14, padding: 0 }}>\u26A1</button>
+                              <button onClick={() => toggleBulletTip(tipKey)} style={{ background: 'none', border: 'none', color: '#f59e0b', cursor: 'pointer', fontSize: 14, padding: 0 }}>⚡</button>
                             )}
                           </div>
                           <textarea value={b} onChange={e => setExpBullet(i, bIdx, e.target.value)} placeholder="What you did + result with numbers" rows={2} style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.65 }} onFocus={e => { e.currentTarget.style.borderBottomColor = '#4F7CFF' }} onBlur={e => { e.currentTarget.style.borderBottomColor = 'rgba(255,255,255,0.18)' }} />
@@ -823,7 +823,7 @@ export default function ResumeBuilderPage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.4)' }}>{proj.name || `Project ${i + 1}`}</span>
                     {formData.projects.length > 1 && (
-                      <button onClick={() => removeProject(i)} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.5)', fontSize: 16, cursor: 'pointer', padding: '2px 6px' }}>\u00D7</button>
+                      <button onClick={() => removeProject(i)} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.5)', fontSize: 16, cursor: 'pointer', padding: '2px 6px' }}>×</button>
                     )}
                   </div>
                   {renderInput('Project Name', proj.name, v => setProjField(i, 'name', v), 'Competitive Analysis \u2014 EdTech Sector')}
@@ -839,7 +839,7 @@ export default function ResumeBuilderPage() {
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             <label style={{ ...labelStyle, flex: 1, marginBottom: 0 }}>Bullet {bIdx + 1}</label>
                             {b && (
-                              <button onClick={() => toggleBulletTip(tipKey)} style={{ background: 'none', border: 'none', color: '#f59e0b', cursor: 'pointer', fontSize: 14, padding: 0 }}>\u26A1</button>
+                              <button onClick={() => toggleBulletTip(tipKey)} style={{ background: 'none', border: 'none', color: '#f59e0b', cursor: 'pointer', fontSize: 14, padding: 0 }}>⚡</button>
                             )}
                           </div>
                           <textarea value={b} onChange={e => setProjBullet(i, bIdx, e.target.value)} placeholder="What you did + result" rows={2} style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.65 }} onFocus={e => { e.currentTarget.style.borderBottomColor = '#4F7CFF' }} onBlur={e => { e.currentTarget.style.borderBottomColor = 'rgba(255,255,255,0.18)' }} />
@@ -913,7 +913,7 @@ export default function ResumeBuilderPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {ats.missing.map((m, i) => (
                       <button key={i} onClick={() => scrollToSection(m.section)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}>
-                        <span style={{ color: '#f59e0b' }}>\u25CB</span>
+                        <span style={{ color: '#f59e0b' }}>○</span>
                         {m.label}
                       </button>
                     ))}
