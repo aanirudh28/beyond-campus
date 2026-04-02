@@ -624,7 +624,7 @@ export default function ResumeBuilderPage() {
       </div>
 
       {/* MOBILE TAB BAR */}
-      <div className="builder-mobile no-print" style={{ display: 'none', position: 'sticky', top: 56, zIndex: 150, background: 'rgba(13,17,23,0.95)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+      <div className="builder-mobile no-print" style={{ position: 'sticky', top: 56, zIndex: 150, background: 'rgba(13,17,23,0.95)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
         <div style={{ display: 'flex' }}>
           {(['edit', 'preview'] as const).map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{ flex: 1, padding: '12px 0', background: 'transparent', border: 'none', borderBottom: activeTab === tab ? '2px solid #4F7CFF' : '2px solid transparent', color: activeTab === tab ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', textTransform: 'capitalize' }}>{tab}</button>
@@ -633,7 +633,7 @@ export default function ResumeBuilderPage() {
       </div>
 
       {/* DESKTOP LAYOUT */}
-      <div className="builder-desktop" style={{ display: 'flex', height: 'calc(100vh - 56px)' }}>
+      <div className="builder-desktop" style={{ height: 'calc(100vh - 56px)' }}>
         {/* LEFT PANEL (FORM) */}
         <div id="form-panel" ref={formPanelRef} style={{ width: '42%', height: 'calc(100vh - 56px)', overflowY: 'auto', background: '#0D1117', padding: '24px 20px' }}>
           {/* Strength Bar */}
@@ -662,7 +662,7 @@ export default function ResumeBuilderPage() {
 
           {/* Section 1: Personal Details */}
           <div ref={el => { sectionRefs.current['personal'] = el }}>
-            <SectionCard id="personal" icon="\uD83D\uDC64" title="Personal Details" status={sectionStatus('personal', formData)} expanded={expandedSections.has('personal')} onToggle={() => toggleSection('personal')}>
+            <SectionCard id="personal" icon="👤" title="Personal Details" status={sectionStatus('personal', formData)} expanded={expandedSections.has('personal')} onToggle={() => toggleSection('personal')}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 16px' }}>
                 <div style={{ gridColumn: '1 / -1' }}>
                   {renderInput('Full Name', formData.name, v => setField('name', v), 'Rahul Mehta')}
@@ -685,7 +685,7 @@ export default function ResumeBuilderPage() {
 
           {/* Section 2: Summary */}
           <div ref={el => { sectionRefs.current['summary'] = el }}>
-            <SectionCard id="summary" icon="\u270D\uFE0F" title="Summary" status={sectionStatus('summary', formData)} expanded={expandedSections.has('summary')} onToggle={() => toggleSection('summary')}>
+            <SectionCard id="summary" icon="✍️" title="Summary" status={sectionStatus('summary', formData)} expanded={expandedSections.has('summary')} onToggle={() => toggleSection('summary')}>
               {renderTextarea('Professional Summary', formData.summary, v => setField('summary', v), 'Write 2\u20133 lines about your background, strengths, and goals.', 4, 300)}
               <button onClick={() => setShowTips(!showTips)} style={{ background: 'none', border: 'none', color: '#4F7CFF', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', marginTop: 8, padding: 0 }}>
                 Tips {showTips ? '\u2191' : '\u2193'}
@@ -700,7 +700,7 @@ export default function ResumeBuilderPage() {
 
           {/* Section 3: Experience */}
           <div ref={el => { sectionRefs.current['experience'] = el }}>
-            <SectionCard id="experience" icon="\uD83D\uDCBC" title="Experience" status={sectionStatus('experience', formData)} expanded={expandedSections.has('experience')} onToggle={() => toggleSection('experience')}>
+            <SectionCard id="experience" icon="💼" title="Experience" status={sectionStatus('experience', formData)} expanded={expandedSections.has('experience')} onToggle={() => toggleSection('experience')}>
               {formData.experiences.map((exp, i) => (
                 <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '16px 16px 12px', marginBottom: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -752,7 +752,7 @@ export default function ResumeBuilderPage() {
 
           {/* Section 4: Education */}
           <div ref={el => { sectionRefs.current['education'] = el }}>
-            <SectionCard id="education" icon="\uD83C\uDF93" title="Education" status={sectionStatus('education', formData)} expanded={expandedSections.has('education')} onToggle={() => toggleSection('education')}>
+            <SectionCard id="education" icon="🎓" title="Education" status={sectionStatus('education', formData)} expanded={expandedSections.has('education')} onToggle={() => toggleSection('education')}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
                 {renderInput('College', formData.college, v => setField('college', v), '[Your College], Delhi')}
                 {renderInput('Degree', formData.degree, v => setField('degree', v), 'BBA (Honours)')}
@@ -782,7 +782,7 @@ export default function ResumeBuilderPage() {
 
           {/* Section 5: Projects */}
           <div ref={el => { sectionRefs.current['projects'] = el }}>
-            <SectionCard id="projects" icon="\uD83D\uDD2C" title="Projects" status={sectionStatus('projects', formData)} expanded={expandedSections.has('projects')} onToggle={() => toggleSection('projects')}>
+            <SectionCard id="projects" icon="🔬" title="Projects" status={sectionStatus('projects', formData)} expanded={expandedSections.has('projects')} onToggle={() => toggleSection('projects')}>
               {formData.projects.map((proj, i) => (
                 <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '16px 16px 12px', marginBottom: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -830,7 +830,7 @@ export default function ResumeBuilderPage() {
 
           {/* Section 6: Skills & Tools */}
           <div ref={el => { sectionRefs.current['skills'] = el }}>
-            <SectionCard id="skills" icon="\uD83D\uDEE0\uFE0F" title="Skills & Tools" status={sectionStatus('skills', formData)} expanded={expandedSections.has('skills')} onToggle={() => toggleSection('skills')}>
+            <SectionCard id="skills" icon="🛠️" title="Skills & Tools" status={sectionStatus('skills', formData)} expanded={expandedSections.has('skills')} onToggle={() => toggleSection('skills')}>
               <TagInput
                 tags={formData.skills}
                 onChange={v => setField('skills', v)}
@@ -845,7 +845,7 @@ export default function ResumeBuilderPage() {
 
           {/* Section 7: Languages */}
           <div ref={el => { sectionRefs.current['languages'] = el }}>
-            <SectionCard id="languages" icon="\uD83C\uDF10" title="Languages" status={sectionStatus('languages', formData)} expanded={expandedSections.has('languages')} onToggle={() => toggleSection('languages')}>
+            <SectionCard id="languages" icon="🌐" title="Languages" status={sectionStatus('languages', formData)} expanded={expandedSections.has('languages')} onToggle={() => toggleSection('languages')}>
               <TagInput
                 tags={formData.languages}
                 onChange={v => setField('languages', v)}
@@ -861,7 +861,7 @@ export default function ResumeBuilderPage() {
           {/* ATS Score Panel */}
           <div style={{ marginTop: 8, marginBottom: 24 }}>
             <button onClick={() => setShowATS(!showATS)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '14px 18px', background: '#161b22', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, cursor: 'pointer', color: '#fff', fontFamily: 'inherit', textAlign: 'left' }}>
-              <span style={{ fontSize: 16 }}>{'\uD83D\uDCCA'}</span>
+              <span style={{ fontSize: 16 }}>📊</span>
               <span style={{ flex: 1, fontSize: 14, fontWeight: 700 }}>ATS Score</span>
               <span style={{ fontSize: 14, fontWeight: 800, color: ats.score > 75 ? '#10b981' : ats.score > 50 ? '#f59e0b' : '#ef4444' }}>{ats.score}</span>
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', transition: 'transform 0.2s', transform: showATS ? 'rotate(180deg)' : 'rotate(0deg)' }}>{'\u25BC'}</span>
@@ -896,7 +896,7 @@ export default function ResumeBuilderPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>LSE Format</span>
               {['IIM', 'DU', 'Startup', 'Finance'].map(n => (
-                <span key={n} style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>{'\uD83D\uDD12'} {n}</span>
+                <span key={n} style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>🔒 {n}</span>
               ))}
             </div>
             <div style={{ display: 'flex', gap: 4 }}>
@@ -923,7 +923,7 @@ export default function ResumeBuilderPage() {
                 ))}
               </div>
               <button onClick={() => setShowPopup(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', borderRadius: 10, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', color: '#fff', fontWeight: 700, fontSize: 13, border: 'none', cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 2px 12px rgba(79,124,255,0.3)' }}>
-                Unlock All Templates \u2014 \u20B9199 \u2192
+                Unlock All Templates — ₹199 →
               </button>
             </div>
           </div>
@@ -931,7 +931,7 @@ export default function ResumeBuilderPage() {
       </div>
 
       {/* MOBILE LAYOUT */}
-      <div className="builder-mobile" style={{ display: 'none', flexDirection: 'column', minHeight: 'calc(100vh - 56px)' }}>
+      <div className="builder-mobile" style={{ flexDirection: 'column', minHeight: 'calc(100vh - 56px)' }}>
         {activeTab === 'edit' && (
           <div style={{ padding: '20px 16px', background: '#0D1117', flex: 1 }}>
             {/* Strength Bar */}
@@ -953,7 +953,7 @@ export default function ResumeBuilderPage() {
             </div>
 
             {/* All sections (same as desktop, reused via sectionRefs) */}
-            <SectionCard id="personal-m" icon="\uD83D\uDC64" title="Personal Details" status={sectionStatus('personal', formData)} expanded={expandedSections.has('personal')} onToggle={() => toggleSection('personal')}>
+            <SectionCard id="personal-m" icon="👤" title="Personal Details" status={sectionStatus('personal', formData)} expanded={expandedSections.has('personal')} onToggle={() => toggleSection('personal')}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
                 {renderInput('Full Name', formData.name, v => setField('name', v), 'Rahul Mehta')}
                 {renderInput('Phone', formData.phone, v => setField('phone', v), '+91 98XXX XXXXX')}
@@ -967,11 +967,11 @@ export default function ResumeBuilderPage() {
               </div>
             </SectionCard>
 
-            <SectionCard id="summary-m" icon="\u270D\uFE0F" title="Summary" status={sectionStatus('summary', formData)} expanded={expandedSections.has('summary')} onToggle={() => toggleSection('summary')}>
+            <SectionCard id="summary-m" icon="✍️" title="Summary" status={sectionStatus('summary', formData)} expanded={expandedSections.has('summary')} onToggle={() => toggleSection('summary')}>
               {renderTextarea('Summary', formData.summary, v => setField('summary', v), 'Your summary here', 4, 300)}
             </SectionCard>
 
-            <SectionCard id="experience-m" icon="\uD83D\uDCBC" title="Experience" status={sectionStatus('experience', formData)} expanded={expandedSections.has('experience')} onToggle={() => toggleSection('experience')}>
+            <SectionCard id="experience-m" icon="💼" title="Experience" status={sectionStatus('experience', formData)} expanded={expandedSections.has('experience')} onToggle={() => toggleSection('experience')}>
               {formData.experiences.map((exp, i) => (
                 <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: 14, marginBottom: 12 }}>
                   {renderInput('Company', exp.company, v => setExpField(i, 'company', v))}
@@ -989,7 +989,7 @@ export default function ResumeBuilderPage() {
               )}
             </SectionCard>
 
-            <SectionCard id="projects-m" icon="\uD83D\uDD2C" title="Projects" status={sectionStatus('projects', formData)} expanded={expandedSections.has('projects')} onToggle={() => toggleSection('projects')}>
+            <SectionCard id="projects-m" icon="🔬" title="Projects" status={sectionStatus('projects', formData)} expanded={expandedSections.has('projects')} onToggle={() => toggleSection('projects')}>
               {formData.projects.map((proj, i) => (
                 <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: 14, marginBottom: 12 }}>
                   {renderInput('Project Name', proj.name, v => setProjField(i, 'name', v))}
@@ -1003,11 +1003,11 @@ export default function ResumeBuilderPage() {
               ))}
             </SectionCard>
 
-            <SectionCard id="skills-m" icon="\uD83D\uDEE0\uFE0F" title="Skills" status={sectionStatus('skills', formData)} expanded={expandedSections.has('skills')} onToggle={() => toggleSection('skills')}>
+            <SectionCard id="skills-m" icon="🛠️" title="Skills" status={sectionStatus('skills', formData)} expanded={expandedSections.has('skills')} onToggle={() => toggleSection('skills')}>
               <TagInput tags={formData.skills} onChange={v => setField('skills', v)} inputValue={skillInput} onInputChange={setSkillInput} placeholder="Type + Enter" max={8} suggestions={DOMAIN_SUGGESTIONS[targetDomain]} />
             </SectionCard>
 
-            <SectionCard id="languages-m" icon="\uD83C\uDF10" title="Languages" status={sectionStatus('languages', formData)} expanded={expandedSections.has('languages')} onToggle={() => toggleSection('languages')}>
+            <SectionCard id="languages-m" icon="🌐" title="Languages" status={sectionStatus('languages', formData)} expanded={expandedSections.has('languages')} onToggle={() => toggleSection('languages')}>
               <TagInput tags={formData.languages} onChange={v => setField('languages', v)} inputValue={langInput} onInputChange={setLangInput} placeholder="Type + Enter" max={8} suggestions={['English (Fluent)', 'Hindi (Native)']} />
             </SectionCard>
           </div>
@@ -1024,7 +1024,7 @@ export default function ResumeBuilderPage() {
         {/* Floating preview button */}
         {activeTab === 'edit' && (
           <button onClick={() => setActiveTab('preview')} className="no-print" style={{ position: 'fixed', bottom: 24, right: 24, width: 52, height: 52, borderRadius: '50%', background: '#f59e0b', border: 'none', fontSize: 22, cursor: 'pointer', boxShadow: '0 4px 16px rgba(245,158,11,0.4)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {'\uD83D\uDCC4'}
+            📄
           </button>
         )}
       </div>
