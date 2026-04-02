@@ -332,7 +332,55 @@ export default function FreePage() {
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', marginTop: 10, textAlign: 'center' }}>2 chapters free · 2 more with email · all 7 with Resource Pack</div>
           </div>
 
-          {/* Card 5: Off-Campus Playbook — Coming Soon */}
+          {/* Card 5: Resume Templates */}
+          <div className="resource-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF' }}>
+                  Free
+                </span>
+                {paid && (
+                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7' }}>
+                    Unlocked ✓
+                  </span>
+                )}
+              </div>
+              <a href="/resources/resume-templates" className="view-link">View Templates →</a>
+            </div>
+
+            <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.4, marginBottom: 8 }}>Resume Templates</h3>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, marginBottom: 16 }}>
+              6 resume formats — LSE, IIM, DU, Startup, Finance, and Marketing. One free, rest with Resource Pack.
+            </p>
+
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+              {[
+                { label: '6 Templates', color: '#93BBFF', bg: 'rgba(79,124,255,0.1)', border: 'rgba(79,124,255,0.25)' },
+                { label: 'ATS-Optimized', color: '#fcd34d', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.25)' },
+              ].map(s => (
+                <span key={s.label} style={{ padding: '5px 14px', borderRadius: 100, background: s.bg, border: `1px solid ${s.border}`, color: s.color, fontSize: 12, fontWeight: 700 }}>
+                  {s.label}
+                </span>
+              ))}
+            </div>
+
+            <a href="/resources/resume-templates" className="view-link" style={{ fontSize: 15 }}>
+              View Templates →
+            </a>
+            <div style={{ marginTop: 12 }}>
+              <a href="/resources/resume-builder" style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.4)', display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none', transition: 'color 0.15s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#93BBFF')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
+              >
+                Try the Free Resume Builder →
+              </a>
+            </div>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 10, fontWeight: 500 }}>
+              1 free &bull; all 6 with Resource Pack
+            </p>
+          </div>
+
+          {/* Card 6: Off-Campus Playbook — Coming Soon */}
           <div className="resource-card dim">
             <div style={{ marginBottom: 18 }}>
               <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)' }}>

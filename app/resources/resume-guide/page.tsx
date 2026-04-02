@@ -1186,6 +1186,9 @@ export default function ResumeGuidePage() {
             <a href="/book" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 100, background: 'rgba(79,124,255,0.12)', border: '1.5px solid rgba(79,124,255,0.35)', color: '#93BBFF', fontWeight: 700, fontSize: 14 }}>
               Book a Session — ₹299
             </a>
+            <a href="/resources/resume-builder" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 100, background: 'rgba(255,255,255,0.04)', border: '1.5px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.65)', fontWeight: 700, fontSize: 14 }}>
+              Build your resume →
+            </a>
           </div>
         </div>
       </section>
