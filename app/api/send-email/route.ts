@@ -44,7 +44,7 @@ export async function POST(req: Request) {
                   </div>
                   <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
                     <span style="color:rgba(255,255,255,0.5);font-size:14px;">Start Date</span>
-                    <span style="color:white;font-size:14px;font-weight:600;">May 1, 2025</span>
+                    <span style="color:white;font-size:14px;font-weight:600;">April 11, 2025</span>
                   </div>
                   <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:4px;display:flex;justify-content:space-between;">
                     <span style="color:rgba(255,255,255,0.5);font-size:14px;">Amount Paid</span>
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
                 </div>
 
                 <p style="color:rgba(255,255,255,0.5);font-size:14px;line-height:1.7;margin:0;">
-                  We'll add you to the WhatsApp group shortly and send you onboarding details before May 1. Get ready to land your first internship this summer! 🚀
+                  We'll add you to the WhatsApp group shortly and send you onboarding details before April 11. Get ready to land your first internship this summer! 🚀
                 </p>
               </div>
 

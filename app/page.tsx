@@ -495,7 +495,7 @@ export default function Home() {
               <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 36px', borderRadius: 100, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 32px rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none' }}>
                 Join Summer Program →
               </a>
-              <div style={{ marginTop: 14, fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>Next batch starts May 1 · Only 25 seats · ₹599</div>
+              <div style={{ marginTop: 14, fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>Founding batch · Starts April 11 · 25 seats · ₹599</div>
             </div>
             <div style={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
@@ -802,7 +802,7 @@ export default function Home() {
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', display: 'inline-block', animation: 'glow-pulse 1s ease-in-out infinite' }} />
             CLOSING SOON — 30 SEATS ONLY
           </div>
-          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 12, lineHeight: 1.1 }}>Next Cohort Starts April 1</h2>
+          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 12, lineHeight: 1.1 }}>Summer Internship Batch Starts April 11</h2>
           <p style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 40 }}>Don't wait. Every day you delay is a day someone else gets the role you wanted.</p>
 
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginBottom: 40 }}>
