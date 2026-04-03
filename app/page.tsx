@@ -112,6 +112,8 @@ export default function Home() {
         .btn-primary span { position:relative; z-index:1; }
         .btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; border-radius: 100px; background: transparent; color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s; border: 1.5px solid rgba(255,255,255,0.2); }
         .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
+        .btn-amber { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: 100px; background: linear-gradient(135deg,#f59e0b,#f97316); color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 32px rgba(245,158,11,0.4); text-decoration: none; }
+        .btn-amber:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 52px rgba(245,158,11,0.6); }
         .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; transition: all 0.4s; }
         .card:hover { background: rgba(255,255,255,0.06); border-color: rgba(79,124,255,0.3); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(79,124,255,0.15); }
         .section-label { font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; display: block; }
@@ -258,7 +260,7 @@ export default function Home() {
         <div style={{ maxWidth: 900, textAlign: 'center', position: 'relative', zIndex: 2, animation: 'fadeUp 0.8s ease both' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 100, fontSize: 13, fontWeight: 600, color: '#fcd34d', marginBottom: 32 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b', display: 'inline-block', animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
-            Summer batch open — 25 seats · ₹599
+            🔥 Summer Internship Program · April 11 · 25 seats · ₹599
           </div>
 
           <h1 className="hero-headline" style={{ marginBottom: 28 }}>
@@ -272,7 +274,7 @@ export default function Home() {
           </p>
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 56 }}>
-            <a href="/summer" className="btn-primary"><span>Join Summer Program — ₹599</span><span style={{ position: 'relative', zIndex: 1 }}>→</span></a>
+            <a href="/summer" className="btn-amber">🔥 Get Your Summer Internship — ₹599 →</a>
             <a href="/cohort" className="btn-secondary">Join Next Cohort — ₹999</a>
           </div>
 
