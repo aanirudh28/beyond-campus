@@ -242,6 +242,7 @@ export default function Home() {
               </div>
             )}
           </div>
+          <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
           <a href="/book" className="btn-secondary" style={{ padding: '10px 24px', fontSize: 14 }}>Book Session</a>
           <a href="/cohort" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>
@@ -651,6 +652,74 @@ export default function Home() {
               <div style={{ fontSize: 13, color: 'var(--muted)' }}>{s.sub}</div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* FROM THE FEED */}
+      <section style={{ padding: '80px 24px', maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <span className="section-label">THE FEED</span>
+          <h2 className="section-title">What students are actually saying</h2>
+          <p style={{ color: 'var(--muted)', fontSize: 16, maxWidth: 480, margin: '0 auto' }}>
+            Real interview stories, stipend data, and honest doubts — anonymous and unfiltered.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8, WebkitOverflowScrolling: 'touch' as any }}>
+          {[
+            { id: 'p1', type: 'experience' as const, content: "Got a Founder's Office offer after 3 rounds — a task, a case discussion, and a founder call. No technical questions at all. Just thinking and communication.", degree: 'BBA', college_tier: 'Tier 2', city: 'Delhi', domain: "Founder's Office", tags: ["Founder's Office", 'Interview'], upvotes: 47, created_at: new Date(Date.now() - 2*3600000).toISOString(), reply_count: 8 },
+            { id: 'p2', type: 'stipend' as const, content: 'BD intern at a fintech startup — ₹12,000/month + ₹3,000 travel allowance. Remote for first month, hybrid after that.', degree: 'BCom', college_tier: 'Tier 3', city: 'Mumbai', domain: 'BD', tags: ['BD', 'Stipend', 'Fintech'], upvotes: 31, created_at: new Date(Date.now() - 5*3600000).toISOString(), reply_count: 3 },
+            { id: 'p3', type: 'doubt' as const, content: "Has anyone gotten a Big 4 HR to reply via LinkedIn DM? Cold emails haven't worked for me in 3 weeks.", degree: 'BBA', college_tier: 'Tier 2', city: 'Pune', domain: 'Consulting', tags: ['Big 4', 'Cold Outreach'], upvotes: 22, created_at: new Date(Date.now() - 8*3600000).toISOString(), reply_count: 14 },
+          ].map(post => {
+            const cfg = post.type === 'experience'
+              ? { label: 'Experience', color: '#4F7CFF', borderColor: '#4F7CFF', bg: 'rgba(79,124,255,0.12)' }
+              : post.type === 'stipend'
+              ? { label: 'Stipend', color: '#10b981', borderColor: '#10b981', bg: 'rgba(16,185,129,0.12)' }
+              : { label: 'Doubt', color: '#f59e0b', borderColor: '#f59e0b', bg: 'rgba(245,158,11,0.12)' }
+            const icon = post.type === 'experience' ? '📖' : post.type === 'stipend' ? '💰' : '❓'
+            const timeAgoStr = (() => {
+              const diff = Date.now() - new Date(post.created_at).getTime()
+              const m = Math.floor(diff / 60000)
+              if (m < 60) return `${m}m ago`
+              const h = Math.floor(m / 60)
+              if (h < 24) return `${h}h ago`
+              return `${Math.floor(h / 24)}d ago`
+            })()
+            return (
+              <div key={post.id} style={{
+                background: '#111827', borderRadius: 18, padding: '18px 18px 14px',
+                borderLeft: `4px solid ${cfg.borderColor}`,
+                minWidth: 280, maxWidth: 340, flex: '0 0 300px',
+                display: 'flex', flexDirection: 'column', gap: 0,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 100, fontSize: 10, fontWeight: 700, color: cfg.color, background: cfg.bg, letterSpacing: 0.5 }}>
+                    {icon} {cfg.label.toUpperCase()}
+                  </span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{timeAgoStr}</span>
+                </div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 10 }}>
+                  {[post.degree, post.college_tier, post.city].filter(Boolean).join(' · ')}
+                </div>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 12, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical' as any, flex: 1 }}>
+                  {post.content}
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
+                  {post.tags.map(tag => (
+                    <span key={tag} style={{ padding: '2px 8px', borderRadius: 100, fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.07)' }}>{tag}</span>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                  <span>▲ {post.upvotes}</span>
+                  <span>💬 {post.reply_count}</span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        <div style={{ textAlign: 'center', marginTop: 36 }}>
+          <a href="/community" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 100, background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 0.2s' }}>
+            Join the conversation →
+          </a>
         </div>
       </section>
 

@@ -62,6 +62,30 @@ type Lead = {
   created_at: string
 }
 
+type FeedPost = {
+  id: string
+  type: string
+  content: string
+  degree: string | null
+  college_tier: string | null
+  city: string | null
+  domain: string | null
+  tags: string[]
+  upvotes: number
+  is_approved: boolean
+  created_at: string
+}
+
+type FeedReply = {
+  id: string
+  post_id: string
+  content: string
+  degree: string | null
+  college_tier: string | null
+  is_approved: boolean
+  created_at: string
+}
+
 const STAGE_LABELS = ['Joined', 'Resume Reviewed', 'Started Outreach', 'Got Interview', 'Placed!']
 
 export default function AdminPage() {
@@ -74,13 +98,115 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources'>('bookings')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed'>('bookings')
   const [summerRegs, setSummerRegs] = useState<SummerReg[]>([])
   const [summerLoading, setSummerLoading] = useState(false)
   const [summerFilter, setSummerFilter] = useState<'all' | 'paid' | 'pending'>('all')
   const [resourcePurchases, setResourcePurchases] = useState<ResourcePurchase[]>([])
   const [leads, setLeads] = useState<Lead[]>([])
   const [resourcesLoading, setResourcesLoading] = useState(false)
+
+  // ─── Feed State ──────────────────────────────────────────────────────────────
+  const [feedPendingPosts, setFeedPendingPosts] = useState<FeedPost[]>([])
+  const [feedApprovedPosts, setFeedApprovedPosts] = useState<FeedPost[]>([])
+  const [feedPendingReplies, setFeedPendingReplies] = useState<FeedReply[]>([])
+  const [feedApprovedReplies, setFeedApprovedReplies] = useState<FeedReply[]>([])
+  const [feedLoading, setFeedLoading] = useState(false)
+
+  const fetchFeed = async () => {
+    setFeedLoading(true)
+    try {
+      const [pendingPostsRes, approvedPostsRes, pendingRepliesRes, approvedRepliesRes] = await Promise.all([
+        fetch('/api/feed/posts?approved=false&limit=100'),
+        fetch('/api/feed/posts?approved=true&limit=100'),
+        fetch('/api/feed/replies?post_id=all&approved=false').catch(() => ({ json: async () => ({ replies: [] }) })),
+        fetch('/api/feed/replies?post_id=all&approved=true').catch(() => ({ json: async () => ({ replies: [] }) })),
+      ])
+      const [pp, ap] = await Promise.all([pendingPostsRes.json(), approvedPostsRes.json()])
+      if (pp.posts) setFeedPendingPosts(pp.posts)
+      if (ap.posts) setFeedApprovedPosts(ap.posts)
+      // Fetch all pending replies separately since we can't pass post_id=all yet — use admin endpoint approach
+      const allPendingReplies = await fetchAllFeedReplies(false)
+      const allApprovedReplies = await fetchAllFeedReplies(true)
+      setFeedPendingReplies(allPendingReplies)
+      setFeedApprovedReplies(allApprovedReplies)
+    } catch (e) {
+      console.error('[admin feed fetch]', e)
+    }
+    setFeedLoading(false)
+  }
+
+  const fetchAllFeedReplies = async (approved: boolean): Promise<FeedReply[]> => {
+    try {
+      // Fetch replies for all posts by fetching from Supabase directly
+      const { data, error } = await supabase
+        .from('feed_replies')
+        .select('*')
+        .eq('is_approved', approved)
+        .order('created_at', { ascending: false })
+        .limit(200)
+      if (error || !data) return []
+      return data
+    } catch {
+      return []
+    }
+  }
+
+  const approvePost = async (id: string) => {
+    try {
+      await fetch('/api/feed/posts', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, approved: true }),
+      })
+      setFeedPendingPosts(prev => prev.filter(p => p.id !== id))
+      const approved = feedPendingPosts.find(p => p.id === id)
+      if (approved) setFeedApprovedPosts(prev => [{ ...approved, is_approved: true }, ...prev])
+    } catch {}
+  }
+
+  const rejectPost = async (id: string) => {
+    try {
+      await fetch('/api/feed/posts', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      setFeedPendingPosts(prev => prev.filter(p => p.id !== id))
+      setFeedApprovedPosts(prev => prev.filter(p => p.id !== id))
+    } catch {}
+  }
+
+  const approveReply = async (id: string) => {
+    try {
+      await fetch('/api/feed/replies', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, approved: true }),
+      })
+      setFeedPendingReplies(prev => prev.filter(r => r.id !== id))
+      const approved = feedPendingReplies.find(r => r.id === id)
+      if (approved) setFeedApprovedReplies(prev => [{ ...approved, is_approved: true }, ...prev])
+    } catch {}
+  }
+
+  const rejectReply = async (id: string) => {
+    try {
+      await fetch('/api/feed/replies', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      setFeedPendingReplies(prev => prev.filter(r => r.id !== id))
+      setFeedApprovedReplies(prev => prev.filter(r => r.id !== id))
+    } catch {}
+  }
+
+  const feedTypeColor = (type: string) => {
+    if (type === 'experience') return { color: '#93BBFF', bg: 'rgba(79,124,255,0.15)', border: 'rgba(79,124,255,0.3)' }
+    if (type === 'stipend')    return { color: '#6ee7b7', bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.3)' }
+    return { color: '#fcd34d', bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.3)' }
+  }
 
   const fetchResources = async () => {
     setResourcesLoading(true)
@@ -107,6 +233,7 @@ export default function AdminPage() {
       fetchStudents()
       fetchSummerRegs()
       fetchResources()
+      fetchFeed()
     } else {
       setError('Incorrect password')
     }
@@ -232,6 +359,7 @@ export default function AdminPage() {
             { key: 'students', label: `Students (${students.length})`, active: activeTab === 'students', color: '#4F7CFF', bg: 'rgba(79,124,255,0.15)' },
             { key: 'summer', label: `☀️ Summer (${summerRegs.length})`, active: activeTab === 'summer', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
             { key: 'resources', label: `📦 Resources (${resourcePurchases.length})`, active: activeTab === 'resources', color: '#4F7CFF', bg: 'rgba(79,124,255,0.15)' },
+            { key: 'feed', label: `💬 Feed (${feedPendingPosts.length + feedPendingReplies.length} pending)`, active: activeTab === 'feed', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
           ].map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: tab.active ? tab.color : 'rgba(255,255,255,0.1)', background: tab.active ? tab.bg : 'transparent', color: tab.active ? tab.color : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               {tab.label}
@@ -434,6 +562,192 @@ export default function AdminPage() {
                 </table>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Feed Tab */}
+        {activeTab === 'feed' && (
+          <div>
+            {/* Stats row */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16, marginBottom: 28 }}>
+              <div className="stat-card">
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 8, fontWeight: 600 }}>APPROVED POSTS</div>
+                <div style={{ fontSize: 32, fontWeight: 800, color: '#10b981' }}>{feedApprovedPosts.length}</div>
+              </div>
+              <div className="stat-card">
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 8, fontWeight: 600 }}>PENDING POSTS</div>
+                <div style={{ fontSize: 32, fontWeight: 800, color: '#f59e0b' }}>{feedPendingPosts.length}</div>
+              </div>
+              <div className="stat-card">
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 8, fontWeight: 600 }}>APPROVED REPLIES</div>
+                <div style={{ fontSize: 32, fontWeight: 800, color: '#10b981' }}>{feedApprovedReplies.length}</div>
+              </div>
+              <div className="stat-card">
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 8, fontWeight: 600 }}>PENDING REPLIES</div>
+                <div style={{ fontSize: 32, fontWeight: 800, color: '#f59e0b' }}>{feedPendingReplies.length}</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
+              <button onClick={fetchFeed} style={{ padding: '10px 20px', borderRadius: 100, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                ↻ Refresh Feed
+              </button>
+            </div>
+
+            {feedLoading ? (
+              <div style={{ padding: 60, textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>Loading feed data...</div>
+            ) : (
+              <>
+                {/* Pending Posts */}
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'white', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ padding: '3px 12px', borderRadius: 100, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: '#fcd34d', fontSize: 12, fontWeight: 700 }}>
+                    {feedPendingPosts.length} Pending
+                  </span>
+                  Posts awaiting review
+                </div>
+
+                {feedPendingPosts.length === 0 ? (
+                  <div style={{ padding: '24px', borderRadius: 16, background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.15)', color: '#6ee7b7', fontSize: 14, marginBottom: 32, textAlign: 'center' }}>
+                    ✓ No pending posts
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 36 }}>
+                    {feedPendingPosts.map(post => {
+                      const tc = feedTypeColor(post.type)
+                      return (
+                        <div key={post.id} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderLeft: `4px solid ${tc.border}`, borderRadius: 16, padding: '18px 20px' }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                                <span style={{ padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, color: tc.color, background: tc.bg }}>{post.type.toUpperCase()}</span>
+                                {post.domain && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{post.domain}</span>}
+                                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>{new Date(post.created_at).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                              </div>
+                              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.65, marginBottom: 10, wordBreak: 'break-word' }}>
+                                {post.content.length > 200 ? post.content.slice(0, 200) + '...' : post.content}
+                              </p>
+                              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+                                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{[post.degree, post.college_tier, post.city].filter(Boolean).join(' · ')}</span>
+                                {post.tags && post.tags.length > 0 && (
+                                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                                    {post.tags.map(t => (
+                                      <span key={t} style={{ padding: '2px 8px', borderRadius: 100, fontSize: 11, background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)' }}>{t}</span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                              <button
+                                onClick={() => approvePost(post.id)}
+                                style={{ padding: '8px 16px', borderRadius: 10, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                              >
+                                ✓ Approve
+                              </button>
+                              <button
+                                onClick={() => rejectPost(post.id)}
+                                style={{ padding: '8px 16px', borderRadius: 10, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                              >
+                                ✕ Reject
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/* Approved Posts */}
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'white', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ padding: '3px 12px', borderRadius: 100, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7', fontSize: 12, fontWeight: 700 }}>
+                    {feedApprovedPosts.length} Live
+                  </span>
+                  Approved posts
+                </div>
+
+                {feedApprovedPosts.length === 0 ? (
+                  <div style={{ padding: '24px', borderRadius: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)', fontSize: 14, marginBottom: 32, textAlign: 'center' }}>
+                    No approved posts yet
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 40 }}>
+                    {feedApprovedPosts.slice(0, 20).map(post => {
+                      const tc = feedTypeColor(post.type)
+                      return (
+                        <div key={post.id} style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.06)', borderLeft: `3px solid ${tc.border}`, borderRadius: 14, padding: '14px 18px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
+                              <span style={{ padding: '2px 8px', borderRadius: 100, fontSize: 10, fontWeight: 700, color: tc.color, background: tc.bg }}>{post.type.toUpperCase()}</span>
+                              {post.domain && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>{post.domain}</span>}
+                              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>↑{post.upvotes}</span>
+                              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>{new Date(post.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                            </div>
+                            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: 0, wordBreak: 'break-word' }}>
+                              {post.content.length > 150 ? post.content.slice(0, 150) + '...' : post.content}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => rejectPost(post.id)}
+                            style={{ padding: '6px 12px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )
+                    })}
+                    {feedApprovedPosts.length > 20 && (
+                      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: 12 }}>
+                        Showing first 20 of {feedApprovedPosts.length} approved posts
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Pending Replies */}
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'white', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ padding: '3px 12px', borderRadius: 100, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: '#fcd34d', fontSize: 12, fontWeight: 700 }}>
+                    {feedPendingReplies.length} Pending
+                  </span>
+                  Replies awaiting review
+                </div>
+
+                {feedPendingReplies.length === 0 ? (
+                  <div style={{ padding: '24px', borderRadius: 16, background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.15)', color: '#6ee7b7', fontSize: 14, marginBottom: 32, textAlign: 'center' }}>
+                    ✓ No pending replies
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+                    {feedPendingReplies.map(reply => (
+                      <div key={reply.id} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '14px 18px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>
+                            {[reply.degree, reply.college_tier].filter(Boolean).join(' · ')} · {new Date(reply.created_at).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, margin: 0, wordBreak: 'break-word' }}>
+                            {reply.content.length > 200 ? reply.content.slice(0, 200) + '...' : reply.content}
+                          </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                          <button
+                            onClick={() => approveReply(reply.id)}
+                            style={{ padding: '7px 14px', borderRadius: 10, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                          >
+                            ✓ Approve
+                          </button>
+                          <button
+                            onClick={() => rejectReply(reply.id)}
+                            style={{ padding: '7px 14px', borderRadius: 10, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                          >
+                            ✕ Reject
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
           </div>
         )}
 
