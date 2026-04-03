@@ -289,8 +289,8 @@ export default function Home() {
                 ))}
               </div>
               <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: 14, fontWeight: 700 }}>2,500+ students</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)' }}>placed off-campus</div>
+                <div style={{ fontSize: 14, fontWeight: 700 }}>A network of 300+</div>
+                <div style={{ fontSize: 12, color: 'var(--muted)' }}>students across 50+ Indian colleges</div>
               </div>
             </div>
             <div style={{ width: 1, height: 36, background: 'rgba(255,255,255,0.1)' }} />
