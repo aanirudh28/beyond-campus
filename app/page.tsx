@@ -293,7 +293,7 @@ export default function Home() {
             </div>
             <div style={{ width: 1, height: 36, background: 'rgba(255,255,255,0.1)' }} />
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-              {['Amazon', 'EY', 'CRED', 'Razorpay', 'Swiggy', 'Zepto'].map(c => (
+              {['BCG', 'EY', 'Deloitte', 'Razorpay', 'Swiggy', 'Zepto'].map(c => (
                 <span key={c} className="logo-pill">{c}</span>
               ))}
             </div>
