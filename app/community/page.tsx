@@ -194,7 +194,6 @@ function PostCard({ post, upvoted, onUpvote, isPlaceholder }: PostCardProps) {
   const [repliesLoading, setRepliesLoading] = useState(false)
   const [replyText, setReplyText]     = useState('')
   const [replyDegree, setReplyDegree] = useState('')
-  const [replyTier, setReplyTier]     = useState('')
   const [replySubmitting, setReplySubmitting] = useState(false)
   const [replySuccess, setReplySuccess] = useState(false)
   const [localUpvotes, setLocalUpvotes] = useState(post.upvotes)
@@ -285,7 +284,6 @@ function PostCard({ post, upvoted, onUpvote, isPlaceholder }: PostCardProps) {
           post_id: post.id,
           content: replyText.trim(),
           degree: replyDegree || null,
-          college_tier: replyTier || null,
         }),
       })
       setReplySuccess(true)
@@ -435,7 +433,7 @@ function PostCard({ post, upvoted, onUpvote, isPlaceholder }: PostCardProps) {
               background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
             }}>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>
-                {[r.degree, r.college_tier].filter(Boolean).join(' · ')} · {timeAgo(r.created_at)}
+                {[r.degree].filter(Boolean).join(' · ')}{r.degree ? ' · ' : ''}{timeAgo(r.created_at)}
               </div>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, margin: 0 }}>{r.content}</p>
             </div>
@@ -469,14 +467,6 @@ function PostCard({ post, upvoted, onUpvote, isPlaceholder }: PostCardProps) {
                 >
                   <option value="">Degree (optional)</option>
                   {DEGREE_OPTIONS.map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
-                <select
-                  value={replyTier}
-                  onChange={e => setReplyTier(e.target.value)}
-                  style={{ padding: '6px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: replyTier ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.35)', fontSize: 12, outline: 'none', fontFamily: 'inherit' }}
-                >
-                  <option value="">College tier (optional)</option>
-                  {TIER_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
                 <button
                   onClick={submitReply}
