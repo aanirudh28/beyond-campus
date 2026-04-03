@@ -800,7 +800,7 @@ export default function Home() {
           <div style={{ position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)', width: 300, height: 200, background: 'radial-gradient(circle, rgba(79,124,255,0.2), transparent)', filter: 'blur(40px)', pointerEvents: 'none' }} />
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 18px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#FCA5A5', marginBottom: 24 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', display: 'inline-block', animation: 'glow-pulse 1s ease-in-out infinite' }} />
-            CLOSING SOON — 30 SEATS ONLY
+            CLOSING SOON — 25 SEATS ONLY
           </div>
           <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 12, lineHeight: 1.1 }}>Summer Internship Batch Starts April 11</h2>
           <p style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 40 }}>Don't wait. Every day you delay is a day someone else gets the role you wanted.</p>
@@ -815,13 +815,13 @@ export default function Home() {
           </div>
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/cohort" className="btn-primary" style={{ fontSize: 17, padding: '18px 40px' }}>
-              <span>Join Cohort — ₹999</span>
+            <a href="/summer" className="btn-primary" style={{ fontSize: 17, padding: '18px 40px' }}>
+              <span>Join Summer Program — ₹599</span>
               <span style={{ position: 'relative', zIndex: 1 }}>→</span>
             </a>
             <a href="/book" className="btn-secondary" style={{ fontSize: 17, padding: '17px 36px' }}>Book a Call First</a>
           </div>
-          <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 20 }}>30-day results guarantee · No corporate jargon · Real placements</p>
+          <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 20 }}>Founding batch · April 11 start · 25 seats only</p>
         </div>
       </section>
 
