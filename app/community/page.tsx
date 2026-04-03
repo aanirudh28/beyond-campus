@@ -289,7 +289,6 @@ function PostCard({ post, upvoted, onUpvote, isPlaceholder }: PostCardProps) {
       setReplySuccess(true)
       setReplyText('')
       setReplyDegree('')
-      setReplyTier('')
       setTimeout(() => setReplySuccess(false), 4000)
     } catch {}
     setReplySubmitting(false)
