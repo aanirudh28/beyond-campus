@@ -112,8 +112,8 @@ export default function Home() {
         .btn-primary span { position:relative; z-index:1; }
         .btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; border-radius: 100px; background: transparent; color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s; border: 1.5px solid rgba(255,255,255,0.2); }
         .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
-        .btn-amber { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: 100px; background: linear-gradient(135deg,#f59e0b,#f97316); color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 32px rgba(245,158,11,0.4); text-decoration: none; }
-        .btn-amber:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 52px rgba(245,158,11,0.6); }
+        .btn-amber { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: 100px; background: linear-gradient(135deg,#d97706,#c2410c); color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 20px rgba(194,65,12,0.3); text-decoration: none; }
+        .btn-amber:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 36px rgba(194,65,12,0.45); }
         .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; transition: all 0.4s; }
         .card:hover { background: rgba(255,255,255,0.06); border-color: rgba(79,124,255,0.3); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(79,124,255,0.15); }
         .section-label { font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; display: block; }
@@ -274,7 +274,7 @@ export default function Home() {
           </p>
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 56 }}>
-            <a href="/summer" className="btn-amber">🔥 Get Your Summer Internship — ₹599 →</a>
+            <a href="/summer" className="btn-amber">Get Your Summer Internship — ₹599</a>
             <a href="/cohort" className="btn-secondary">Join Next Cohort — ₹999</a>
           </div>
 
@@ -817,9 +817,8 @@ export default function Home() {
           </div>
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/summer" className="btn-primary" style={{ fontSize: 17, padding: '18px 40px' }}>
-              <span>Join Summer Program — ₹599</span>
-              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+            <a href="/summer" className="btn-amber" style={{ fontSize: 17, padding: '18px 40px' }}>
+              Get Your Summer Internship — ₹599
             </a>
             <a href="/book" className="btn-secondary" style={{ fontSize: 17, padding: '17px 36px' }}>Book a Call First</a>
           </div>
