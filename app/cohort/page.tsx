@@ -39,8 +39,8 @@ export default function CohortPage() {
 
         {/* Brand nav */}
         <div style={{ marginBottom: 36 }}>
-          <a href="/" style={{ textDecoration: 'none' }}>
-            <span style={{ fontSize: 16, fontWeight: 800, color: 'white', letterSpacing: -0.3 }}>Beyond Campus</span>
+          <a href="/" style={{ textDecoration: 'none', fontFamily: "'DM Serif Display', serif", fontSize: 22, letterSpacing: -0.5, color: 'white' }}>
+            Beyond<span style={{ color: '#4F7CFF' }}>Campus</span>
           </a>
         </div>
 
