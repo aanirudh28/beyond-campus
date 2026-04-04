@@ -1,132 +1,46 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
-declare global {
-  interface Window { Razorpay: any }
-}
+// COHORT PAYMENTS DISABLED — to re-enable, remove the waitlist form
+// and restore the Razorpay payment flow. Run prompt: "Re-enable cohort payments"
+// to activate instantly.
 
 export default function CohortPage() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [resumeStatus, setResumeStatus] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [isJoined, setIsJoined] = useState(false)
+  const [waitlistEmail, setWaitlistEmail] = useState('')
+  const [waitlistLoading, setWaitlistLoading] = useState(false)
+  const [waitlistDone, setWaitlistDone] = useState(false)
 
-  const loadRazorpay = () => {
-    return new Promise((resolve) => {
-      if (window.Razorpay) return resolve(true)
-      const script = document.createElement('script')
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-      script.onload = () => resolve(true)
-      script.onerror = () => resolve(false)
-      document.body.appendChild(script)
-    })
-  }
-
-  const saveBooking = async (paymentId: string) => {
-    const { error } = await supabase.from('bookings').insert({
-      name,
-      email,
-      phone,
-      resume_status: resumeStatus,
-      date: 'April 1',
-      time_slot: '8-Week Cohort',
-      payment_id: paymentId,
-      amount: 999,
-      type: 'cohort',
-    })
-    if (error) console.error('Booking save error:', error)
-
-    await fetch('/api/create-account', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, type: 'cohort' }),
-    })
-
-    await fetch('/api/send-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name,
-        email,
-        date: 'April 1',
-        timeSlot: '8-Week Cohort',
-        type: 'cohort',
-        amount: 999,
-      }),
-    })
-  }
-
-  const handleJoin = async () => {
-    if (!name || !email || !phone) {
-      alert('Please enter your name, email, and phone number.')
-      return
-    }
-    if (!resumeStatus) {
-      alert('Please answer the resume question.')
-      return
-    }
-
-    setIsLoading(true)
-
+  const handleWaitlist = async () => {
+    if (!waitlistEmail.trim()) return
+    setWaitlistLoading(true)
     try {
-      const loaded = await loadRazorpay()
-      if (!loaded) {
-        alert('Failed to load payment gateway.')
-        setIsLoading(false)
-        return
-      }
-
-      const res = await fetch('/api/create-order', {
+      await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: 999 }),
+        body: JSON.stringify({ email: waitlistEmail.trim(), source: 'Cohort Waitlist' }),
       })
-
-      const { orderId, amount } = await res.json()
-
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount,
-        currency: 'INR',
-        name: 'Beyond Campus',
-        description: '8-Week Placement Accelerator Cohort',
-        order_id: orderId,
-        prefill: { name, email },
-        theme: { color: '#7c3aed' },
-        handler: async function (response: any) {
-          await saveBooking(response.razorpay_payment_id)
-          setIsJoined(true)
-          setIsLoading(false)
-        },
-        modal: { ondismiss: () => setIsLoading(false) },
-      }
-
-      const rzp = new window.Razorpay(options)
-      rzp.open()
-    } catch (err) {
-      console.error(err)
-      alert('Something went wrong. Please try again.')
-      setIsLoading(false)
-    }
+    } catch { /* silent fail — still show success */ }
+    setWaitlistDone(true)
+    setWaitlistLoading(false)
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4 font-sans">
-      <div className="max-w-lg w-full">
+    <main className="min-h-screen bg-gray-50 flex flex-col items-center font-sans">
+
+      {/* Coming Soon Banner */}
+      <div style={{ width: '100%', background: 'rgba(79,124,255,0.1)', borderBottom: '1px solid rgba(79,124,255,0.2)', padding: '12px 24px', textAlign: 'center' }}>
+        <p style={{ fontSize: 14, color: 'white', margin: 0, fontFamily: 'inherit' }}>
+          🚀 The 8-Week Job Placement Cohort is launching soon — join the waitlist to get early access and a founding member discount.
+        </p>
+      </div>
+
+      <div className="max-w-lg w-full py-12 px-4">
 
         {/* Header */}
         <div className="text-center mb-8">
           <span className="bg-orange-500 text-white text-sm font-semibold px-3 py-1 rounded-full inline-block mb-4">
-            🔥 Next Batch — April 1 · Only 30 Seats
+            🚀 Launching Soon · Join the Waitlist
           </span>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Join the 8-Week Placement Accelerator</h1>
           <p className="text-gray-500">Get structured guidance, live sessions, and proven strategies to land your first off-campus offer.</p>
@@ -161,64 +75,50 @@ export default function CohortPage() {
           </div>
         </div>
 
-        {/* Form card */}
+        {/* Waitlist form card */}
         <div className="bg-white rounded-2xl shadow p-6 border border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Reserve your seat</h2>
+          {waitlistDone ? (
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>🎉</div>
+              <p style={{ fontSize: 16, fontWeight: 700, color: '#111', marginBottom: 8 }}>You&apos;re on the list!</p>
+              <p style={{ fontSize: 14, color: '#6b7280', lineHeight: 1.6 }}>
+                We&apos;ll reach out as soon as registrations open — founding members get early access and a special discount.
+              </p>
+            </div>
+          ) : (
+            <>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Get Early Access</h2>
+              <p className="text-sm text-gray-500 mb-5">
+                Registrations are opening soon. Drop your email and we&apos;ll notify you first — founding members get a special discount.
+              </p>
 
-          <div className="flex flex-col gap-3 mb-5">
-            <input
-              type="text"
-              placeholder="Your Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
-            />
-            <input
-              type="email"
-              placeholder="Your Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
-            />
-            <input
-              type="tel"
-              placeholder="Your Phone Number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
-            />
-          </div>
+              <div className="flex flex-col gap-3 mb-5">
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  value={waitlistEmail}
+                  onChange={(e) => setWaitlistEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleWaitlist()}
+                  className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                />
+              </div>
 
-          <p className="text-sm font-medium text-gray-700 mb-2">Do you have a resume?</p>
-          <div className="flex flex-col gap-2 mb-5">
-            {[
-              { value: 'has_resume', label: 'Yes, I have an existing resume' },
-              { value: 'needs_resume', label: 'No, I need help building my resume from scratch' },
-            ].map((option) => (
-              <button key={option.value} onClick={() => setResumeStatus(option.value)}
-                className={`text-left px-4 py-3 rounded-lg border text-sm font-medium transition ${resumeStatus === option.value ? 'bg-purple-600 border-purple-600 text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
-                {option.label}
+              {/* COHORT PAYMENTS DISABLED — to re-enable, remove the waitlist form */}
+              {/* and restore the Razorpay payment flow. Run prompt: "Re-enable cohort payments" */}
+              {/* to activate instantly. */}
+              <button
+                onClick={handleWaitlist}
+                disabled={waitlistLoading || !waitlistEmail.trim()}
+                className="w-full bg-purple-600 text-white font-semibold py-3 rounded-lg hover:bg-purple-700 transition disabled:opacity-60"
+              >
+                {waitlistLoading ? '⏳ Saving...' : 'Notify Me →'}
               </button>
-            ))}
-          </div>
 
-          <button
-            onClick={handleJoin}
-            disabled={isLoading || isJoined}
-            className="w-full bg-purple-600 text-white font-semibold py-3 rounded-lg hover:bg-purple-700 transition disabled:opacity-60"
-          >
-            {isJoined ? '✅ You\'re In!' : isLoading ? '⏳ Processing...' : 'Pay & Join Cohort – ₹999'}
-          </button>
-
-          {isJoined && (
-            <p className="text-green-600 text-center font-medium mt-4">
-              🎉 Welcome aboard! Check your email at <strong>{email}</strong> for next steps.
-            </p>
+              <p className="text-gray-400 text-xs text-center mt-3">
+                No spam · We&apos;ll only email you when registrations open
+              </p>
+            </>
           )}
-
-          <p className="text-gray-400 text-xs text-center mt-3">
-            One-time payment · Secure checkout via Razorpay
-          </p>
         </div>
 
       </div>

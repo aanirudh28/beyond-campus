@@ -8,6 +8,23 @@ export default function Home() {
   const [timeLeft, setTimeLeft] = useState({ h: 11, m: 47, s: 33 })
   const [counters, setCounters] = useState({ salary: 0, placed: 0, rate: 0 })
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [cohortWaitlist, setCohortWaitlist] = useState<'hidden' | 'open' | 'done'>('hidden')
+  const [cohortWaitlistEmail, setCohortWaitlistEmail] = useState('')
+  const [cohortWaitlistLoading, setCohortWaitlistLoading] = useState(false)
+
+  const submitCohortWaitlist = async () => {
+    if (!cohortWaitlistEmail.trim()) return
+    setCohortWaitlistLoading(true)
+    try {
+      await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cohortWaitlistEmail.trim(), source: 'Cohort Waitlist' }),
+      })
+      setCohortWaitlist('done')
+    } catch { setCohortWaitlist('done') }
+    setCohortWaitlistLoading(false)
+  }
   const [resourcesOpen, setResourcesOpen] = useState(false)
   const resourcesCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [howItWorksVisible, setHowItWorksVisible] = useState(false)
@@ -567,10 +584,31 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <a href="/cohort" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s' }}>
+            {/* COHORT PAYMENTS DISABLED — to re-enable, remove the waitlist form */}
+            {/* and restore the Razorpay payment flow. Run prompt: "Re-enable cohort payments" */}
+            {/* to activate instantly. */}
+            <button
+              onClick={() => setCohortWaitlist(s => s === 'open' ? 'hidden' : 'open')}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s', border: 'none', cursor: 'pointer', width: '100%', fontFamily: 'inherit' }}>
               Join Next Cohort →
-            </a>
-            <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>Only 30 seats · April 1 start</p>
+            </button>
+            {cohortWaitlist === 'open' && (
+              <div style={{ marginTop: 12, padding: '16px', borderRadius: 16, background: 'rgba(123,97,255,0.08)', border: '1px solid rgba(123,97,255,0.2)', animation: 'fadeUp 0.2s ease both' }}>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 10, fontWeight: 600 }}>Enter your email to get early access</p>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input type="email" placeholder="you@email.com" value={cohortWaitlistEmail} onChange={e => setCohortWaitlistEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && submitCohortWaitlist()} style={{ flex: 1, padding: '9px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', color: 'white', fontSize: 13, outline: 'none', fontFamily: 'inherit', minWidth: 0 }} />
+                  <button onClick={submitCohortWaitlist} disabled={cohortWaitlistLoading} style={{ padding: '9px 16px', borderRadius: 10, background: 'linear-gradient(135deg,#7B61FF,#4F7CFF)', border: 'none', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+                    {cohortWaitlistLoading ? '...' : 'Notify Me →'}
+                  </button>
+                </div>
+              </div>
+            )}
+            {cohortWaitlist === 'done' && (
+              <div style={{ marginTop: 12, padding: '12px 16px', borderRadius: 12, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', textAlign: 'center' }}>
+                <p style={{ fontSize: 13, color: '#6ee7b7', fontWeight: 700, margin: 0 }}>✓ You're on the waitlist! We'll notify you first when registrations open.</p>
+              </div>
+            )}
+            <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>Launching Soon · Join the waitlist</p>
           </div>
 
           {/* Mentorship */}
