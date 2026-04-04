@@ -37,6 +37,13 @@ export default function CohortPage() {
 
       <div style={{ maxWidth: 520, width: '100%', padding: '48px 16px' }}>
 
+        {/* Back to home */}
+        <div style={{ marginBottom: 24 }}>
+          <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontWeight: 500 }}>
+            ← Back to Home
+          </a>
+        </div>
+
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <span style={{ background: '#f97316', color: 'white', fontSize: 13, fontWeight: 700, padding: '4px 14px', borderRadius: 100, display: 'inline-block', marginBottom: 16 }}>
