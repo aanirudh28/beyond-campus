@@ -24,7 +24,7 @@ const FAQS = [
   { q: 'What year of college should I be in to join?', a: 'Ideally 1st, 2nd, or 3rd year — students who have at least one summer ahead of them. Final year students are better suited for our job placement cohort.' },
   { q: 'I have absolutely no experience. Can I still get an internship?', a: "Yes — that's exactly who this program is built for. The resume template and outreach strategy are specifically designed for students with no prior internship experience." },
   { q: 'What domains do you help with?', a: "Consulting, finance, Founder's Office, marketing, business development, and operations. No coding or tech roles." },
-  { q: 'How is this different from the 8-week cohort?', a: 'The summer program is shorter (4 weeks), cheaper (₹599 vs ₹999), and focused specifically on internship applications during the summer hiring season. The 8-week cohort is more comprehensive and suited for full-time job placement.' },
+  { q: 'How is this different from the 8-week cohort?', a: 'The summer program is shorter (4 weeks), cheaper (₹699 vs ₹999), and focused specifically on internship applications during the summer hiring season. The 8-week cohort is more comprehensive and suited for full-time job placement.' },
   { q: "What if I don't get an internship in 4 weeks?", a: "You will. The entire program is built around making this happen. But if life gets in the way — exams, health, anything — we don't disappear after 4 weeks. We'll be there to answer every doubt and keep you moving until you land your internship. Because you eventually will." },
   { q: 'How quickly can I get started after paying?', a: 'Immediately. Confirmation email within 2 minutes, WhatsApp group access the same day, and onboarding starts on April 11.' },
 ]
@@ -143,7 +143,7 @@ export default function SummerPage() {
             A 4-week intensive program that gets non-tech students their first internship — through cold outreach, smart targeting, and real mentor support.
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 32 }}>
-            <a href="/summer/register" className="btn-amber large">Apply Now — ₹599 →</a>
+            <a href="/summer/register" className="btn-amber large">Apply Now — ₹699 →</a>
             <button className="btn-outlined-s" style={{ padding: '17px 36px', fontSize: 16 }} onClick={() => curriculumRef.current?.scrollIntoView({ behavior: 'smooth' })}>See What's Inside ↓</button>
           </div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.32)' }}>
@@ -249,7 +249,7 @@ export default function SummerPage() {
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <span className="section-label-amber">EVERYTHING INCLUDED</span>
-            <h2 style={{ fontSize: 'clamp(32px,5vw,56px)', fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.05 }}>₹599 gets you all of this</h2>
+            <h2 style={{ fontSize: 'clamp(32px,5vw,56px)', fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.05 }}>₹699 gets you all of this</h2>
           </div>
           <div className="incl-split" style={{ display: 'flex', gap: 52, alignItems: 'flex-start' }}>
             <div className="incl-left" style={{ width: '65%' }}>
@@ -283,7 +283,7 @@ export default function SummerPage() {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>Your price</span>
-                    <span style={{ fontSize: 36, fontWeight: 900, color: '#f59e0b', letterSpacing: -1.5 }}>₹599</span>
+                    <span style={{ fontSize: 36, fontWeight: 900, color: '#f59e0b', letterSpacing: -1.5 }}>₹699</span>
                   </div>
                 </div>
                 <a href="/summer/register" className="btn-amber full" style={{ borderRadius: 14, padding: '15px 24px', fontSize: 15 }}>
@@ -306,7 +306,7 @@ export default function SummerPage() {
           <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg,#f59e0b,#f97316)', borderRadius: '0 0 14px 14px', fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Summer 2025</div>
           <div style={{ marginTop: 16, fontFamily: "'DM Serif Display',serif", fontSize: 26, marginBottom: 8, lineHeight: 1.2 }}>Summer Internship Program 2025</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, justifyContent: 'center', margin: '20px 0 6px' }}>
-            <span style={{ fontSize: 56, fontWeight: 900, color: '#f59e0b', letterSpacing: -2 }}>₹599</span>
+            <span style={{ fontSize: 56, fontWeight: 900, color: '#f59e0b', letterSpacing: -2 }}>₹699</span>
             <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through' }}>₹2,999</span>
           </div>
           <div style={{ fontSize: 13, color: 'rgba(245,158,11,0.8)', fontWeight: 600, marginBottom: 28 }}>You save ₹2,400</div>
@@ -344,7 +344,7 @@ export default function SummerPage() {
             ))}
           </div>
           <div style={{ marginTop: 48, textAlign: 'center' }}>
-            <a href="/summer/register" className="btn-amber large">Secure My Seat — ₹599 →</a>
+            <a href="/summer/register" className="btn-amber large">Secure My Seat — ₹699 →</a>
           </div>
         </div>
       </section>
@@ -358,7 +358,7 @@ export default function SummerPage() {
       {scrollY > 600 && (
         <a href="/summer/register" className="mobile-only-bar" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 150, background: 'linear-gradient(135deg,#f59e0b,#f97316)', padding: '14px 20px', display: 'none', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 -8px 32px rgba(245,158,11,0.3)', gap: 12, textDecoration: 'none' }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'white' }}>25 seats · April 11 · ₹599</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'white' }}>25 seats · April 11 · ₹699</div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)' }}>Summer Internship Program 2025</div>
           </div>
           <div style={{ background: 'rgba(0,0,0,0.18)', border: '1.5px solid rgba(255,255,255,0.4)', borderRadius: 100, padding: '9px 18px', color: 'white', fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap', flexShrink: 0 }}>

@@ -575,7 +575,7 @@ export default function LinkedInScriptsPage() {
               href="/summer"
               style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 100, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: 'white', fontWeight: 700, fontSize: 14, boxShadow: '0 0 28px rgba(245,158,11,0.3)' }}
             >
-              Join Summer Program — ₹599 →
+              Join Summer Program — ₹699 →
             </a>
           </div>
         </div>

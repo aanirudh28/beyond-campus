@@ -197,13 +197,13 @@ export default function UnlockPopup({
               </div>
             </div>
 
-            {/* Card 2: Summer ₹599 */}
+            {/* Card 2: Summer ₹699 */}
             <div style={{ background:'linear-gradient(135deg,rgba(245,158,11,0.1),rgba(249,115,22,0.06))', border:'1px solid rgba(245,158,11,0.25)', borderRadius:16, padding:'16px 20px' }}>
               <div style={{ display:'flex', alignItems:'center', gap:16, flexWrap:'wrap' }}>
                 <div style={{ flex:1, minWidth:160 }}>
                   <div style={{ fontSize:15, fontWeight:700, color:'white', marginBottom:4 }}>Summer Internship Program</div>
                   <div style={{ display:'flex', alignItems:'baseline', gap:8, marginBottom:8 }}>
-                    <span style={{ fontSize:20, fontWeight:800, color:'#f59e0b' }}>₹599</span>
+                    <span style={{ fontSize:20, fontWeight:800, color:'#f59e0b' }}>₹699</span>
                     <span style={{ fontSize:13, color:'rgba(255,255,255,0.3)', textDecoration:'line-through' }}>₹2,999</span>
                   </div>
                   <div style={{ display:'flex', flexDirection:'column', gap:3 }}>

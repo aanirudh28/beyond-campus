@@ -281,7 +281,7 @@ export default function Home() {
         <div style={{ maxWidth: 900, textAlign: 'center', position: 'relative', zIndex: 2, animation: 'fadeUp 0.8s ease both' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 100, fontSize: 13, fontWeight: 600, color: '#fcd34d', marginBottom: 32 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b', display: 'inline-block', animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
-            🔥 Summer Internship Program · April 11 · 25 seats · ₹599
+            🔥 Summer Internship Program · April 11 · 25 seats · ₹699
           </div>
 
           <h1 className="hero-headline" style={{ marginBottom: 28 }}>
@@ -295,7 +295,7 @@ export default function Home() {
           </p>
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 56 }}>
-            <a href="/summer" className="btn-amber">Get Your Summer Internship — ₹599</a>
+            <a href="/summer" className="btn-amber">Get Your Summer Internship — ₹699</a>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <a href="/cohort" className="btn-secondary">Join Next Cohort — ₹999</a>
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 8, margin: '8px 0 0' }}>Coming Soon · Join the waitlist</p>
@@ -521,7 +521,7 @@ export default function Home() {
               <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 36px', borderRadius: 100, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 32px rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none' }}>
                 Join Summer Program →
               </a>
-              <div style={{ marginTop: 14, fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>Founding batch · Starts April 11 · 25 seats · ₹599</div>
+              <div style={{ marginTop: 14, fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>Founding batch · Starts April 11 · 25 seats · ₹699</div>
             </div>
             <div style={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
@@ -556,7 +556,7 @@ export default function Home() {
             <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, marginBottom: 6, lineHeight: 1.1 }}>Summer Internship<br />Accelerator</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>4 weeks. Built for students who want their first internship this summer.</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '20px 0' }}>
-              <span style={{ fontSize: 42, fontWeight: 800, color: '#f59e0b' }}>₹599</span>
+              <span style={{ fontSize: 42, fontWeight: 800, color: '#f59e0b' }}>₹699</span>
               <span style={{ color: 'var(--muted)', fontSize: 15, textDecoration: 'line-through' }}>₹2,999</span>
               <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ program</span>
             </div>
@@ -931,7 +931,7 @@ export default function Home() {
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
             <a href="/summer" className="btn-amber" style={{ fontSize: 17, padding: '18px 40px' }}>
-              Get Your Summer Internship — ₹599
+              Get Your Summer Internship — ₹699
             </a>
             <a href="/book" className="btn-secondary" style={{ fontSize: 17, padding: '17px 36px' }}>Book a Call First</a>
           </div>

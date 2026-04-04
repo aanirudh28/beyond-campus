@@ -47,14 +47,14 @@ export default function SummerRegisterPage() {
       const orderRes = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: 599 }),
+        body: JSON.stringify({ amount: 699 }),
       })
       const { orderId, key } = await orderRes.json()
 
       console.log('Razorpay key being used:', (key || '').substring(0, 12))
       const rzp = new window.Razorpay({
         key,
-        amount: 59900, currency: 'INR',
+        amount: 69900, currency: 'INR',
         name: 'Beyond Campus',
         description: 'Summer Internship Program 2025',
         order_id: orderId,
@@ -240,7 +240,7 @@ export default function SummerRegisterPage() {
                     onMouseEnter={e => { if (!submitting) { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 0 56px rgba(245,158,11,0.48)' } }}
                     onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 36px rgba(245,158,11,0.28)' }}
                   >
-                    {submitting ? 'Processing…' : 'Secure My Seat — ₹599 →'}
+                    {submitting ? 'Processing…' : 'Secure My Seat — ₹699 →'}
                   </button>
                   <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)', textAlign: 'center' }}>
                     🔒 Secured by Razorpay · ✅ Instant confirmation · 📱 WhatsApp access same day

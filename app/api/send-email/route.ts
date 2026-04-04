@@ -48,7 +48,7 @@ export async function POST(req: Request) {
                   </div>
                   <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:4px;display:flex;justify-content:space-between;">
                     <span style="color:rgba(255,255,255,0.5);font-size:14px;">Amount Paid</span>
-                    <span style="color:#f59e0b;font-size:16px;font-weight:800;">₹599</span>
+                    <span style="color:#f59e0b;font-size:16px;font-weight:800;">₹699</span>
                   </div>
                 </div>
 
