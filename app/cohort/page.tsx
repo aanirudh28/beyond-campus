@@ -37,10 +37,14 @@ export default function CohortPage() {
 
       <div style={{ maxWidth: 520, width: '100%', padding: '48px 16px' }}>
 
-        {/* Back to home */}
-        <div style={{ marginBottom: 24 }}>
-          <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontWeight: 500 }}>
-            Beyond Campus
+        {/* Brand nav */}
+        <div style={{ marginBottom: 36, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+            <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, boxShadow: '0 4px 14px rgba(79,124,255,0.35)' }}>🎓</div>
+            <span style={{ fontSize: 16, fontWeight: 800, color: 'white', letterSpacing: -0.3 }}>Beyond Campus</span>
+          </a>
+          <a href="/" style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 500 }}>
+            ← Home
           </a>
         </div>
 
