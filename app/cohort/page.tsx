@@ -26,30 +26,30 @@ export default function CohortPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col items-center font-sans">
+    <main style={{ minHeight: '100vh', backgroundColor: '#0B0B0F', display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: "'DM Sans', sans-serif" }}>
 
       {/* Coming Soon Banner */}
       <div style={{ width: '100%', background: 'rgba(79,124,255,0.1)', borderBottom: '1px solid rgba(79,124,255,0.2)', padding: '12px 24px', textAlign: 'center' }}>
-        <p style={{ fontSize: 14, color: 'white', margin: 0, fontFamily: 'inherit' }}>
+        <p style={{ fontSize: 14, color: 'white', margin: 0 }}>
           🚀 The 8-Week Job Placement Cohort is launching soon — join the waitlist to get early access and a founding member discount.
         </p>
       </div>
 
-      <div className="max-w-lg w-full py-12 px-4">
+      <div style={{ maxWidth: 520, width: '100%', padding: '48px 16px' }}>
 
         {/* Header */}
-        <div className="text-center mb-8">
-          <span className="bg-orange-500 text-white text-sm font-semibold px-3 py-1 rounded-full inline-block mb-4">
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <span style={{ background: '#f97316', color: 'white', fontSize: 13, fontWeight: 700, padding: '4px 14px', borderRadius: 100, display: 'inline-block', marginBottom: 16 }}>
             🚀 Launching Soon · Join the Waitlist
           </span>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Join the 8-Week Placement Accelerator</h1>
-          <p className="text-gray-500">Get structured guidance, live sessions, and proven strategies to land your first off-campus offer.</p>
+          <h1 style={{ fontSize: 30, fontWeight: 800, color: 'white', marginBottom: 10, letterSpacing: -0.5 }}>Join the 8-Week Placement Accelerator</h1>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, margin: 0 }}>Get structured guidance, live sessions, and proven strategies to land your first off-campus offer.</p>
         </div>
 
         {/* What's included card */}
-        <div className="bg-white rounded-2xl shadow p-6 mb-6 border border-gray-100">
-          <h2 className="font-semibold text-gray-900 mb-4">What you get</h2>
-          <ul className="space-y-2 text-sm text-gray-700">
+        <div style={{ background: '#111827', borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)', padding: 24, marginBottom: 20 }}>
+          <h2 style={{ fontWeight: 700, color: 'white', marginBottom: 16, fontSize: 16 }}>What you get</h2>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
               '8 weeks of structured curriculum',
               'Live weekly sessions with mentors',
@@ -60,46 +60,46 @@ export default function CohortPage() {
               'Private WhatsApp community',
               'Lifetime access to all resources',
             ].map((item) => (
-              <li key={item} className="flex items-center gap-2">
-                <span className="text-green-500 font-bold">✓</span>
+              <li key={item} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
+                <span style={{ color: '#4ade80', fontWeight: 700, flexShrink: 0 }}>✓</span>
                 {item}
               </li>
             ))}
           </ul>
-          <div className="border-t mt-5 pt-4 flex items-center justify-between">
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 20, paddingTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <span className="text-2xl font-bold text-gray-900">₹999</span>
-              <span className="text-gray-400 line-through ml-2 text-sm">₹4,999</span>
+              <span style={{ fontSize: 26, fontWeight: 800, color: 'white' }}>₹999</span>
+              <span style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through', marginLeft: 10, fontSize: 14 }}>₹4,999</span>
             </div>
-            <span className="text-green-600 text-sm font-semibold bg-green-50 px-2 py-1 rounded-full">80% off</span>
+            <span style={{ color: '#4ade80', fontSize: 13, fontWeight: 700, background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.2)', padding: '4px 12px', borderRadius: 100 }}>80% off</span>
           </div>
         </div>
 
         {/* Waitlist form card */}
-        <div className="bg-white rounded-2xl shadow p-6 border border-gray-100">
+        <div style={{ background: '#111827', borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)', padding: 24 }}>
           {waitlistDone ? (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🎉</div>
-              <p style={{ fontSize: 16, fontWeight: 700, color: '#111', marginBottom: 8 }}>You&apos;re on the list!</p>
-              <p style={{ fontSize: 14, color: '#6b7280', lineHeight: 1.6 }}>
+              <p style={{ fontSize: 16, fontWeight: 700, color: 'white', marginBottom: 8 }}>You&apos;re on the list!</p>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
                 We&apos;ll reach out as soon as registrations open — founding members get early access and a special discount.
               </p>
             </div>
           ) : (
             <>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Get Early Access</h2>
-              <p className="text-sm text-gray-500 mb-5">
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: 'white', marginBottom: 8 }}>Get Early Access</h2>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', marginBottom: 20, lineHeight: 1.6 }}>
                 Registrations are opening soon. Drop your email and we&apos;ll notify you first — founding members get a special discount.
               </p>
 
-              <div className="flex flex-col gap-3 mb-5">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
                 <input
                   type="email"
-                  placeholder="Your Email"
+                  placeholder="your@email.com"
                   value={waitlistEmail}
                   onChange={(e) => setWaitlistEmail(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleWaitlist()}
-                  className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  style={{ border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, padding: '10px 14px', background: 'rgba(255,255,255,0.05)', color: 'white', fontSize: 14, fontFamily: "'DM Sans', sans-serif", outline: 'none' }}
                 />
               </div>
 
@@ -109,12 +109,12 @@ export default function CohortPage() {
               <button
                 onClick={handleWaitlist}
                 disabled={waitlistLoading || !waitlistEmail.trim()}
-                className="w-full bg-purple-600 text-white font-semibold py-3 rounded-lg hover:bg-purple-700 transition disabled:opacity-60"
+                style={{ width: '100%', background: 'linear-gradient(135deg,#7c3aed,#6d28d9)', color: 'white', fontWeight: 700, padding: '14px 0', borderRadius: 12, border: 'none', fontSize: 15, cursor: waitlistLoading || !waitlistEmail.trim() ? 'not-allowed' : 'pointer', opacity: waitlistLoading || !waitlistEmail.trim() ? 0.6 : 1, fontFamily: "'DM Sans', sans-serif" }}
               >
                 {waitlistLoading ? '⏳ Saving...' : 'Notify Me →'}
               </button>
 
-              <p className="text-gray-400 text-xs text-center mt-3">
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', textAlign: 'center', marginTop: 12 }}>
                 No spam · We&apos;ll only email you when registrations open
               </p>
             </>
