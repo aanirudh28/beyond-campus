@@ -25,7 +25,7 @@ const FAQS = [
   { q: 'I have absolutely no experience. Can I still get an internship?', a: "Yes — that's exactly who this program is built for. The resume template and outreach strategy are specifically designed for students with no prior internship experience." },
   { q: 'What domains do you help with?', a: "Consulting, finance, Founder's Office, marketing, business development, and operations. No coding or tech roles." },
   { q: 'How is this different from the 8-week cohort?', a: 'The summer program is shorter (4 weeks), cheaper (₹599 vs ₹999), and focused specifically on internship applications during the summer hiring season. The 8-week cohort is more comprehensive and suited for full-time job placement.' },
-  { q: "What if I don't get an internship in 4 weeks?", a: "You keep everything — templates, resources, community access — and you can continue applying with the same strategy. Most students see their first responses within the first 2 weeks of outreach." },
+  { q: "What if I don't get an internship in 4 weeks?", a: "You will. The entire program is built around making this happen. But if life gets in the way — exams, health, anything — we don't disappear after 4 weeks. We'll be there to answer every doubt and keep you moving until you land your internship. Because you eventually will." },
   { q: 'How quickly can I get started after paying?', a: 'Immediately. Confirmation email within 2 minutes, WhatsApp group access the same day, and onboarding starts on April 11.' },
 ]
 
