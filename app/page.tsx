@@ -262,10 +262,13 @@ export default function Home() {
           <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
           <a href="/book" className="btn-secondary" style={{ padding: '10px 24px', fontSize: 14 }}>Book Session</a>
-          <a href="/cohort" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>
-            <span>Join Cohort</span>
-            <span style={{ position: 'relative', zIndex: 1 }}>→</span>
-          </a>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <a href="/cohort" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>
+              <span>Join Cohort</span>
+              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+            </a>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 8, margin: '8px 0 0' }}>Coming Soon · Join the waitlist</p>
+          </div>
         </div>
       </nav>
 
@@ -293,7 +296,10 @@ export default function Home() {
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 56 }}>
             <a href="/summer" className="btn-amber">Get Your Summer Internship — ₹599</a>
-            <a href="/cohort" className="btn-secondary">Join Next Cohort — ₹999</a>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <a href="/cohort" className="btn-secondary">Join Next Cohort — ₹999</a>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 8, margin: '8px 0 0' }}>Coming Soon · Join the waitlist</p>
+            </div>
           </div>
 
           {/* Social proof row */}
@@ -942,10 +948,13 @@ export default function Home() {
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
             <a href="/book" className="btn-secondary" style={{ padding: '12px 24px', fontSize: 14 }}>Book Session</a>
-            <a href="/cohort" className="btn-primary" style={{ padding: '12px 24px', fontSize: 14 }}>
-              <span>Join Cohort</span>
-              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
-            </a>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <a href="/cohort" className="btn-primary" style={{ padding: '12px 24px', fontSize: 14 }}>
+                <span>Join Cohort</span>
+                <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+              </a>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 8, margin: '8px 0 0' }}>Coming Soon · Join the waitlist</p>
+            </div>
           </div>
         </div>
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
