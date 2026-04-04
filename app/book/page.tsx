@@ -133,8 +133,10 @@ export default function BookPage() {
       })
       const { orderId, amount } = await res.json()
 
+      const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || ''
+      console.log('Razorpay key being used:', key.substring(0, 12))
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key,
         amount, currency: 'INR',
         name: 'Beyond Campus',
         description: `Mentorship with ${selectedMentor.name} – ${selectedDate}, ${selectedTime}`,

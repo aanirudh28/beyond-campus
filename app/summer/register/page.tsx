@@ -51,8 +51,10 @@ export default function SummerRegisterPage() {
       })
       const { orderId } = await orderRes.json()
 
+      const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || ''
+      console.log('Razorpay key being used:', key.substring(0, 12))
       const rzp = new window.Razorpay({
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key,
         amount: 59900, currency: 'INR',
         name: 'Beyond Campus',
         description: 'Summer Internship Program 2025',
