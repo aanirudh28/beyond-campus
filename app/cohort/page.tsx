@@ -40,7 +40,7 @@ export default function CohortPage() {
         {/* Back to home */}
         <div style={{ marginBottom: 24 }}>
           <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontWeight: 500 }}>
-            ← Back to Home
+            Beyond Campus
           </a>
         </div>
 
