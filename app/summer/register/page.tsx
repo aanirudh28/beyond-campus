@@ -49,10 +49,9 @@ export default function SummerRegisterPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: 599 }),
       })
-      const { orderId } = await orderRes.json()
+      const { orderId, key } = await orderRes.json()
 
-      const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || ''
-      console.log('Razorpay key being used:', key.substring(0, 12))
+      console.log('Razorpay key being used:', (key || '').substring(0, 12))
       const rzp = new window.Razorpay({
         key,
         amount: 59900, currency: 'INR',

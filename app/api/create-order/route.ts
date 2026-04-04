@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       receipt: `receipt_${Date.now()}`,
     })
 
-    return NextResponse.json({ orderId: order.id, amount: order.amount })
+    return NextResponse.json({ orderId: order.id, amount: order.amount, key: process.env.RAZORPAY_KEY_ID })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })
   }

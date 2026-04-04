@@ -60,9 +60,9 @@ export default function UnlockPopup({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: 199 }),
       })
-      const { orderId, amount } = await res.json()
+      const { orderId, amount, key } = await res.json()
       const rzp = new (window as any).Razorpay({
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key,
         amount,
         currency: 'INR',
         order_id: orderId,

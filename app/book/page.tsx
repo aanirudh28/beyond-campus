@@ -131,10 +131,9 @@ export default function BookPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: 299 }),
       })
-      const { orderId, amount } = await res.json()
+      const { orderId, amount, key } = await res.json()
 
-      const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || ''
-      console.log('Razorpay key being used:', key.substring(0, 12))
+      console.log('Razorpay key being used:', (key || '').substring(0, 12))
       const options = {
         key,
         amount, currency: 'INR',
