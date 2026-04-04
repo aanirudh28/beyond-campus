@@ -6,6 +6,19 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 
 type PostType = 'experience' | 'stipend' | 'doubt'
 
+interface StoredPost {
+  id: string
+  type: PostType
+  content: string
+  degree: string | null
+  college_tier: string | null
+  city: string | null
+  domain: string | null
+  tags: string[]
+  created_at: string
+  is_approved: boolean
+}
+
 interface Post {
   id: string
   type: PostType
@@ -112,6 +125,26 @@ function saveUpvotedSet(s: Set<string>) {
   localStorage.setItem('feedUpvoted', JSON.stringify([...s]))
 }
 
+function getMyPosts(): StoredPost[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = localStorage.getItem('feedMyPosts')
+    return raw ? (JSON.parse(raw) as StoredPost[]) : []
+  } catch { return [] }
+}
+
+function saveMyPost(post: StoredPost) {
+  if (typeof window === 'undefined') return
+  const existing = getMyPosts().filter(p => p.id !== post.id)
+  localStorage.setItem('feedMyPosts', JSON.stringify([post, ...existing]))
+}
+
+function markMyPostApproved(id: string) {
+  if (typeof window === 'undefined') return
+  const updated = getMyPosts().map(p => p.id === id ? { ...p, is_approved: true } : p)
+  localStorage.setItem('feedMyPosts', JSON.stringify(updated))
+}
+
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime()
   const m = Math.floor(diff / 60000)
@@ -185,9 +218,10 @@ interface PostCardProps {
   upvoted: boolean
   onUpvote: (id: string) => void
   isPlaceholder?: boolean
+  isPending?: boolean
 }
 
-function PostCard({ post, upvoted, onUpvote, isPlaceholder }: PostCardProps) {
+function PostCard({ post, upvoted, onUpvote, isPlaceholder, isPending }: PostCardProps) {
   const [expanded, setExpanded]       = useState(false)
   const [showReplies, setShowReplies] = useState(false)
   const [replies, setReplies]         = useState<Reply[]>([])
@@ -307,15 +341,27 @@ function PostCard({ post, upvoted, onUpvote, isPlaceholder }: PostCardProps) {
       marginBottom: 20,
       transition: 'box-shadow 0.2s',
     }}>
-      {/* Header: type badge + time */}
+      {/* Header: type badge + pending badge + time */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <span style={{
-          display: 'inline-flex', alignItems: 'center', gap: 5,
-          padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700,
-          color: cfg.color, background: cfg.bg, letterSpacing: 0.5,
-        }}>
-          {post.type === 'experience' ? '📖' : post.type === 'stipend' ? '💰' : '❓'} {cfg.label.toUpperCase()}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700,
+            color: cfg.color, background: cfg.bg, letterSpacing: 0.5,
+          }}>
+            {post.type === 'experience' ? '📖' : post.type === 'stipend' ? '💰' : '❓'} {cfg.label.toUpperCase()}
+          </span>
+          {isPending && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              padding: '3px 9px', borderRadius: 100, fontSize: 11, fontWeight: 700,
+              color: '#f59e0b', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)',
+              letterSpacing: 0.3,
+            }}>
+              ⏳ Under Review
+            </span>
+          )}
+        </div>
         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{timeAgo(post.created_at)}</span>
       </div>
 
@@ -493,9 +539,10 @@ function PostCard({ post, upvoted, onUpvote, isPlaceholder }: PostCardProps) {
 interface SubmitModalProps {
   mode: 'experience' | 'doubt'
   onClose: () => void
+  onPosted: () => void
 }
 
-function SubmitModal({ mode, onClose }: SubmitModalProps) {
+function SubmitModal({ mode, onClose, onPosted }: SubmitModalProps) {
   const isDoubt = mode === 'doubt'
 
   // Step 1
@@ -545,6 +592,20 @@ function SubmitModal({ mode, onClose }: SubmitModalProps) {
         }),
       })
       if (!res.ok) throw new Error('Failed to submit')
+      const json = await res.json()
+      saveMyPost({
+        id: json.post?.id || `local_${Date.now()}`,
+        type: postType,
+        content: content.trim(),
+        degree: degree || null,
+        college_tier: tier || null,
+        city: city.trim() || null,
+        domain: domain || null,
+        tags,
+        created_at: new Date().toISOString(),
+        is_approved: false,
+      })
+      onPosted()
       setSubmitted(true)
     } catch {
       setSubmitError('Something went wrong. Please try again.')
@@ -872,10 +933,14 @@ export default function CommunityPage() {
   const [upvotedSet, setUpvotedSet]     = useState<Set<string>>(new Set())
   const [scrollY, setScrollY]           = useState(0)
   const [modal, setModal]               = useState<'experience' | 'doubt' | null>(null)
+  const [myPosts, setMyPosts]           = useState<StoredPost[]>([])
 
-  // Load upvoted set from localStorage on mount
+  const refreshMyPosts = () => setMyPosts(getMyPosts())
+
+  // Load upvoted set + my posts from localStorage on mount
   useEffect(() => {
     setUpvotedSet(getUpvotedSet())
+    setMyPosts(getMyPosts())
   }, [])
 
   // Scroll tracking for sticky bar
@@ -887,6 +952,7 @@ export default function CommunityPage() {
 
   // Fetch posts from API
   const fetchPosts = useCallback(async () => {
+    if (activeFilter === '👤 My Posts') { setLoading(false); return }
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -909,6 +975,12 @@ export default function CommunityPage() {
       const json = await res.json()
       if (json.posts && Array.isArray(json.posts)) {
         setPosts(json.posts.length > 0 ? json.posts : PLACEHOLDER_POSTS)
+        // Cross-reference: mark any of my pending posts that are now live
+        const liveIds = new Set((json.posts as Post[]).map(p => p.id))
+        const stored = getMyPosts()
+        let changed = false
+        stored.forEach(p => { if (!p.is_approved && liveIds.has(p.id)) { markMyPostApproved(p.id); changed = true } })
+        if (changed) setMyPosts(getMyPosts())
       } else {
         setPosts(PLACEHOLDER_POSTS)
       }
@@ -928,7 +1000,7 @@ export default function CommunityPage() {
 
   const isPlaceholder = (id: string) => id.startsWith('p') && ['p1', 'p2', 'p3'].includes(id)
 
-  const FILTER_PILLS = ['All', '🎯 Interviews', '💰 Stipends', '❓ Doubts', 'Consulting', 'Finance', "Founder's Office", 'Marketing', 'BD', 'Operations']
+  const FILTER_PILLS = ['All', '👤 My Posts', '🎯 Interviews', '💰 Stipends', '❓ Doubts', 'Consulting', 'Finance', "Founder's Office", 'Marketing', 'BD', 'Operations']
   const SORT_OPTIONS: { key: 'popular' | 'recent' | 'discussed'; label: string }[] = [
     { key: 'popular', label: 'Most Popular' },
     { key: 'recent', label: 'Most Recent' },
@@ -1093,7 +1165,38 @@ export default function CommunityPage() {
 
       {/* FEED */}
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px 80px' }}>
-        {loading ? (
+        {activeFilter === '👤 My Posts' ? (
+          myPosts.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '80px 24px' }}>
+              <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
+              <p style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>No posts yet</p>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)', maxWidth: 320, margin: '0 auto 24px' }}>
+                Posts you submit will appear here — including ones still under review — so you can always find them.
+              </p>
+              <button
+                onClick={() => setModal('experience')}
+                style={{ padding: '11px 24px', borderRadius: 100, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', border: 'none', color: 'white', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                ✍️ Share Your First Post
+              </button>
+            </div>
+          ) : (
+            <div className="feed-columns">
+              {myPosts.map(stored => {
+                const post: Post = { ...stored, upvotes: 0, reply_count: 0 }
+                return (
+                  <PostCard
+                    key={stored.id}
+                    post={post}
+                    upvoted={false}
+                    onUpvote={() => {}}
+                    isPending={!stored.is_approved}
+                  />
+                )
+              })}
+            </div>
+          )
+        ) : loading ? (
           <div className="feed-columns">
             {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
@@ -1166,7 +1269,7 @@ export default function CommunityPage() {
       </div>
 
       {/* MODALS */}
-      {modal && <SubmitModal mode={modal} onClose={() => setModal(null)} />}
+      {modal && <SubmitModal mode={modal} onClose={() => setModal(null)} onPosted={refreshMyPosts} />}
     </main>
   )
 }
