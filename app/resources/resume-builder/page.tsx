@@ -53,12 +53,12 @@ const EXAMPLE_DATA: FormData = {
   summary: 'Final-year BBA student at [Your College], Delhi, targeting Business Development and consulting roles. Built and converted a 45-lead B2B pipeline during my internship at Bloom. Strong in Excel, market research, and structured thinking.',
   experiences: [
     { company: 'Bloom D2C Startup', role: 'Business Development Intern', duration: 'Jun\u2013Aug 2024', location: 'Delhi',
-      bullets: ['Identified and cold-contacted 45 potential B2B partnership leads over 6 weeks', 'Converted 4 leads into active discussions, contributing to 2 signed agreements worth \u20B93.2L', 'Built and maintained a CRM tracker for 60+ prospects using Notion and Google Sheets', ''] },
+      bullets: ['Identified and cold-contacted 45 potential B2B partnership leads over 6 weeks', 'Converted 4 leads into active discussions, contributing to 2 signed agreements worth ₹3.2L', 'Built and maintained a CRM tracker for 60+ prospects using Notion and Google Sheets', ''] },
     { company: 'College Finance Society', role: 'Research Analyst', duration: 'Aug 2023\u2013Present', location: '',
       bullets: ['Prepared weekly market research reports on 3 sectors, distributed to 200+ members', 'Co-authored a 12-page report on FMCG sector trends; presented to faculty panel of 5', '', ''] },
   ],
   education2: { college: '', degree: '', year: '', cgpa: '' },
-  projects: [{ name: 'Competitive Analysis \u2014 EdTech Sector', context: 'College Strategy Course',
+  projects: [{ name: 'Competitive Analysis — EdTech Sector', context: 'College Strategy Course',
     bullets: ['Analyzed 5 EdTech companies across pricing, positioning, and growth strategies', 'Identified 3 untapped market opportunities; ranked 1st among 14 teams at college'] }],
   skills: ['MS Excel (Advanced)', 'PowerPoint', 'Notion', 'Google Analytics (Basic)', 'Canva'],
   languages: ['English (Fluent)', 'Hindi (Native)'],
@@ -122,9 +122,9 @@ function getBulletTip(bullet: string): { text: string; type: 'warn' | 'good' } {
   if (!bullet.trim()) return { text: '', type: 'warn' }
   const weakStarters = ['helped', 'worked', 'assisted']
   const firstWord = bullet.trim().split(/\s+/)[0]?.toLowerCase() || ''
-  if (weakStarters.includes(firstWord)) return { text: "Start stronger \u2014 try 'Drove', 'Built', 'Managed'", type: 'warn' }
-  if (!/\d/.test(bullet)) return { text: "Add a specific number \u2014 e.g. '40% growth' or '\u20B93.2L impact'", type: 'warn' }
-  if (bullet.length < 60) return { text: 'Add more context \u2014 what was the result or impact?', type: 'warn' }
+  if (weakStarters.includes(firstWord)) return { text: "Start stronger — try 'Drove', 'Built', 'Managed'", type: 'warn' }
+  if (!/\d/.test(bullet)) return { text: "Add a specific number — e.g. '40% growth' or '₹3.2L impact'", type: 'warn' }
+  if (bullet.length < 60) return { text: 'Add more context — what was the result or impact?', type: 'warn' }
   return { text: '\u2713 Strong bullet', type: 'good' }
 }
 
@@ -244,7 +244,7 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
                   <span>{e.duration}{e.location ? ` \u00B7 ${e.location}` : ''}</span>
                 </div>
                 {e.role && <div style={{ fontStyle: 'italic' }}>{e.role}</div>}
-                {e.bullets.filter(Boolean).map((b, j) => <div key={j}>\u2014 {b}</div>)}
+                {e.bullets.filter(Boolean).map((b, j) => <div key={j}>— {b}</div>)}
               </div>
             )
           })}
@@ -261,7 +261,7 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
                 <div style={{ fontWeight: 'bold' }}>
                   {p.name}{p.context && <span style={{ fontWeight: 'normal', fontStyle: 'italic' }}> | {p.context}</span>}
                 </div>
-                {p.bullets.filter(Boolean).map((b, j) => <div key={j}>\u2014 {b}</div>)}
+                {p.bullets.filter(Boolean).map((b, j) => <div key={j}>— {b}</div>)}
               </div>
             )
           })}
@@ -329,7 +329,7 @@ function TagInput({ tags, onChange, inputValue, onInputChange, placeholder, max,
         {tags.map((tag, i) => (
           <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 100, background: 'rgba(79,124,255,0.12)', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF', fontSize: 12, fontWeight: 600 }}>
             {tag}
-            <button onClick={() => removeTag(i)} style={{ background: 'none', border: 'none', color: '#93BBFF', cursor: 'pointer', fontSize: 14, padding: 0, lineHeight: 1 }}>\xd7</button>
+            <button onClick={() => removeTag(i)} style={{ background: 'none', border: 'none', color: '#93BBFF', cursor: 'pointer', fontSize: 14, padding: 0, lineHeight: 1 }}>×</button>
           </span>
         ))}
       </div>
@@ -534,7 +534,7 @@ export default function ResumeBuilderPage() {
       }
       pdf.save(`${(formData.name || 'resume').replace(/\s+/g, '_')}_resume.pdf`)
       addToast('PDF downloaded \u2713', 'success')
-    } catch { addToast('Download failed \u2014 try again', 'error') }
+    } catch { addToast('Download failed — try again', 'error') }
     finally {
       ;(el as HTMLElement).style.transform = prevTransform
       ;(el as HTMLElement).style.transformOrigin = prevOrigin
@@ -699,7 +699,7 @@ export default function ResumeBuilderPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)' }}>{exp.company || `Experience ${i + 1}`}</span>
                 {formData.experiences.length > 1 && (
-                  <button onClick={() => removeExperience(i)} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.45)', fontSize: 16, cursor: 'pointer', padding: '2px 4px', lineHeight: 1 }}>\xd7</button>
+                  <button onClick={() => removeExperience(i)} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.45)', fontSize: 16, cursor: 'pointer', padding: '2px 4px', lineHeight: 1 }}>×</button>
                 )}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
@@ -760,10 +760,10 @@ export default function ResumeBuilderPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)' }}>{proj.name || `Project ${i + 1}`}</span>
                 {formData.projects.length > 1 && (
-                  <button onClick={() => removeProject(i)} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.45)', fontSize: 16, cursor: 'pointer', padding: '2px 4px', lineHeight: 1 }}>\xd7</button>
+                  <button onClick={() => removeProject(i)} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.45)', fontSize: 16, cursor: 'pointer', padding: '2px 4px', lineHeight: 1 }}>×</button>
                 )}
               </div>
-              {renderInput('Project Name', proj.name, v => setProjField(i, 'name', v), 'Competitive Analysis \u2014 EdTech Sector')}
+              {renderInput('Project Name', proj.name, v => setProjField(i, 'name', v), 'Competitive Analysis — EdTech Sector')}
               <div style={{ marginTop: 10 }}>{renderInput('Context', proj.context, v => setProjField(i, 'context', v), 'College Strategy Course')}</div>
               <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {proj.bullets.map((b, bIdx) => renderBulletField(`proj-${i}-${bIdx}`, b, v => setProjBullet(i, bIdx, v), 'What you did + result'))}
@@ -876,7 +876,7 @@ export default function ResumeBuilderPage() {
                 <div style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Action Verb Bank</div>
                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Click to insert at cursor{activeBulletKey ? '' : ' — focus a bullet first'}</div>
               </div>
-              <button onClick={() => setBulletBank(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 22, cursor: 'pointer', padding: 4, lineHeight: 1 }}>\xd7</button>
+              <button onClick={() => setBulletBank(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 22, cursor: 'pointer', padding: 4, lineHeight: 1 }}>×</button>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
               {ACTION_VERBS.map(v => (
@@ -970,7 +970,7 @@ export default function ResumeBuilderPage() {
                 ))}
               </div>
               <button onClick={() => setShowPopup(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', borderRadius: 10, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', color: '#fff', fontWeight: 700, fontSize: 13, border: 'none', cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 2px 12px rgba(79,124,255,0.3)' }}>
-                Unlock All Templates \u2014 \u20B9199 \u2192
+                Unlock All Templates — ₹199 →
               </button>
             </div>
           </div>
