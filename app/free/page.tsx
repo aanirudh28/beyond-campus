@@ -17,6 +17,29 @@ export default function FreePage() {
       script.async = true
       document.body.appendChild(script)
     }
+
+    const savedEmail = localStorage.getItem('userEmail')
+    if (savedEmail) {
+      fetch('/api/check-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: savedEmail }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.hasAccess) {
+            localStorage.setItem('resourcePackUnlocked', 'true')
+            setPaid(true)
+          } else {
+            localStorage.removeItem('resourcePackUnlocked')
+            localStorage.removeItem('coldEmailPackEmailUnlocked')
+            localStorage.removeItem('linkedinScriptsEmailUnlocked')
+            localStorage.removeItem('resumeGuideEmailUnlocked')
+            setPaid(false)
+          }
+        })
+        .catch(() => {})
+    }
   }, [])
 
   const handleUnlockPack = async () => {

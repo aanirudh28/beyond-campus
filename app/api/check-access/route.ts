@@ -8,7 +8,7 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   const { email } = await req.json()
-  if (!email) return NextResponse.json({ hasAccess: false })
+  if (!email) return NextResponse.json({ hasAccess: false, revoked: false })
 
   const { data } = await supabase
     .from('manual_access')
@@ -18,6 +18,7 @@ export async function POST(req: Request) {
 
   return NextResponse.json({
     hasAccess: !!data,
-    accessType: data?.access_type || null
+    accessType: data?.access_type || null,
+    revoked: !data
   })
 }

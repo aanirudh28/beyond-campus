@@ -303,23 +303,28 @@ export default function ColdEmailPackPage() {
     setEmailUnlocked(emailUnlockedVal)
     setFullyUnlocked(fullyUnlockedVal)
 
-    if (!fullyUnlockedVal) {
-      const savedEmail = localStorage.getItem('userEmail')
-      if (savedEmail) {
-        fetch('/api/check-access', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: savedEmail }),
+    const savedEmail = localStorage.getItem('userEmail')
+    if (savedEmail) {
+      fetch('/api/check-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: savedEmail }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.hasAccess) {
+            localStorage.setItem('resourcePackUnlocked', 'true')
+            setFullyUnlocked(true)
+          } else {
+            localStorage.removeItem('resourcePackUnlocked')
+            localStorage.removeItem('coldEmailPackEmailUnlocked')
+            localStorage.removeItem('linkedinScriptsEmailUnlocked')
+            localStorage.removeItem('resumeGuideEmailUnlocked')
+            setFullyUnlocked(false)
+            setEmailUnlocked(false)
+          }
         })
-          .then(r => r.json())
-          .then(data => {
-            if (data.hasAccess) {
-              localStorage.setItem('resourcePackUnlocked', 'true')
-              setFullyUnlocked(true)
-            }
-          })
-          .catch(() => {})
-      }
+        .catch(() => {})
     }
   }, [])
 
