@@ -62,6 +62,14 @@ type Lead = {
   created_at: string
 }
 
+type ManualAccess = {
+  id: string
+  email: string
+  access_type: string
+  granted_at: string
+  granted_by: string
+}
+
 type FeedPost = {
   id: string
   type: string
@@ -98,13 +106,56 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed'>('bookings')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access'>('bookings')
   const [summerRegs, setSummerRegs] = useState<SummerReg[]>([])
   const [summerLoading, setSummerLoading] = useState(false)
   const [summerFilter, setSummerFilter] = useState<'all' | 'paid' | 'pending'>('all')
   const [resourcePurchases, setResourcePurchases] = useState<ResourcePurchase[]>([])
   const [leads, setLeads] = useState<Lead[]>([])
   const [resourcesLoading, setResourcesLoading] = useState(false)
+
+  // ─── Manual Access State ─────────────────────────────────────────────────────
+  const [manualAccessList, setManualAccessList] = useState<ManualAccess[]>([])
+  const [manualAccessLoading, setManualAccessLoading] = useState(false)
+  const [manualAccessEmail, setManualAccessEmail] = useState('')
+  const [manualAccessType, setManualAccessType] = useState('Resource Pack (all resources)')
+  const [manualAccessSubmitting, setManualAccessSubmitting] = useState(false)
+  const [manualAccessError, setManualAccessError] = useState('')
+  const [manualAccessSuccess, setManualAccessSuccess] = useState('')
+
+  const fetchManualAccess = async () => {
+    setManualAccessLoading(true)
+    const { data } = await supabase.from('manual_access').select('*').order('granted_at', { ascending: false })
+    if (data) setManualAccessList(data)
+    setManualAccessLoading(false)
+  }
+
+  const grantAccess = async () => {
+    if (!manualAccessEmail.trim()) { setManualAccessError('Email is required'); return }
+    setManualAccessSubmitting(true)
+    setManualAccessError('')
+    setManualAccessSuccess('')
+    const { error } = await supabase.from('manual_access').upsert(
+      { email: manualAccessEmail.trim().toLowerCase(), access_type: manualAccessType, granted_by: 'admin' },
+      { onConflict: 'email' }
+    )
+    if (error) {
+      setManualAccessError('Failed to grant access: ' + error.message)
+    } else {
+      setManualAccessSuccess(`Access granted to ${manualAccessEmail.trim()}`)
+      setManualAccessEmail('')
+      await fetchManualAccess()
+    }
+    setManualAccessSubmitting(false)
+  }
+
+  const revokeAccess = async (id: string, email: string) => {
+    const { error } = await supabase.from('manual_access').delete().eq('id', id)
+    if (!error) {
+      setManualAccessList(prev => prev.filter(a => a.id !== id))
+      setManualAccessSuccess(`Access revoked for ${email}`)
+    }
+  }
 
   // ─── Feed State ──────────────────────────────────────────────────────────────
   const [feedPendingPosts, setFeedPendingPosts] = useState<FeedPost[]>([])
@@ -234,6 +285,7 @@ export default function AdminPage() {
       fetchSummerRegs()
       fetchResources()
       fetchFeed()
+      fetchManualAccess()
     } else {
       setError('Incorrect password')
     }
@@ -360,6 +412,7 @@ export default function AdminPage() {
             { key: 'summer', label: `☀️ Summer (${summerRegs.length})`, active: activeTab === 'summer', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
             { key: 'resources', label: `📦 Resources (${resourcePurchases.length})`, active: activeTab === 'resources', color: '#4F7CFF', bg: 'rgba(79,124,255,0.15)' },
             { key: 'feed', label: `💬 Feed (${feedPendingPosts.length + feedPendingReplies.length} pending)`, active: activeTab === 'feed', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
+            { key: 'manual-access', label: `🔓 Manual Access (${manualAccessList.length})`, active: activeTab === 'manual-access', color: '#a78bfa', bg: 'rgba(167,139,250,0.15)' },
           ].map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: tab.active ? tab.color : 'rgba(255,255,255,0.1)', background: tab.active ? tab.bg : 'transparent', color: tab.active ? tab.color : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               {tab.label}
@@ -748,6 +801,96 @@ export default function AdminPage() {
                 )}
               </>
             )}
+          </div>
+        )}
+
+        {/* Manual Access Tab */}
+        {activeTab === 'manual-access' && (
+          <div>
+            {/* Grant form */}
+            <div style={{ background: 'rgba(167,139,250,0.05)', border: '1px solid rgba(167,139,250,0.2)', borderRadius: 20, padding: 32, marginBottom: 32 }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: 'white', marginBottom: 6 }}>Grant Resource Access</div>
+              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', marginBottom: 28 }}>
+                Give a specific person full access to all resources — useful for testers, partners, or community members.
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  value={manualAccessEmail}
+                  onChange={e => { setManualAccessEmail(e.target.value); setManualAccessError(''); setManualAccessSuccess('') }}
+                  onKeyDown={e => e.key === 'Enter' && grantAccess()}
+                  style={{ width: '100%', padding: '13px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', color: 'white', fontSize: 15, outline: 'none' }}
+                />
+                <select
+                  value={manualAccessType}
+                  onChange={e => setManualAccessType(e.target.value)}
+                  style={{ width: '100%', padding: '13px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', color: 'white', fontSize: 15, outline: 'none', cursor: 'pointer' }}
+                >
+                  <option value="Resource Pack (all resources)">Resource Pack (all resources)</option>
+                  <option value="Cold Email Pack only">Cold Email Pack only</option>
+                  <option value="LinkedIn Scripts only">LinkedIn Scripts only</option>
+                </select>
+                {manualAccessError && <div style={{ color: '#f87171', fontSize: 13 }}>{manualAccessError}</div>}
+                {manualAccessSuccess && <div style={{ color: '#6ee7b7', fontSize: 13 }}>{manualAccessSuccess}</div>}
+                <button
+                  onClick={grantAccess}
+                  disabled={manualAccessSubmitting}
+                  style={{ padding: '13px 24px', borderRadius: 12, background: manualAccessSubmitting ? 'rgba(167,139,250,0.3)' : 'linear-gradient(135deg, #a78bfa, #7c3aed)', color: 'white', fontWeight: 700, fontSize: 15, border: 'none', cursor: manualAccessSubmitting ? 'not-allowed' : 'pointer' }}
+                >
+                  {manualAccessSubmitting ? 'Granting...' : 'Grant Access →'}
+                </button>
+              </div>
+            </div>
+
+            {/* Access list */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'white' }}>Manually Granted Access</div>
+              <button onClick={fetchManualAccess} style={{ padding: '8px 16px', borderRadius: 100, background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.25)', color: '#c4b5fd', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                ↻ Refresh
+              </button>
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden' }}>
+              {manualAccessLoading ? (
+                <div style={{ padding: 60, textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>Loading...</div>
+              ) : manualAccessList.length === 0 ? (
+                <div style={{ padding: 60, textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>No manual access granted yet</div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Email</th>
+                        <th>Access Type</th>
+                        <th>Granted At</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {manualAccessList.map(a => (
+                        <tr key={a.id}>
+                          <td style={{ fontWeight: 500, color: 'white' }}>{a.email}</td>
+                          <td>
+                            <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 100, background: 'rgba(167,139,250,0.12)', color: '#c4b5fd', border: '1px solid rgba(167,139,250,0.25)', fontWeight: 600 }}>
+                              {a.access_type}
+                            </span>
+                          </td>
+                          <td style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{formatDate(a.granted_at)}</td>
+                          <td>
+                            <button
+                              onClick={() => revokeAccess(a.id, a.email)}
+                              style={{ padding: '6px 14px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                            >
+                              Revoke
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

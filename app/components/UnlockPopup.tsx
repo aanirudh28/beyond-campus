@@ -47,6 +47,7 @@ export default function UnlockPopup({
       })
     } catch {}
     localStorage.setItem(`${localStorageKey}EmailUnlocked`, 'true')
+    localStorage.setItem('userEmail', email)
     setEmailDone(true)
     setSubmittingEmail(false)
     onEmailUnlock()
@@ -79,6 +80,7 @@ export default function UnlockPopup({
             })
           } catch {}
           localStorage.setItem('resourcePackUnlocked', 'true')
+          if (email) localStorage.setItem('userEmail', email)
           onClose()
           window.location.reload()
         },

@@ -140,10 +140,30 @@ export default function ResumeGuidePage() {
   const [checklist, setChecklist] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
-    setFullyUnlocked(localStorage.getItem('resourcePackUnlocked') === 'true')
+    const fullyUnlockedVal = localStorage.getItem('resourcePackUnlocked') === 'true'
+    setFullyUnlocked(fullyUnlockedVal)
     const saved = localStorage.getItem('resumeChecklist')
     if (saved) {
       try { setChecklist(JSON.parse(saved)) } catch {}
+    }
+
+    if (!fullyUnlockedVal) {
+      const savedEmail = localStorage.getItem('userEmail')
+      if (savedEmail) {
+        fetch('/api/check-access', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: savedEmail }),
+        })
+          .then(r => r.json())
+          .then(data => {
+            if (data.hasAccess) {
+              localStorage.setItem('resourcePackUnlocked', 'true')
+              setFullyUnlocked(true)
+            }
+          })
+          .catch(() => {})
+      }
     }
   }, [])
 

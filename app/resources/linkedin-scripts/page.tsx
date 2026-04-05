@@ -192,8 +192,29 @@ export default function LinkedInScriptsPage() {
   const [persona, setPersona]           = useState<PersonaKey>('All')
 
   useEffect(() => {
-    setEmailUnlocked(localStorage.getItem('linkedinScriptsEmailUnlocked') === 'true')
-    setFullyUnlocked(localStorage.getItem('resourcePackUnlocked') === 'true')
+    const emailUnlockedVal = localStorage.getItem('linkedinScriptsEmailUnlocked') === 'true'
+    const fullyUnlockedVal = localStorage.getItem('resourcePackUnlocked') === 'true'
+    setEmailUnlocked(emailUnlockedVal)
+    setFullyUnlocked(fullyUnlockedVal)
+
+    if (!fullyUnlockedVal) {
+      const savedEmail = localStorage.getItem('userEmail')
+      if (savedEmail) {
+        fetch('/api/check-access', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: savedEmail }),
+        })
+          .then(r => r.json())
+          .then(data => {
+            if (data.hasAccess) {
+              localStorage.setItem('resourcePackUnlocked', 'true')
+              setFullyUnlocked(true)
+            }
+          })
+          .catch(() => {})
+      }
+    }
   }, [])
 
   // Email unlocks first 4 scripts; beyond that, paid only
