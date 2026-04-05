@@ -155,7 +155,7 @@ export default function FreePage() {
             Resource Pack — Unlock Everything
           </h2>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, marginBottom: 28, maxWidth: 600 }}>
-            Get all 5 resources for ₹199 — Cold Email Pack (50 templates), LinkedIn Scripts (20 DMs), Company List (500+ companies), Resume Template, and the Off-Campus Playbook.
+            Get all 5 resources for ₹199 — Cold Email Pack (50 templates), LinkedIn Scripts (20 DMs), Personalized Company Target List, Resume Template, and the Off-Campus Playbook.
           </p>
 
           {/* Feature bullets */}
@@ -163,7 +163,7 @@ export default function FreePage() {
             {[
               'All 50 cold email templates',
               'All 20 LinkedIn DM scripts',
-              'Company List — 500+ companies',
+              'Personalized Company Target List — built for you',
               'Resume template + playbook',
             ].map(bullet => (
               <div key={bullet} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.75)' }}>
@@ -269,42 +269,33 @@ export default function FreePage() {
             </p>
           </div>
 
-          {/* Card 3: Company List */}
+          {/* Card 3: Consulting Resources */}
           <div className="resource-card">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', color: '#fcd34d' }}>
-                Resource Pack
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7' }}>
+                FREE
               </span>
-              {paid && (
-                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7' }}>
-                  Unlocked ✓
-                </span>
-              )}
+              <a href="/resources/consulting" className="view-link">Browse Resources →</a>
             </div>
 
-            <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.4, marginBottom: 8 }}>Company List</h3>
+            <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.4, marginBottom: 8 }}>Consulting Resources</h3>
             <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, marginBottom: 16 }}>
-              500+ off-campus friendly companies with contact details, hiring patterns, and notes — sorted by domain and size.
+              Casebooks, guestimate frameworks, and interview prep materials — free downloads for consulting aspirants.
             </p>
 
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
-              {[
-                { label: '500+ Companies', color: '#fcd34d', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.25)' },
-                { label: 'Hiring notes', color: '#c4b5fd', bg: 'rgba(139,92,246,0.1)', border: 'rgba(139,92,246,0.25)' },
-              ].map(s => (
-                <span key={s.label} style={{ padding: '5px 14px', borderRadius: 100, background: s.bg, border: `1px solid ${s.border}`, color: s.color, fontSize: 12, fontWeight: 700 }}>
-                  {s.label}
+              {['Casebooks', 'Guestimates', 'Free'].map(s => (
+                <span key={s} style={{ padding: '5px 14px', borderRadius: 100, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', color: '#6ee7b7', fontSize: 12, fontWeight: 700 }}>
+                  {s}
                 </span>
               ))}
             </div>
 
-            {!paid && (
-              <button className="unlock-btn-sm" onClick={handleUnlockPack} disabled={payLoading}>
-                {payLoading ? 'Processing...' : 'Unlock for ₹199 →'}
-              </button>
-            )}
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: paid ? 0 : 10, fontWeight: 500 }}>
-              Available in the Resource Pack only
+            <a href="/resources/consulting" className="view-link" style={{ fontSize: 15 }}>
+              Browse Resources →
+            </a>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 10, fontWeight: 500 }}>
+              No email required · Direct download
             </p>
           </div>
 

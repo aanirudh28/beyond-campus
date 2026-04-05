@@ -180,7 +180,7 @@ export default function UnlockPopup({
                     <span style={{ fontSize:14, color:'rgba(255,255,255,0.3)', textDecoration:'line-through' }}>₹999</span>
                   </div>
                   <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
-                    {['All 50 cold email templates','All 20 LinkedIn DM scripts','Resume guide + template','Off-campus playbook'].map(item => (
+                    {['All 50 cold email templates','All 20 LinkedIn DM scripts','Personalized Company Target List — built around your profile and domain','Resume guide + template','Off-campus playbook'].map(item => (
                       <div key={item} style={{ fontSize:12, color:'rgba(255,255,255,0.65)', display:'flex', alignItems:'center', gap:6 }}>
                         <span style={{ color:'#4F7CFF', fontWeight:700, flexShrink:0 }}>✓</span> {item}
                       </div>

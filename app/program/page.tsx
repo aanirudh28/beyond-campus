@@ -28,7 +28,7 @@ const INCLUSIONS = [
   { icon: '📧', title: 'Cold Email Templates', desc: '50+ proven templates across industries' },
   { icon: '💼', title: 'Resume Template', desc: 'ATS-optimized for business roles' },
   { icon: '🔗', title: 'LinkedIn DM Scripts', desc: 'Word-for-word messages that get replies' },
-  { icon: '📋', title: 'Target Company Spreadsheet', desc: '200+ companies hiring off-campus' },
+  { icon: '🎯', title: 'Personalized Company Target List', desc: 'We build a custom list of 30-50 companies based on your background, domain, and city — not a generic spreadsheet' },
   { icon: '🎯', title: 'Role-Specific Guides', desc: "Consulting, finance, Founder's Office playbooks" },
   { icon: '📞', title: 'Weekly Live Sessions', desc: '8 weeks of live group calls' },
   { icon: '👥', title: 'Private WhatsApp Community', desc: 'Students, alumni, and mentors' },

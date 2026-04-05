@@ -247,10 +247,13 @@ export default function Home() {
                   <span>Resume Builder (Free)</span>
                   <span style={{ fontSize: 11, color: '#6ee7b7', fontWeight: 700 }}>free</span>
                 </a>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: 10, color: 'rgba(255,255,255,0.35)', fontSize: 14, fontWeight: 600 }}>
-                  <span>Company List</span>
-                  <span style={{ fontSize: 11, color: '#f59e0b', fontWeight: 700 }}>🔒 ₹199</span>
-                </div>
+                <a href="/resources/consulting" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: 10, color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, textDecoration: 'none', transition: 'background 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(79,124,255,0.1)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <span>📚 Consulting Resources</span>
+                  <span style={{ fontSize: 11, color: '#6ee7b7', fontWeight: 700 }}>free</span>
+                </a>
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '6px 0' }} />
                 <a href="/free" style={{ display: 'block', padding: '10px 12px', borderRadius: 10, textAlign: 'center', background: 'linear-gradient(135deg,rgba(79,124,255,0.15),rgba(123,97,255,0.1))', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
                   Unlock Everything — ₹199 →

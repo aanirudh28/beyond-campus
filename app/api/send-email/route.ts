@@ -58,7 +58,7 @@ export async function POST(req: Request) {
                     'Cold Email Templates for Internships',
                     'Internship Resume Template',
                     'LinkedIn DM Scripts',
-                    'Target Company List (100+ companies)',
+                    'Personalized Company Target List (built for your profile)',
                     '4 Weekly Live Sessions',
                     'Private WhatsApp Community',
                     'Personalized Resume & Outreach Feedback',

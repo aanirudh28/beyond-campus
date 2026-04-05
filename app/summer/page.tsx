@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 
 const WEEKS = [
   { icon: '🎯', label: 'Build Your Foundation', items: ['Resume built specifically for internship applications', 'LinkedIn profile optimized for summer hiring', 'Naukri profile setup for internship search', 'Identifying your target internship roles and companies'] },
-  { icon: '📧', label: 'Launch Your Outreach', items: ['Cold email templates for internship applications', 'LinkedIn DM scripts for reaching HR and founders', 'Building your target company list (startups + corporates)', 'Sending your first 20 outreach messages with mentor review'] },
+  { icon: '📧', label: 'Launch Your Outreach', items: ['Cold email templates for internship applications', 'LinkedIn DM scripts for reaching HR and founders', 'Your personalized company target list (30-50 companies, built for you)', 'Sending your first 20 outreach messages with mentor review'] },
   { icon: '🔗', label: 'Get Into Conversations', items: ['Following up on cold emails and DMs', 'How to handle responses and schedule calls', 'Basic interview preparation for internship roles', 'Referral outreach through alumni and seniors'] },
   { icon: '🎉', label: 'Convert to Offer', items: ['Converting conversations to internship offers', 'Negotiating internship terms and stipend', "What to do if you're still searching (backup strategy)", 'Setting yourself up for a PPO (Pre-Placement Offer)'] },
 ]
@@ -13,7 +13,7 @@ const INCLUSIONS = [
   { icon: '📧', title: 'Cold Email Templates for Internships', desc: 'Optimized for summer hiring season' },
   { icon: '💼', title: 'Internship Resume Template', desc: 'Built for students with no prior experience' },
   { icon: '🔗', title: 'LinkedIn DM Scripts', desc: 'For HRs, founders, and alumni' },
-  { icon: '📋', title: 'Target Company List', desc: '100+ companies actively taking interns this summer' },
+  { icon: '🎯', title: 'Personalized Company Target List', desc: 'We build a custom list of 30-50 companies based on your background, domain, and city — not a generic spreadsheet' },
   { icon: '📞', title: '4 Weekly Live Sessions', desc: 'Direct mentor access every week' },
   { icon: '👥', title: 'Private WhatsApp Community', desc: 'Connect with students in the same batch' },
   { icon: '🎯', title: 'Personalized Feedback', desc: 'Resume and outreach reviewed by mentor' },
