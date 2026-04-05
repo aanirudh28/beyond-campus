@@ -661,7 +661,7 @@ export default function ResumeBuilderPage() {
 
       {/* Section Cards */}
       <div ref={el => { sectionRefs.current['personal'] = el }}>
-        <SectionCard id={mobile ? 'personal-m' : 'personal'} icon="\uD83D\uDC64" title="Personal Details" status={sectionStatus('personal', formData)} expanded={expandedSections.has('personal')} onToggle={() => toggleSection('personal')}>
+        <SectionCard id={mobile ? 'personal-m' : 'personal'} icon="👤" title="Personal Details" status={sectionStatus('personal', formData)} expanded={expandedSections.has('personal')} onToggle={() => toggleSection('personal')}>
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: '12px 14px' }}>
             <div style={{ gridColumn: mobile ? '1' : '1 / -1' }}>{renderInput('Full Name', formData.name, v => setField('name', v), 'Rahul Mehta')}</div>
             {renderInput('Phone', formData.phone, v => setField('phone', v), '+91 98XXX XXXXX')}
@@ -679,7 +679,7 @@ export default function ResumeBuilderPage() {
       </div>
 
       <div ref={el => { sectionRefs.current['summary'] = el }}>
-        <SectionCard id={mobile ? 'summary-m' : 'summary'} icon="\u270D\uFE0F" title="Summary" status={sectionStatus('summary', formData)} expanded={expandedSections.has('summary')} onToggle={() => toggleSection('summary')}>
+        <SectionCard id={mobile ? 'summary-m' : 'summary'} icon="✍️" title="Summary" status={sectionStatus('summary', formData)} expanded={expandedSections.has('summary')} onToggle={() => toggleSection('summary')}>
           {renderTextarea('Professional Summary', formData.summary, v => setField('summary', v), 'Write 2\u20133 lines about your background, strengths, and goals.', 4, 300)}
           <button onClick={() => setShowTips(!showTips)} style={{ background: 'none', border: 'none', color: '#4F7CFF', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', marginTop: 8, padding: 0 }}>
             Tips {showTips ? '\u2191' : '\u2193'}
@@ -693,7 +693,7 @@ export default function ResumeBuilderPage() {
       </div>
 
       <div ref={el => { sectionRefs.current['experience'] = el }}>
-        <SectionCard id={mobile ? 'experience-m' : 'experience'} icon="\uD83D\uDCBC" title="Experience" status={sectionStatus('experience', formData)} expanded={expandedSections.has('experience')} onToggle={() => toggleSection('experience')}>
+        <SectionCard id={mobile ? 'experience-m' : 'experience'} icon="💼" title="Experience" status={sectionStatus('experience', formData)} expanded={expandedSections.has('experience')} onToggle={() => toggleSection('experience')}>
           {formData.experiences.map((exp, i) => (
             <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '14px 14px 12px', marginBottom: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
@@ -725,7 +725,7 @@ export default function ResumeBuilderPage() {
       </div>
 
       <div ref={el => { sectionRefs.current['education'] = el }}>
-        <SectionCard id={mobile ? 'education-m' : 'education'} icon="\uD83C\uDF93" title="Education" status={sectionStatus('education', formData)} expanded={expandedSections.has('education')} onToggle={() => toggleSection('education')}>
+        <SectionCard id={mobile ? 'education-m' : 'education'} icon="🎓" title="Education" status={sectionStatus('education', formData)} expanded={expandedSections.has('education')} onToggle={() => toggleSection('education')}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
             {renderInput('College', formData.college, v => setField('college', v), '[Your College], Delhi')}
             {renderInput('Degree', formData.degree, v => setField('degree', v), 'BBA (Honours)')}
@@ -754,7 +754,7 @@ export default function ResumeBuilderPage() {
       </div>
 
       <div ref={el => { sectionRefs.current['projects'] = el }}>
-        <SectionCard id={mobile ? 'projects-m' : 'projects'} icon="\uD83D\uDD2C" title="Projects" status={sectionStatus('projects', formData)} expanded={expandedSections.has('projects')} onToggle={() => toggleSection('projects')}>
+        <SectionCard id={mobile ? 'projects-m' : 'projects'} icon="🔬" title="Projects" status={sectionStatus('projects', formData)} expanded={expandedSections.has('projects')} onToggle={() => toggleSection('projects')}>
           {formData.projects.map((proj, i) => (
             <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '14px 14px 12px', marginBottom: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
@@ -780,13 +780,13 @@ export default function ResumeBuilderPage() {
       </div>
 
       <div ref={el => { sectionRefs.current['skills'] = el }}>
-        <SectionCard id={mobile ? 'skills-m' : 'skills'} icon="\uD83D\uDEE0\uFE0F" title="Skills &amp; Tools" status={sectionStatus('skills', formData)} expanded={expandedSections.has('skills')} onToggle={() => toggleSection('skills')}>
+        <SectionCard id={mobile ? 'skills-m' : 'skills'} icon="🛠️" title="Skills &amp; Tools" status={sectionStatus('skills', formData)} expanded={expandedSections.has('skills')} onToggle={() => toggleSection('skills')}>
           <TagInput tags={formData.skills} onChange={v => setField('skills', v)} inputValue={skillInput} onInputChange={setSkillInput} placeholder="Type a skill + Enter" max={8} suggestions={DOMAIN_SUGGESTIONS[targetDomain]} />
         </SectionCard>
       </div>
 
       <div ref={el => { sectionRefs.current['languages'] = el }}>
-        <SectionCard id={mobile ? 'languages-m' : 'languages'} icon="\uD83C\uDF10" title="Languages" status={sectionStatus('languages', formData)} expanded={expandedSections.has('languages')} onToggle={() => toggleSection('languages')}>
+        <SectionCard id={mobile ? 'languages-m' : 'languages'} icon="🌐" title="Languages" status={sectionStatus('languages', formData)} expanded={expandedSections.has('languages')} onToggle={() => toggleSection('languages')}>
           <TagInput tags={formData.languages} onChange={v => setField('languages', v)} inputValue={langInput} onInputChange={setLangInput} placeholder="Type a language + Enter" max={8} suggestions={['English (Fluent)', 'Hindi (Native)']} />
         </SectionCard>
       </div>
@@ -794,7 +794,7 @@ export default function ResumeBuilderPage() {
       {/* ATS Score Panel */}
       <div style={{ marginBottom: 24 }}>
         <button onClick={() => setShowATS(!showATS)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 18px', background: '#161b22', border: '1px solid rgba(255,255,255,0.05)', borderLeft: `3px solid ${ats.score > 75 ? '#10b981' : ats.score > 50 ? '#f59e0b' : '#ef4444'}`, borderRadius: 12, cursor: 'pointer', color: '#fff', fontFamily: 'inherit', textAlign: 'left' }}>
-          <span style={{ fontSize: 15 }}>\uD83D\uDCCA</span>
+          <span style={{ fontSize: 15 }}>📊</span>
           <span style={{ flex: 1, fontSize: 13, fontWeight: 700 }}>ATS Score</span>
           <span style={{ fontSize: 15, fontWeight: 800, color: ats.score > 75 ? '#10b981' : ats.score > 50 ? '#f59e0b' : '#ef4444' }}>{ats.score}</span>
           <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', transition: 'transform 0.2s', transform: showATS ? 'rotate(180deg)' : 'rotate(0deg)' }}>\u25BC</span>
@@ -935,7 +935,7 @@ export default function ResumeBuilderPage() {
               {['IIM', 'DU', 'Startup', 'Finance'].map(n => (
                 <button key={n} className="template-locked" onClick={() => setShowPopup(true)}
                   style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', padding: '4px 11px', borderRadius: 100, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4, transition: 'all 0.15s' }}>
-                  \uD83D\uDD12 {n}
+                  🔒 {n}
                 </button>
               ))}
             </div>
@@ -958,7 +958,7 @@ export default function ResumeBuilderPage() {
           <div style={{ padding: '0 24px 40px' }}>
             <div style={{ background: 'linear-gradient(135deg,rgba(79,124,255,0.08),rgba(123,97,255,0.05))', border: '1px solid rgba(79,124,255,0.18)', borderRadius: 16, padding: '18px 22px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                <div style={{ fontSize: 20 }}>\uD83D\uDCCB</div>
+                <div style={{ fontSize: 20 }}>📋</div>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Unlock 5 more formats</div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 1 }}>IIM, DU, Startup, Finance, Marketing</div>
@@ -990,7 +990,7 @@ export default function ResumeBuilderPage() {
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
               <span style={{ fontSize: 12, fontWeight: 700, color: '#93BBFF', padding: '4px 12px', borderRadius: 100, background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.35)' }}>LSE</span>
               {['IIM', 'DU', 'Startup', 'Finance'].map(n => (
-                <button key={n} onClick={() => setShowPopup(true)} style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', padding: '4px 10px', borderRadius: 100, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', cursor: 'pointer', fontFamily: 'inherit' }}>\uD83D\uDD12 {n}</button>
+                <button key={n} onClick={() => setShowPopup(true)} style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', padding: '4px 10px', borderRadius: 100, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', cursor: 'pointer', fontFamily: 'inherit' }}>🔒 {n}</button>
               ))}
             </div>
             <div style={{ boxShadow: '0 4px 32px rgba(0,0,0,0.5)', borderRadius: 4, overflow: 'hidden', display: 'inline-block' }}>
@@ -1000,7 +1000,7 @@ export default function ResumeBuilderPage() {
         )}
         {activeTab === 'edit' && (
           <button onClick={() => setActiveTab('preview')} className="no-print" style={{ position: 'fixed', bottom: 24, right: 20, width: 50, height: 50, borderRadius: '50%', background: '#4F7CFF', border: 'none', fontSize: 20, cursor: 'pointer', boxShadow: '0 4px 16px rgba(79,124,255,0.45)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            \uD83D\uDCC4
+            📄
           </button>
         )}
       </div>
