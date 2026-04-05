@@ -125,7 +125,7 @@ function getBulletTip(bullet: string): { text: string; type: 'warn' | 'good' } {
   if (weakStarters.includes(firstWord)) return { text: "Start stronger — try 'Drove', 'Built', 'Managed'", type: 'warn' }
   if (!/\d/.test(bullet)) return { text: "Add a specific number — e.g. '40% growth' or '₹3.2L impact'", type: 'warn' }
   if (bullet.length < 60) return { text: 'Add more context — what was the result or impact?', type: 'warn' }
-  return { text: '\u2713 Strong bullet', type: 'good' }
+  return { text: '✓ Strong bullet', type: 'good' }
 }
 
 type SectionStatus = 'empty' | 'partial' | 'complete'
@@ -300,9 +300,9 @@ function SectionCard({ id, icon, title, status, expanded, onToggle, children }: 
         <span style={{ fontSize: 15 }}>{icon}</span>
         <span style={{ flex: 1, fontSize: 13, fontWeight: 700 }}>{title}</span>
         <span style={{ width: 18, height: 18, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, background: status === 'complete' ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.04)', color: status === 'complete' ? '#10b981' : 'rgba(255,255,255,0.25)', border: `1px solid ${status === 'complete' ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.08)'}`, flexShrink: 0 }}>
-          {status === 'complete' ? '\u2713' : '\u25CB'}
+          {status === 'complete' ? '✓' : '○'}
         </span>
-        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', transition: 'transform 0.2s', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0 }}>\u25BC</span>
+        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', transition: 'transform 0.2s', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0 }}>▼</span>
       </button>
       {expanded && <div style={{ padding: '0 18px 18px' }}>{children}</div>}
     </div>
@@ -482,7 +482,7 @@ export default function ResumeBuilderPage() {
   const handleSave = () => {
     localStorage.setItem('resumeDraft', JSON.stringify(formData))
     setSavedTime(new Date())
-    addToast('Draft saved \u2713', 'success')
+    addToast('Draft saved ✓', 'success')
   }
 
   const handleFillExample = () => {
@@ -533,7 +533,7 @@ export default function ResumeBuilderPage() {
         }
       }
       pdf.save(`${(formData.name || 'resume').replace(/\s+/g, '_')}_resume.pdf`)
-      addToast('PDF downloaded \u2713', 'success')
+      addToast('PDF downloaded ✓', 'success')
     } catch { addToast('Download failed — try again', 'error') }
     finally {
       ;(el as HTMLElement).style.transform = prevTransform
@@ -797,7 +797,7 @@ export default function ResumeBuilderPage() {
           <span style={{ fontSize: 15 }}>📊</span>
           <span style={{ flex: 1, fontSize: 13, fontWeight: 700 }}>ATS Score</span>
           <span style={{ fontSize: 15, fontWeight: 800, color: ats.score > 75 ? '#10b981' : ats.score > 50 ? '#f59e0b' : '#ef4444' }}>{ats.score}</span>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', transition: 'transform 0.2s', transform: showATS ? 'rotate(180deg)' : 'rotate(0deg)' }}>\u25BC</span>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', transition: 'transform 0.2s', transform: showATS ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
         </button>
         {showATS && (
           <div style={{ background: '#161b22', border: '1px solid rgba(255,255,255,0.05)', borderTop: 'none', borderRadius: '0 0 12px 12px', padding: '16px 18px' }}>
@@ -815,7 +815,7 @@ export default function ResumeBuilderPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {ats.missing.map((m, i) => (
                   <button key={i} onClick={() => scrollToSection(m.section)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.45)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}>
-                    <span style={{ color: '#f59e0b', fontSize: 10 }}>\u25CF</span>
+                    <span style={{ color: '#f59e0b', fontSize: 10 }}>●</span>
                     {m.label}
                   </button>
                 ))}
