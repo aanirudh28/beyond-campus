@@ -611,7 +611,6 @@ export default function ResumeBuilderPage() {
         <textarea
           ref={el => { bulletRefs.current[key] = el }}
           value={value} onChange={e => onSet(e.target.value)}
-          onFocus={() => setActiveBulletKey(key)}
           placeholder={placeholder} rows={2}
           style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.65 }}
           onFocus={e => { e.currentTarget.style.borderBottomColor = '#4F7CFF'; setActiveBulletKey(key) }}
