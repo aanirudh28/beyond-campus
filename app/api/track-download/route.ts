@@ -7,10 +7,14 @@ const supabase = createClient(
 )
 
 export async function POST(req: Request) {
-  const { resourceName } = await req.json()
-  await supabase.from('resource_downloads').insert({
-    resource_name: resourceName,
-    downloaded_at: new Date().toISOString()
-  })
-  return NextResponse.json({ success: true })
+  try {
+    const { resourceName } = await req.json()
+    await supabase.from('resource_downloads').insert({
+      resource_name: resourceName,
+      downloaded_at: new Date().toISOString()
+    })
+    return NextResponse.json({ success: true })
+  } catch {
+    return NextResponse.json({ success: false })
+  }
 }

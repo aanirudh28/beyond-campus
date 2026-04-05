@@ -280,19 +280,21 @@ export default function FreePage() {
 
             <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.4, marginBottom: 8 }}>Consulting Resources</h3>
             <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, marginBottom: 16 }}>
-              Casebooks, guestimate frameworks, and interview prep materials — free downloads for consulting aspirants.
+              Casebooks from IIM-A, IIM-B, IIM-C, IIM-L, ISB, BITSoM + SRCC Guestimate Book. Free downloads, no sign-up.
             </p>
 
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
-              {['Casebooks', 'Guestimates', 'Free'].map(s => (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+              {['8 Casebooks · Guestimates · Free'].map(s => (
                 <span key={s} style={{ padding: '5px 14px', borderRadius: 100, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', color: '#6ee7b7', fontSize: 12, fontWeight: 700 }}>
                   {s}
                 </span>
               ))}
             </div>
 
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 18, fontWeight: 500 }}>↓ 3,200+ downloads</div>
+
             <a href="/resources/consulting" className="view-link" style={{ fontSize: 15 }}>
-              Browse Resources →
+              Browse &amp; Download →
             </a>
             <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 10, fontWeight: 500 }}>
               No email required · Direct download
