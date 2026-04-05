@@ -601,7 +601,7 @@ export default function ResumeBuilderPage() {
           <label style={{ ...labelStyle, flex: 1, marginBottom: 0 }}>Achievement</label>
           {value && (
             <button onClick={() => setBulletTips(p => ({ ...p, [key]: !p[key] }))} title="Get tip"
-              style={{ background: 'none', border: 'none', color: '#f59e0b', cursor: 'pointer', fontSize: 13, padding: 0, lineHeight: 1 }}>\u26a1</button>
+              style={{ background: 'none', border: 'none', color: '#f59e0b', cursor: 'pointer', fontSize: 13, padding: 0, lineHeight: 1 }}>⚡</button>
           )}
           <button onClick={() => { setBulletBank(true); setActiveBulletKey(key) }} title="Insert action verb"
             style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: 11, fontWeight: 700, padding: 0, fontFamily: 'inherit' }}>
