@@ -169,7 +169,7 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
   const hasExp  = f.experiences.some(e => e.company || e.role)
   const hasProj = f.projects.some(p => p.name)
   const hasEdu2 = f.education2.college || f.education2.degree
-  const isEmpty = !f.name && !hasEdu && !hasExp && !hasProj && f.skills.length === 0
+  const isEmpty = !f.name && !f.email && !f.college
 
   const sectionHeading = (label: string) => (
     <div style={{ borderBottom: '1.5px solid black', marginBottom: 8, marginTop: 14 }}>
@@ -183,20 +183,47 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
       <div style={{ position: 'absolute', top: 1050, left: 0, right: 0, height: 1, background: 'rgba(239,68,68,0.5)', zIndex: 10, pointerEvents: 'none' }} />
 
       {isEmpty && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 400, gap: 12 }}>
-          <div style={{ fontSize: 32 }}>📄</div>
-          <div style={{ color: '#9ca3af', fontFamily: 'DM Sans, sans-serif', fontSize: 14, textAlign: 'center', lineHeight: 1.6 }}>
-            Your resume preview will appear here<br />
-            <span style={{ fontSize: 12, color: '#d1d5db' }}>Start filling in your details on the left</span>
+        <div style={{ opacity: 1, transition: 'opacity 0.4s ease', padding: '40px 0 0' }}>
+          {/* Name skeleton */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 20 }}>
+            <div className="skeleton-pulse" style={{ width: 180, height: 16, background: '#e5e7eb', borderRadius: 4 }} />
+            <div className="skeleton-pulse" style={{ width: 280, height: 10, background: '#e5e7eb', borderRadius: 4, marginTop: 6 }} />
+          </div>
+          {/* Education */}
+          <div style={{ marginTop: 20 }}>
+            <div className="skeleton-pulse" style={{ width: 80, height: 10, background: '#e5e7eb', borderRadius: 4 }} />
+            <div style={{ height: 1, background: '#d1d5db', width: '100%', marginTop: 4 }} />
+            <div className="skeleton-pulse" style={{ width: 200, height: 10, background: '#e5e7eb', borderRadius: 4, marginTop: 8 }} />
+            <div className="skeleton-pulse" style={{ width: 150, height: 8, background: '#e5e7eb', borderRadius: 4, marginTop: 4 }} />
+          </div>
+          {/* Experience */}
+          <div style={{ marginTop: 20 }}>
+            <div className="skeleton-pulse" style={{ width: 80, height: 10, background: '#e5e7eb', borderRadius: 4 }} />
+            <div style={{ height: 1, background: '#d1d5db', width: '100%', marginTop: 4 }} />
+            <div className="skeleton-pulse" style={{ width: 220, height: 10, background: '#e5e7eb', borderRadius: 4, marginTop: 8 }} />
+            <div className="skeleton-pulse" style={{ width: 300, height: 8, background: '#e5e7eb', borderRadius: 4, marginTop: 4 }} />
+            <div className="skeleton-pulse" style={{ width: 260, height: 8, background: '#e5e7eb', borderRadius: 4, marginTop: 4 }} />
+            <div className="skeleton-pulse" style={{ width: 280, height: 8, background: '#e5e7eb', borderRadius: 4, marginTop: 4 }} />
+          </div>
+          {/* Skills */}
+          <div style={{ marginTop: 20 }}>
+            <div className="skeleton-pulse" style={{ width: 80, height: 10, background: '#e5e7eb', borderRadius: 4 }} />
+            <div style={{ height: 1, background: '#d1d5db', width: '100%', marginTop: 4 }} />
+            <div className="skeleton-pulse" style={{ width: 320, height: 8, background: '#e5e7eb', borderRadius: 4, marginTop: 8 }} />
+          </div>
+          {/* Caption */}
+          <div style={{ marginTop: 32, textAlign: 'center', fontSize: 11, color: '#9ca3af', fontFamily: 'DM Sans, sans-serif' }}>
+            Start typing to see your resume appear here
           </div>
         </div>
       )}
 
+      <div style={{ opacity: isEmpty ? 0 : 1, transition: 'opacity 0.4s ease', pointerEvents: isEmpty ? 'none' : 'auto' }}>
       {f.name && (
         <div style={{ textAlign: 'center', marginBottom: 10 }}>
           <div style={{ fontSize: 22, fontWeight: 'bold', letterSpacing: 1 }}>{f.name}</div>
           {contactParts.length > 0 && (
-            <div style={{ fontSize: 10, color: '#333', marginTop: 4 }}>{contactParts.join(' \u00B7 ')}</div>
+            <div style={{ fontSize: 10, color: '#333', marginTop: 4 }}>{contactParts.join(' · ')}</div>
           )}
         </div>
       )}
@@ -281,6 +308,7 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
           <div><span style={{ fontWeight: 'bold' }}>Languages:</span> {f.languages.join(', ')}</div>
         </div>
       )}
+      </div>
     </div>
   )
 }
@@ -842,6 +870,8 @@ export default function ResumeBuilderPage() {
           @page { size:A4; margin:15mm; }
         }
         @keyframes slideInRight { from { transform:translateX(60px);opacity:0; } to { transform:translateX(0);opacity:1; } }
+        @keyframes skeletonPulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+        .skeleton-pulse { animation: skeletonPulse 1.5s ease-in-out infinite; }
         @keyframes fadeUp { from { opacity:0;transform:translateY(8px); } to { opacity:1;transform:translateY(0); } }
         @media(max-width:860px){
           .builder-desktop{display:none !important}
