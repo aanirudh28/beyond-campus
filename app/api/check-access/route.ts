@@ -10,15 +10,16 @@ export async function POST(req: Request) {
   const { email } = await req.json()
   if (!email) return NextResponse.json({ hasAccess: false, revoked: false })
 
-  const { data } = await supabase
-    .from('manual_access')
-    .select('access_type')
-    .eq('email', email)
-    .single()
+  const [{ data: manualData }, { data: purchaseData }] = await Promise.all([
+    supabase.from('manual_access').select('access_type').eq('email', email).single(),
+    supabase.from('resource_purchases').select('email').eq('email', email).single(),
+  ])
+
+  const hasAccess = !!manualData || !!purchaseData
 
   return NextResponse.json({
-    hasAccess: !!data,
-    accessType: data?.access_type || null,
-    revoked: !data
+    hasAccess,
+    accessType: manualData?.access_type || (purchaseData ? 'paid' : null),
+    revoked: !hasAccess,
   })
 }
