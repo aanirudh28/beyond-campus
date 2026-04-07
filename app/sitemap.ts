@@ -33,6 +33,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: 'https://www.beyond-campus.in/resources/career-toolkit',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
       url: 'https://www.beyond-campus.in/resources/cold-email-pack',
       lastModified: new Date(),
       changeFrequency: 'monthly',

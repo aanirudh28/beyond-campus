@@ -804,6 +804,12 @@ export default function ResumeBuilderPage() {
           <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(79,124,255,0.04)', border: '1px solid rgba(79,124,255,0.08)', fontSize: 11, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
             Include case competitions, academic research, freelance work.
           </div>
+          <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 8, background: 'rgba(79,124,255,0.06)', border: '1px solid rgba(79,124,255,0.15)', fontSize: 12, color: '#93BBFF', lineHeight: 1.6 }}>
+            💡 Not sure what to build?{' '}
+            <a href="/resources/career-toolkit" style={{ color: '#93BBFF', fontWeight: 700, textDecoration: 'underline' }}>
+              See project playbooks by role →
+            </a>
+          </div>
         </SectionCard>
       </div>
 
