@@ -17,21 +17,21 @@ type Role = { id: string; title: string; domain: string; emoji: string; projects
 
 // ──────────────────────── ROLES ────────────────────────
 const roles: Role[] = [
-  { id: 'business-analyst', title: 'Business Analyst Intern', domain: 'Consulting', emoji: '📊', projects: 4, skills: 12 },
-  { id: 'strategy-intern', title: 'Strategy Intern', domain: 'Consulting', emoji: '♟️', projects: 3, skills: 10 },
-  { id: 'consulting-big4', title: 'Big 4 Consulting Intern', domain: 'Consulting', emoji: '🏢', projects: 4, skills: 14 },
-  { id: 'finance-intern', title: 'Finance Intern', domain: 'Finance', emoji: '💰', projects: 4, skills: 12 },
-  { id: 'fpa-intern', title: 'FP&A Intern', domain: 'Finance', emoji: '📈', projects: 3, skills: 10 },
-  { id: 'investment-research', title: 'Investment Research Intern', domain: 'Finance', emoji: '🔍', projects: 3, skills: 11 },
-  { id: 'founders-office', title: "Founder's Office Intern", domain: "Founder's Office", emoji: '🚀', projects: 4, skills: 13 },
-  { id: 'chief-of-staff', title: 'Chief of Staff (Entry)', domain: "Founder's Office", emoji: '⚡', projects: 3, skills: 11 },
-  { id: 'marketing-intern', title: 'Marketing Intern', domain: 'Marketing', emoji: '📣', projects: 5, skills: 14 },
-  { id: 'content-social', title: 'Content & Social Media Intern', domain: 'Marketing', emoji: '✍️', projects: 4, skills: 12 },
-  { id: 'growth-marketing', title: 'Growth Marketing Intern', domain: 'Marketing', emoji: '📊', projects: 3, skills: 13 },
-  { id: 'bd-intern', title: 'Business Development Intern', domain: 'BD', emoji: '🤝', projects: 4, skills: 11 },
-  { id: 'partnerships-intern', title: 'Partnerships Intern', domain: 'BD', emoji: '🔗', projects: 3, skills: 10 },
-  { id: 'operations-intern', title: 'Operations Intern', domain: 'Operations', emoji: '⚙️', projects: 4, skills: 12 },
-  { id: 'project-management', title: 'Project Management Intern', domain: 'Operations', emoji: '📋', projects: 3, skills: 11 },
+  { id: 'business-analyst', title: 'Business Analyst', domain: 'Consulting', emoji: '📊', projects: 4, skills: 12 },
+  { id: 'strategy-intern', title: 'Strategy Analyst', domain: 'Consulting', emoji: '♟️', projects: 3, skills: 10 },
+  { id: 'consulting-big4', title: 'Big 4 Consulting Analyst', domain: 'Consulting', emoji: '🏢', projects: 4, skills: 14 },
+  { id: 'finance-intern', title: 'Finance Analyst', domain: 'Finance', emoji: '💰', projects: 4, skills: 12 },
+  { id: 'fpa-intern', title: 'FP&A Analyst', domain: 'Finance', emoji: '📈', projects: 3, skills: 10 },
+  { id: 'investment-research', title: 'Investment Research Analyst', domain: 'Finance', emoji: '🔍', projects: 3, skills: 11 },
+  { id: 'founders-office', title: "Founder's Office", domain: "Founder's Office", emoji: '🚀', projects: 4, skills: 13 },
+  { id: 'chief-of-staff', title: 'Chief of Staff', domain: "Founder's Office", emoji: '⚡', projects: 3, skills: 11 },
+  { id: 'marketing-intern', title: 'Marketing Analyst', domain: 'Marketing', emoji: '📣', projects: 5, skills: 14 },
+  { id: 'content-social', title: 'Content & Social Media', domain: 'Marketing', emoji: '✍️', projects: 4, skills: 12 },
+  { id: 'growth-marketing', title: 'Growth Marketing Analyst', domain: 'Marketing', emoji: '📊', projects: 3, skills: 13 },
+  { id: 'bd-intern', title: 'Business Development Analyst', domain: 'BD', emoji: '🤝', projects: 4, skills: 11 },
+  { id: 'partnerships-intern', title: 'Partnerships Analyst', domain: 'BD', emoji: '🔗', projects: 3, skills: 10 },
+  { id: 'operations-intern', title: 'Operations Analyst', domain: 'Operations', emoji: '⚙️', projects: 4, skills: 12 },
+  { id: 'project-management', title: 'Project Management Analyst', domain: 'Operations', emoji: '📋', projects: 3, skills: 11 },
 ]
 
 const domains = ['All', 'Consulting', 'Finance', "Founder's Office", 'Marketing', 'BD', 'Operations']
