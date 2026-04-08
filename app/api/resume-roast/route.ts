@@ -4,19 +4,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Anthropic from '@anthropic-ai/sdk'
 
-// Polyfill browser APIs required by pdf-parse/pdfjs in Node.js
-if (typeof (global as any).DOMMatrix === 'undefined') {
-  (global as any).DOMMatrix = class DOMMatrix {
-    constructor(_init?: string | number[]) {}
-  }
-}
-if (typeof (global as any).Path2D === 'undefined') {
-  (global as any).Path2D = class Path2D {}
-}
-if (typeof (global as any).ImageData === 'undefined') {
-  (global as any).ImageData = class ImageData {}
-}
-
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -26,35 +13,7 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 })
 
-export async function POST(req: NextRequest) {
-  try {
-    const formData = await req.formData()
-    const file = formData.get('file') as File
-    const tone = (formData.get('tone') as string) || 'normal'
-
-    if (!file) return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
-    if (file.size > 5 * 1024 * 1024) return NextResponse.json({ error: 'File too large. Max 5MB.' }, { status: 400 })
-    if (file.type !== 'application/pdf') return NextResponse.json({ error: 'Only PDF files accepted.' }, { status: 400 })
-
-    const arrayBuffer = await file.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer)
-    const pdfParse = require('pdf-parse')
-    const pdfData = await pdfParse(buffer)
-    const resumeText = pdfData.text?.trim()
-
-    if (!resumeText || resumeText.length < 100) {
-      return NextResponse.json({
-        error: 'Could not extract text from this PDF. Make sure your resume is not a scanned image.'
-      }, { status: 400 })
-    }
-
-    if (resumeText.length > 15000) {
-      return NextResponse.json({
-        error: 'Resume is too long. Keep it to one page.'
-      }, { status: 400 })
-    }
-
-    const systemPrompt = `You are a brutally honest but genuinely helpful resume reviewer for non-tech business roles in India — consulting, finance, Founder's Office, marketing, business development, and operations.
+const analysisPrompt = (tone: string) => `You are a brutally honest but genuinely helpful resume reviewer for non-tech business roles in India — consulting, finance, Founder's Office, marketing, business development, and operations.
 
 Your job is to roast this resume in ${tone} mode:
 - normal: honest, direct, constructive, slightly witty
@@ -70,16 +29,9 @@ CRITICAL RULES:
 4. Rewritten bullets must be realistic — use placeholders like [X%] or [₹X] not invented numbers
 5. The roast summary must be witty but not mean — it should make them want to fix it, not give up
 6. If the resume is actually good (score 80+), acknowledge it — don't manufacture criticism
-7. Return ONLY valid JSON. No preamble, no explanation, no markdown fences. Just the raw JSON object.`
+7. Return ONLY valid JSON. No preamble, no explanation, no markdown fences. Just the raw JSON object.
 
-    const userPrompt = `Resume text:
-"""
-${resumeText}
-"""
-
-Tone: ${tone}
-
-Analyze this resume completely and return a JSON object with this exact structure:
+Analyze the resume in the attached PDF and return a JSON object with this exact structure:
 {
   "overall_score": <integer 0-100>,
   "domain": <string — best guess at target domain>,
@@ -88,79 +40,71 @@ Analyze this resume completely and return a JSON object with this exact structur
   "roast_summary": <string — 2-3 sentences, witty but accurate, tone-appropriate>,
   "shareable_headline": <string — one punchy line max 12 words that captures the biggest problem>,
   "sections": {
-    "education": {
-      "score": <integer 0-100>,
-      "verdict": <string — one sharp sentence>,
-      "issues": [<specific strings referencing actual content>],
-      "positives": [<strings>]
-    },
-    "experience": {
-      "score": <integer 0-100>,
-      "verdict": <string>,
-      "issues": [<strings>],
-      "positives": [<strings>]
-    },
-    "projects": {
-      "score": <integer 0-100>,
-      "verdict": <string>,
-      "issues": [<strings>],
-      "positives": [<strings>]
-    },
-    "skills": {
-      "score": <integer 0-100>,
-      "verdict": <string>,
-      "issues": [<strings>],
-      "positives": [<strings>]
-    },
-    "formatting": {
-      "score": <integer 0-100>,
-      "verdict": <string>,
-      "issues": [<strings>],
-      "positives": [<strings>]
-    }
+    "education": { "score": <integer 0-100>, "verdict": <string>, "issues": [<strings>], "positives": [<strings>] },
+    "experience": { "score": <integer 0-100>, "verdict": <string>, "issues": [<strings>], "positives": [<strings>] },
+    "projects": { "score": <integer 0-100>, "verdict": <string>, "issues": [<strings>], "positives": [<strings>] },
+    "skills": { "score": <integer 0-100>, "verdict": <string>, "issues": [<strings>], "positives": [<strings>] },
+    "formatting": { "score": <integer 0-100>, "verdict": <string>, "issues": [<strings>], "positives": [<strings>] }
   },
   "top_mistakes": [
-    {
-      "title": <string — short name>,
-      "description": <string — specific, references actual resume content>,
-      "example": <string — exact quote from resume demonstrating the problem>,
-      "fix": <string — exactly what to do>,
-      "severity": <"critical"|"major"|"minor">
-    }
+    { "title": <string>, "description": <string>, "example": <string — exact quote>, "fix": <string>, "severity": <"critical"|"major"|"minor"> }
   ],
   "ats_issues": {
     "score": <integer 0-100>,
-    "issues": [<specific strings>],
-    "missing_keywords": [<strings — keywords likely missing for target role>]
+    "issues": [<strings>],
+    "missing_keywords": [<strings>]
   },
   "recruiter_perception": {
-    "first_impression": <string — what they think in first 6 seconds>,
+    "first_impression": <string>,
     "likely_decision": <"shortlist"|"maybe"|"reject">,
-    "what_stands_out": <string — something genuinely positive>,
-    "what_kills_it": <string — the single biggest dealbreaker>
+    "what_stands_out": <string>,
+    "what_kills_it": <string>
   },
   "rewritten_bullets": [
-    {
-      "original": <string — exact quote from resume>,
-      "rewritten": <string — improved version>,
-      "why_better": <string — specific explanation>
-    }
+    { "original": <string — exact quote>, "rewritten": <string>, "why_better": <string> }
   ],
   "actionable_fixes": [
-    {
-      "priority": <integer 1-5, 1 = fix first>,
-      "action": <string — very specific action>,
-      "impact": <string — what changes>,
-      "time_needed": <string — "5 minutes"|"30 minutes"|"1 hour">
-    }
+    { "priority": <integer 1-5>, "action": <string>, "impact": <string>, "time_needed": <string> }
   ]
 }`
+
+export async function POST(req: NextRequest) {
+  try {
+    const formData = await req.formData()
+    const file = formData.get('file') as File
+    const tone = (formData.get('tone') as string) || 'normal'
+
+    if (!file) return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
+    if (file.size > 5 * 1024 * 1024) return NextResponse.json({ error: 'File too large. Max 5MB.' }, { status: 400 })
+    if (file.type !== 'application/pdf') return NextResponse.json({ error: 'Only PDF files accepted.' }, { status: 400 })
+
+    // Convert PDF to base64 and send directly to Claude — no pdf-parse needed
+    const arrayBuffer = await file.arrayBuffer()
+    const base64 = Buffer.from(arrayBuffer).toString('base64')
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-5',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: userPrompt }],
-      system: systemPrompt,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'document',
+              source: {
+                type: 'base64',
+                media_type: 'application/pdf',
+                data: base64,
+              },
+            } as any,
+            {
+              type: 'text',
+              text: `Tone: ${tone}\n\nAnalyze this resume and return the JSON as instructed.`,
+            },
+          ],
+        },
+      ],
+      system: analysisPrompt(tone),
     })
 
     const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
@@ -170,7 +114,7 @@ Analyze this resume completely and return a JSON object with this exact structur
     const { data, error } = await supabase
       .from('roast_results')
       .insert({
-        resume_text: resumeText.substring(0, 10000),
+        resume_text: '',
         tone,
         overall_score: roastData.overall_score,
         roast_summary: roastData.roast_summary,
