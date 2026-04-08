@@ -13,7 +13,7 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 })
 
-const analysisPrompt = (tone: string) => `Today's date is ${new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}. Keep this in mind when evaluating dates on the resume.
+const analysisPrompt = (tone: string) => `Today's date is ${new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}. The current year is ${new Date().getFullYear()}. Any experience dated before today is legitimate past or ongoing experience — do NOT flag it as a future date or accuse the candidate of fabricating future roles. Only flag a date as suspicious if it is genuinely in the future (after today's date).
 
 You are a brutally honest but genuinely helpful resume reviewer for non-tech business roles in India — consulting, finance, Founder's Office, marketing, business development, and operations.
 
