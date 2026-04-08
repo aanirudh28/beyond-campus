@@ -217,7 +217,34 @@ export default function FreePage() {
         {/* ── RESOURCE CARDS ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-          {/* Card 0: Career Toolkit — completely free */}
+          {/* Card 0: Resume Roast — NEW */}
+          <div className="resource-card" style={{ borderColor: 'rgba(239,68,68,0.2)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.2, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', color: '#f87171' }}>
+                  NEW 🔥
+                </span>
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, color: 'rgba(255,255,255,0.3)' }}>AI-powered · Free</span>
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 8 }}>🔥 Resume Roast</div>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 16 }}>
+              Upload your resume and get a brutally honest score, section breakdown, rewritten bullets, and ATS analysis. 3,200+ resumes roasted.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
+              {['AI-Powered', 'Instant', 'Free'].map(tag => (
+                <span key={tag} style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', fontWeight: 600 }}>{tag}</span>
+              ))}
+            </div>
+            <a href="/resources/resume-roast" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 0', borderRadius: 12, background: 'linear-gradient(135deg,rgba(239,68,68,0.2),rgba(220,38,38,0.15))', border: '1.5px solid rgba(239,68,68,0.4)', color: '#f87171', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
+              Roast My Resume →
+            </a>
+            <div style={{ textAlign: 'center', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>
+              Completely free · No sign-up · Results in 30 seconds
+            </div>
+          </div>
+
+          {/* Card 0b: Career Toolkit — completely free */}
           <div className="resource-card">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

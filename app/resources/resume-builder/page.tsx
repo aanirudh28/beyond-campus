@@ -810,6 +810,12 @@ export default function ResumeBuilderPage() {
               See project playbooks by role →
             </a>
           </div>
+          <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 8, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)', fontSize: 12, color: '#f87171', lineHeight: 1.6 }}>
+            Already have a resume?{' '}
+            <a href="/resources/resume-roast" style={{ color: '#f87171', fontWeight: 700, textDecoration: 'underline' }}>
+              🔥 Get it roasted first →
+            </a>
+          </div>
         </SectionCard>
       </div>
 
