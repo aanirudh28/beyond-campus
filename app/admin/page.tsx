@@ -70,6 +70,17 @@ type ManualAccess = {
   granted_by: string
 }
 
+type RoastResult = {
+  id: string
+  email: string | null
+  tone: string
+  overall_score: number
+  grade: string
+  grade_label: string
+  domain: string
+  created_at: string
+}
+
 type FeedPost = {
   id: string
   type: string
@@ -106,7 +117,9 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access'>('bookings')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts'>('bookings')
+  const [roasts, setRoasts] = useState<RoastResult[]>([])
+  const [roastsLoading, setRoastsLoading] = useState(false)
   const [summerRegs, setSummerRegs] = useState<SummerReg[]>([])
   const [summerLoading, setSummerLoading] = useState(false)
   const [summerFilter, setSummerFilter] = useState<'all' | 'paid' | 'pending'>('all')
@@ -270,6 +283,17 @@ export default function AdminPage() {
     setResourcesLoading(false)
   }
 
+  const fetchRoasts = async () => {
+    setRoastsLoading(true)
+    const { data } = await supabase
+      .from('roast_results')
+      .select('id, email, tone, overall_score, grade, grade_label, domain, created_at')
+      .order('created_at', { ascending: false })
+      .limit(200)
+    if (data) setRoasts(data)
+    setRoastsLoading(false)
+  }
+
   const fetchSummerRegs = async () => {
     setSummerLoading(true)
     const { data } = await supabase.from('summer_registrations').select('*').order('created_at', { ascending: false })
@@ -286,6 +310,7 @@ export default function AdminPage() {
       fetchResources()
       fetchFeed()
       fetchManualAccess()
+      fetchRoasts()
     } else {
       setError('Incorrect password')
     }
@@ -413,6 +438,7 @@ export default function AdminPage() {
             { key: 'resources', label: `📦 Resources (${resourcePurchases.length})`, active: activeTab === 'resources', color: '#4F7CFF', bg: 'rgba(79,124,255,0.15)' },
             { key: 'feed', label: `💬 Feed (${feedPendingPosts.length + feedPendingReplies.length} pending)`, active: activeTab === 'feed', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
             { key: 'manual-access', label: `🔓 Manual Access (${manualAccessList.length})`, active: activeTab === 'manual-access', color: '#a78bfa', bg: 'rgba(167,139,250,0.15)' },
+            { key: 'roasts', label: `🔥 Roasts (${roasts.length})`, active: activeTab === 'roasts', color: '#ef4444', bg: 'rgba(239,68,68,0.15)' },
           ].map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: tab.active ? tab.color : 'rgba(255,255,255,0.1)', background: tab.active ? tab.bg : 'transparent', color: tab.active ? tab.color : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               {tab.label}
@@ -972,6 +998,74 @@ export default function AdminPage() {
           Showing {filtered.length} of {bookings.length} bookings
         </div>
         </>}
+
+        {/* Roasts Tab */}
+        {activeTab === 'roasts' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+              <button onClick={fetchRoasts} style={{ padding: '10px 20px', borderRadius: 100, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                ↻ Refresh
+              </button>
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden' }}>
+              {roastsLoading ? (
+                <div style={{ padding: 60, textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>Loading roasts...</div>
+              ) : roasts.length === 0 ? (
+                <div style={{ padding: 60, textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>No roasts yet</div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Email</th>
+                        <th>Score</th>
+                        <th>Grade</th>
+                        <th>Domain</th>
+                        <th>Tone</th>
+                        <th>Date</th>
+                        <th>Link</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {roasts.map(r => (
+                        <tr key={r.id}>
+                          <td style={{ color: r.email ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.25)', fontStyle: r.email ? 'normal' : 'italic' }}>
+                            {r.email || 'anonymous'}
+                          </td>
+                          <td>
+                            <span style={{ fontWeight: 800, color: r.overall_score >= 70 ? '#4ade80' : r.overall_score >= 50 ? '#fcd34d' : '#f87171' }}>
+                              {r.overall_score}/100
+                            </span>
+                          </td>
+                          <td>
+                            <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 100, fontWeight: 700, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171' }}>
+                              {r.grade} · {r.grade_label}
+                            </span>
+                          </td>
+                          <td style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>{r.domain || '—'}</td>
+                          <td>
+                            <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 100, background: r.tone === 'savage' ? 'rgba(239,68,68,0.12)' : r.tone === 'recruiter' ? 'rgba(79,124,255,0.12)' : 'rgba(255,255,255,0.06)', color: r.tone === 'savage' ? '#f87171' : r.tone === 'recruiter' ? '#93BBFF' : 'rgba(255,255,255,0.5)', border: '1px solid', borderColor: r.tone === 'savage' ? 'rgba(239,68,68,0.2)' : r.tone === 'recruiter' ? 'rgba(79,124,255,0.2)' : 'rgba(255,255,255,0.1)' }}>
+                              {r.tone}
+                            </span>
+                          </td>
+                          <td style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{formatDate(r.created_at)}</td>
+                          <td>
+                            <a href={`/resources/resume-roast/results/${r.id}`} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: '#93BBFF', fontWeight: 600 }}>
+                              View →
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: 'rgba(255,255,255,0.2)' }}>
+              {roasts.length} roasts total · {roasts.filter(r => r.email).length} with email
+            </div>
+          </div>
+        )}
 
       </div>
     </main>

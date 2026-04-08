@@ -29,6 +29,7 @@ export default function ResumeRoastPage() {
   const [msgIndex, setMsgIndex] = useState(0)
   const [msgVisible, setMsgVisible] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [email, setEmail] = useState('')
 
   // Progress bar animation
   useEffect(() => {
@@ -81,6 +82,7 @@ export default function ResumeRoastPage() {
       const fd = new FormData()
       fd.append('file', file)
       fd.append('tone', tone)
+      fd.append('email', email.trim().toLowerCase())
       const res = await fetch('/api/resume-roast', { method: 'POST', body: fd })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Something went wrong'); setProcessing(false); return }
@@ -192,6 +194,21 @@ export default function ResumeRoastPage() {
           </div>
         </div>
 
+        {/* EMAIL INPUT */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', marginBottom: 10 }}>Your Email <span style={{ color: '#ef4444', fontWeight: 700 }}>*</span></div>
+          <input
+            type="email"
+            placeholder="you@college.edu"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+            style={{ width: '100%', padding: '14px 16px', borderRadius: 12, background: '#111827', border: '1.5px solid rgba(255,255,255,0.08)', color: 'white', fontSize: 15, outline: 'none', fontFamily: "'DM Sans','Inter',sans-serif", transition: 'border-color 0.2s' }}
+            onFocus={e => (e.target.style.borderColor = 'rgba(239,68,68,0.4)')}
+            onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
+          />
+        </div>
+
         {/* UPLOAD ZONE */}
         <div style={{ marginBottom: 20 }}>
           <input
@@ -234,7 +251,7 @@ export default function ResumeRoastPage() {
         )}
 
         {/* SUBMIT */}
-        <button className="submit-btn" disabled={!file} onClick={handleSubmit}>
+        <button className="submit-btn" disabled={!file || !email.trim()} onClick={handleSubmit}>
           Roast My Resume 🔥
         </button>
 

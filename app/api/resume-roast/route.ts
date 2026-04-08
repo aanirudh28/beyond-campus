@@ -75,8 +75,10 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData()
     const file = formData.get('file') as File
     const tone = (formData.get('tone') as string) || 'normal'
+    const email = (formData.get('email') as string) || null
 
     if (!file) return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
+    if (!email) return NextResponse.json({ error: 'Email is required.' }, { status: 400 })
     if (file.size > 5 * 1024 * 1024) return NextResponse.json({ error: 'File too large. Max 5MB.' }, { status: 400 })
     if (file.type !== 'application/pdf') return NextResponse.json({ error: 'Only PDF files accepted.' }, { status: 400 })
 
@@ -117,6 +119,7 @@ export async function POST(req: NextRequest) {
       .from('roast_results')
       .insert({
         resume_text: '',
+        email,
         tone,
         overall_score: roastData.overall_score,
         roast_summary: roastData.roast_summary,
