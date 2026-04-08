@@ -256,7 +256,7 @@ export default function FreePage() {
             </div>
             <div style={{ fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 8 }}>🛠️ Career Toolkit</div>
             <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 16 }}>
-              Skill maps, project playbooks, and resume bullets for 15 internship roles. Know exactly what to build before you apply.
+              Skill maps, project playbooks, and resume bullets for 15 roles. Know exactly what to build before you apply.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
               {['15 Roles', '50+ Projects', 'Resume Bullets'].map(tag => (
