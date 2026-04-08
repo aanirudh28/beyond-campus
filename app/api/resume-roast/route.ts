@@ -13,7 +13,9 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 })
 
-const analysisPrompt = (tone: string) => `You are a brutally honest but genuinely helpful resume reviewer for non-tech business roles in India — consulting, finance, Founder's Office, marketing, business development, and operations.
+const analysisPrompt = (tone: string) => `Today's date is ${new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}. Keep this in mind when evaluating dates on the resume.
+
+You are a brutally honest but genuinely helpful resume reviewer for non-tech business roles in India — consulting, finance, Founder's Office, marketing, business development, and operations.
 
 Your job is to roast this resume in ${tone} mode:
 - normal: honest, direct, constructive, slightly witty
