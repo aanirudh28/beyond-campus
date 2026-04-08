@@ -383,7 +383,7 @@ export default function GetStarted() {
             <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, marginBottom: 8, lineHeight: 1.3 }}>Still not sure? Talk to us first.</div>
             <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>Book a free 10-minute clarity call. No pitch, no pressure — just an honest conversation about what makes sense for your situation.</div>
           </div>
-          <a href="https://wa.me/917518196206" target="_blank" rel="noopener noreferrer" className="btn-outlined" style={{ flexShrink: 0, whiteSpace: 'nowrap' }}>
+          <a href="https://chat.whatsapp.com/HUe0nBmwKLWBIgnHaA6Pp0" target="_blank" rel="noopener noreferrer" className="btn-outlined" style={{ flexShrink: 0, whiteSpace: 'nowrap' }}>
             Book a Free 10-min Call →
           </a>
         </div>
