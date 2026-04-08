@@ -2,6 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Anthropic from '@anthropic-ai/sdk'
 
+// Polyfill browser APIs required by pdf-parse/pdfjs in Node.js
+if (typeof (global as any).DOMMatrix === 'undefined') {
+  (global as any).DOMMatrix = class DOMMatrix {
+    constructor(_init?: string | number[]) {}
+  }
+}
+if (typeof (global as any).Path2D === 'undefined') {
+  (global as any).Path2D = class Path2D {}
+}
+if (typeof (global as any).ImageData === 'undefined') {
+  (global as any).ImageData = class ImageData {}
+}
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
