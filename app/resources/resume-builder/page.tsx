@@ -235,7 +235,7 @@ function statusColor(st: SectionStatus): string {
 /* ─────────────────────────────────────────────
    LIVE PREVIEW (LSE FORMAT)
 ───────────────────────────────────────────── */
-function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
+function LivePreview({ f, zoom, recruiterView }: { f: FormData; zoom: number; recruiterView?: boolean }) {
   const contactParts = [f.phone, f.email, f.linkedin, f.city].filter(Boolean)
   const hasEdu  = f.college || f.degree || f.year
   const hasExp  = f.experiences.some(e => e.company || e.role)
@@ -291,7 +291,7 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
         </div>
       )}
 
-      <div style={{ opacity: isEmpty ? 0 : 1, transition: 'opacity 0.4s ease', pointerEvents: isEmpty ? 'none' : 'auto' }}>
+      <div className={recruiterView ? 'recruiter-on' : ''} style={{ opacity: isEmpty ? 0 : 1, transition: 'opacity 0.4s ease', pointerEvents: isEmpty ? 'none' : 'auto' }}>
       {f.name && (
         <div style={{ textAlign: 'center', marginBottom: 10 }}>
           <div style={{ fontSize: 18, fontWeight: 'bold', letterSpacing: 1.5, textTransform: 'uppercase' }}>{f.name}</div>
@@ -539,11 +539,15 @@ export default function ResumeBuilderPage() {
   const [generatedSummary, setGeneratedSummary] = useState('')
   const [showPdfModal, setShowPdfModal]       = useState(false)
   const [isScoreCardLoading, setIsScoreCardLoading] = useState(false)
+  const [recruiterView, setRecruiterView]           = useState(false)
+  const [recruiterTimer, setRecruiterTimer]         = useState(6)
+  const [recruiterDone, setRecruiterDone]           = useState(false)
 
   const formPanelRef  = useRef<HTMLDivElement>(null)
   const sectionRefs   = useRef<Record<string, HTMLDivElement | null>>({})
   const bulletRefs    = useRef<Record<string, HTMLTextAreaElement | null>>({})
-  const toastIdRef    = useRef(0)
+  const toastIdRef           = useRef(0)
+  const recruiterIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // Load draft on mount
   useEffect(() => {
@@ -652,6 +656,29 @@ export default function ResumeBuilderPage() {
     setShowEdu2(false)
     setShowEdu3(false)
     addToast('All fields cleared', 'warn')
+  }
+
+  const toggleRecruiterView = () => {
+    if (recruiterView) {
+      if (recruiterIntervalRef.current) { clearInterval(recruiterIntervalRef.current); recruiterIntervalRef.current = null }
+      setRecruiterView(false)
+      setRecruiterTimer(6)
+      setRecruiterDone(false)
+    } else {
+      setRecruiterView(true)
+      setRecruiterTimer(6)
+      setRecruiterDone(false)
+      recruiterIntervalRef.current = setInterval(() => {
+        setRecruiterTimer(prev => {
+          if (prev <= 1) {
+            if (recruiterIntervalRef.current) { clearInterval(recruiterIntervalRef.current); recruiterIntervalRef.current = null }
+            setRecruiterDone(true)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
   }
 
   const handleDownloadPDF = async () => {
@@ -1184,6 +1211,14 @@ export default function ResumeBuilderPage() {
           .builder-mobile{display:none !important}
         }
         .verb-chip:hover { background:rgba(79,124,255,0.15) !important; border-color:rgba(79,124,255,0.4) !important; color:#93BBFF !important; }
+        @keyframes recruiterPulse { 0%,100% { box-shadow:0 0 0 0 rgba(245,158,11,0.4); } 50% { box-shadow:0 0 0 6px rgba(245,158,11,0); } }
+        .recruiter-on > * { opacity:0.12 !important; transition:opacity 0.3s; }
+        .recruiter-on > :first-child { opacity:1 !important; background:rgba(245,158,11,0.12) !important; border-radius:4px; }
+        .recruiter-on > [data-section="education"] { opacity:1 !important; background:rgba(245,158,11,0.12) !important; border-radius:4px; }
+        .recruiter-on > [data-section="experience"] { opacity:1 !important; background:rgba(245,158,11,0.12) !important; border-radius:4px; }
+        .recruiter-on > [data-section="skills"] { opacity:1 !important; background:rgba(245,158,11,0.12) !important; border-radius:4px; }
+        .recruiter-on > [data-section="experience"] > div:nth-child(n+3) { opacity:0.12 !important; background:transparent !important; }
+        .recruiter-on > [data-section="experience"] > div:nth-child(2) > div:nth-child(n+4) { opacity:0.12 !important; }
         .template-locked:hover { border-color:rgba(79,124,255,0.3) !important; }
         ::-webkit-scrollbar { width:4px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:2px; }
       `}</style>
@@ -1293,25 +1328,33 @@ export default function ResumeBuilderPage() {
                 </button>
               ))}
             </div>
-            {/* Page fit + Zoom controls */}
+            {/* Page fit + Recruiter View + Zoom controls */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+              {recruiterView && (
+                <div style={{ fontSize: 12, color: '#f59e0b', background: 'rgba(0,0,0,0.75)', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 100, padding: '3px 12px', fontWeight: 700, whiteSpace: 'nowrap', letterSpacing: 0.2 }}>
+                  {recruiterDone ? '⏱ Time\'s up' : `⏱ ${recruiterTimer}s remaining`}
+                </div>
+              )}
               {(() => {
                 const pageFit = calculatePageFit(formData)
                 const fitColor = pageFit >= 100 ? '#ef4444' : pageFit >= 90 ? '#f59e0b' : pageFit >= 70 ? '#10b981' : 'rgba(255,255,255,0.3)'
-                return <span style={{ fontSize: 11, color: fitColor, fontWeight: 600, marginRight: 4 }}>{pageFit >= 100 ? '⚠️ Overflowing' : pageFit >= 90 ? `${pageFit}% — almost full` : pageFit >= 70 ? `${pageFit}% ✓` : `${pageFit}%`}</span>
+                return <span style={{ fontSize: 11, color: fitColor, fontWeight: 600 }}>{pageFit >= 100 ? '⚠️ Overflowing' : pageFit >= 90 ? `${pageFit}% — almost full` : pageFit >= 70 ? `${pageFit}% ✓` : `${pageFit}%`}</span>
               })()}
-            </div>
-            <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
-              {[75, 90, 100].map(z => (
-                <button key={z} onClick={() => setZoom(z)} style={{ padding: '4px 10px', borderRadius: 6, background: zoom === z ? 'rgba(79,124,255,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${zoom === z ? 'rgba(79,124,255,0.35)' : 'rgba(255,255,255,0.07)'}`, color: zoom === z ? '#93BBFF' : 'rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>{z}%</button>
-              ))}
+              <button onClick={toggleRecruiterView} style={{ height: 28, padding: '0 12px', borderRadius: 100, background: recruiterView ? '#f59e0b' : 'transparent', border: recruiterView ? 'none' : '1px solid rgba(255,255,255,0.2)', color: recruiterView ? '#000' : 'rgba(255,255,255,0.5)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', flexShrink: 0, animation: recruiterView && !recruiterDone ? 'recruiterPulse 1.5s ease infinite' : 'none' }}>
+                {recruiterView ? '👁 Recruiter View ON' : '👁 Recruiter View'}
+              </button>
+              <div style={{ display: 'flex', gap: 3 }}>
+                {[75, 90, 100].map(z => (
+                  <button key={z} onClick={() => setZoom(z)} style={{ padding: '4px 10px', borderRadius: 6, background: zoom === z ? 'rgba(79,124,255,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${zoom === z ? 'rgba(79,124,255,0.35)' : 'rgba(255,255,255,0.07)'}`, color: zoom === z ? '#93BBFF' : 'rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>{z}%</button>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Resume render area */}
           <div style={{ padding: '28px 24px', display: 'flex', justifyContent: 'center', backgroundImage: 'radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
             <div style={{ boxShadow: '0 8px 48px rgba(0,0,0,0.6)', borderRadius: 4, overflow: 'hidden', width: 680 * (zoom / 100) }}>
-              <LivePreview f={formData} zoom={zoom} />
+              <LivePreview f={formData} zoom={zoom} recruiterView={recruiterView} />
             </div>
           </div>
 
@@ -1338,6 +1381,27 @@ export default function ResumeBuilderPage() {
         </div>
       </div>
 
+      {/* RECRUITER VIEW OVERLAY CARD (desktop) */}
+      {recruiterView && recruiterDone && (
+        <div className="no-print builder-desktop" style={{ position: 'fixed', bottom: 40, left: '42%', right: 0, display: 'flex', justifyContent: 'center', zIndex: 500, pointerEvents: 'none' }}>
+          <div style={{ pointerEvents: 'auto', background: '#111827', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 16, padding: '20px', maxWidth: 320, width: '100%', fontFamily: "'DM Sans',sans-serif", animation: 'fadeUp 0.25s ease' }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', marginBottom: 4 }}>This is what they remembered.</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginBottom: 14 }}>Everything else was ignored.</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.65)', marginBottom: 8 }}>Make these 5 elements count:</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 16 }}>
+              {['Name — clear and prominent', 'Recent role — specific title', 'First bullet — your best one', 'CGPA — only if 7.5+', 'Skills — match the JD'].map((item, i) => (
+                <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ color: '#10b981', fontWeight: 700 }}>✓</span> {item}
+                </div>
+              ))}
+            </div>
+            <button onClick={toggleRecruiterView} style={{ width: '100%', padding: '10px', borderRadius: 10, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', color: '#f59e0b', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+              Turn off Recruiter View
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* MOBILE LAYOUT */}
       <div className="builder-mobile" style={{ flexDirection: 'column', minHeight: 'calc(100vh - 104px)' }}>
         {activeTab === 'edit' && (
@@ -1355,8 +1419,25 @@ export default function ResumeBuilderPage() {
               ))}
             </div>
             <div style={{ boxShadow: '0 4px 32px rgba(0,0,0,0.5)', borderRadius: 4, overflow: 'hidden', display: 'inline-block' }}>
-              <LivePreview f={formData} zoom={55} />
+              <LivePreview f={formData} zoom={55} recruiterView={recruiterView} />
             </div>
+            {recruiterView && recruiterDone && (
+              <div style={{ marginTop: 20, background: '#111827', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 16, padding: '20px', fontFamily: "'DM Sans',sans-serif" }}>
+                <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', marginBottom: 4 }}>This is what they remembered.</div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginBottom: 14 }}>Everything else was ignored.</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.65)', marginBottom: 8 }}>Make these 5 elements count:</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 16 }}>
+                  {['Name — clear and prominent', 'Recent role — specific title', 'First bullet — your best one', 'CGPA — only if 7.5+', 'Skills — match the JD'].map((item, i) => (
+                    <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ color: '#10b981', fontWeight: 700 }}>✓</span> {item}
+                    </div>
+                  ))}
+                </div>
+                <button onClick={toggleRecruiterView} style={{ width: '100%', padding: '10px', borderRadius: 10, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', color: '#f59e0b', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  Turn off Recruiter View
+                </button>
+              </div>
+            )}
           </div>
         )}
         {activeTab === 'edit' && (
