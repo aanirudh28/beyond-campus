@@ -19,6 +19,7 @@ interface FormData {
   summary: string
   experiences: Experience[]
   education2: Education2
+  education3: Education2
   projects: Project[]
   skills: string[]
   languages: string[]
@@ -29,6 +30,7 @@ const defaultFormData: FormData = {
   summary: '',
   experiences: [{ company: '', role: '', duration: '', location: '', bullets: ['', '', '', ''] }],
   education2: { college: '', degree: '', year: '', cgpa: '' },
+  education3: { college: '', degree: '', year: '', cgpa: '' },
   projects: [{ name: '', context: '', bullets: ['', ''] }],
   skills: [],
   languages: [],
@@ -58,6 +60,7 @@ const EXAMPLE_DATA: FormData = {
       bullets: ['Prepared weekly market research reports on 3 sectors, distributed to 200+ members', 'Co-authored a 12-page report on FMCG sector trends; presented to faculty panel of 5', '', ''] },
   ],
   education2: { college: '', degree: '', year: '', cgpa: '' },
+  education3: { college: '', degree: '', year: '', cgpa: '' },
   projects: [{ name: 'Competitive Analysis — EdTech Sector', context: 'College Strategy Course',
     bullets: ['Analyzed 5 EdTech companies across pricing, positioning, and growth strategies', 'Identified 3 untapped market opportunities; ranked 1st among 14 teams at college'] }],
   skills: ['MS Excel (Advanced)', 'PowerPoint', 'Notion', 'Google Analytics (Basic)', 'Canva'],
@@ -169,6 +172,7 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
   const hasExp  = f.experiences.some(e => e.company || e.role)
   const hasProj = f.projects.some(p => p.name)
   const hasEdu2 = f.education2.college || f.education2.degree
+  const hasEdu3 = f.education3.college || f.education3.degree
   const isEmpty = !f.name && !f.email && !f.college
 
   const sectionHeading = (label: string) => (
@@ -247,6 +251,15 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
                 {f.education2.year && <span>{f.education2.year}</span>}
               </div>
               <div>{[f.education2.degree, f.education2.cgpa && `CGPA: ${f.education2.cgpa}`].filter(Boolean).join(' \u00B7 ')}</div>
+            </div>
+          )}
+          {hasEdu3 && (
+            <div style={{ marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontWeight: 'bold' }}>{f.education3.college}</span>
+                {f.education3.year && <span>{f.education3.year}</span>}
+              </div>
+              <div>{[f.education3.degree, f.education3.cgpa && `CGPA: ${f.education3.cgpa}`].filter(Boolean).join(' \u00B7 ')}</div>
             </div>
           )}
         </div>
@@ -419,6 +432,7 @@ export default function ResumeBuilderPage() {
   const [zoom, setZoom]                       = useState(90)
   const [showTips, setShowTips]               = useState(false)
   const [showEdu2, setShowEdu2]               = useState(false)
+  const [showEdu3, setShowEdu3]               = useState(false)
   const [bulletTips, setBulletTips]           = useState<Record<string, boolean>>({})
   const [bulletBank, setBulletBank]           = useState(false)
   const [activeBulletKey, setActiveBulletKey] = useState<string | null>(null)
@@ -437,6 +451,7 @@ export default function ResumeBuilderPage() {
         const parsed = JSON.parse(saved) as FormData
         setFormData(parsed)
         if (parsed.education2?.college || parsed.education2?.degree) setShowEdu2(true)
+        if (parsed.education3?.college || parsed.education3?.degree) setShowEdu3(true)
         addToast('Draft restored', 'success')
       }
     } catch { /* ignore */ }
@@ -525,6 +540,7 @@ export default function ResumeBuilderPage() {
     localStorage.removeItem('resumeDraft')
     setSavedTime(null)
     setShowEdu2(false)
+    setShowEdu3(false)
     addToast('All fields cleared', 'warn')
   }
 
@@ -802,13 +818,29 @@ export default function ResumeBuilderPage() {
           )}
           {showEdu2 && (
             <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-              <div style={{ ...labelStyle, marginBottom: 10 }}>Additional Qualification</div>
+              <div style={{ ...labelStyle, marginBottom: 10 }}>Class XII / School</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
                 {renderInput('College / School', formData.education2.college, v => setField('education2', { ...formData.education2, college: v }), 'School name')}
                 {renderInput('Degree / Board', formData.education2.degree, v => setField('education2', { ...formData.education2, degree: v }), 'Class XII / CBSE')}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   {renderInput('Year', formData.education2.year, v => setField('education2', { ...formData.education2, year: v }), '2022')}
                   {renderInput('CGPA / %', formData.education2.cgpa, v => setField('education2', { ...formData.education2, cgpa: v }), '92%')}
+                </div>
+              </div>
+              {!showEdu3 && (
+                <button onClick={() => setShowEdu3(true)} style={{ background: 'none', border: 'none', color: '#4F7CFF', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', marginTop: 12, padding: 0 }}>+ Add Class X / School</button>
+              )}
+            </div>
+          )}
+          {showEdu3 && (
+            <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ ...labelStyle, marginBottom: 10 }}>Class X / School</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+                {renderInput('School', formData.education3.college, v => setField('education3', { ...formData.education3, college: v }), 'School name')}
+                {renderInput('Degree / Board', formData.education3.degree, v => setField('education3', { ...formData.education3, degree: v }), 'Class X / CBSE')}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  {renderInput('Year', formData.education3.year, v => setField('education3', { ...formData.education3, year: v }), '2020')}
+                  {renderInput('CGPA / %', formData.education3.cgpa, v => setField('education3', { ...formData.education3, cgpa: v }), '95%')}
                 </div>
               </div>
             </div>
