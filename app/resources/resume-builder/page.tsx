@@ -8,10 +8,12 @@ import jsPDF from 'jspdf'
 /* ─────────────────────────────────────────────
    TYPES & DEFAULTS
 ───────────────────────────────────────────── */
-type Experience = { company: string; role: string; duration: string; location: string; bullets: string[] }
-type Project    = { name: string; context: string; bullets: string[] }
-type Education2 = { college: string; degree: string; year: string; cgpa: string }
-type Toast      = { id: number; message: string; type?: 'success' | 'warn' | 'error' }
+type Experience    = { company: string; role: string; duration: string; location: string; bullets: string[] }
+type Project       = { name: string; context: string; bullets: string[] }
+type Education2    = { college: string; degree: string; year: string; cgpa: string }
+type Certification = { name: string; org: string; year: string; inProgress: boolean }
+type Position      = { title: string; org: string; duration: string; bullet: string }
+type Toast         = { id: number; message: string; type?: 'success' | 'warn' | 'error' }
 
 interface FormData {
   name: string; college: string; degree: string; year: string; cgpa: string
@@ -23,6 +25,8 @@ interface FormData {
   projects: Project[]
   skills: string[]
   languages: string[]
+  certifications: Certification[]
+  positions: Position[]
 }
 
 const defaultFormData: FormData = {
@@ -34,6 +38,8 @@ const defaultFormData: FormData = {
   projects: [{ name: '', context: '', bullets: ['', ''] }],
   skills: [],
   languages: [],
+  certifications: [],
+  positions: [],
 }
 
 const ACTION_VERBS = ['Analyzed','Evaluated','Recommended','Structured','Synthesized','Identified','Developed','Modeled','Forecasted','Managed','Launched','Grew','Optimized','Created','Drove','Sourced','Negotiated','Converted','Coordinated','Streamlined','Implemented','Executed','Built','Scaled','Led','Presented','Researched','Delivered','Generated','Reduced','Improved','Increased','Designed','Supervised','Trained','Established','Initiated','Resolved']
@@ -48,6 +54,15 @@ const DOMAIN_SUGGESTIONS: Record<string, string[]> = {
 }
 
 const DOMAINS = ['Consulting', 'Finance', "Founder's Office", 'Marketing', 'BD', 'Operations']
+
+const DOMAIN_KEYWORDS: Record<string, string[]> = {
+  'Consulting':        ['analysis', 'strategy', 'framework', 'market', 'research', 'presentation', 'stakeholder', 'recommendations', 'structured', 'case'],
+  'Finance':           ['financial', 'modeling', 'excel', 'valuation', 'analysis', 'forecast', 'budget', 'revenue', 'cost', 'p&l'],
+  "Founder's Office":  ['strategy', 'operations', 'growth', 'cross-functional', 'stakeholder', 'execution', 'coordination', 'initiative', 'project', 'leadership'],
+  'Marketing':         ['campaign', 'content', 'social media', 'analytics', 'engagement', 'brand', 'digital', 'audience', 'conversion', 'growth'],
+  'BD':                ['partnership', 'sales', 'negotiation', 'pipeline', 'client', 'revenue', 'outreach', 'relationship', 'deal', 'prospect'],
+  'Operations':        ['process', 'efficiency', 'optimization', 'coordination', 'vendor', 'logistics', 'workflow', 'implementation', 'tracking', 'reporting'],
+}
 
 const EXAMPLE_DATA: FormData = {
   name: 'Rahul Mehta', college: '[Your College], Delhi', degree: 'BBA (Honours)', year: '2025', cgpa: '8.1',
@@ -65,6 +80,8 @@ const EXAMPLE_DATA: FormData = {
     bullets: ['Analyzed 5 EdTech companies across pricing, positioning, and growth strategies', 'Identified 3 untapped market opportunities; ranked 1st among 14 teams at college'] }],
   skills: ['MS Excel (Advanced)', 'PowerPoint', 'Notion', 'Google Analytics (Basic)', 'Canva'],
   languages: ['English (Fluent)', 'Hindi (Native)'],
+  certifications: [],
+  positions: [],
 }
 
 /* ─────────────────────────────────────────────
@@ -121,14 +138,64 @@ function calcATS(f: FormData): { score: number; missing: { label: string; sectio
   return { score: Math.min(score, 100), missing }
 }
 
-function getBulletTip(bullet: string): { text: string; type: 'warn' | 'good' } {
-  if (!bullet.trim()) return { text: '', type: 'warn' }
-  const weakStarters = ['helped', 'worked', 'assisted']
-  const firstWord = bullet.trim().split(/\s+/)[0]?.toLowerCase() || ''
-  if (weakStarters.includes(firstWord)) return { text: "Start stronger — try 'Drove', 'Built', 'Managed'", type: 'warn' }
-  if (!/\d/.test(bullet)) return { text: "Add a specific number — e.g. '40% growth' or '₹3.2L impact'", type: 'warn' }
-  if (bullet.length < 60) return { text: 'Add more context — what was the result or impact?', type: 'warn' }
-  return { text: '✓ Strong bullet', type: 'good' }
+const weakVerbs = ['helped', 'worked on', 'assisted', 'was responsible for', 'responsible for', 'participated', 'contributed to', 'involved in', 'supported', 'handled', 'did', 'made', 'tried', 'attempted']
+const strongVerbs = ['led', 'built', 'drove', 'grew', 'increased', 'reduced', 'launched', 'managed', 'developed', 'created', 'designed', 'executed', 'delivered', 'achieved', 'generated', 'streamlined', 'optimized', 'automated', 'spearheaded', 'coordinated', 'negotiated', 'analyzed', 'presented', 'trained', 'mentored', 'established', 'implemented', 'transformed', 'expanded', 'secured', 'identified', 'evaluated', 'recommended', 'forecasted', 'sourced', 'converted', 'researched', 'supervised', 'initiated', 'resolved', 'structured', 'synthesized', 'modeled', 'scaled']
+
+function analyzeBullet(text: string): { status: 'empty' | 'weak' | 'improve' | 'ok' | 'strong'; message: string } {
+  if (!text || text.length < 10) return { status: 'empty', message: '' }
+  const lower = text.toLowerCase().trim()
+  const hasNumber = /\d/.test(text) || /₹|%|lpa|lakhs|cr\b|k\b/.test(lower)
+  const foundWeak = weakVerbs.find(v => lower.startsWith(v))
+  const hasStrongVerb = strongVerbs.some(v => lower.startsWith(v))
+  const isTooShort = text.length < 40
+  const isTooLong = text.length > 200
+  if (foundWeak) return { status: 'weak', message: `Replace "${foundWeak}" with a stronger verb` }
+  if (!hasStrongVerb && text.length > 20) return { status: 'improve', message: 'Start with a strong action verb (Led, Built, Grew, etc.)' }
+  if (!hasNumber && text.length > 50) return { status: 'improve', message: 'Add a number or metric — how much? how many? by what %?' }
+  if (isTooShort) return { status: 'improve', message: 'Too short — add context and impact' }
+  if (isTooLong) return { status: 'improve', message: 'Too long — keep under ~20 words' }
+  if (hasStrongVerb && hasNumber) return { status: 'strong', message: '✓ Strong bullet' }
+  return { status: 'ok', message: 'Good — consider adding a metric if possible' }
+}
+
+function calculatePageFit(f: FormData): number {
+  let c = 80
+  if (f.summary) c += f.summary.length / 1.8
+  f.experiences.forEach(exp => { c += 60; exp.bullets.filter(Boolean).forEach(b => { c += b.length + 20 }) })
+  c += 50 * (1 + (f.education2?.college ? 1 : 0) + (f.education3?.college ? 1 : 0))
+  f.projects.forEach(proj => { c += 60; proj.bullets.filter(Boolean).forEach(b => { c += b.length + 20 }) })
+  c += Math.min((f.skills?.join(', ').length || 0), 120)
+  if (f.certifications?.length) c += f.certifications.filter(cert => cert.name).length * 40
+  if (f.positions?.length) f.positions.filter(p => p.title).forEach(p => { c += 50 + (p.bullet?.length || 0) })
+  return Math.min(Math.round((c / 3800) * 100), 110)
+}
+
+function generateLinkedInHeadline(f: FormData, domain: string): string {
+  const degree = f.degree || 'Student'
+  const college = f.college || 'College'
+  const yearLabel = f.year ? (f.year >= '2025' ? 'Final Year' : `${f.year} Year`) : 'Final Year'
+  const domainLabel: Record<string, string> = {
+    'Consulting': 'Consulting & Strategy', 'Finance': 'Finance & FP&A',
+    "Founder's Office": "Founder's Office & Ops", 'Marketing': 'Marketing & Growth',
+    'BD': 'Business Development', 'Operations': 'Operations',
+  }
+  return `${yearLabel} ${degree} | Targeting ${domainLabel[domain] || domain} | ${college} | Open to Off-Campus`
+}
+
+function generateSummary(f: FormData, domain: string): string {
+  const degree = f.degree || '[Degree]'
+  const college = f.college || '[College]'
+  const hasExp = f.experiences?.some(e => e.company)
+  const expText = hasExp ? `with hands-on experience in ${domain.toLowerCase()} roles` : 'seeking my first internship experience'
+  const context: Record<string, string> = {
+    'Consulting': 'structured problem-solving and business analysis',
+    'Finance': 'financial analysis and data-driven decision making',
+    "Founder's Office": 'cross-functional execution and strategic initiatives',
+    'Marketing': 'campaign strategy and brand building',
+    'BD': 'relationship building and business development',
+    'Operations': 'process optimization and operational efficiency',
+  }
+  return `Final year ${degree} student at ${college}, ${expText}. Interested in ${context[domain] || 'business roles'}. Looking to contribute in an off-campus role at a growth-oriented organization where I can add measurable value from day one.`
 }
 
 type SectionStatus = 'empty' | 'partial' | 'complete'
@@ -152,8 +219,10 @@ function sectionStatus(section: string, f: FormData): SectionStatus {
       return f.projects.some(p => p.name && p.bullets.filter(Boolean).length >= 1) ? 'complete' : 'partial'
     }
     case 'skills':    return f.skills.length >= 3 ? 'complete' : f.skills.length > 0 ? 'partial' : 'empty'
-    case 'languages': return f.languages.length > 0 ? 'complete' : 'empty'
-    default:          return 'empty'
+    case 'languages':     return f.languages.length > 0 ? 'complete' : 'empty'
+    case 'certifications': return f.certifications?.length > 0 && f.certifications.some(c => c.name) ? 'complete' : f.certifications?.length > 0 ? 'partial' : 'empty'
+    case 'positions':     return f.positions?.length > 0 && f.positions.some(p => p.title) ? 'complete' : f.positions?.length > 0 ? 'partial' : 'empty'
+    default:              return 'empty'
   }
 }
 
@@ -308,10 +377,38 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
         </div>
       )}
 
+      {f.positions && f.positions.length > 0 && f.positions.some(p => p.title) && (
+        <div data-section="positions">
+          {sectionHeading('Positions of Responsibility')}
+          {f.positions.map((p, i) => !p.title ? null : (
+            <div key={i} style={{ marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontWeight: 'bold' }}>{p.title}{p.org && <span style={{ fontWeight: 'normal' }}> | {p.org}</span>}</span>
+                {p.duration && <span>{p.duration}</span>}
+              </div>
+              {p.bullet && <div>— {p.bullet}</div>}
+            </div>
+          ))}
+        </div>
+      )}
+
       {f.skills.length > 0 && (
         <div data-section="skills">
           {sectionHeading('Skills')}
           <div style={{ marginBottom: f.languages.length > 0 ? 6 : 0 }}>{f.skills.join(', ')}</div>
+        </div>
+      )}
+
+      {f.certifications && f.certifications.length > 0 && f.certifications.some(c => c.name) && (
+        <div data-section="certifications">
+          {sectionHeading('Certifications')}
+          {f.certifications.map((c, i) => !c.name ? null : (
+            <div key={i} style={{ marginBottom: 4 }}>
+              <span style={{ fontWeight: 'bold' }}>{c.name}</span>
+              {c.org && <span> — {c.org}</span>}
+              {c.inProgress ? <span style={{ fontStyle: 'italic' }}> (In Progress)</span> : c.year ? <span>, {c.year}</span> : null}
+            </div>
+          ))}
         </div>
       )}
 
@@ -433,10 +530,15 @@ export default function ResumeBuilderPage() {
   const [showTips, setShowTips]               = useState(false)
   const [showEdu2, setShowEdu2]               = useState(false)
   const [showEdu3, setShowEdu3]               = useState(false)
-  const [bulletTips, setBulletTips]           = useState<Record<string, boolean>>({})
   const [bulletBank, setBulletBank]           = useState(false)
   const [activeBulletKey, setActiveBulletKey] = useState<string | null>(null)
   const [isPdfLoading, setIsPdfLoading]       = useState(false)
+  const [showKeywords, setShowKeywords]       = useState(false)
+  const [generatedHeadline, setGeneratedHeadline] = useState('')
+  const [headlineCopied, setHeadlineCopied]   = useState(false)
+  const [generatedSummary, setGeneratedSummary] = useState('')
+  const [showPdfModal, setShowPdfModal]       = useState(false)
+  const [isScoreCardLoading, setIsScoreCardLoading] = useState(false)
 
   const formPanelRef  = useRef<HTMLDivElement>(null)
   const sectionRefs   = useRef<Record<string, HTMLDivElement | null>>({})
@@ -521,6 +623,14 @@ export default function ResumeBuilderPage() {
 
   const removeProject = (idx: number) =>
     setFormData(prev => ({ ...prev, projects: prev.projects.filter((_, i) => i !== idx) }))
+
+  const addCert = () => { if (formData.certifications.length >= 4) return; setFormData(prev => ({ ...prev, certifications: [...prev.certifications, { name: '', org: '', year: '', inProgress: false }] })) }
+  const removeCert = (idx: number) => setFormData(prev => ({ ...prev, certifications: prev.certifications.filter((_, i) => i !== idx) }))
+  const setCertField = (idx: number, key: keyof Certification, value: string | boolean) => setFormData(prev => ({ ...prev, certifications: prev.certifications.map((c, i) => i === idx ? { ...c, [key]: value } : c) }))
+
+  const addPosition = () => { if (formData.positions.length >= 4) return; setFormData(prev => ({ ...prev, positions: [...prev.positions, { title: '', org: '', duration: '', bullet: '' }] })) }
+  const removePosition = (idx: number) => setFormData(prev => ({ ...prev, positions: prev.positions.filter((_, i) => i !== idx) }))
+  const setPosField = (idx: number, key: keyof Position, value: string) => setFormData(prev => ({ ...prev, positions: prev.positions.map((p, i) => i === idx ? { ...p, [key]: value } : p) }))
 
   const handleSave = () => {
     localStorage.setItem('resumeDraft', JSON.stringify(formData))
@@ -638,16 +748,11 @@ export default function ResumeBuilderPage() {
   )
 
   const renderBulletField = (key: string, value: string, onSet: (v: string) => void, placeholder: string) => {
-    const tip = value ? getBulletTip(value) : null
+    const analysis = analyzeBullet(value)
+    const hintColor = analysis.status === 'weak' ? '#ef4444' : analysis.status === 'improve' ? '#f59e0b' : analysis.status === 'strong' ? '#10b981' : 'rgba(255,255,255,0.3)'
     return (
       <div key={key}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-          <label style={{ ...labelStyle, flex: 1, marginBottom: 0 }}>Achievement</label>
-          {value && (
-            <button onClick={() => setBulletTips(p => ({ ...p, [key]: !p[key] }))} title="Get tip"
-              style={{ background: 'none', border: 'none', color: '#f59e0b', cursor: 'pointer', fontSize: 13, padding: 0, lineHeight: 1 }}>⚡</button>
-          )}
-        </div>
+        <label style={{ ...labelStyle, marginBottom: 3 }}>Achievement</label>
         <textarea
           ref={el => { bulletRefs.current[key] = el }}
           value={value} onChange={e => onSet(e.target.value)}
@@ -656,10 +761,8 @@ export default function ResumeBuilderPage() {
           onFocus={e => { e.currentTarget.style.borderBottomColor = '#4F7CFF'; setActiveBulletKey(key) }}
           onBlur={e => { e.currentTarget.style.borderBottomColor = 'rgba(255,255,255,0.15)' }}
         />
-        {bulletTips[key] && tip && (
-          <div style={{ fontSize: 11, marginTop: 4, padding: '6px 10px', borderRadius: 6, background: tip.type === 'good' ? 'rgba(16,185,129,0.08)' : 'rgba(245,158,11,0.08)', border: `1px solid ${tip.type === 'good' ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}`, color: tip.type === 'good' ? '#6ee7b7' : '#fcd34d' }}>
-            {tip.text}
-          </div>
+        {analysis.status !== 'empty' && (
+          <div style={{ fontSize: 11, marginTop: 3, color: hintColor }}>{analysis.message}</div>
         )}
       </div>
     )
@@ -738,6 +841,74 @@ export default function ResumeBuilderPage() {
         )}
       </div>
 
+      {/* Keyword Density Panel */}
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => setShowKeywords(!showKeywords)} style={{ background: 'none', border: 'none', color: '#4F7CFF', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>
+          {showKeywords ? 'Hide keywords ▲' : 'Check keywords ▼'}
+        </button>
+        {showKeywords && (() => {
+          const keywords = DOMAIN_KEYWORDS[targetDomain] || []
+          const resumeText = [formData.summary, ...formData.experiences.flatMap(e => [e.company, e.role, ...e.bullets]), ...formData.projects.flatMap(p => [p.name, p.context, ...p.bullets]), formData.skills.join(' ')].join(' ').toLowerCase()
+          const found = keywords.filter(k => resumeText.includes(k))
+          return (
+            <div style={{ marginTop: 10, padding: '12px 14px', background: '#161b22', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10 }}>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>{found.length} of {keywords.length} {targetDomain} keywords found</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                {keywords.map(k => {
+                  const present = resumeText.includes(k)
+                  return (
+                    <span key={k} style={{ padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 600, background: present ? 'rgba(79,124,255,0.12)' : 'rgba(255,255,255,0.03)', border: `1px solid ${present ? 'rgba(79,124,255,0.3)' : 'rgba(255,255,255,0.07)'}`, color: present ? '#93BBFF' : 'rgba(255,255,255,0.25)' }}>
+                      {present ? '✓ ' : ''}{k}
+                    </span>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })()}
+      </div>
+
+      {/* Score Share Card */}
+      <div style={{ marginBottom: 16 }}>
+        <div id="resume-score-card" style={{ background: '#111827', borderRadius: 16, padding: '20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: 'white' }}>🔥 Resume Builder</div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>beyond-campus.in</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: `conic-gradient(${strengthColor} ${strength * 3.6}deg, rgba(255,255,255,0.06) 0deg)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#111827', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, color: strengthColor }}>{strength}%</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: 'white' }}>{strengthLabel}</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Domain: {targetDomain}</div>
+              {missing && <div style={{ fontSize: 11, color: '#f59e0b', marginTop: 4 }}>Next: {missing}</div>}
+            </div>
+          </div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 10 }}>
+            Built with Beyond Campus Resume Builder · beyond-campus.in/resources/resume-builder
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            const el = document.getElementById('resume-score-card')
+            if (!el) return
+            setIsScoreCardLoading(true)
+            try {
+              const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#111827' })
+              const link = document.createElement('a')
+              link.download = 'my_resume_score.png'
+              link.href = canvas.toDataURL('image/png')
+              link.click()
+            } catch { /* ignore */ }
+            setIsScoreCardLoading(false)
+          }}
+          style={{ marginTop: 8, width: '100%', padding: '9px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+        >
+          {isScoreCardLoading ? 'Generating…' : '📸 Share My Resume Score'}
+        </button>
+      </div>
+
       {/* Section Cards */}
       <div ref={el => { sectionRefs.current['personal'] = el }}>
         <SectionCard id={mobile ? 'personal-m' : 'personal'} icon="👤" title="Personal Details" status={sectionStatus('personal', formData)} expanded={expandedSections.has('personal')} onToggle={() => toggleSection('personal')}>
@@ -752,7 +923,20 @@ export default function ResumeBuilderPage() {
               {renderInput('CGPA', formData.cgpa, v => setField('cgpa', v), '8.1', 'Omit if below 7.5')}
               {renderInput('City', formData.city, v => setField('city', v), 'Delhi')}
             </div>
-            <div style={{ gridColumn: mobile ? '1' : '1 / -1' }}>{renderInput('LinkedIn URL', formData.linkedin, v => setField('linkedin', v), 'linkedin.com/in/yourname')}</div>
+            <div style={{ gridColumn: mobile ? '1' : '1 / -1' }}>
+              {renderInput('LinkedIn URL', formData.linkedin, v => setField('linkedin', v), 'linkedin.com/in/yourname')}
+              <div style={{ marginTop: 8 }}>
+                <button onClick={() => setGeneratedHeadline(generateLinkedInHeadline(formData, targetDomain))} style={{ background: 'none', border: 'none', color: '#4F7CFF', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Generate LinkedIn headline →</button>
+                {generatedHeadline && (
+                  <div style={{ marginTop: 8, padding: '10px 12px', borderRadius: 8, background: 'rgba(79,124,255,0.06)', border: '1px solid rgba(79,124,255,0.15)', fontSize: 12, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
+                    {generatedHeadline}
+                    <button onClick={() => { navigator.clipboard.writeText(generatedHeadline); setHeadlineCopied(true); setTimeout(() => setHeadlineCopied(false), 2000) }} style={{ marginLeft: 8, background: 'none', border: 'none', color: headlineCopied ? '#10b981' : '#4F7CFF', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>
+                      {headlineCopied ? 'Copied ✓' : 'Copy'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </SectionCard>
       </div>
@@ -768,6 +952,19 @@ export default function ResumeBuilderPage() {
               Include: who you are, what you want, what makes you different. Avoid generic phrases like &quot;seeking a challenging role.&quot;
             </div>
           )}
+          <div style={{ marginTop: 8 }}>
+            <button onClick={() => setGeneratedSummary(generateSummary(formData, targetDomain))} style={{ background: 'none', border: 'none', color: '#4F7CFF', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Generate a starting point →</button>
+            {generatedSummary && (
+              <div style={{ marginTop: 8, padding: '12px 14px', borderRadius: 8, background: 'rgba(79,124,255,0.06)', border: '1px solid rgba(79,124,255,0.15)' }}>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, marginBottom: 10 }}>{generatedSummary}</div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={() => { setField('summary', generatedSummary); setGeneratedSummary('') }} style={{ padding: '5px 12px', borderRadius: 8, background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Use this →</button>
+                  <button onClick={() => setGeneratedSummary(generateSummary(formData, targetDomain))} style={{ padding: '5px 12px', borderRadius: 8, background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Regenerate</button>
+                </div>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', marginTop: 8 }}>Edit this to make it specific to you — personalized summaries perform 3× better.</div>
+              </div>
+            )}
+          </div>
         </SectionCard>
       </div>
 
@@ -889,9 +1086,61 @@ export default function ResumeBuilderPage() {
         </SectionCard>
       </div>
 
+      {/* Positions of Responsibility */}
+      <div ref={el => { sectionRefs.current['positions'] = el }}>
+        <SectionCard id={mobile ? 'positions-m' : 'positions'} icon="🎖️" title="Positions of Responsibility" status={sectionStatus('positions', formData)} expanded={expandedSections.has('positions')} onToggle={() => toggleSection('positions')}>
+          {formData.positions.map((pos, i) => (
+            <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '14px 14px 12px', marginBottom: 10 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)' }}>{pos.title || `Position ${i + 1}`}</span>
+                <button onClick={() => removePosition(i)} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.45)', fontSize: 16, cursor: 'pointer', padding: '2px 4px', lineHeight: 1 }}>×</button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 14 }}>
+                {renderInput('Position Title', pos.title, v => setPosField(i, 'title', v), 'Cultural Secretary')}
+                {renderInput('Organisation', pos.org, v => setPosField(i, 'org', v), 'Annual College Fest Committee')}
+                {renderInput('Duration', pos.duration, v => setPosField(i, 'duration', v), '2023–24')}
+                {renderTextarea('Achievement (optional)', pos.bullet, v => setPosField(i, 'bullet', v), 'Managed logistics for 2,000-person event with ₹8L budget', 2)}
+              </div>
+            </div>
+          ))}
+          {formData.positions.length < 4 && (
+            <button onClick={addPosition} style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid rgba(79,124,255,0.25)', background: 'rgba(79,124,255,0.06)', color: '#93BBFF', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>+ Add Position</button>
+          )}
+          <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
+            Include committee roles, club leadership, event management, college council positions.
+          </div>
+        </SectionCard>
+      </div>
+
       <div ref={el => { sectionRefs.current['skills'] = el }}>
         <SectionCard id={mobile ? 'skills-m' : 'skills'} icon="🛠️" title="Skills &amp; Tools" status={sectionStatus('skills', formData)} expanded={expandedSections.has('skills')} onToggle={() => toggleSection('skills')}>
           <TagInput tags={formData.skills} onChange={v => setField('skills', v)} inputValue={skillInput} onInputChange={setSkillInput} placeholder="Type a skill + Enter" max={16} suggestions={DOMAIN_SUGGESTIONS[targetDomain]} />
+        </SectionCard>
+      </div>
+
+      {/* Certifications */}
+      <div ref={el => { sectionRefs.current['certifications'] = el }}>
+        <SectionCard id={mobile ? 'certifications-m' : 'certifications'} icon="🏆" title="Certifications" status={sectionStatus('certifications', formData)} expanded={expandedSections.has('certifications')} onToggle={() => toggleSection('certifications')}>
+          {formData.certifications.map((cert, i) => (
+            <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '14px 14px 12px', marginBottom: 10 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)' }}>{cert.name || `Certification ${i + 1}`}</span>
+                <button onClick={() => removeCert(i)} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.45)', fontSize: 16, cursor: 'pointer', padding: '2px 4px', lineHeight: 1 }}>×</button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 14 }}>
+                {renderInput('Certification Name', cert.name, v => setCertField(i, 'name', v), 'Google Analytics Individual Qualification')}
+                {renderInput('Issuing Organisation', cert.org, v => setCertField(i, 'org', v), 'Google')}
+                {!cert.inProgress && renderInput('Year', cert.year, v => setCertField(i, 'year', v), '2024')}
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+                  <input type="checkbox" checked={cert.inProgress} onChange={e => setCertField(i, 'inProgress', e.target.checked)} style={{ width: 14, height: 14, accentColor: '#4F7CFF' }} />
+                  In Progress
+                </label>
+              </div>
+            </div>
+          ))}
+          {formData.certifications.length < 4 && (
+            <button onClick={addCert} style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid rgba(79,124,255,0.25)', background: 'rgba(79,124,255,0.06)', color: '#93BBFF', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>+ Add Certification</button>
+          )}
         </SectionCard>
       </div>
 
@@ -913,10 +1162,12 @@ export default function ResumeBuilderPage() {
         a{text-decoration:none;color:inherit}
         input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.25)}
         @media print {
-          #form-panel, #header-bar, .no-print { display:none !important; }
-          #resume-print-target { display:block !important; position:static !important; width:100% !important; height:auto !important; overflow:visible !important; background:white !important; }
-          body { background:white !important; }
-          @page { size:A4; margin:15mm; }
+          *{-webkit-print-color-adjust:exact;}
+          #header-bar,.no-print,#form-panel,.builder-mobile{display:none!important}
+          .builder-desktop{display:block!important;height:auto!important}
+          #resume-print-target{position:static!important;width:210mm!important;margin:0 auto!important;padding:15mm!important;box-shadow:none!important;border-radius:0!important;transform:none!important;font-family:'Times New Roman',serif!important;}
+          body,html{background:white!important}
+          @page{size:A4;margin:0}
         }
         @keyframes slideInRight { from { transform:translateX(60px);opacity:0; } to { transform:translateX(0);opacity:1; } }
         @keyframes skeletonPulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
@@ -947,6 +1198,28 @@ export default function ResumeBuilderPage() {
           </div>
         ))}
       </div>
+
+      {/* PDF MODAL */}
+      {showPdfModal && (
+        <div className="no-print" onClick={() => setShowPdfModal(false)} style={{ position: 'fixed', inset: 0, zIndex: 1100, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: '32px', width: '100%', maxWidth: 400, fontFamily: "'DM Sans',sans-serif" }}>
+            <div style={{ fontSize: 20, marginBottom: 4 }}>📄</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 6 }}>Download Your Resume</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, marginBottom: 20 }}>
+              Follow these steps for best results:<br/>
+              1. Click <strong style={{ color: 'rgba(255,255,255,0.8)' }}>"Open Print Dialog"</strong> below<br/>
+              2. Set destination: <strong style={{ color: 'rgba(255,255,255,0.8)' }}>Save as PDF</strong><br/>
+              3. Set margins: <strong style={{ color: 'rgba(255,255,255,0.8)' }}>None</strong><br/>
+              4. Uncheck <strong style={{ color: 'rgba(255,255,255,0.8)' }}>"Headers &amp; footers"</strong><br/>
+              5. Click Save
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => { setShowPdfModal(false); setTimeout(() => window.print(), 100) }} style={{ flex: 1, padding: '12px', borderRadius: 12, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', border: 'none', color: 'white', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>Open Print Dialog →</button>
+              <button onClick={() => setShowPdfModal(false)} style={{ padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* BULLET BANK DRAWER */}
       {bulletBank && (
@@ -980,8 +1253,8 @@ export default function ResumeBuilderPage() {
           {savedAgo && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginRight: 4 }}>{savedAgo}</span>}
           <button onClick={handleSave} title="Ctrl+S" style={{ height: 32, padding: '0 14px', borderRadius: 100, background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Save Draft</button>
           <button onClick={handleFillExample} style={{ height: 32, padding: '0 14px', borderRadius: 100, background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Example</button>
-          <button onClick={handleDownloadPDF} disabled={isPdfLoading} style={{ height: 32, padding: '0 14px', borderRadius: 100, background: isPdfLoading ? 'rgba(245,158,11,0.5)' : '#f59e0b', border: 'none', color: '#000', fontSize: 13, fontWeight: 700, cursor: isPdfLoading ? 'wait' : 'pointer', fontFamily: 'inherit' }}>
-            {isPdfLoading ? 'Generating\u2026' : 'Download PDF'}
+          <button onClick={() => setShowPdfModal(true)} style={{ height: 32, padding: '0 14px', borderRadius: 100, background: '#f59e0b', border: 'none', color: '#000', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+            Download PDF
           </button>
           <button onClick={handleReset} style={{ height: 32, padding: '0 10px', background: 'none', border: 'none', color: 'rgba(239,68,68,0.6)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Reset</button>
         </div>
@@ -1020,7 +1293,14 @@ export default function ResumeBuilderPage() {
                 </button>
               ))}
             </div>
-            {/* Zoom controls */}
+            {/* Page fit + Zoom controls */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+              {(() => {
+                const pageFit = calculatePageFit(formData)
+                const fitColor = pageFit >= 100 ? '#ef4444' : pageFit >= 90 ? '#f59e0b' : pageFit >= 70 ? '#10b981' : 'rgba(255,255,255,0.3)'
+                return <span style={{ fontSize: 11, color: fitColor, fontWeight: 600, marginRight: 4 }}>{pageFit >= 100 ? '⚠️ Overflowing' : pageFit >= 90 ? `${pageFit}% — almost full` : pageFit >= 70 ? `${pageFit}% ✓` : `${pageFit}%`}</span>
+              })()}
+            </div>
             <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
               {[75, 90, 100].map(z => (
                 <button key={z} onClick={() => setZoom(z)} style={{ padding: '4px 10px', borderRadius: 6, background: zoom === z ? 'rgba(79,124,255,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${zoom === z ? 'rgba(79,124,255,0.35)' : 'rgba(255,255,255,0.07)'}`, color: zoom === z ? '#93BBFF' : 'rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>{z}%</button>
