@@ -554,8 +554,8 @@ export default function ResumeBuilderPage() {
     try {
       const saved = localStorage.getItem('resumeDraft')
       if (saved) {
-        const parsed = JSON.parse(saved) as FormData
-        setFormData(parsed)
+        const parsed = JSON.parse(saved) as Partial<FormData>
+        setFormData({ ...defaultFormData, ...parsed })
         if (parsed.education2?.college || parsed.education2?.degree) setShowEdu2(true)
         if (parsed.education3?.college || parsed.education3?.degree) setShowEdu3(true)
         addToast('Draft restored', 'success')
