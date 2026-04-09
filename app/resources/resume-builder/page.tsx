@@ -859,7 +859,7 @@ export default function ResumeBuilderPage() {
 
       <div ref={el => { sectionRefs.current['skills'] = el }}>
         <SectionCard id={mobile ? 'skills-m' : 'skills'} icon="🛠️" title="Skills &amp; Tools" status={sectionStatus('skills', formData)} expanded={expandedSections.has('skills')} onToggle={() => toggleSection('skills')}>
-          <TagInput tags={formData.skills} onChange={v => setField('skills', v)} inputValue={skillInput} onInputChange={setSkillInput} placeholder="Type a skill + Enter" max={8} suggestions={DOMAIN_SUGGESTIONS[targetDomain]} />
+          <TagInput tags={formData.skills} onChange={v => setField('skills', v)} inputValue={skillInput} onInputChange={setSkillInput} placeholder="Type a skill + Enter" max={16} suggestions={DOMAIN_SUGGESTIONS[targetDomain]} />
         </SectionCard>
       </div>
 
