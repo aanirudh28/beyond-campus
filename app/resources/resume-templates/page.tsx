@@ -137,48 +137,97 @@ function IIMResume() {
   )
 }
 
-function DUResume() {
+function FinanceOpsResume() {
+  const eduRows = [
+    { pct: '8.1 CGPA', degree: 'BBA (Honours)', institution: '[Your College], Delhi', year: '2025' },
+    { pct: '92%',      degree: 'Class XII / CBSE', institution: 'Delhi Public School, Delhi', year: '2021' },
+    { pct: '95%',      degree: 'Class X / CBSE',   institution: 'Delhi Public School, Delhi', year: '2019' },
+  ]
+  const projects = [
+    { name: 'Competitive Analysis — EdTech Sector', bullets: ['Analyzed 5 EdTech firms across pricing, positioning, and unit economics', 'Identified 3 underserved segments; ranked 1st among 14 teams'] },
+    { name: 'FMCG Sector Deep-Dive', bullets: ['Modeled revenue trends for 8 listed FMCG players using public filings', 'Co-authored 12-page report; presented to faculty panel of 5 professors'] },
+  ]
+  const positions = [
+    { role: 'Vice President', org: 'Finance & Investment Society, [College]', year: '2023–24' },
+    { role: 'Event Head', org: 'Annual Business Conclave', year: '2022–23' },
+  ]
+  const extras = [
+    'Participated in IIM Calcutta Insight Case Competition — top 15 nationally',
+    'NSS Volunteer Coordinator — led 3 community drives, 400+ beneficiaries',
+  ]
+  const sec = (label: string) => (
+    <div style={{ borderBottom: '1.5px solid #000', marginBottom: 5, marginTop: 11, paddingBottom: 1 }}>
+      <div style={{ fontSize: 10.5, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
+    </div>
+  )
+  const tdBase: React.CSSProperties = { border: '1px solid #bbb', padding: '3px 6px', fontSize: 9.5, verticalAlign: 'top' }
   return (
-    <div style={{ fontFamily: 'Calibri, sans-serif', fontSize: 10.5, lineHeight: 1.55, color: '#1a1a1a', padding: '24px 28px', background: '#fff', width: 595 }}>
-      <div style={{ marginBottom: 10 }}>
-        <div style={{ fontSize: 20, fontWeight: 'bold', color: '#1a1a1a' }}>{RESUME.name}</div>
-        <div style={{ fontSize: 10, color: '#555' }}>{RESUME.phone} · {RESUME.email} · {RESUME.linkedin}</div>
+    <div style={{ fontFamily: 'Calibri, Arial, sans-serif', fontSize: 10, lineHeight: 1.5, color: '#000', padding: '22px 26px', background: '#fff', width: 595 }}>
+      {/* Header */}
+      <div style={{ textAlign: 'center', marginBottom: 8 }}>
+        <div style={{ fontSize: 17, fontWeight: 'bold', letterSpacing: 1, textTransform: 'uppercase' }}>{RESUME.name}</div>
+        <div style={{ fontSize: 9, marginTop: 3 }}>{RESUME.phone} | {RESUME.email} | {RESUME.linkedin} | Delhi</div>
       </div>
-      <div style={{ borderBottom: '1px solid #888', marginBottom: 6 }}>
-        <div style={{ fontSize: 11, fontWeight: 'bold', textTransform: 'uppercase', color: '#1a1a1a' }}>Education</div>
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ fontWeight: 'bold' }}>{RESUME.college}</span>
-          <span style={{ color: '#555' }}>{RESUME.grad}</span>
-        </div>
-        <div>{RESUME.degree} · CGPA: {RESUME.cgpa}</div>
-      </div>
-      <div style={{ borderBottom: '1px solid #888', marginBottom: 6 }}>
-        <div style={{ fontSize: 11, fontWeight: 'bold', textTransform: 'uppercase', color: '#1a1a1a' }}>Experience</div>
-      </div>
+
+      {/* Education — table */}
+      {sec('Education')}
+      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 4 }}>
+        <thead>
+          <tr style={{ background: '#f0f0f0' }}>
+            {['%/CGPA', 'Degree / Exam', 'Institution', 'Year'].map(h => (
+              <th key={h} style={{ ...tdBase, fontWeight: 'bold', background: '#f0f0f0' }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {eduRows.map((r, i) => (
+            <tr key={i}>
+              <td style={tdBase}>{r.pct}</td>
+              <td style={tdBase}>{r.degree}</td>
+              <td style={tdBase}>{r.institution}</td>
+              <td style={tdBase}>{r.year}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Work Experience */}
+      {sec('Work Experience')}
       {RESUME.exp.map((e, i) => (
-        <div key={i} style={{ marginBottom: 10 }}>
+        <div key={i} style={{ marginBottom: 7 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ fontWeight: 'bold' }}>{e.company}</span>
-            <span style={{ color: '#555' }}>{e.duration}</span>
+            <span style={{ fontWeight: 'bold' }}>{e.company} | {e.role}</span>
+            <span style={{ fontSize: 9.5 }}>{e.duration}</span>
           </div>
-          <div style={{ fontStyle: 'italic', color: '#444' }}>{e.role}</div>
-          {e.bullets.map((b, j) => <div key={j} style={{ paddingLeft: 10 }}>• {b}</div>)}
+          {e.bullets.map((b, j) => <div key={j} style={{ paddingLeft: 12 }}>• {b}</div>)}
         </div>
       ))}
-      <div style={{ borderBottom: '1px solid #888', marginBottom: 6 }}>
-        <div style={{ fontSize: 11, fontWeight: 'bold', textTransform: 'uppercase', color: '#1a1a1a' }}>Projects</div>
-      </div>
-      <div style={{ marginBottom: 10 }}>
-        <div style={{ fontWeight: 'bold' }}>{RESUME.project.name} <span style={{ fontWeight: 'normal' }}>| {RESUME.project.context}</span></div>
-        {RESUME.project.bullets.map((b, i) => <div key={i} style={{ paddingLeft: 10 }}>• {b}</div>)}
-      </div>
-      <div style={{ borderBottom: '1px solid #888', marginBottom: 6 }}>
-        <div style={{ fontSize: 11, fontWeight: 'bold', textTransform: 'uppercase', color: '#1a1a1a' }}>Skills</div>
-      </div>
-      <div>{RESUME.skills}</div>
-      <div style={{ marginTop: 4 }}><span style={{ fontWeight: 'bold' }}>Languages:</span> {RESUME.languages}</div>
+
+      {/* Academic Projects — two-column table */}
+      {sec('Academic Projects')}
+      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 4 }}>
+        <tbody>
+          {projects.map((p, i) => (
+            <tr key={i} style={{ verticalAlign: 'top' }}>
+              <td style={{ ...tdBase, width: '28%', fontWeight: 'bold' }}>{p.name}</td>
+              <td style={tdBase}>{p.bullets.map((b, j) => <div key={j}>• {b}</div>)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Positions of Responsibility */}
+      {sec('Positions of Responsibility')}
+      {positions.map((p, i) => (
+        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+          <span><strong>{p.role}</strong>, {p.org}</span>
+          <span style={{ fontSize: 9.5 }}>{p.year}</span>
+        </div>
+      ))}
+
+      {/* Extra-Curriculars */}
+      {sec('Extra-Curriculars')}
+      {extras.map((e, i) => <div key={i} style={{ paddingLeft: 12 }}>• {e}</div>)}
     </div>
   )
 }
@@ -335,7 +384,7 @@ type TemplateItem = {
 const TEMPLATES: TemplateItem[] = [
   { id: 1, name: 'LSE Format', badge: 'FREE', domain: 'Consulting', style: 'Classic', tags: ['All backgrounds', 'Consulting & Finance', 'Classic'], description: 'Clean single-column serif format. Universally respected by Indian and global recruiters.', useLink: '/resources/resume-builder', Render: LSEResume },
   { id: 2, name: 'IIM Format', badge: 'PREMIUM', domain: 'Consulting', style: 'Structured', tags: ['Commerce & MBA', 'Big 4 & Consulting', 'Structured'], description: 'The gold standard for Indian business school applications.', Render: IIMResume },
-  { id: 3, name: 'DU Format', badge: 'PREMIUM', domain: 'Finance', style: 'Classic', tags: ['Commerce backgrounds', 'Finance & Operations', 'Professional'], description: 'Optimized for Delhi University commerce graduates. Clean and ATS-safe.', Render: DUResume },
+  { id: 3, name: 'Finance & Ops Format', badge: 'PREMIUM', domain: 'Finance', style: 'Classic', tags: ['Commerce & BBA', 'Finance & Operations', 'ATS-friendly'], description: 'Table-based education, two-column projects, POR section. ATS-safe and widely used across commerce colleges.', Render: FinanceOpsResume },
   { id: 4, name: "Startup & Founder's Office", badge: 'PREMIUM', domain: "Founder's Office", style: 'Modern', tags: ['Startup roles', "Founder's Office & BD", 'Modern'], description: "For growth-stage startups and Founder's Office roles. Clean sans-serif with personality.", Render: StartupResume },
   { id: 5, name: 'Finance & FP&A', badge: 'PREMIUM', domain: 'Finance', style: 'Classic', tags: ['Finance backgrounds', 'FP&A & Investment', 'Numbers-forward'], description: 'Designed for finance-heavy roles. Skills and tools section prominently placed.', Render: FinanceResume },
   { id: 6, name: 'Marketing & BD', badge: 'PREMIUM', domain: 'Marketing', style: 'Modern', tags: ['Marketing & BD', 'D2C & Startups', 'Dynamic'], description: 'For marketing, content, and BD roles where tools and campaigns matter.', Render: MarketingResume },
