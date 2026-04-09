@@ -172,8 +172,8 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
   const isEmpty = !f.name && !f.email && !f.college
 
   const sectionHeading = (label: string) => (
-    <div style={{ borderBottom: '1.5px solid black', marginBottom: 8, marginTop: 14 }}>
-      <div style={{ fontSize: 12, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
+    <div style={{ borderBottom: '1px solid #000', marginBottom: 6, marginTop: 14 }}>
+      <div style={{ fontSize: 10.5, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
     </div>
   )
 
@@ -221,9 +221,9 @@ function LivePreview({ f, zoom }: { f: FormData; zoom: number }) {
       <div style={{ opacity: isEmpty ? 0 : 1, transition: 'opacity 0.4s ease', pointerEvents: isEmpty ? 'none' : 'auto' }}>
       {f.name && (
         <div style={{ textAlign: 'center', marginBottom: 10 }}>
-          <div style={{ fontSize: 22, fontWeight: 'bold', letterSpacing: 1 }}>{f.name}</div>
+          <div style={{ fontSize: 18, fontWeight: 'bold', letterSpacing: 1.5, textTransform: 'uppercase' }}>{f.name}</div>
           {contactParts.length > 0 && (
-            <div style={{ fontSize: 10, color: '#333', marginTop: 4 }}>{contactParts.join(' · ')}</div>
+            <div style={{ fontSize: 9.5, color: '#333', marginTop: 4, letterSpacing: 0.3 }}>{contactParts.join(' · ')}</div>
           )}
         </div>
       )}
@@ -320,16 +320,13 @@ function SectionCard({ id, icon, title, status, expanded, onToggle, children }: 
   id: string; icon: string; title: string; status: SectionStatus; expanded: boolean; onToggle: () => void; children: React.ReactNode
 }) {
   return (
-    <div style={{ background: '#161b22', border: '1px solid rgba(255,255,255,0.05)', borderLeft: `3px solid ${statusColor(status)}`, borderRadius: 12, marginBottom: 10, overflow: 'hidden', transition: 'border-color 0.3s' }}>
+    <div style={{ background: '#161b22', border: '1px solid rgba(255,255,255,0.05)', borderLeft: `3px solid ${statusColor(status)}`, borderRadius: 12, marginBottom: 12, overflow: 'hidden', transition: 'border-color 0.3s' }}>
       <button
         onClick={onToggle}
-        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 18px', background: 'transparent', border: 'none', cursor: 'pointer', color: '#fff', fontFamily: "'DM Sans',sans-serif", textAlign: 'left' }}
+        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '16px 18px', background: 'transparent', border: 'none', cursor: 'pointer', color: '#fff', fontFamily: "'DM Sans',sans-serif", textAlign: 'left' }}
       >
         <span style={{ fontSize: 15 }}>{icon}</span>
         <span style={{ flex: 1, fontSize: 13, fontWeight: 700 }}>{title}</span>
-        <span style={{ width: 18, height: 18, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, background: status === 'complete' ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.04)', color: status === 'complete' ? '#10b981' : 'rgba(255,255,255,0.25)', border: `1px solid ${status === 'complete' ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.08)'}`, flexShrink: 0 }}>
-          {status === 'complete' ? '✓' : '○'}
-        </span>
         <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', transition: 'transform 0.2s', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0 }}>▼</span>
       </button>
       {expanded && <div style={{ padding: '0 18px 18px' }}>{children}</div>}
@@ -483,7 +480,7 @@ export default function ResumeBuilderPage() {
     setFormData(prev => ({ ...prev, experiences: prev.experiences.map((e, i) => { if (i !== idx) return e; const b = [...e.bullets]; b[bIdx] = value; return { ...e, bullets: b } }) }))
 
   const addExperience = () => {
-    if (formData.experiences.length >= 3) return
+    if (formData.experiences.length >= 5) return
     setFormData(prev => ({ ...prev, experiences: [...prev.experiences, { company: '', role: '', duration: '', location: '', bullets: ['', '', '', ''] }] }))
   }
 
@@ -491,7 +488,7 @@ export default function ResumeBuilderPage() {
     setFormData(prev => ({ ...prev, experiences: prev.experiences.filter((_, i) => i !== idx) }))
 
   const addExpBullet = (idx: number) =>
-    setFormData(prev => ({ ...prev, experiences: prev.experiences.map((e, i) => i !== idx || e.bullets.length >= 4 ? e : { ...e, bullets: [...e.bullets, ''] }) }))
+    setFormData(prev => ({ ...prev, experiences: prev.experiences.map((e, i) => i !== idx || e.bullets.length >= 6 ? e : { ...e, bullets: [...e.bullets, ''] }) }))
 
   const setProjField = (idx: number, key: keyof Project, value: string) =>
     setFormData(prev => ({ ...prev, projects: prev.projects.map((p, i) => i === idx ? { ...p, [key]: value } : p) }))
@@ -500,9 +497,12 @@ export default function ResumeBuilderPage() {
     setFormData(prev => ({ ...prev, projects: prev.projects.map((p, i) => { if (i !== idx) return p; const b = [...p.bullets]; b[bIdx] = value; return { ...p, bullets: b } }) }))
 
   const addProject = () => {
-    if (formData.projects.length >= 2) return
+    if (formData.projects.length >= 4) return
     setFormData(prev => ({ ...prev, projects: [...prev.projects, { name: '', context: '', bullets: ['', ''] }] }))
   }
+
+  const addProjBullet = (idx: number) =>
+    setFormData(prev => ({ ...prev, projects: prev.projects.map((p, i) => i !== idx || p.bullets.length >= 4 ? p : { ...p, bullets: [...p.bullets, ''] }) }))
 
   const removeProject = (idx: number) =>
     setFormData(prev => ({ ...prev, projects: prev.projects.filter((_, i) => i !== idx) }))
@@ -594,8 +594,8 @@ export default function ResumeBuilderPage() {
     color: 'white', fontSize: 13, padding: '8px 0 6px', width: '100%', outline: 'none', fontFamily: 'inherit',
   }
   const labelStyle: React.CSSProperties = {
-    display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: 1.5,
-    textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: 3,
+    display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: 1,
+    textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', marginBottom: 3,
   }
 
   const renderInput = (label: string, value: string, onChange: (v: string) => void, placeholder?: string, note?: string) => (
@@ -631,10 +631,6 @@ export default function ResumeBuilderPage() {
             <button onClick={() => setBulletTips(p => ({ ...p, [key]: !p[key] }))} title="Get tip"
               style={{ background: 'none', border: 'none', color: '#f59e0b', cursor: 'pointer', fontSize: 13, padding: 0, lineHeight: 1 }}>⚡</button>
           )}
-          <button onClick={() => { setBulletBank(true); setActiveBulletKey(key) }} title="Insert action verb"
-            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: 11, fontWeight: 700, padding: 0, fontFamily: 'inherit' }}>
-            VERB
-          </button>
         </div>
         <textarea
           ref={el => { bulletRefs.current[key] = el }}
@@ -687,10 +683,49 @@ export default function ResumeBuilderPage() {
         </div>
       </div>
 
+      {/* ATS Score — compact always-visible bar */}
+      <div style={{ marginBottom: 16, background: '#161b22', border: '1px solid rgba(255,255,255,0.05)', borderLeft: `3px solid ${ats.score > 75 ? '#10b981' : ats.score > 50 ? '#f59e0b' : '#ef4444'}`, borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px' }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, flexShrink: 0 }}>ATS</span>
+          <div style={{ flex: 1, height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${ats.score}%`, borderRadius: 3, background: ats.score > 75 ? '#10b981' : ats.score > 50 ? '#f59e0b' : '#ef4444', transition: 'width 0.4s ease' }} />
+          </div>
+          <span style={{ fontSize: 14, fontWeight: 800, color: ats.score > 75 ? '#10b981' : ats.score > 50 ? '#f59e0b' : '#ef4444', minWidth: 26, textAlign: 'right', flexShrink: 0 }}>{ats.score}</span>
+          {ats.missing[0] && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1.5 }}>{ats.missing[0].label}</span>}
+          <button onClick={() => setShowATS(!showATS)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', padding: 0, fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0 }}>
+            {showATS ? 'hide ▲' : 'details ▼'}
+          </button>
+        </div>
+        {showATS && (
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '14px 14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
+              <ATSCircle score={ats.score} />
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>ATS Readiness</div>
+                <div style={{ fontSize: 12, color: ats.score > 75 ? '#10b981' : ats.score > 60 ? '#f59e0b' : '#ef4444', fontWeight: 600 }}>
+                  {ats.score > 75 ? 'Excellent' : ats.score > 60 ? 'Good' : ats.score > 50 ? 'Fair' : 'Needs work'}
+                </div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{ats.missing.length} items to improve</div>
+              </div>
+            </div>
+            {ats.missing.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                {ats.missing.map((m, i) => (
+                  <button key={i} onClick={() => scrollToSection(m.section)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.45)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}>
+                    <span style={{ color: '#f59e0b', fontSize: 10 }}>●</span>
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Section Cards */}
       <div ref={el => { sectionRefs.current['personal'] = el }}>
         <SectionCard id={mobile ? 'personal-m' : 'personal'} icon="👤" title="Personal Details" status={sectionStatus('personal', formData)} expanded={expandedSections.has('personal')} onToggle={() => toggleSection('personal')}>
-          <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: '12px 14px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: '20px 14px' }}>
             <div style={{ gridColumn: mobile ? '1' : '1 / -1' }}>{renderInput('Full Name', formData.name, v => setField('name', v), 'Rahul Mehta')}</div>
             {renderInput('Phone', formData.phone, v => setField('phone', v), '+91 98XXX XXXXX')}
             {renderInput('Email', formData.email, v => setField('email', v), 'you@email.com')}
@@ -730,7 +765,7 @@ export default function ResumeBuilderPage() {
                   <button onClick={() => removeExperience(i)} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.45)', fontSize: 16, cursor: 'pointer', padding: '2px 4px', lineHeight: 1 }}>×</button>
                 )}
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }}>
                 {renderInput('Company', exp.company, v => setExpField(i, 'company', v), 'Bloom D2C Startup')}
                 {renderInput('Role', exp.role, v => setExpField(i, 'role', v), 'Business Development Intern')}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -738,15 +773,15 @@ export default function ResumeBuilderPage() {
                   {renderInput('Location', exp.location, v => setExpField(i, 'location', v), 'Delhi')}
                 </div>
               </div>
-              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {exp.bullets.map((b, bIdx) => renderBulletField(`exp-${i}-${bIdx}`, b, v => setExpBullet(i, bIdx, v), 'What you did + result with numbers'))}
-                {exp.bullets.length < 4 && (
+              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {exp.bullets.map((b, bIdx) => renderBulletField(`exp-${i}-${bIdx}`, b, v => setExpBullet(i, bIdx, v), 'What you did + result (e.g. Grew Instagram from 800 to 3,400 followers in 6 weeks)'))}
+                {exp.bullets.length < 6 && (
                   <button onClick={() => addExpBullet(i)} style={{ background: 'none', border: 'none', color: '#4F7CFF', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0 }}>+ Add Achievement</button>
                 )}
               </div>
             </div>
           ))}
-          {formData.experiences.length < 3 && (
+          {formData.experiences.length < 5 && (
             <button onClick={addExperience} style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid rgba(79,124,255,0.25)', background: 'rgba(79,124,255,0.06)', color: '#93BBFF', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>+ Add Experience</button>
           )}
         </SectionCard>
@@ -754,7 +789,7 @@ export default function ResumeBuilderPage() {
 
       <div ref={el => { sectionRefs.current['education'] = el }}>
         <SectionCard id={mobile ? 'education-m' : 'education'} icon="🎓" title="Education" status={sectionStatus('education', formData)} expanded={expandedSections.has('education')} onToggle={() => toggleSection('education')}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }}>
             {renderInput('College', formData.college, v => setField('college', v), '[Your College], Delhi')}
             {renderInput('Degree', formData.degree, v => setField('degree', v), 'BBA (Honours)')}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -793,12 +828,15 @@ export default function ResumeBuilderPage() {
               </div>
               {renderInput('Project Name', proj.name, v => setProjField(i, 'name', v), 'Competitive Analysis — EdTech Sector')}
               <div style={{ marginTop: 10 }}>{renderInput('Context', proj.context, v => setProjField(i, 'context', v), 'College Strategy Course')}</div>
-              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {proj.bullets.map((b, bIdx) => renderBulletField(`proj-${i}-${bIdx}`, b, v => setProjBullet(i, bIdx, v), 'What you did + result'))}
+              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {proj.bullets.map((b, bIdx) => renderBulletField(`proj-${i}-${bIdx}`, b, v => setProjBullet(i, bIdx, v), 'What you built + outcome (e.g. Built a financial model tracking 10 KPIs for a mock e-commerce business)'))}
+                {proj.bullets.length < 4 && (
+                  <button onClick={() => addProjBullet(i)} style={{ background: 'none', border: 'none', color: '#4F7CFF', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0 }}>+ Add Achievement</button>
+                )}
               </div>
             </div>
           ))}
-          {formData.projects.length < 2 && (
+          {formData.projects.length < 4 && (
             <button onClick={addProject} style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid rgba(79,124,255,0.25)', background: 'rgba(79,124,255,0.06)', color: '#93BBFF', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>+ Add Project</button>
           )}
           <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(79,124,255,0.04)', border: '1px solid rgba(79,124,255,0.08)', fontSize: 11, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
@@ -831,39 +869,6 @@ export default function ResumeBuilderPage() {
         </SectionCard>
       </div>
 
-      {/* ATS Score Panel */}
-      <div style={{ marginBottom: 24 }}>
-        <button onClick={() => setShowATS(!showATS)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 18px', background: '#161b22', border: '1px solid rgba(255,255,255,0.05)', borderLeft: `3px solid ${ats.score > 75 ? '#10b981' : ats.score > 50 ? '#f59e0b' : '#ef4444'}`, borderRadius: 12, cursor: 'pointer', color: '#fff', fontFamily: 'inherit', textAlign: 'left' }}>
-          <span style={{ fontSize: 15 }}>📊</span>
-          <span style={{ flex: 1, fontSize: 13, fontWeight: 700 }}>ATS Score</span>
-          <span style={{ fontSize: 15, fontWeight: 800, color: ats.score > 75 ? '#10b981' : ats.score > 50 ? '#f59e0b' : '#ef4444' }}>{ats.score}</span>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', transition: 'transform 0.2s', transform: showATS ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
-        </button>
-        {showATS && (
-          <div style={{ background: '#161b22', border: '1px solid rgba(255,255,255,0.05)', borderTop: 'none', borderRadius: '0 0 12px 12px', padding: '16px 18px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
-              <ATSCircle score={ats.score} />
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>ATS Readiness</div>
-                <div style={{ fontSize: 12, color: ats.score > 75 ? '#10b981' : ats.score > 60 ? '#f59e0b' : '#ef4444', fontWeight: 600 }}>
-                  {ats.score > 75 ? 'Excellent' : ats.score > 60 ? 'Good' : ats.score > 50 ? 'Fair' : 'Needs work'}
-                </div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{ats.missing.length} items to improve</div>
-              </div>
-            </div>
-            {ats.missing.length > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                {ats.missing.map((m, i) => (
-                  <button key={i} onClick={() => scrollToSection(m.section)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.45)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}>
-                    <span style={{ color: '#f59e0b', fontSize: 10 }}>●</span>
-                    {m.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
     </>
   )
 
@@ -885,6 +890,8 @@ export default function ResumeBuilderPage() {
         @keyframes skeletonPulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
         .skeleton-pulse { animation: skeletonPulse 1.5s ease-in-out infinite; }
         @keyframes fadeUp { from { opacity:0;transform:translateY(8px); } to { opacity:1;transform:translateY(0); } }
+        .builder-desktop{display:none}
+        .builder-mobile{display:none}
         @media(max-width:860px){
           .builder-desktop{display:none !important}
           .builder-mobile{display:flex !important}
@@ -939,20 +946,20 @@ export default function ResumeBuilderPage() {
         </a>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
           {savedAgo && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginRight: 4 }}>{savedAgo}</span>}
-          <button onClick={handleSave} title="Ctrl+S" style={{ padding: '7px 13px', borderRadius: 8, background: 'rgba(16,185,129,0.07)', border: '1px solid rgba(16,185,129,0.2)', color: '#6ee7b7', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Save</button>
-          <button onClick={handleFillExample} style={{ padding: '7px 13px', borderRadius: 8, background: 'rgba(79,124,255,0.06)', border: '1px solid rgba(79,124,255,0.18)', color: '#93BBFF', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Example</button>
-          <button onClick={handleDownloadPDF} disabled={isPdfLoading} style={{ padding: '7px 16px', borderRadius: 8, background: isPdfLoading ? 'rgba(79,124,255,0.4)' : 'linear-gradient(135deg,#4F7CFF,#7B61FF)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: isPdfLoading ? 'wait' : 'pointer', fontFamily: 'inherit', boxShadow: '0 2px 10px rgba(79,124,255,0.25)' }}>
+          <button onClick={handleSave} title="Ctrl+S" style={{ height: 32, padding: '0 14px', borderRadius: 100, background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Save Draft</button>
+          <button onClick={handleFillExample} style={{ height: 32, padding: '0 14px', borderRadius: 100, background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Example</button>
+          <button onClick={handleDownloadPDF} disabled={isPdfLoading} style={{ height: 32, padding: '0 14px', borderRadius: 100, background: isPdfLoading ? 'rgba(245,158,11,0.5)' : '#f59e0b', border: 'none', color: '#000', fontSize: 13, fontWeight: 700, cursor: isPdfLoading ? 'wait' : 'pointer', fontFamily: 'inherit' }}>
             {isPdfLoading ? 'Generating\u2026' : 'Download PDF'}
           </button>
-          <button onClick={handleReset} style={{ padding: '7px 13px', borderRadius: 8, background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)', color: 'rgba(239,68,68,0.55)', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Reset</button>
+          <button onClick={handleReset} style={{ height: 32, padding: '0 10px', background: 'none', border: 'none', color: 'rgba(239,68,68,0.6)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Reset</button>
         </div>
       </div>
 
       {/* MOBILE TAB BAR */}
-      <div className="builder-mobile no-print" style={{ position: 'sticky', top: 56, zIndex: 150, background: 'rgba(13,17,23,0.97)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="builder-mobile no-print" style={{ position: 'sticky', top: 56, zIndex: 150, background: '#0D1117', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div style={{ display: 'flex' }}>
-          {(['edit', 'preview'] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} style={{ flex: 1, padding: '12px 0', background: 'transparent', border: 'none', borderBottom: activeTab === tab ? '2px solid #4F7CFF' : '2px solid transparent', color: activeTab === tab ? '#fff' : 'rgba(255,255,255,0.35)', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', textTransform: 'capitalize', transition: 'all 0.15s' }}>{tab}</button>
+          {([['edit', '✏️ Edit'], ['preview', '👁 Preview']] as const).map(([tab, label]) => (
+            <button key={tab} onClick={() => setActiveTab(tab as 'edit' | 'preview')} style={{ flex: 1, padding: '12px 0', background: 'transparent', border: 'none', borderBottom: activeTab === tab ? '2px solid #4F7CFF' : '2px solid transparent', color: activeTab === tab ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>{label}</button>
           ))}
         </div>
       </div>
