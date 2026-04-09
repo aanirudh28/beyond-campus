@@ -84,6 +84,7 @@ const EXAMPLE_DATA: FormData = {
   languages: ['English (Fluent)', 'Hindi (Native)'],
   certifications: [],
   positions: [],
+  education4: { college: '', degree: '', year: '', cgpa: '' },
 }
 
 /* ─────────────────────────────────────────────
