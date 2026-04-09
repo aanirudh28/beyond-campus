@@ -22,6 +22,7 @@ interface FormData {
   experiences: Experience[]
   education2: Education2
   education3: Education2
+  education4: Education2
   projects: Project[]
   skills: string[]
   languages: string[]
@@ -35,6 +36,7 @@ const defaultFormData: FormData = {
   experiences: [{ company: '', role: '', duration: '', location: '', bullets: ['', '', '', ''] }],
   education2: { college: '', degree: '', year: '', cgpa: '' },
   education3: { college: '', degree: '', year: '', cgpa: '' },
+  education4: { college: '', degree: '', year: '', cgpa: '' },
   projects: [{ name: '', context: '', bullets: ['', ''] }],
   skills: [],
   languages: [],
@@ -331,6 +333,15 @@ function LivePreview({ f, zoom, recruiterView }: { f: FormData; zoom: number; re
               <div>{[f.education3.degree, f.education3.cgpa && `CGPA: ${f.education3.cgpa}`].filter(Boolean).join(' \u00B7 ')}</div>
             </div>
           )}
+          {(f.education4?.college || f.education4?.degree) && (
+            <div style={{ marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontWeight: 'bold' }}>{f.education4.college}</span>
+                {f.education4.year && <span>{f.education4.year}</span>}
+              </div>
+              <div>{[f.education4.degree, f.education4.cgpa].filter(Boolean).join(' \u00B7 ')}</div>
+            </div>
+          )}
         </div>
       )}
 
@@ -530,6 +541,7 @@ export default function ResumeBuilderPage() {
   const [showTips, setShowTips]               = useState(false)
   const [showEdu2, setShowEdu2]               = useState(false)
   const [showEdu3, setShowEdu3]               = useState(false)
+  const [showEdu4, setShowEdu4]               = useState(false)
   const [bulletBank, setBulletBank]           = useState(false)
   const [activeBulletKey, setActiveBulletKey] = useState<string | null>(null)
   const [isPdfLoading, setIsPdfLoading]       = useState(false)
@@ -558,6 +570,7 @@ export default function ResumeBuilderPage() {
         setFormData({ ...defaultFormData, ...parsed })
         if (parsed.education2?.college || parsed.education2?.degree) setShowEdu2(true)
         if (parsed.education3?.college || parsed.education3?.degree) setShowEdu3(true)
+        if (parsed.education4?.college || parsed.education4?.degree) setShowEdu4(true)
         addToast('Draft restored', 'success')
       }
     } catch { /* ignore */ }
@@ -655,6 +668,7 @@ export default function ResumeBuilderPage() {
     setSavedTime(null)
     setShowEdu2(false)
     setShowEdu3(false)
+    setShowEdu4(false)
     addToast('All fields cleared', 'warn')
   }
 
@@ -1065,6 +1079,25 @@ export default function ResumeBuilderPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   {renderInput('Year', formData.education3.year, v => setField('education3', { ...formData.education3, year: v }), '2020')}
                   {renderInput('CGPA / %', formData.education3.cgpa, v => setField('education3', { ...formData.education3, cgpa: v }), '95%')}
+                </div>
+              </div>
+            </div>
+          )}
+          {!showEdu4 && (
+            <button onClick={() => setShowEdu4(true)} style={{ background: 'none', border: 'none', color: '#4F7CFF', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', marginTop: 12, padding: 0 }}>+ Add Professional Qualification (CFA / CA / CMA)</button>
+          )}
+          {showEdu4 && (
+            <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <div style={{ ...labelStyle, marginBottom: 0 }}>Professional Qualification</div>
+                <button onClick={() => { setShowEdu4(false); setField('education4', { college: '', degree: '', year: '', cgpa: '' }) }} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.45)', fontSize: 16, cursor: 'pointer', padding: '2px 4px', lineHeight: 1 }}>×</button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+                {renderInput('Qualification', formData.education4.degree, v => setField('education4', { ...formData.education4, degree: v }), 'CFA Level 2 Candidate / CA Foundation / CMA')}
+                {renderInput('Certifying Body', formData.education4.college, v => setField('education4', { ...formData.education4, college: v }), 'CFA Institute / ICAI / IMA')}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  {renderInput('Year / Status', formData.education4.year, v => setField('education4', { ...formData.education4, year: v }), 'Pursuing / 2024')}
+                  {renderInput('Level / Score', formData.education4.cgpa, v => setField('education4', { ...formData.education4, cgpa: v }), 'Level 1 Cleared')}
                 </div>
               </div>
             </div>
