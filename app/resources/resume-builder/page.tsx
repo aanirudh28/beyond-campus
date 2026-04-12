@@ -1250,9 +1250,12 @@ export default function ResumeBuilderPage() {
         @media print {
           *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
           body,html{background:white!important;margin:0!important;padding:0!important;}
+          .builder-desktop{display:block!important;}
+          #preview-panel{display:block!important;overflow:visible!important;}
           body *{visibility:hidden!important;}
-          #resume-print-target{visibility:visible!important;position:absolute!important;top:0!important;left:0!important;width:210mm!important;padding:15mm!important;margin:0!important;transform:none!important;box-shadow:none!important;border-radius:0!important;background:white!important;font-family:'Times New Roman',serif!important;}
-          #resume-print-target *{visibility:visible!important;}
+          #resume-print-target,#resume-print-target *{visibility:visible!important;}
+          #resume-print-target{position:fixed!important;top:0!important;left:0!important;width:100%!important;padding:15mm!important;margin:0!important;transform:none!important;box-shadow:none!important;border-radius:0!important;background:white!important;font-family:'Times New Roman',serif!important;}
+          #resume-print-target > div:first-child{display:none!important;}
           @page{size:A4;margin:0}
         }
       `}</style>
