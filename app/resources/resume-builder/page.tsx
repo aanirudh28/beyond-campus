@@ -1249,12 +1249,10 @@ export default function ResumeBuilderPage() {
         ::-webkit-scrollbar { width:4px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:2px; }
         @media print {
           *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-          body,html{background:white!important}
-          #header-bar,.no-print,#form-panel,.builder-mobile{display:none!important}
-          .builder-desktop{display:block!important;height:auto!important;width:100%!important;}
-          #preview-panel{display:block!important;width:100%!important;height:auto!important;overflow:visible!important;background:white!important;}
-          #preview-panel > *{display:none!important}
-          #resume-print-target{display:block!important;position:static!important;width:210mm!important;margin:0 auto!important;padding:15mm!important;box-shadow:none!important;border-radius:0!important;transform:none!important;font-family:'Times New Roman',serif!important;}
+          body,html{background:white!important;margin:0!important;padding:0!important;}
+          body *{visibility:hidden!important;}
+          #resume-print-target{visibility:visible!important;position:absolute!important;top:0!important;left:0!important;width:210mm!important;padding:15mm!important;margin:0!important;transform:none!important;box-shadow:none!important;border-radius:0!important;background:white!important;font-family:'Times New Roman',serif!important;}
+          #resume-print-target *{visibility:visible!important;}
           @page{size:A4;margin:0}
         }
       `}</style>
