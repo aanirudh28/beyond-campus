@@ -238,7 +238,7 @@ function statusColor(st: SectionStatus): string {
 /* ─────────────────────────────────────────────
    LIVE PREVIEW (LSE FORMAT)
 ───────────────────────────────────────────── */
-function LivePreview({ f, zoom, recruiterView }: { f: FormData; zoom: number; recruiterView?: boolean }) {
+function LivePreview({ f, zoom, recruiterView, elementId = 'resume-print-target' }: { f: FormData; zoom: number; recruiterView?: boolean; elementId?: string }) {
   const contactParts = [f.phone, f.email, f.linkedin, f.city].filter(Boolean)
   const hasEdu  = f.college || f.degree || f.year
   const hasExp  = f.experiences.some(e => e.company || e.role)
@@ -254,7 +254,7 @@ function LivePreview({ f, zoom, recruiterView }: { f: FormData; zoom: number; re
   )
 
   return (
-    <div id="resume-print-target" style={{ fontFamily: 'Times New Roman, serif', fontSize: 10.5, lineHeight: 1.5, color: '#000', padding: 40, background: '#fff', width: 680, minHeight: 960, position: 'relative', transform: `scale(${zoom / 100})`, transformOrigin: 'top left' }}>
+    <div id={elementId} style={{ fontFamily: 'Times New Roman, serif', fontSize: 10.5, lineHeight: 1.5, color: '#000', padding: 40, background: '#fff', width: 680, minHeight: 960, position: 'relative', transform: `scale(${zoom / 100})`, transformOrigin: 'top left' }}>
       {/* Page break indicator — line only, no text */}
       <div style={{ position: 'absolute', top: 1050, left: 0, right: 0, height: 1, background: 'rgba(239,68,68,0.5)', zIndex: 10, pointerEvents: 'none' }} />
 
@@ -1250,12 +1250,14 @@ export default function ResumeBuilderPage() {
         @media print {
           *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
           body,html{background:white!important;margin:0!important;padding:0!important;}
-          .builder-desktop{display:block!important;}
-          #preview-panel{display:block!important;overflow:visible!important;}
+          #header-bar,.no-print,#form-panel,.builder-mobile{display:none!important;}
+          .builder-desktop{display:block!important;height:auto!important;}
+          #preview-panel{display:block!important;height:auto!important;overflow:visible!important;}
           body *{visibility:hidden!important;}
           #resume-print-target,#resume-print-target *{visibility:visible!important;}
-          #resume-print-target{position:fixed!important;top:0!important;left:0!important;width:100%!important;padding:15mm!important;margin:0!important;transform:none!important;box-shadow:none!important;border-radius:0!important;background:white!important;font-family:'Times New Roman',serif!important;}
-          #resume-print-target > div:first-child{display:none!important;}
+          #resume-print-target~#resume-print-target,#resume-print-target~#resume-print-target *{visibility:hidden!important;display:none!important;}
+          #resume-print-target{position:absolute!important;top:0!important;left:0!important;width:210mm!important;padding:15mm!important;margin:0!important;transform:none!important;box-shadow:none!important;border-radius:0!important;background:white!important;font-family:'Times New Roman',serif!important;}
+          #resume-print-target>div:first-child{display:none!important;}
           @page{size:A4;margin:0}
         }
       `}</style>
@@ -1274,20 +1276,27 @@ export default function ResumeBuilderPage() {
       {/* PDF MODAL */}
       {showPdfModal && (
         <div className="no-print" onClick={() => setShowPdfModal(false)} style={{ position: 'fixed', inset: 0, zIndex: 1100, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: '32px', width: '100%', maxWidth: 400, fontFamily: "'DM Sans',sans-serif" }}>
-            <div style={{ fontSize: 20, marginBottom: 4 }}>📄</div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 6 }}>Download Your Resume</div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, marginBottom: 20 }}>
-              Follow these steps for best results:<br/>
-              1. Click <strong style={{ color: 'rgba(255,255,255,0.8)' }}>"Open Print Dialog"</strong> below<br/>
-              2. Set destination: <strong style={{ color: 'rgba(255,255,255,0.8)' }}>Save as PDF</strong><br/>
-              3. Set margins: <strong style={{ color: 'rgba(255,255,255,0.8)' }}>None</strong><br/>
-              4. Uncheck <strong style={{ color: 'rgba(255,255,255,0.8)' }}>"Headers &amp; footers"</strong><br/>
-              5. Click Save
+          <div onClick={e => e.stopPropagation()} style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: '28px', width: '100%', maxWidth: 400, fontFamily: "'DM Sans',sans-serif" }}>
+            <div style={{ fontSize: 20, marginBottom: 8 }}>📄</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 16 }}>Save Your Resume as PDF</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 6 }}>In the dialog that opens:</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
+              {[
+                ['Set destination:', 'Save as PDF'],
+                ['Set margins:', 'None'],
+                ['Turn OFF:', 'Headers and footers'],
+                ['Then:', 'Click Save'],
+              ].map(([label, value], i) => (
+                <div key={i} style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                  <span style={{ color: '#4F7CFF', fontWeight: 700, minWidth: 20 }}>{i + 1}.</span>
+                  <span style={{ color: 'rgba(255,255,255,0.45)' }}>{label}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>{value}</span>
+                </div>
+              ))}
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => { setShowPdfModal(false); setTimeout(() => window.print(), 100) }} style={{ flex: 1, padding: '12px', borderRadius: 12, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', border: 'none', color: 'white', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>Open Print Dialog →</button>
-              <button onClick={() => setShowPdfModal(false)} style={{ padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+              <button onClick={() => { setShowPdfModal(false); setTimeout(() => window.print(), 100) }} style={{ flex: 1, padding: '12px', borderRadius: 100, background: '#4F7CFF', border: 'none', color: 'white', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>Open Print Dialog →</button>
+              <button onClick={() => setShowPdfModal(false)} style={{ padding: '12px 16px', borderRadius: 100, background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
             </div>
           </div>
         </div>
@@ -1326,7 +1335,7 @@ export default function ResumeBuilderPage() {
           <button onClick={handleSave} title="Ctrl+S" style={{ height: 32, padding: '0 14px', borderRadius: 100, background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Save Draft</button>
           <button onClick={handleFillExample} style={{ height: 32, padding: '0 14px', borderRadius: 100, background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Example</button>
           <button onClick={() => setShowPdfModal(true)} style={{ height: 32, padding: '0 14px', borderRadius: 100, background: '#f59e0b', border: 'none', color: '#000', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
-            Download PDF
+            Save as PDF
           </button>
           <button onClick={handleReset} style={{ height: 32, padding: '0 10px', background: 'none', border: 'none', color: 'rgba(239,68,68,0.6)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Reset</button>
         </div>
@@ -1456,7 +1465,7 @@ export default function ResumeBuilderPage() {
               ))}
             </div>
             <div style={{ boxShadow: '0 4px 32px rgba(0,0,0,0.5)', borderRadius: 4, overflow: 'hidden', display: 'inline-block' }}>
-              <LivePreview f={formData} zoom={55} recruiterView={recruiterView} />
+              <LivePreview f={formData} zoom={55} recruiterView={recruiterView} elementId="resume-print-target-mobile" />
             </div>
             {recruiterView && recruiterDone && (
               <div style={{ marginTop: 20, background: '#111827', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 16, padding: '20px', fontFamily: "'DM Sans',sans-serif" }}>
