@@ -1222,25 +1222,17 @@ export default function ResumeBuilderPage() {
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none;color:inherit}
         input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.25)}
-        @media print {
-          *{-webkit-print-color-adjust:exact;}
-          #header-bar,.no-print,#form-panel,.builder-mobile{display:none!important}
-          .builder-desktop{display:block!important;height:auto!important}
-          #resume-print-target{position:static!important;width:210mm!important;margin:0 auto!important;padding:15mm!important;box-shadow:none!important;border-radius:0!important;transform:none!important;font-family:'Times New Roman',serif!important;}
-          body,html{background:white!important}
-          @page{size:A4;margin:0}
-        }
         @keyframes slideInRight { from { transform:translateX(60px);opacity:0; } to { transform:translateX(0);opacity:1; } }
         @keyframes skeletonPulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
         .skeleton-pulse { animation: skeletonPulse 1.5s ease-in-out infinite; }
         @keyframes fadeUp { from { opacity:0;transform:translateY(8px); } to { opacity:1;transform:translateY(0); } }
         .builder-desktop{display:none}
         .builder-mobile{display:none}
-        @media(max-width:860px){
+        @media screen and (max-width:860px){
           .builder-desktop{display:none !important}
           .builder-mobile{display:flex !important}
         }
-        @media(min-width:861px){
+        @media screen and (min-width:861px){
           .builder-desktop{display:flex !important}
           .builder-mobile{display:none !important}
         }
@@ -1255,6 +1247,16 @@ export default function ResumeBuilderPage() {
         .recruiter-on > [data-section="experience"] > div:nth-child(2) > div:nth-child(n+4) { opacity:0.12 !important; }
         .template-locked:hover { border-color:rgba(79,124,255,0.3) !important; }
         ::-webkit-scrollbar { width:4px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:2px; }
+        @media print {
+          *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+          body,html{background:white!important}
+          #header-bar,.no-print,#form-panel,.builder-mobile{display:none!important}
+          .builder-desktop{display:block!important;height:auto!important;width:100%!important;}
+          #preview-panel{display:block!important;width:100%!important;height:auto!important;overflow:visible!important;background:white!important;}
+          #preview-panel > *{display:none!important}
+          #resume-print-target{display:block!important;position:static!important;width:210mm!important;margin:0 auto!important;padding:15mm!important;box-shadow:none!important;border-radius:0!important;transform:none!important;font-family:'Times New Roman',serif!important;}
+          @page{size:A4;margin:0}
+        }
       `}</style>
 
       <UnlockPopup isOpen={showPopup} onClose={() => setShowPopup(false)} onEmailUnlock={() => {}} resourceName="Resume Templates" localStorageKey="resumeTemplates" showEmailOption={false} emailAlreadySubmitted={false} />
@@ -1346,7 +1348,7 @@ export default function ResumeBuilderPage() {
         </div>
 
         {/* RIGHT: PREVIEW */}
-        <div style={{ width: '58%', height: 'calc(100vh - 56px)', overflowY: 'auto', background: '#0f1520' }}>
+        <div id="preview-panel" style={{ width: '58%', height: 'calc(100vh - 56px)', overflowY: 'auto', background: '#0f1520' }}>
           {/* Preview sticky header */}
           <div style={{ position: 'sticky', top: 0, zIndex: 10, background: 'rgba(15,21,32,0.97)', backdropFilter: 'blur(10px)', padding: '10px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
