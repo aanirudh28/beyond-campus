@@ -12,7 +12,7 @@ type Experience    = { company: string; role: string; duration: string; location
 type Project       = { name: string; context: string; bullets: string[] }
 type Education2    = { college: string; degree: string; year: string; cgpa: string }
 type Certification = { name: string; org: string; year: string; inProgress: boolean }
-type Position      = { title: string; org: string; duration: string; bullet: string }
+type Position      = { title: string; org: string; duration: string; bullets: string[] }
 type Toast         = { id: number; message: string; type?: 'success' | 'warn' | 'error' }
 
 interface FormData {
@@ -169,7 +169,7 @@ function calculatePageFit(f: FormData): number {
   f.projects.forEach(proj => { c += 60; proj.bullets.filter(Boolean).forEach(b => { c += b.length + 20 }) })
   c += Math.min((f.skills?.join(', ').length || 0), 120)
   if (f.certifications?.length) c += f.certifications.filter(cert => cert.name).length * 40
-  if (f.positions?.length) f.positions.filter(p => p.title).forEach(p => { c += 50 + (p.bullet?.length || 0) })
+  if (f.positions?.length) f.positions.filter(p => p.title).forEach(p => { c += 50; p.bullets?.filter(Boolean).forEach(b => { c += b.length + 16 }) })
   return Math.min(Math.round((c / 3800) * 100), 110)
 }
 
@@ -398,7 +398,7 @@ function LivePreview({ f, zoom, recruiterView, elementId = 'resume-print-target'
                 <span style={{ fontWeight: 'bold' }}>{p.title}{p.org && <span style={{ fontWeight: 'normal' }}> | {p.org}</span>}</span>
                 {p.duration && <span>{p.duration}</span>}
               </div>
-              {p.bullet && <div>— {p.bullet}</div>}
+              {p.bullets?.filter(Boolean).map((b, j) => <div key={j}>— {b}</div>)}
             </div>
           ))}
         </div>
@@ -568,6 +568,12 @@ export default function ResumeBuilderPage() {
       const saved = localStorage.getItem('resumeDraft')
       if (saved) {
         const parsed = JSON.parse(saved) as Partial<FormData>
+        // Migrate old positions that used bullet:string to bullets:string[]
+        if (parsed.positions) {
+          parsed.positions = parsed.positions.map((p: any) =>
+            p.bullets ? p : { ...p, bullets: p.bullet ? [p.bullet] : [''] }
+          )
+        }
         setFormData({ ...defaultFormData, ...parsed })
         if (parsed.education2?.college || parsed.education2?.degree) setShowEdu2(true)
         if (parsed.education3?.college || parsed.education3?.degree) setShowEdu3(true)
@@ -646,9 +652,11 @@ export default function ResumeBuilderPage() {
   const removeCert = (idx: number) => setFormData(prev => ({ ...prev, certifications: prev.certifications.filter((_, i) => i !== idx) }))
   const setCertField = (idx: number, key: keyof Certification, value: string | boolean) => setFormData(prev => ({ ...prev, certifications: prev.certifications.map((c, i) => i === idx ? { ...c, [key]: value } : c) }))
 
-  const addPosition = () => { if (formData.positions.length >= 4) return; setFormData(prev => ({ ...prev, positions: [...prev.positions, { title: '', org: '', duration: '', bullet: '' }] })) }
+  const addPosition = () => { if (formData.positions.length >= 4) return; setFormData(prev => ({ ...prev, positions: [...prev.positions, { title: '', org: '', duration: '', bullets: [''] }] })) }
   const removePosition = (idx: number) => setFormData(prev => ({ ...prev, positions: prev.positions.filter((_, i) => i !== idx) }))
-  const setPosField = (idx: number, key: keyof Position, value: string) => setFormData(prev => ({ ...prev, positions: prev.positions.map((p, i) => i === idx ? { ...p, [key]: value } : p) }))
+  const setPosField = (idx: number, key: 'title' | 'org' | 'duration', value: string) => setFormData(prev => ({ ...prev, positions: prev.positions.map((p, i) => i === idx ? { ...p, [key]: value } : p) }))
+  const setPosBullet = (idx: number, bIdx: number, value: string) => setFormData(prev => ({ ...prev, positions: prev.positions.map((p, i) => { if (i !== idx) return p; const b = [...(p.bullets || [])]; b[bIdx] = value; return { ...p, bullets: b } }) }))
+  const addPosBullet = (idx: number) => setFormData(prev => ({ ...prev, positions: prev.positions.map((p, i) => i !== idx || (p.bullets?.length || 0) >= 4 ? p : { ...p, bullets: [...(p.bullets || []), ''] }) }))
 
   const handleSave = () => {
     localStorage.setItem('resumeDraft', JSON.stringify(formData))
@@ -1160,7 +1168,12 @@ export default function ResumeBuilderPage() {
                 {renderInput('Position Title', pos.title, v => setPosField(i, 'title', v), 'Cultural Secretary')}
                 {renderInput('Organisation', pos.org, v => setPosField(i, 'org', v), 'Annual College Fest Committee')}
                 {renderInput('Duration', pos.duration, v => setPosField(i, 'duration', v), '2023–24')}
-                {renderTextarea('Achievement (optional)', pos.bullet, v => setPosField(i, 'bullet', v), 'Managed logistics for 2,000-person event with ₹8L budget', 2)}
+                <div style={{ marginTop: 4, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {(pos.bullets || ['']).map((b, bIdx) => renderBulletField(`pos-${i}-${bIdx}`, b, v => setPosBullet(i, bIdx, v), 'Managed logistics for 2,000-person event with ₹8L budget'))}
+                  {(pos.bullets?.length || 0) < 4 && (
+                    <button onClick={() => addPosBullet(i)} style={{ background: 'none', border: 'none', color: '#4F7CFF', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0 }}>+ Add Achievement</button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
