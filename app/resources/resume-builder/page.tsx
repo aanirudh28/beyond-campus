@@ -312,7 +312,7 @@ function LivePreview({ f, zoom, recruiterView, elementId = 'resume-print-target'
           <div style={{ marginBottom: 6 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ fontWeight: 'bold' }}>{f.college}</span>
-              {f.year && <span>Expected {f.year}</span>}
+              {f.year && <span>{f.year}</span>}
             </div>
             <div>{[f.degree, f.cgpa && `CGPA: ${f.cgpa}`].filter(Boolean).join(' \u00B7 ')}</div>
           </div>
