@@ -493,21 +493,33 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 const DIFF_STYLE: Record<Difficulty, { bg: string; border: string; color: string }> = {
-  Basic: { bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.3)', color: '#6ee7b7' },
-  Intermediate: { bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.35)', color: '#fcd34d' },
-  Advanced: { bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.3)', color: '#f87171' },
+  Basic:        { bg: 'rgba(16,185,129,0.12)',  border: 'rgba(16,185,129,0.35)',  color: '#34d399' },
+  Intermediate: { bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.4)',   color: '#fbbf24' },
+  Advanced:     { bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.35)',   color: '#f87171' },
+}
+
+// Left-border accent colour per category
+const CAT_COLOR: Record<string, string> = {
+  'Excel Basics':           '#10b981',
+  'Lookup & Reference':     '#3b82f6',
+  'IF & Logic':             '#a78bfa',
+  'Text Functions':         '#22d3ee',
+  'Date & Numbers':         '#f59e0b',
+  'Pivot Tables':           '#f472b6',
+  'Shortcuts & Productivity': '#fb923c',
+  'Data Cleaning':          '#84cc16',
 }
 
 const CAT_SHORT: Record<string, string> = {
-  'All': 'All',
-  'Excel Basics': 'Excel Basics',
-  'Lookup & Reference': 'Lookups',
-  'IF & Logic': 'IF & Logic',
-  'Text Functions': 'Text',
-  'Date & Numbers': 'Dates',
-  'Pivot Tables': 'Pivot Tables',
+  'All':                    'All',
+  'Excel Basics':           'Excel Basics',
+  'Lookup & Reference':     'Lookups',
+  'IF & Logic':             'IF & Logic',
+  'Text Functions':         'Text',
+  'Date & Numbers':         'Dates',
+  'Pivot Tables':           'Pivot Tables',
   'Shortcuts & Productivity': 'Shortcuts',
-  'Data Cleaning': 'Data Cleaning',
+  'Data Cleaning':          'Data Cleaning',
 }
 
 // ──────────────────────── COMPONENT ────────────────────────
@@ -525,6 +537,12 @@ export default function ExcelInterviewPrep() {
   const [quizScore, setQuizScore] = useState(0)
   const [quizComplete, setQuizComplete] = useState(false)
   const [quizTotal] = useState(10)
+
+  // Lock body scroll when quiz overlay is open
+  useEffect(() => {
+    document.body.style.overflow = quizMode ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [quizMode])
 
   const filteredQuestions = activeCategory === 'All'
     ? questions
@@ -559,338 +577,538 @@ export default function ExcelInterviewPrep() {
 
   const currentQ = quizQuestions[quizIndex]
 
-  const statsText = `${CATEGORIES.length - 1} categories · ${questions.length} questions · Free forever`
-
   return (
     <main style={{ background: '#0B0B0F', color: '#fff', minHeight: '100vh', fontFamily: "'DM Sans','Inter',sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=JetBrains+Mono:wght@400;500&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none;color:inherit}
 
-        .q-card{
-          background:#111827;
-          border:1px solid rgba(255,255,255,0.07);
-          border-radius:16px;
-          overflow:hidden;
-          transition:border-color 0.2s;
-        }
-        .q-card:hover{border-color:rgba(79,124,255,0.25)}
-
-        .q-header{
-          display:flex;align-items:flex-start;justify-content:space-between;
-          padding:20px 22px;cursor:pointer;gap:12px;
-        }
-        .q-header:hover .q-question{color:#e2e8f0}
-
-        .q-question{
-          font-size:15px;font-weight:600;line-height:1.5;
-          color:rgba(255,255,255,0.85);flex:1;
-          transition:color 0.15s;
+        /* ── Hero gradient backdrop ── */
+        .hero-wrap{
+          background:
+            radial-gradient(ellipse 80% 40% at 10% 0%, rgba(16,185,129,0.09) 0%, transparent 70%),
+            radial-gradient(ellipse 60% 50% at 90% 10%, rgba(79,124,255,0.06) 0%, transparent 60%);
         }
 
-        .q-chevron{
-          flex-shrink:0;width:20px;height:20px;
-          display:flex;align-items:center;justify-content:center;
-          color:rgba(255,255,255,0.3);
-          transition:transform 0.2s,color 0.2s;
-          margin-top:2px;
+        /* ── Stat pills ── */
+        .stat-pill{
+          display:inline-flex;align-items:center;gap:6px;
+          padding:6px 14px;border-radius:100px;
+          background:rgba(16,185,129,0.08);
+          border:1px solid rgba(16,185,129,0.22);
+          font-size:12px;font-weight:700;color:rgba(255,255,255,0.65);
+          white-space:nowrap;
         }
-        .q-chevron.open{transform:rotate(180deg);color:#4F7CFF}
-
-        .q-body{
-          padding:0 22px 20px;
-          border-top:1px solid rgba(255,255,255,0.05);
-        }
-
-        .q-answer{
-          font-size:14px;line-height:1.75;
-          color:rgba(255,255,255,0.65);
-          padding-top:18px;
+        .stat-pill-dot{
+          width:6px;height:6px;border-radius:50%;
+          background:#10b981;flex-shrink:0;
         }
 
-        .code-block{
-          background:#12121a;
-          border:1px solid rgba(79,124,255,0.2);
-          border-radius:10px;
-          padding:14px 18px;
-          margin-top:14px;
-          font-family:'Courier New',monospace;
-          font-size:13px;
-          color:#93BBFF;
-          position:relative;
-          overflow-x:auto;
-          white-space:pre-wrap;
-          word-break:break-all;
+        /* ── CTA buttons ── */
+        .btn-primary{
+          display:inline-flex;align-items:center;justify-content:center;gap:8px;
+          padding:14px 28px;border-radius:12px;border:none;cursor:pointer;
+          font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;
+          background:linear-gradient(135deg,#059669,#10b981);
+          box-shadow:0 4px 24px rgba(16,185,129,0.3);
+          transition:transform 0.15s,box-shadow 0.15s;
         }
+        .btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 32px rgba(16,185,129,0.38)}
+        .btn-primary:active{transform:translateY(0)}
 
-        .copy-btn{
-          position:absolute;top:10px;right:10px;
-          background:rgba(79,124,255,0.15);
-          border:1px solid rgba(79,124,255,0.3);
-          color:#93BBFF;
-          border-radius:6px;
-          padding:4px 10px;
-          font-size:11px;font-weight:700;
-          cursor:pointer;font-family:'DM Sans',sans-serif;
-          transition:background 0.2s;
+        .btn-secondary{
+          display:inline-flex;align-items:center;justify-content:center;gap:8px;
+          padding:14px 28px;border-radius:12px;cursor:pointer;
+          font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;
+          color:rgba(255,255,255,0.75);
+          background:rgba(255,255,255,0.05);
+          border:1.5px solid rgba(255,255,255,0.14);
+          transition:background 0.15s,border-color 0.15s;
         }
-        .copy-btn:hover{background:rgba(79,124,255,0.3)}
+        .btn-secondary:hover{background:rgba(255,255,255,0.09);border-color:rgba(255,255,255,0.22)}
 
-        .tip-box{
-          background:rgba(245,158,11,0.06);
-          border:1px solid rgba(245,158,11,0.2);
-          border-radius:10px;
-          padding:12px 16px;
-          margin-top:14px;
-          font-size:13px;
-          color:rgba(255,220,100,0.8);
-          line-height:1.6;
-        }
-        .tip-label{
-          font-weight:700;font-size:11px;letter-spacing:0.8px;
-          text-transform:uppercase;color:#fcd34d;margin-bottom:4px;
-        }
-
+        /* ── Filter bar ── */
         .filter-bar{
           position:sticky;top:52px;z-index:90;
-          background:rgba(11,11,15,0.97);
-          backdrop-filter:blur(16px);
-          border-bottom:1px solid rgba(255,255,255,0.05);
+          background:rgba(11,11,15,0.96);
+          backdrop-filter:blur(20px);
+          -webkit-backdrop-filter:blur(20px);
+          border-bottom:1px solid rgba(255,255,255,0.06);
           padding:12px 24px;
         }
-
         .filter-pills{
-          display:flex;gap:8px;overflow-x:auto;
+          display:flex;gap:8px;overflow-x:auto;flex-wrap:nowrap;
           scrollbar-width:none;-ms-overflow-style:none;
           padding-bottom:2px;
         }
         .filter-pills::-webkit-scrollbar{display:none}
-
         .pill{
-          flex-shrink:0;
-          padding:6px 14px;border-radius:100px;
-          font-size:13px;font-weight:600;
-          cursor:pointer;border:1px solid rgba(255,255,255,0.12);
-          color:rgba(255,255,255,0.5);
+          flex-shrink:0;white-space:nowrap;
+          padding:7px 16px;border-radius:100px;
+          font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;
+          cursor:pointer;
+          border:1.5px solid rgba(255,255,255,0.1);
+          color:rgba(255,255,255,0.45);
           background:transparent;
-          font-family:'DM Sans',sans-serif;
-          transition:all 0.15s;
+          transition:all 0.18s ease;
+        }
+        .pill:hover{border-color:rgba(16,185,129,0.4);color:rgba(255,255,255,0.8)}
+        .pill.active{
+          background:#059669;
+          border-color:#059669;
+          color:#fff;
+          box-shadow:0 2px 12px rgba(5,150,105,0.35);
+        }
+
+        /* ── Question cards ── */
+        .q-card{
+          background:#0f1923;
+          border:1px solid rgba(255,255,255,0.07);
+          border-radius:14px;
+          overflow:hidden;
+          transition:border-color 0.2s,box-shadow 0.2s;
+          position:relative;
+        }
+        .q-card::before{
+          content:'';
+          position:absolute;left:0;top:0;bottom:0;
+          width:3px;border-radius:0;
+          transition:opacity 0.2s;
+          opacity:0.7;
+        }
+        .q-card:hover{border-color:rgba(255,255,255,0.13);box-shadow:0 4px 24px rgba(0,0,0,0.3)}
+        .q-card:hover::before{opacity:1}
+
+        .q-header{
+          display:flex;align-items:flex-start;justify-content:space-between;
+          padding:24px 24px 24px 28px;cursor:pointer;gap:16px;
+          user-select:none;
+        }
+        .q-header:hover .q-question{color:#fff}
+
+        .q-question{
+          font-size:15px;font-weight:600;line-height:1.55;
+          color:rgba(255,255,255,0.82);flex:1;
+          transition:color 0.15s;
+        }
+
+        .q-chevron{
+          flex-shrink:0;width:22px;height:22px;
+          display:flex;align-items:center;justify-content:center;
+          background:rgba(255,255,255,0.06);border-radius:50%;
+          color:rgba(255,255,255,0.4);
+          transition:transform 0.25s cubic-bezier(.4,0,.2,1),
+                      background 0.2s,color 0.2s;
+          margin-top:1px;
+        }
+        .q-chevron.open{
+          transform:rotate(180deg);
+          background:rgba(5,150,105,0.18);
+          color:#34d399;
+        }
+
+        /* expanded body */
+        .q-body{
+          padding:0 24px 24px 28px;
+          background:rgba(255,255,255,0.018);
+          border-top:1px solid rgba(255,255,255,0.055);
+        }
+        .q-answer{
+          font-size:14px;line-height:1.8;
+          color:rgba(255,255,255,0.62);
+          padding-top:20px;
+        }
+
+        /* ── Code block ── */
+        .code-block{
+          background:#0d1117;
+          border:1px solid rgba(34,211,238,0.18);
+          border-radius:10px;
+          padding:16px 56px 16px 18px;
+          margin-top:16px;
+          font-family:'JetBrains Mono','Courier New',monospace;
+          font-size:13px;
+          color:#4ade80;
+          position:relative;
+          overflow-x:auto;
+          white-space:pre;
+          line-height:1.6;
+        }
+        .copy-btn{
+          position:absolute;top:10px;right:10px;
+          background:rgba(74,222,128,0.1);
+          border:1px solid rgba(74,222,128,0.25);
+          color:#4ade80;
+          border-radius:6px;padding:4px 12px;
+          font-size:11px;font-weight:700;
+          cursor:pointer;font-family:'DM Sans',sans-serif;
+          transition:background 0.15s,color 0.15s;
           white-space:nowrap;
         }
-        .pill:hover{border-color:rgba(79,124,255,0.4);color:#93BBFF}
-        .pill.active{
-          background:rgba(79,124,255,0.2);
-          border-color:rgba(79,124,255,0.6);
-          color:#93BBFF;
+        .copy-btn:hover{background:rgba(74,222,128,0.2)}
+        .copy-btn.copied{
+          background:rgba(74,222,128,0.2);
+          color:#86efac;border-color:rgba(74,222,128,0.4);
         }
 
-        .cheat-table{
-          width:100%;border-collapse:collapse;
-          font-size:13px;
+        /* ── Tip box ── */
+        .tip-box{
+          display:flex;gap:10px;
+          background:rgba(251,191,36,0.05);
+          border:1px solid rgba(251,191,36,0.18);
+          border-radius:10px;
+          padding:14px 16px;
+          margin-top:16px;
+          font-size:13.5px;
+          color:rgba(255,230,130,0.82);
+          line-height:1.65;
         }
-        .cheat-table th{
-          text-align:left;padding:10px 14px;
-          background:rgba(79,124,255,0.08);
-          color:rgba(255,255,255,0.5);
-          font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;
+        .tip-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+        .tip-label{
+          font-weight:800;font-size:10px;letter-spacing:1px;
+          text-transform:uppercase;color:#fbbf24;
+          display:block;margin-bottom:3px;
+        }
+
+        /* ── Cheat sheet ── */
+        .cheat-wrap{
+          margin-bottom:48px;
+          background:#0f1923;
+          border:1px solid rgba(16,185,129,0.2);
+          border-radius:16px;
+          overflow:hidden;
+          box-shadow:0 8px 40px rgba(0,0,0,0.4);
+        }
+        .cheat-header{
+          padding:18px 24px;
           border-bottom:1px solid rgba(255,255,255,0.07);
+          display:flex;align-items:center;justify-content:space-between;
+          background:rgba(16,185,129,0.05);
+          position:sticky;top:0;
         }
+        .cheat-table{
+          width:100%;border-collapse:collapse;font-size:13px;
+        }
+        .cheat-table thead th{
+          position:sticky;top:0;
+          text-align:left;padding:11px 16px;
+          background:#0d1117;
+          color:rgba(255,255,255,0.4);
+          font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+          border-bottom:1px solid rgba(255,255,255,0.08);
+        }
+        .cheat-table tbody tr:nth-child(even) td{background:rgba(255,255,255,0.02)}
+        .cheat-table tbody tr:hover td{background:rgba(16,185,129,0.05)}
         .cheat-table td{
-          padding:10px 14px;
-          color:rgba(255,255,255,0.7);
+          padding:11px 16px;
+          color:rgba(255,255,255,0.68);
           border-bottom:1px solid rgba(255,255,255,0.04);
           vertical-align:top;
         }
         .cheat-table tr:last-child td{border-bottom:none}
-        .cheat-table tr:hover td{background:rgba(79,124,255,0.04)}
-
-        .fn-name{
-          font-family:'Courier New',monospace;
-          color:#93BBFF;font-weight:700;
+        .fn-cell{
+          font-family:'JetBrains Mono','Courier New',monospace;
+          color:#34d399;font-weight:700;font-size:12px;
+          white-space:nowrap;
         }
         .syntax-cell{
-          font-family:'Courier New',monospace;
-          color:rgba(147,187,255,0.7);font-size:12px;
+          font-family:'JetBrains Mono','Courier New',monospace;
+          color:rgba(34,211,238,0.7);font-size:11.5px;
+          white-space:nowrap;
         }
+        .print-btn{
+          display:inline-flex;align-items:center;gap:6px;
+          padding:7px 14px;border-radius:8px;
+          background:rgba(16,185,129,0.1);
+          border:1px solid rgba(16,185,129,0.25);
+          color:#34d399;font-size:12px;font-weight:700;
+          cursor:pointer;font-family:'DM Sans',sans-serif;
+          transition:background 0.15s;
+        }
+        .print-btn:hover{background:rgba(16,185,129,0.2)}
 
-        .quiz-card{
-          background:#111827;
-          border:1px solid rgba(79,124,255,0.25);
+        /* ── Quiz overlay ── */
+        .quiz-overlay{
+          position:fixed;inset:0;z-index:200;
+          background:rgba(7,10,14,0.96);
+          backdrop-filter:blur(24px);
+          -webkit-backdrop-filter:blur(24px);
+          display:flex;align-items:center;justify-content:center;
+          padding:24px;
+          overflow-y:auto;
+        }
+        .quiz-panel{
+          width:100%;max-width:560px;
+          background:#0f1923;
+          border:1px solid rgba(255,255,255,0.1);
           border-radius:20px;
-          padding:36px 32px;
+          padding:40px 36px;
+          box-shadow:0 32px 80px rgba(0,0,0,0.6);
+          position:relative;
         }
 
-        .quiz-btn{
+        .quiz-progress-bg{
+          height:5px;background:rgba(255,255,255,0.07);
+          border-radius:3px;overflow:hidden;margin-bottom:32px;
+        }
+        .quiz-progress-fill{
+          height:100%;background:linear-gradient(90deg,#059669,#34d399);
+          border-radius:3px;transition:width 0.4s cubic-bezier(.4,0,.2,1);
+        }
+
+        .quiz-q-num{
+          font-size:11px;font-weight:800;letter-spacing:1.5px;
+          text-transform:uppercase;color:rgba(255,255,255,0.3);
+          margin-bottom:8px;
+        }
+        .quiz-question-text{
+          font-size:18px;font-weight:700;line-height:1.5;
+          color:#fff;margin-bottom:28px;
+        }
+
+        .quiz-answer-box{
+          background:rgba(255,255,255,0.03);
+          border:1px solid rgba(255,255,255,0.09);
+          border-radius:14px;
+          padding:20px 22px;
+          margin-bottom:20px;
+        }
+        .quiz-answer-text{
+          font-size:14px;line-height:1.78;
+          color:rgba(255,255,255,0.72);
+        }
+
+        .qbtn{
           display:inline-flex;align-items:center;justify-content:center;
-          padding:13px 28px;border-radius:12px;
+          padding:14px 24px;border-radius:12px;
           font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;
-          cursor:pointer;border:none;transition:opacity 0.2s;
+          cursor:pointer;border:none;
+          transition:transform 0.12s,box-shadow 0.12s,background 0.15s;
         }
-        .quiz-btn-primary{
-          background:linear-gradient(135deg,#4F7CFF,#7B61FF);
+        .qbtn:hover{transform:translateY(-1px)}
+        .qbtn:active{transform:translateY(0)}
+        .qbtn-reveal{
+          width:100%;
+          background:linear-gradient(135deg,#059669,#10b981);
           color:#fff;
-          box-shadow:0 4px 20px rgba(79,124,255,0.3);
+          box-shadow:0 4px 20px rgba(5,150,105,0.35);
         }
-        .quiz-btn-primary:hover{opacity:0.9}
-        .quiz-btn-secondary{
-          background:rgba(255,255,255,0.07);
-          border:1px solid rgba(255,255,255,0.12) !important;
-          color:rgba(255,255,255,0.7);
-        }
-        .quiz-btn-secondary:hover{background:rgba(255,255,255,0.1)}
-        .quiz-btn-correct{
+        .qbtn-reveal:hover{box-shadow:0 8px 28px rgba(5,150,105,0.45)}
+        .qbtn-correct{
           background:rgba(16,185,129,0.15);
-          border:1px solid rgba(16,185,129,0.4) !important;
-          color:#6ee7b7;
+          border:1.5px solid rgba(16,185,129,0.4) !important;
+          color:#34d399;
         }
-        .quiz-btn-wrong{
-          background:rgba(239,68,68,0.12);
-          border:1px solid rgba(239,68,68,0.35) !important;
+        .qbtn-correct:hover{background:rgba(16,185,129,0.25)}
+        .qbtn-wrong{
+          background:rgba(239,68,68,0.1);
+          border:1.5px solid rgba(239,68,68,0.35) !important;
           color:#f87171;
         }
-
-        .progress-bar-bg{
-          height:4px;background:rgba(255,255,255,0.07);
-          border-radius:2px;overflow:hidden;
+        .qbtn-wrong:hover{background:rgba(239,68,68,0.2)}
+        .qbtn-ghost{
+          background:rgba(255,255,255,0.05);
+          border:1px solid rgba(255,255,255,0.1) !important;
+          color:rgba(255,255,255,0.5);
         }
-        .progress-bar-fill{
-          height:100%;background:linear-gradient(90deg,#4F7CFF,#7B61FF);
-          border-radius:2px;transition:width 0.3s;
+        .qbtn-ghost:hover{background:rgba(255,255,255,0.09)}
+
+        /* score screen */
+        .score-ring{
+          width:96px;height:96px;border-radius:50%;
+          display:flex;align-items:center;justify-content:center;
+          background:rgba(16,185,129,0.1);
+          border:2px solid rgba(16,185,129,0.3);
+          font-size:32px;font-weight:800;color:#34d399;
+          margin:0 auto 16px;
+          box-shadow:0 0 32px rgba(16,185,129,0.15);
         }
 
+        /* ── Footer CTA ── */
+        .footer-cta{
+          margin-top:72px;
+          padding:40px 32px;
+          background:linear-gradient(135deg,rgba(16,185,129,0.05),rgba(79,124,255,0.04));
+          border:1px solid rgba(255,255,255,0.08);
+          border-radius:20px;
+          text-align:center;
+        }
+
+        /* ── Responsive ── */
         @media(max-width:640px){
-          .q-header{padding:16px 16px}
-          .q-body{padding:0 16px 16px}
-          .quiz-card{padding:24px 18px}
-          .cheat-table td,.cheat-table th{padding:8px 10px}
+          .q-header{padding:18px 18px 18px 22px}
+          .q-body{padding:0 18px 18px 22px}
+          .quiz-panel{padding:28px 20px}
+          .quiz-question-text{font-size:16px}
+          .cheat-table td,.cheat-table thead th{padding:9px 12px}
           .syntax-cell{display:none}
+          .btn-primary,.btn-secondary{padding:13px 20px;font-size:14px}
+        }
+        @media(max-width:400px){
+          .quiz-panel{padding:24px 16px}
+        }
+
+        @media print{
+          .filter-bar,.quiz-overlay,.btn-primary,.btn-secondary,
+          .footer-cta,.print-btn{display:none!important}
+          .cheat-wrap{border:1px solid #ccc;box-shadow:none}
+          .cheat-table td,.cheat-table thead th{color:#000;background:#fff!important}
+          .fn-cell{color:#059669}
+          .syntax-cell{color:#0284c7}
+          body{background:#fff!important;color:#000!important}
         }
       `}</style>
 
       {/* ── TOP BAR ── */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 100, background: 'rgba(11,11,15,0.95)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '0 24px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 100, background: 'rgba(11,11,15,0.96)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '0 24px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <a href="/" style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 18, letterSpacing: -0.5 }}>
           Beyond<span style={{ color: '#4F7CFF' }}>Campus</span>
         </a>
-        <a href="/free" style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <a href="/free" style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.35)', display: 'flex', alignItems: 'center', gap: 5 }}>
           ← Free Resources
         </a>
       </div>
 
       {/* ── HERO ── */}
-      <div style={{ maxWidth: 860, margin: '0 auto', padding: '52px 24px 0' }}>
-        <div style={{ marginBottom: 10 }}>
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', padding: '5px 14px', borderRadius: 100, background: 'rgba(79,124,255,0.12)', border: '1px solid rgba(79,124,255,0.35)', color: '#93BBFF' }}>
-            FREE · NO SIGN-UP
-          </span>
-        </div>
-        <h1 style={{ fontSize: 'clamp(28px,5vw,44px)', fontWeight: 800, letterSpacing: -1, lineHeight: 1.15, marginBottom: 14 }}>
-          Excel Interview Prep
-        </h1>
-        <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 24, maxWidth: 580 }}>
-          The most asked Excel questions for analyst, ops, and finance roles — with formulas, examples, and interviewer tips. Free, no sign-up.
-        </p>
+      <div className="hero-wrap">
+        <div style={{ maxWidth: 860, margin: '0 auto', padding: '56px 24px 48px' }}>
 
-        {/* Stats bar */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 28px', marginBottom: 36 }}>
-          {statsText.split(' · ').map(s => (
-            <span key={s} style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4F7CFF', display: 'inline-block' }} />
-              {s}
+          {/* Free badge */}
+          <div style={{ marginBottom: 16 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.6, textTransform: 'uppercase', padding: '5px 14px', borderRadius: 100, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', color: '#34d399' }}>
+              FREE · NO SIGN-UP
             </span>
-          ))}
-        </div>
+          </div>
 
-        {/* CTA buttons */}
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 52 }}>
-          <button
-            className="quiz-btn quiz-btn-primary"
-            onClick={startQuiz}
-            style={{ padding: '13px 24px' }}
-          >
-            Test Yourself → 10 Questions
-          </button>
-          <button
-            className="quiz-btn quiz-btn-secondary"
-            onClick={() => setCheatOpen(o => !o)}
-            style={{ padding: '13px 24px', border: '1px solid rgba(255,255,255,0.12)' }}
-          >
-            {cheatOpen ? 'Hide' : 'Show'} Formula Cheat Sheet
-          </button>
-        </div>
+          {/* Title with green accent line */}
+          <div style={{ marginBottom: 16 }}>
+            <h1 style={{ fontSize: 'clamp(30px,5.5vw,48px)', fontWeight: 800, letterSpacing: -1.2, lineHeight: 1.1, display: 'inline' }}>
+              Excel Interview Prep
+            </h1>
+            <div style={{ width: 56, height: 3, background: 'linear-gradient(90deg,#059669,#34d399)', borderRadius: 2, marginTop: 10 }} />
+          </div>
 
-        {/* ── CHEAT SHEET ── */}
-        {cheatOpen && (
-          <div style={{ marginBottom: 48, background: '#111827', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 16, overflow: 'hidden' }}>
-            <div style={{ padding: '18px 22px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 700, fontSize: 15 }}>Formula Cheat Sheet</span>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>{cheatSheet.length} functions</span>
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.48)', lineHeight: 1.72, marginBottom: 28, maxWidth: 560 }}>
+            The most asked Excel questions for analyst, ops, and finance roles — with formulas, examples, and interviewer tips. Free, no sign-up.
+          </p>
+
+          {/* Stats pills */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 32 }}>
+            {[
+              `${CATEGORIES.length - 1} categories`,
+              `${questions.length} questions`,
+              'Free forever',
+            ].map(s => (
+              <span key={s} className="stat-pill">
+                <span className="stat-pill-dot" />
+                {s}
+              </span>
+            ))}
+          </div>
+
+          {/* CTA buttons */}
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <button className="btn-primary" onClick={startQuiz}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8z" fill="currentColor" opacity=".4"/><path d="M6.5 5.5l4 2.5-4 2.5V5.5z" fill="currentColor"/></svg>
+              Test Yourself — 10 Questions
+            </button>
+            <button className="btn-secondary" onClick={() => setCheatOpen(o => !o)}>
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 3h11M2 7h8M2 11h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              {cheatOpen ? 'Hide' : 'View'} Formula Cheat Sheet
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── CHEAT SHEET ── */}
+      {cheatOpen && (
+        <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px' }}>
+          <div className="cheat-wrap">
+            <div className="cheat-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontWeight: 800, fontSize: 15, letterSpacing: -0.3 }}>Formula Cheat Sheet</span>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 100, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', color: '#34d399' }}>
+                  {cheatSheet.length} functions
+                </span>
+              </div>
+              <button className="print-btn" onClick={() => window.print()}>
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M3 4V1.5h7V4M3 9.5H1.5A.5.5 0 011 9V5.5a.5.5 0 01.5-.5h10a.5.5 0 01.5.5V9a.5.5 0 01-.5.5H10M3 7h7v4H3V7z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/></svg>
+                Print / Save PDF
+              </button>
             </div>
             <div style={{ overflowX: 'auto' }}>
               <table className="cheat-table">
                 <thead>
                   <tr>
-                    <th>Function</th>
-                    <th className="syntax-cell">Syntax</th>
+                    <th style={{ width: '18%' }}>Function</th>
+                    <th style={{ width: '38%' }} className="syntax-cell">Syntax</th>
                     <th>Use case</th>
                   </tr>
                 </thead>
                 <tbody>
                   {cheatSheet.map(row => (
                     <tr key={row.fn}>
-                      <td><span className="fn-name">{row.fn}</span></td>
-                      <td className="syntax-cell"><span style={{ fontFamily: 'Courier New,monospace', color: 'rgba(147,187,255,0.7)', fontSize: 12 }}>{row.syntax}</span></td>
-                      <td>{row.use}</td>
+                      <td><span className="fn-cell">{row.fn}</span></td>
+                      <td><span className="syntax-cell">{row.syntax}</span></td>
+                      <td style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13 }}>{row.use}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* ── QUIZ MODE ── */}
-        {quizMode && (
-          <div className="quiz-card" style={{ marginBottom: 52 }}>
+      {/* ── QUIZ OVERLAY ── */}
+      {quizMode && (
+        <div className="quiz-overlay">
+          <div className="quiz-panel">
             {quizComplete ? (
-              // End screen
+              /* ── Score screen ── */
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>
-                  {quizScore >= 8 ? '🏆' : quizScore >= 5 ? '👍' : '📚'}
-                </div>
-                <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: -0.5, marginBottom: 8 }}>
+                <div className="score-ring">
                   {quizScore}/{quizTotal}
                 </div>
-                <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>
-                  {quizScore >= 8 ? 'Excellent — you are interview-ready.' : quizScore >= 5 ? 'Good progress — keep practising the ones you missed.' : 'Keep reviewing the question bank below — you will get there.'}
+                <p style={{ fontSize: 22, fontWeight: 800, letterSpacing: -0.5, marginBottom: 8 }}>
+                  {quizScore >= 8 ? 'Solid — you\'re interview-ready.' : quizScore >= 5 ? 'Good progress. Review the ones you missed.' : 'Keep going. Browse the questions below.'}
                 </p>
-                <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 24, flexWrap: 'wrap' }}>
-                  <button className="quiz-btn quiz-btn-primary" onClick={startQuiz}>Try Again</button>
-                  <button className="quiz-btn quiz-btn-secondary" onClick={() => setQuizMode(false)} style={{ border: '1px solid rgba(255,255,255,0.12)' }}>
+                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginBottom: 32, lineHeight: 1.6 }}>
+                  {quizScore >= 8
+                    ? 'You got ' + quizScore + ' out of ' + quizTotal + '. That\'s a strong foundation for your next interview.'
+                    : quizScore >= 5
+                    ? 'You got ' + quizScore + ' out of ' + quizTotal + '. A few more practice rounds and you\'ll have it.'
+                    : 'You got ' + quizScore + ' out of ' + quizTotal + '. The question bank below has everything you need — work through it category by category.'}
+                </p>
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <button className="qbtn qbtn-reveal" style={{ width: 'auto', padding: '13px 28px' }} onClick={startQuiz}>
+                    Try Again
+                  </button>
+                  <button className="qbtn qbtn-ghost" style={{ border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => setQuizMode(false)}>
                     Back to Browse
                   </button>
                 </div>
               </div>
             ) : currentQ ? (
-              // Active quiz question
+              /* ── Active question ── */
               <div>
-                {/* Progress */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 12 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: 0.5 }}>
-                    QUESTION {quizIndex + 1}/{quizTotal}
+                {/* Header row */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                  <p className="quiz-q-num">Question {quizIndex + 1} of {quizTotal}</p>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#34d399' }}>
+                    Score {quizScore}
                   </span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#6ee7b7' }}>
-                    Score: {quizScore}
-                  </span>
-                </div>
-                <div className="progress-bar-bg" style={{ marginBottom: 24 }}>
-                  <div className="progress-bar-fill" style={{ width: `${((quizIndex) / quizTotal) * 100}%` }} />
                 </div>
 
-                {/* Meta */}
-                <div style={{ display: 'flex', gap: 8, marginBottom: 18, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.25)', color: '#93BBFF', fontWeight: 600 }}>
+                {/* Progress bar */}
+                <div className="quiz-progress-bg">
+                  <div className="quiz-progress-fill" style={{ width: `${(quizIndex / quizTotal) * 100}%` }} />
+                </div>
+
+                {/* Category + difficulty badges */}
+                <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>
                     {currentQ.category}
                   </span>
                   <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, background: DIFF_STYLE[currentQ.difficulty].bg, border: `1px solid ${DIFF_STYLE[currentQ.difficulty].border}`, color: DIFF_STYLE[currentQ.difficulty].color, fontWeight: 700 }}>
@@ -898,41 +1116,37 @@ export default function ExcelInterviewPrep() {
                   </span>
                 </div>
 
-                {/* Question */}
-                <p style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.5, marginBottom: 24, color: '#fff' }}>
-                  {currentQ.question}
-                </p>
+                <p className="quiz-question-text">{currentQ.question}</p>
 
-                {/* Answer area */}
                 {!quizAnswerShown ? (
-                  <button className="quiz-btn quiz-btn-primary" style={{ width: '100%' }} onClick={() => setQuizAnswerShown(true)}>
+                  <button className="qbtn qbtn-reveal" onClick={() => setQuizAnswerShown(true)}>
                     Reveal Answer
                   </button>
                 ) : (
                   <div>
-                    <div style={{ background: 'rgba(79,124,255,0.06)', border: '1px solid rgba(79,124,255,0.18)', borderRadius: 12, padding: '18px 20px', marginBottom: 16 }}>
-                      <p style={{ fontSize: 14, lineHeight: 1.75, color: 'rgba(255,255,255,0.75)', marginBottom: currentQ.formula_example ? 12 : 0 }}>
-                        {currentQ.answer}
-                      </p>
+                    <div className="quiz-answer-box">
+                      <p className="quiz-answer-text">{currentQ.answer}</p>
                       {currentQ.formula_example && (
-                        <div style={{ fontFamily: 'Courier New,monospace', fontSize: 13, color: '#93BBFF', background: '#12121a', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 8, padding: '10px 14px', marginTop: 10 }}>
+                        <div style={{ fontFamily: "'JetBrains Mono','Courier New',monospace", fontSize: 12.5, color: '#4ade80', background: '#0d1117', border: '1px solid rgba(74,222,128,0.15)', borderRadius: 8, padding: '11px 14px', marginTop: 14, overflowX: 'auto', whiteSpace: 'pre' }}>
                           {currentQ.formula_example}
                         </div>
                       )}
                       {currentQ.tip && (
-                        <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 8, fontSize: 13, color: 'rgba(255,220,100,0.8)', lineHeight: 1.6 }}>
-                          <span style={{ fontWeight: 700, color: '#fcd34d' }}>Tip: </span>{currentQ.tip}
+                        <div style={{ display: 'flex', gap: 8, marginTop: 14, padding: '11px 14px', background: 'rgba(251,191,36,0.05)', border: '1px solid rgba(251,191,36,0.18)', borderRadius: 8, fontSize: 13, color: 'rgba(255,230,130,0.8)', lineHeight: 1.65 }}>
+                          <span style={{ flexShrink: 0, fontSize: 13 }}>💡</span>
+                          <span><strong style={{ color: '#fbbf24' }}>Tip: </strong>{currentQ.tip}</span>
                         </div>
                       )}
                     </div>
-                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 14, textAlign: 'center' }}>
-                      How did you do?
+
+                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginBottom: 12, fontWeight: 600, letterSpacing: 0.3 }}>
+                      HOW DID YOU DO?
                     </p>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                      <button className="quiz-btn quiz-btn-correct" onClick={() => handleQuizAnswer(true)} style={{ border: '1px solid rgba(16,185,129,0.4)' }}>
+                      <button className="qbtn qbtn-correct" style={{ border: 'none' }} onClick={() => handleQuizAnswer(true)}>
                         Got it ✓
                       </button>
-                      <button className="quiz-btn quiz-btn-wrong" onClick={() => handleQuizAnswer(false)} style={{ border: '1px solid rgba(239,68,68,0.35)' }}>
+                      <button className="qbtn qbtn-wrong" style={{ border: 'none' }} onClick={() => handleQuizAnswer(false)}>
                         Missed it ✗
                       </button>
                     </div>
@@ -941,140 +1155,147 @@ export default function ExcelInterviewPrep() {
 
                 <button
                   onClick={() => setQuizMode(false)}
-                  style={{ display: 'block', marginTop: 20, marginLeft: 'auto', fontSize: 13, color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}
+                  style={{ display: 'block', marginTop: 24, marginLeft: 'auto', fontSize: 12, color: 'rgba(255,255,255,0.25)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600, letterSpacing: 0.3 }}
                 >
-                  Exit quiz
+                  EXIT QUIZ
                 </button>
               </div>
             ) : null}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* ── CATEGORY FILTER BAR ── */}
-      {!quizMode && (
-        <div className="filter-bar">
-          <div style={{ maxWidth: 860, margin: '0 auto' }}>
-            <div className="filter-pills">
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat}
-                  className={`pill${activeCategory === cat ? ' active' : ''}`}
-                  onClick={() => { setActiveCategory(cat); setExpandedId(null) }}
-                >
-                  {CAT_SHORT[cat]}
-                  {cat !== 'All' && (
-                    <span style={{ marginLeft: 6, fontSize: 11, opacity: 0.6 }}>
-                      {questions.filter(q => q.category === cat).length}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
+      <div className="filter-bar">
+        <div style={{ maxWidth: 860, margin: '0 auto' }}>
+          <div className="filter-pills">
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                className={`pill${activeCategory === cat ? ' active' : ''}`}
+                onClick={() => { setActiveCategory(cat); setExpandedId(null) }}
+              >
+                {CAT_SHORT[cat]}
+                {cat !== 'All' && (
+                  <span style={{ marginLeft: 5, fontSize: 11, opacity: 0.55 }}>
+                    {questions.filter(q => q.category === cat).length}
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
         </div>
-      )}
+      </div>
 
       {/* ── QUESTION CARDS ── */}
-      {!quizMode && (
-        <div style={{ maxWidth: 860, margin: '0 auto', padding: '28px 24px 100px' }}>
-          <div style={{ marginBottom: 18, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.3)' }}>
-              {filteredQuestions.length} question{filteredQuestions.length !== 1 ? 's' : ''}
-              {activeCategory !== 'All' ? ` in ${activeCategory}` : ''}
-            </span>
-            {expandedId !== null && (
-              <button
-                onClick={() => setExpandedId(null)}
-                style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}
-              >
-                Collapse all
-              </button>
-            )}
-          </div>
+      <div style={{ maxWidth: 860, margin: '0 auto', padding: '32px 24px 100px' }}>
+        <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.28)' }}>
+            {filteredQuestions.length} question{filteredQuestions.length !== 1 ? 's' : ''}
+            {activeCategory !== 'All' ? ` in ${activeCategory}` : ''}
+          </span>
+          {expandedId !== null && (
+            <button
+              onClick={() => setExpandedId(null)}
+              style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}
+            >
+              Collapse all
+            </button>
+          )}
+        </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {filteredQuestions.map(q => {
-              const isOpen = expandedId === q.id
-              return (
-                <div key={q.id} className="q-card">
-                  <div
-                    className="q-header"
-                    onClick={() => setExpandedId(isOpen ? null : q.id)}
-                    role="button"
-                    aria-expanded={isOpen}
-                  >
-                    <div style={{ flex: 1 }}>
-                      {/* Badges row */}
-                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
-                        <span style={{ fontSize: 10, padding: '2px 9px', borderRadius: 100, background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.2)', color: '#93BBFF', fontWeight: 700 }}>
-                          {q.category}
-                        </span>
-                        <span style={{ fontSize: 10, padding: '2px 9px', borderRadius: 100, background: DIFF_STYLE[q.difficulty].bg, border: `1px solid ${DIFF_STYLE[q.difficulty].border}`, color: DIFF_STYLE[q.difficulty].color, fontWeight: 700 }}>
-                          {q.difficulty}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {filteredQuestions.map(q => {
+            const isOpen = expandedId === q.id
+            const accentColor = CAT_COLOR[q.category] ?? '#4F7CFF'
+            return (
+              <div
+                key={q.id}
+                className="q-card"
+                style={{ '--accent': accentColor } as React.CSSProperties}
+              >
+                {/* Left accent border via inline style */}
+                <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: accentColor, opacity: isOpen ? 1 : 0.5, borderRadius: '14px 0 0 14px', transition: 'opacity 0.2s' }} />
+
+                <div
+                  className="q-header"
+                  onClick={() => setExpandedId(isOpen ? null : q.id)}
+                  role="button"
+                  aria-expanded={isOpen}
+                >
+                  <div style={{ flex: 1 }}>
+                    {/* Badges */}
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 9 }}>
+                      <span style={{ fontSize: 10, padding: '2px 9px', borderRadius: 100, background: `${accentColor}18`, border: `1px solid ${accentColor}35`, color: accentColor, fontWeight: 700 }}>
+                        {q.category}
+                      </span>
+                      <span style={{ fontSize: 10, padding: '2px 9px', borderRadius: 100, background: DIFF_STYLE[q.difficulty].bg, border: `1px solid ${DIFF_STYLE[q.difficulty].border}`, color: DIFF_STYLE[q.difficulty].color, fontWeight: 700 }}>
+                        {q.difficulty}
+                      </span>
+                    </div>
+                    <p className="q-question">{q.question}</p>
+                  </div>
+                  <span className={`q-chevron${isOpen ? ' open' : ''}`}>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </div>
+
+                {isOpen && (
+                  <div className="q-body">
+                    <p className="q-answer">{q.answer}</p>
+
+                    {q.formula_example && (
+                      <div className="code-block" style={{ paddingRight: copiedId === q.id ? '70px' : '56px' }}>
+                        {q.formula_example}
+                        <button
+                          className={`copy-btn${copiedId === q.id ? ' copied' : ''}`}
+                          onClick={e => { e.stopPropagation(); handleCopy(q.formula_example!, q.id) }}
+                        >
+                          {copiedId === q.id ? 'Copied ✓' : 'Copy'}
+                        </button>
+                      </div>
+                    )}
+
+                    {q.tip && (
+                      <div className="tip-box">
+                        <span className="tip-icon">💡</span>
+                        <span>
+                          <span className="tip-label">Interviewer tip</span>
+                          {q.tip}
                         </span>
                       </div>
-                      <p className="q-question">{q.question}</p>
-                    </div>
-                    <span className={`q-chevron${isOpen ? ' open' : ''}`}>
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
+                    )}
                   </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
 
-                  {isOpen && (
-                    <div className="q-body">
-                      <p className="q-answer">{q.answer}</p>
-
-                      {q.formula_example && (
-                        <div className="code-block">
-                          {q.formula_example}
-                          <button
-                            className="copy-btn"
-                            onClick={e => { e.stopPropagation(); handleCopy(q.formula_example!, q.id) }}
-                          >
-                            {copiedId === q.id ? 'Copied!' : 'Copy'}
-                          </button>
-                        </div>
-                      )}
-
-                      {q.tip && (
-                        <div className="tip-box">
-                          <div className="tip-label">Interviewer tip</div>
-                          {q.tip}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-
-          {/* Footer CTA */}
-          <div style={{ marginTop: 64, padding: '32px', background: '#111827', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, textAlign: 'center' }}>
-            <p style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Found this useful?</p>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginBottom: 22, lineHeight: 1.7 }}>
-              Check the full Career Toolkit — skill maps, project playbooks, and resume bullets for 15 analyst roles.
-            </p>
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a
-                href="/resources/career-toolkit"
-                style={{ padding: '12px 24px', borderRadius: 12, background: 'linear-gradient(135deg,rgba(79,124,255,0.2),rgba(123,97,255,0.15))', border: '1.5px solid rgba(79,124,255,0.4)', color: '#93BBFF', fontWeight: 700, fontSize: 14, display: 'inline-block' }}
-              >
-                Career Toolkit →
-              </a>
-              <a
-                href="/free"
-                style={{ padding: '12px 24px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.55)', fontWeight: 600, fontSize: 14, display: 'inline-block' }}
-              >
-                All Free Resources
-              </a>
-            </div>
+        {/* Footer CTA */}
+        <div className="footer-cta">
+          <p style={{ fontSize: 17, fontWeight: 800, marginBottom: 8, letterSpacing: -0.3 }}>Found this useful?</p>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginBottom: 24, lineHeight: 1.7, maxWidth: 440, margin: '8px auto 24px' }}>
+            Check the full Career Toolkit — skill maps, project playbooks, and resume bullets for 15 analyst roles.
+          </p>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a
+              href="/resources/career-toolkit"
+              style={{ padding: '12px 24px', borderRadius: 12, background: 'linear-gradient(135deg,rgba(5,150,105,0.2),rgba(16,185,129,0.12))', border: '1.5px solid rgba(16,185,129,0.35)', color: '#34d399', fontWeight: 700, fontSize: 14, display: 'inline-block' }}
+            >
+              Career Toolkit →
+            </a>
+            <a
+              href="/free"
+              style={{ padding: '12px 24px', borderRadius: 12, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', color: 'rgba(255,255,255,0.45)', fontWeight: 600, fontSize: 14, display: 'inline-block' }}
+            >
+              All Free Resources
+            </a>
           </div>
         </div>
-      )}
+      </div>
     </main>
   )
 }
