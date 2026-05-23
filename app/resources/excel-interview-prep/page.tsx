@@ -24,6 +24,7 @@ type CheatEntry = {
 // ──────────────────────── DATA ────────────────────────
 const CATEGORIES = [
   'All',
+  'Excel Basics',
   'Lookup & Reference',
   'IF & Logic',
   'Text Functions',
@@ -334,6 +335,126 @@ const questions: Question[] = [
     answer: 'Regular Paste pastes everything — formulas, formatting, cell size. Paste Special (Ctrl+Alt+V) lets you choose exactly what to paste: Values only (result of the formula, not the formula itself), Formats only, Transpose (flip rows and columns), Multiply/Add (arithmetic on pasted values), etc.',
     tip: '"Paste as Values" (Ctrl+Alt+V → V → Enter) is one of the most-used operations in real data work. If you hard-code a value and someone wants to remove formula dependencies, this is your tool.',
   },
+
+  // ── Excel Basics ──
+  {
+    id: 34,
+    category: 'Excel Basics',
+    difficulty: 'Basic',
+    question: 'What are the most common business uses of Excel in analyst and ops roles?',
+    answer: 'Excel is used for: (1) Data organisation — storing and structuring raw data in rows and columns. (2) Calculations and formulas — automating repetitive maths across thousands of rows. (3) Reporting and dashboards — summarising data with charts, Pivot Tables, and conditional formatting. (4) Data cleaning — removing duplicates, trimming spaces, standardising formats. (5) Tracking — budgets, project plans, pipelines, inventories. Most entry-level analyst and ops tasks at Indian startups and corporates are done entirely in Excel or Google Sheets.',
+    tip: 'In interviews, frame your Excel experience around real outputs: "I built a budget tracker" or "I cleaned a 5,000-row dataset using VLOOKUP and TRIM." Vague answers like "I know Excel well" do not impress.',
+  },
+  {
+    id: 35,
+    category: 'Excel Basics',
+    difficulty: 'Intermediate',
+    question: 'What is an Excel Table (Ctrl+T) and why use it instead of a plain range?',
+    answer: 'An Excel Table is a structured data container created with Ctrl+T. Benefits over a plain range: (1) Formulas auto-expand when you add new rows — no dragging down. (2) Structured references like =Table1[Revenue] are readable. (3) Built-in filter dropdowns on every column header. (4) Pivot Tables connected to a Table automatically pick up new data on refresh — no need to update the source range. (5) Works seamlessly with Power Query for data transformation.',
+    formula_example: '=SUM(Table1[Revenue])',
+    tip: 'Convert raw data to a Table before building any formulas or Pivot Tables on top of it. This one habit eliminates a whole class of errors when data grows.',
+  },
+  {
+    id: 36,
+    category: 'Excel Basics',
+    difficulty: 'Basic',
+    question: 'How do you sort data in Excel?',
+    answer: 'Three ways: (1) Quick sort — click any cell in the column to sort by, then use Data → Sort A to Z / Sort Z to A. (2) Custom sort — Data → Sort → Add Levels lets you sort by multiple columns in order (e.g. sort by Region first, then by Revenue descending within each region). (3) Filter dropdown — with filters on (Ctrl+Shift+L), click any column\'s dropdown arrow and choose sort from there.',
+    tip: 'Always use Custom Sort when you need multi-level sorting. Quick-sorting a single column on a multi-column dataset can misalign rows if the data is not in a Table.',
+  },
+  {
+    id: 37,
+    category: 'Excel Basics',
+    difficulty: 'Basic',
+    question: 'How do you use AutoFilter and what can you do with it?',
+    answer: 'AutoFilter adds dropdown arrows to column headers so you can show only rows matching certain values. Enable with Ctrl+Shift+L or Data → Filter. You can: filter by specific values (tick/untick from a list), use number filters (greater than, top 10, between), use text filters (contains, begins with), or filter by cell colour. To clear all filters: Ctrl+Shift+L twice, or Data → Clear.',
+    tip: 'Ctrl+Shift+L is one of the most-used shortcuts in ops and analytics roles. You toggle filters constantly — know it cold.',
+  },
+  {
+    id: 38,
+    category: 'Excel Basics',
+    difficulty: 'Intermediate',
+    question: 'What is a Named Range and why is it useful?',
+    answer: 'A Named Range assigns a label to a cell or range. Instead of =VLOOKUP(A2, $D$2:$F$100, 2, FALSE) you write =VLOOKUP(A2, ProductList, 2, FALSE). Benefits: (1) Formulas become readable — the name explains what the range contains. (2) Named ranges are absolute by default — no $ signs needed. (3) If the data range shifts, you update the name definition once and all formulas referencing it update automatically.',
+    formula_example: '=VLOOKUP(A2, ProductList, 2, FALSE)',
+    tip: 'Create named ranges via Formulas → Define Name, or type the name directly in the Name Box (top-left corner of the formula bar). A well-structured spreadsheet uses named ranges for every key lookup table.',
+  },
+  {
+    id: 39,
+    category: 'Excel Basics',
+    difficulty: 'Intermediate',
+    question: 'What features do you combine to build an Excel dashboard?',
+    answer: 'A solid Excel dashboard uses: (1) Pivot Tables for dynamic data summaries. (2) Charts linked to Pivot Tables for visualisation. (3) Slicers for interactive one-click filtering. (4) SUMIFS / COUNTIFS for standalone KPI numbers. (5) Conditional Formatting to flag exceptions. (6) Named Ranges or Excel Tables so formulas stay stable. (7) A separate "Data" sheet and a separate "Dashboard" sheet — never mix raw data and visuals on the same sheet.',
+    tip: 'The most important dashboard principle: separate your data layer from your display layer. Raw data on Sheet 1, dashboard on Sheet 2. This makes maintenance easy and prevents accidental overwrites.',
+  },
+  {
+    id: 40,
+    category: 'Excel Basics',
+    difficulty: 'Intermediate',
+    question: 'What is a sparkline in Excel?',
+    answer: 'A sparkline is a miniature chart that fits inside a single cell — it shows a trend at a glance without taking up chart space. Three types: Line (trend over time), Column (bar comparison), Win/Loss (positive vs negative). Insert via Insert → Sparklines. Commonly used in dashboards next to monthly totals to show direction without a full chart.',
+    tip: 'Mentioning sparklines when talking about dashboards signals you have actually built them, not just described them. They are a finishing touch that separates clean dashboards from basic ones.',
+  },
+
+  // ── Pivot Tables (additional) ──
+  {
+    id: 41,
+    category: 'Pivot Tables',
+    difficulty: 'Basic',
+    question: 'How do you create a Pivot Table from scratch?',
+    answer: 'Click any cell inside your data → Insert → PivotTable → choose to place it on a new sheet (cleaner). In the field list on the right: drag dimension fields (e.g. Region, Category) to Rows or Columns, drag numeric fields (e.g. Revenue, Units Sold) to Values. The summary builds instantly. Your source data must have column headers, no blank rows, and one record per row.',
+    tip: 'Before inserting a Pivot Table, convert your data to an Excel Table first (Ctrl+T). The Pivot Table will then automatically include new rows when you refresh — no need to update the source range manually.',
+  },
+  {
+    id: 42,
+    category: 'Pivot Tables',
+    difficulty: 'Intermediate',
+    question: 'How do you group dates by month or quarter in a Pivot Table?',
+    answer: 'Drag a date field into Rows. Right-click any date value → Group → select the grouping you want: Days, Months, Quarters, Years (you can select multiple). In Excel 365, date grouping often happens automatically. To remove grouping, right-click → Ungroup.',
+    tip: 'Grouping is greyed out? The source column contains text that looks like dates, not actual date values. Fix with =DATEVALUE(A2) or use Data → Text to Columns to convert the column.',
+  },
+  {
+    id: 43,
+    category: 'Pivot Tables',
+    difficulty: 'Advanced',
+    question: 'What is a Calculated Field in a Pivot Table?',
+    answer: 'A Calculated Field lets you create a new metric inside the Pivot Table using a formula based on existing fields — without touching the source data. Example: if your data has Revenue and Cost, create a Calculated Field "Margin" = Revenue - Cost. Access via PivotTable Analyze → Fields, Items & Sets → Calculated Field.',
+    tip: 'Calculated Fields use the SUM of the field, not individual row values — this produces wrong results for ratios like % margin. For precise ratio calculations, add a column to the source data instead and use that field in the Pivot Table.',
+  },
+  {
+    id: 44,
+    category: 'Pivot Tables',
+    difficulty: 'Intermediate',
+    question: 'How do you connect one slicer to multiple Pivot Tables?',
+    answer: 'Insert a slicer via PivotTable Analyze → Insert Slicer → select the field. To connect it to additional Pivot Tables: right-click the slicer → Report Connections → tick every Pivot Table you want it to control. Now clicking any slicer button filters all connected tables and their linked charts simultaneously — this is the standard way to build interactive dashboards.',
+    tip: 'Right-click the slicer → Size and Properties → set "Don\'t move or size with cells." This keeps the slicer in place when Pivot Tables expand. Always do this on a dashboard.',
+  },
+
+  // ── Shortcuts (additional) ──
+  {
+    id: 45,
+    category: 'Shortcuts & Productivity',
+    difficulty: 'Basic',
+    question: 'How do you sort data quickly using keyboard shortcuts?',
+    answer: 'Fastest methods: (1) Alt+A+S+A sorts the current column A to Z. (2) Alt+A+S+D sorts Z to A. (3) Alt+D+S opens the full Sort dialog for multi-level sorting. In practice, most analysts turn on filters (Ctrl+Shift+L) and use the column dropdown arrow to sort — it is quicker and gives you the multi-level option in context.',
+    tip: 'Multi-level sort (sort by Region, then by Revenue) is almost always what real data work requires. Get comfortable with Data → Sort → Add Level.',
+  },
+  {
+    id: 46,
+    category: 'Shortcuts & Productivity',
+    difficulty: 'Basic',
+    question: 'What does Ctrl+Shift+Arrow do, and why is it useful?',
+    answer: 'Ctrl+Shift+Arrow selects all continuous cells from the current cell to the last non-empty cell in that direction. Ctrl+Arrow alone just moves the cursor there without selecting. These shortcuts are essential for navigating large datasets — Ctrl+Shift+Down selects an entire column of data in one keystroke, no mouse scrolling needed.',
+    tip: 'Ctrl+Shift+End selects from your current cell to the very last used cell on the sheet — a fast way to select your entire dataset to copy, format, or delete.',
+  },
+  {
+    id: 47,
+    category: 'Shortcuts & Productivity',
+    difficulty: 'Basic',
+    question: 'What are the most useful shortcuts for navigating and working with large datasets?',
+    answer: 'Must-know navigation shortcuts: Ctrl+End (jump to last used cell — shows dataset size), Ctrl+Home (go to A1), Ctrl+Arrow (jump to last non-empty cell), Ctrl+Shift+Arrow (select to last non-empty cell), F5 / Ctrl+G (Go To — jump to a cell or find blanks). Selection shortcuts: Shift+Space (select entire row), Ctrl+Space (select entire column), Ctrl+A (select all used cells). Workflow shortcut: Ctrl+G → Special → Blanks highlights all empty cells in one step.',
+    tip: 'Ctrl+G → Special → Blanks is the fastest way to find missing data in an imported dataset. Select the blanks, right-click → Delete → Shift cells up to clean gaps without looping through thousands of rows.',
+  },
 ]
 
 const cheatSheet: CheatEntry[] = [
@@ -379,6 +500,7 @@ const DIFF_STYLE: Record<Difficulty, { bg: string; border: string; color: string
 
 const CAT_SHORT: Record<string, string> = {
   'All': 'All',
+  'Excel Basics': 'Excel Basics',
   'Lookup & Reference': 'Lookups',
   'IF & Logic': 'IF & Logic',
   'Text Functions': 'Text',

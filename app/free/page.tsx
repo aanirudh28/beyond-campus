@@ -256,10 +256,10 @@ export default function FreePage() {
             </div>
             <div style={{ fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 8 }}>📊 Excel Interview Prep</div>
             <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 16 }}>
-              33 most-asked Excel questions for analyst, ops, and finance roles — VLOOKUP, Pivot Tables, IF formulas, shortcuts. With a quiz mode and formula cheat sheet.
+              47 most-asked Excel questions for analyst, ops, and finance roles — VLOOKUP, Pivot Tables, dashboards, sorting, shortcuts, and more. With quiz mode and a formula cheat sheet.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
-              {['33 Questions', '7 Categories', 'Quiz Mode', 'Cheat Sheet'].map(tag => (
+              {['47 Questions', '8 Categories', 'Quiz Mode', 'Cheat Sheet'].map(tag => (
                 <span key={tag} style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, background: 'rgba(79,124,255,0.08)', border: '1px solid rgba(79,124,255,0.2)', color: '#93BBFF', fontWeight: 600 }}>{tag}</span>
               ))}
             </div>
