@@ -296,9 +296,9 @@ export default function Home() {
         <div className="orb" style={{ width: 300, height: 300, background: 'radial-gradient(circle, rgba(0,210,255,0.1), transparent)', top: '40%', left: '60%', animation: 'float 8s ease-in-out infinite' }} />
 
         <div style={{ maxWidth: 900, textAlign: 'center', position: 'relative', zIndex: 2, animation: 'fadeUp 0.8s ease both' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 100, fontSize: 13, fontWeight: 600, color: '#fcd34d', marginBottom: 32 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b', display: 'inline-block', animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
-            🔥 Summer Internship Program · April 11 · 25 seats · ₹699
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.35)', borderRadius: 100, fontSize: 13, fontWeight: 600, color: '#fca5a5', marginBottom: 32 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', display: 'inline-block', animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
+            Summer 2025 registrations closed · Next batch coming soon
           </div>
 
           <h1 className="hero-headline" style={{ marginBottom: 28 }}>
@@ -312,7 +312,7 @@ export default function Home() {
           </p>
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 56 }}>
-            <a href="/summer" className="btn-amber">Get Your Summer Internship — ₹699</a>
+            <a href="/summer/register" className="btn-amber">Join the Summer Waitlist →</a>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <a href="/cohort" className="btn-secondary">Join Next Cohort — ₹999</a>
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 8, margin: '8px 0 0' }}>Coming Soon · Join the waitlist</p>
@@ -524,7 +524,7 @@ export default function Home() {
         <div style={{ maxWidth: 1000, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#f59e0b' }}>SUMMER 2025</span>
-            <span style={{ padding: '3px 12px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, color: '#fcd34d' }}>NEW 🌟</span>
+            <span style={{ padding: '3px 12px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, color: '#fca5a5' }}>CLOSED</span>
           </div>
           <div style={{ display: 'flex', gap: 48, alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: 280 }}>
@@ -535,10 +535,10 @@ export default function Home() {
               <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, marginBottom: 28, maxWidth: 440 }}>
                 A focused 4-week program for students who want a real internship — not just another rejection email.
               </p>
-              <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 36px', borderRadius: 100, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 32px rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none' }}>
-                Join Summer Program →
+              <a href="/summer/register" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 36px', borderRadius: 100, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 32px rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none' }}>
+                Join the Waitlist →
               </a>
-              <div style={{ marginTop: 14, fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>Founding batch · Starts April 11 · 25 seats · ₹699</div>
+              <div style={{ marginTop: 14, fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>Registrations closed · Next batch coming soon</div>
             </div>
             <div style={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
@@ -568,7 +568,7 @@ export default function Home() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
           {/* Summer Internship */}
           <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(249,115,22,0.05))', border: '1px solid rgba(245,158,11,0.25)', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: 'nowrap' }}>NEW 🌟</div>
+            <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg, #ef4444, #dc2626)', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: 'nowrap' }}>CLOSED</div>
             <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#fcd34d', marginBottom: 24, letterSpacing: 1, marginTop: 20 }}>SUMMER INTERNSHIP PROGRAM</div>
             <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, marginBottom: 6, lineHeight: 1.1 }}>Summer Internship<br />Accelerator</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>4 weeks. Built for students who want their first internship this summer.</div>
@@ -584,10 +584,10 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <a href="/summer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none' }}>
-              Apply for Summer Program →
+            <a href="/summer/register" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none' }}>
+              Join the Waitlist →
             </a>
-            <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>Applications open now · Summer 2025 batch</p>
+            <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>Registrations closed · Next batch coming soon</p>
           </div>
 
           {/* Cohort */}
@@ -932,27 +932,18 @@ export default function Home() {
           <div style={{ position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)', width: 300, height: 200, background: 'radial-gradient(circle, rgba(79,124,255,0.2), transparent)', filter: 'blur(40px)', pointerEvents: 'none' }} />
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 18px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#FCA5A5', marginBottom: 24 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', display: 'inline-block', animation: 'glow-pulse 1s ease-in-out infinite' }} />
-            CLOSING SOON — 25 SEATS ONLY
+            SUMMER 2025 — REGISTRATIONS CLOSED
           </div>
-          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 12, lineHeight: 1.1 }}>Summer Internship Batch Starts April 11</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 40 }}>Don't wait. Every day you delay is a day someone else gets the role you wanted.</p>
-
-          <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginBottom: 40 }}>
-            {[{ label: 'Hours', val: pad(timeLeft.h) }, { label: 'Minutes', val: pad(timeLeft.m) }, { label: 'Seconds', val: pad(timeLeft.s) }].map(t => (
-              <div key={t.label} className="countdown-box">
-                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 42, lineHeight: 1, color: '#4F7CFF', marginBottom: 4 }}>{t.val}</div>
-                <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' }}>{t.label}</div>
-              </div>
-            ))}
-          </div>
+          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 12, lineHeight: 1.1 }}>The Next Summer Batch Is Coming Soon</h2>
+          <p style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 40 }}>Join the waitlist and be the first to know when we open registrations — you'll get early access and a founding member discount.</p>
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/summer" className="btn-amber" style={{ fontSize: 17, padding: '18px 40px' }}>
-              Get Your Summer Internship — ₹699
+            <a href="/summer/register" className="btn-amber" style={{ fontSize: 17, padding: '18px 40px' }}>
+              Join the Waitlist →
             </a>
             <a href="/book" className="btn-secondary" style={{ fontSize: 17, padding: '17px 36px' }}>Book a Call First</a>
           </div>
-          <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 20 }}>Founding batch · April 11 start · 25 seats only</p>
+          <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 20 }}>Registrations closed · Next batch coming soon</p>
         </div>
       </section>
 
