@@ -244,6 +244,33 @@ export default function FreePage() {
             </div>
           </div>
 
+          {/* Card 0c: Excel Interview Prep — completely free */}
+          <div className="resource-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7' }}>
+                  FREE
+                </span>
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, color: 'rgba(255,255,255,0.3)' }}>No sign-up required</span>
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 8 }}>📊 Excel Interview Prep</div>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 16 }}>
+              33 most-asked Excel questions for analyst, ops, and finance roles — VLOOKUP, Pivot Tables, IF formulas, shortcuts. With a quiz mode and formula cheat sheet.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
+              {['33 Questions', '7 Categories', 'Quiz Mode', 'Cheat Sheet'].map(tag => (
+                <span key={tag} style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, background: 'rgba(79,124,255,0.08)', border: '1px solid rgba(79,124,255,0.2)', color: '#93BBFF', fontWeight: 600 }}>{tag}</span>
+              ))}
+            </div>
+            <a href="/resources/excel-interview-prep" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 0', borderRadius: 12, background: 'linear-gradient(135deg,rgba(79,124,255,0.2),rgba(123,97,255,0.15))', border: '1.5px solid rgba(79,124,255,0.4)', color: '#93BBFF', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
+              Start Prep →
+            </a>
+            <div style={{ textAlign: 'center', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>
+              Completely free · No sign-up · Quiz yourself
+            </div>
+          </div>
+
           {/* Card 0b: Career Toolkit — completely free */}
           <div className="resource-card">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
