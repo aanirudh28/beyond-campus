@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // ──────────────────────── TYPES ────────────────────────
 type SkillEntry = { skill: string; why: string }
@@ -1693,6 +1693,7 @@ export default function CareerToolkitPage() {
   const [activeTab, setActiveTab] = useState<'skills' | 'projects' | 'bullets'>('skills')
   const [expandedProject, setExpandedProject] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -1718,6 +1719,9 @@ export default function CareerToolkitPage() {
       setSelectedRole(id)
       setActiveTab('skills')
       setExpandedProject(null)
+      setTimeout(() => {
+        panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 50)
     }
   }
 
@@ -1849,7 +1853,7 @@ export default function CareerToolkitPage() {
 
         {/* TOOLKIT PANEL */}
         {selectedRole && currentData && currentRole && (
-          <div className="toolkit-panel" style={{ background: '#0f1624', border: '1px solid rgba(79,124,255,0.25)', borderRadius: 20, overflow: 'hidden', marginBottom: 48 }}>
+          <div ref={panelRef} className="toolkit-panel" style={{ background: '#0f1624', border: '1px solid rgba(79,124,255,0.25)', borderRadius: 20, overflow: 'hidden', marginBottom: 48 }}>
             {/* Panel header */}
             <div style={{ padding: '24px 28px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
