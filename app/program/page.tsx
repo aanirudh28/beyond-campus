@@ -158,7 +158,7 @@ export default function ProgramPage() {
             <a href="/book" className="btn-outlined" style={{ padding: '17px 36px', fontSize: 16 }}>Start with a 1:1 Session</a>
           </div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', letterSpacing: 0.3 }}>
-            📱 WhatsApp support · 🌍 Students from 50+ colleges · 📅 Next batch coming soon · 🔒 Secure checkout via Razorpay
+            📱 WhatsApp support · 🌍 Students from 50+ colleges · 🔒 Secure checkout via Razorpay
           </div>
         </div>
       </section>
@@ -390,7 +390,6 @@ export default function ProgramPage() {
                   ))}
                 </div>
                 <a href="/cohort" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '15px 32px', borderRadius: 100, background: 'linear-gradient(135deg,#7B61FF,#4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(123,97,255,0.35)', transition: 'all 0.3s', fontFamily: "'DM Sans',sans-serif" }}>Join the Cohort →</a>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center', marginTop: 12 }}>Next batch coming soon · Only 30 seats</p>
               </div>
             </div>
           </div>
@@ -432,14 +431,14 @@ export default function ProgramPage() {
             <span className="gradient-text">Now make the move.</span>
           </h2>
           <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.48)', lineHeight: 1.75, marginBottom: 40 }}>
-            Every week you spend without a strategy is a week someone else gets the role you wanted. The next batch is coming soon.
+            Every week you spend without a strategy is a week someone else gets the role you wanted.
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
             <a href="/cohort" className="btn-orange large">Join the Next Cohort →</a>
             <a href="/book" className="btn-outlined" style={{ padding: '17px 36px', fontSize: 16 }}>Start with a 1:1 Session</a>
           </div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)', letterSpacing: 0.3 }}>
-            📱 WhatsApp support · 🌍 50+ colleges · 📅 Next batch coming soon · 🔒 Secure checkout via Razorpay
+            📱 WhatsApp support · 🌍 50+ colleges · 🔒 Secure checkout via Razorpay
           </div>
         </Section>
       </section>

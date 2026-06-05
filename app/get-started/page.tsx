@@ -366,9 +366,6 @@ export default function GetStarted() {
                 <a href="/cohort" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '15px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(123,97,255,0.35)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: "'DM Sans', sans-serif" }}>
                   Join the Cohort →
                 </a>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginTop: 12, lineHeight: 1.5 }}>
-                  Next batch starts April 1 — only 30 seats
-                </p>
               </div>
             </div>
           </div>

@@ -97,7 +97,6 @@ export default function InternshipPage() {
       {/* Hero */}
       <section className="bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white py-20 px-4 text-center">
         <div className="max-w-3xl mx-auto">
-          <span className="bg-orange-500 text-white text-sm font-semibold px-3 py-1 rounded-full mb-4 inline-block">🔥 Next Batch Starting April 1 — Only 30 Seats</span>
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight">Land an Internship in 8 Weeks — Without Campus Placement</h1>
           <p className="text-indigo-200 text-lg mb-8">A structured cohort with real mentors, proven strategies, and weekly accountability — designed for Indian students who want results.</p>
           <a href="/cohort"
@@ -207,7 +206,6 @@ export default function InternshipPage() {
           <h2 className="text-3xl font-bold mb-3">Ready to Land Your Internship?</h2>
           <p className="text-indigo-200 mb-6">Join 2,500+ students who stopped waiting and started getting offers.</p>
           <p className="text-2xl font-bold mb-1">₹999 <span className="text-indigo-300 line-through text-lg ml-2">₹4,999</span></p>
-          <p className="text-indigo-300 text-sm mb-6">Limited seats • Next batch April 1</p>
           <a href="/cohort"
             className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold px-10 py-4 rounded-xl text-lg transition">
             Join Now – ₹999
