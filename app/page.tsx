@@ -593,7 +593,7 @@ export default function Home() {
               ))}
             </div>
             <a
-              href="/cohort"
+              href="/program"
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
               View Program →
             </a>
