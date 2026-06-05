@@ -1,10 +1,10 @@
 export const metadata = {
-  title: 'Summer Internship Program 2025 — Beyond Campus',
-  description: "A 4-week live program for non-tech students to land their first summer internship in consulting, finance, Founder's Office, marketing, and BD. ₹699.",
+  title: 'Internship Program — Beyond Campus',
+  description: "A 4-week live program for non-tech students to land their first internship in consulting, finance, Founder's Office, marketing, and BD. ₹1,750.",
   alternates: { canonical: 'https://www.beyond-campus.in/summer' },
   openGraph: {
-    title: 'Summer Internship Program 2025 — Beyond Campus',
-    description: '4 weeks. Live sessions. ₹699. Built for non-tech students targeting consulting, finance, and startup roles.',
+    title: 'Internship Program — Beyond Campus',
+    description: '4 weeks. Live sessions. ₹1,750. Built for non-tech students targeting consulting, finance, and startup roles.',
     url: 'https://www.beyond-campus.in/summer',
   },
 }

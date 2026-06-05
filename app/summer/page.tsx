@@ -1,6 +1,10 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import LeadCapturePopup from '@/app/components/LeadCapturePopup'
+
+declare global { interface Window { Razorpay: any } }
 
 const WEEKS = [
   { icon: '🎯', label: 'Build Your Foundation', items: ['Resume built specifically for internship applications', 'LinkedIn profile optimized for summer hiring', 'Naukri profile setup for internship search', 'Identifying your target internship roles and companies'] },
@@ -24,7 +28,7 @@ const FAQS = [
   { q: 'What year of college should I be in to join?', a: 'Ideally 1st, 2nd, or 3rd year — students who have at least one summer ahead of them. Final year students are better suited for our job placement cohort.' },
   { q: 'I have absolutely no experience. Can I still get an internship?', a: "Yes — that's exactly who this program is built for. The resume template and outreach strategy are specifically designed for students with no prior internship experience." },
   { q: 'What domains do you help with?', a: "Consulting, finance, Founder's Office, marketing, business development, and operations. No coding or tech roles." },
-  { q: 'How is this different from the 8-week cohort?', a: 'The summer program is shorter (4 weeks), cheaper (₹699 vs ₹999), and focused specifically on internship applications during the summer hiring season. The 8-week cohort is more comprehensive and suited for full-time job placement.' },
+  { q: 'How is this different from the 8-week Placement Cohort?', a: 'This program is shorter (4 weeks, ₹1,750) and focused specifically on landing your first internship. The 8-week Placement Cohort (₹2,500) is more comprehensive and suited for full-time job placement after graduation.' },
   { q: "What if I don't get an internship in 4 weeks?", a: "You will. The entire program is built around making this happen. But if life gets in the way — exams, health, anything — we don't disappear after 4 weeks. We'll be there to answer every doubt and keep you moving until you land your internship. Because you eventually will." },
   { q: 'How quickly can I get started after paying?', a: 'Immediately. Confirmation email within 2 minutes, WhatsApp group access the same day, and onboarding begins shortly after registration closes.' },
 ]
@@ -40,6 +44,9 @@ export default function SummerPage() {
   const [scrollY, setScrollY]     = useState(0)
   const [scrollPct, setScrollPct] = useState(0)
   const [openFaq, setOpenFaq]     = useState<number | null>(null)
+  const [isEnrolling, setIsEnrolling] = useState(false)
+  const [enrolled, setEnrolled]   = useState(false)
+  const [popupOpen, setPopupOpen] = useState(false)
   const curriculumRef             = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -49,9 +56,72 @@ export default function SummerPage() {
       setScrollY(y)
       setScrollPct(max > 0 ? (y / max) * 100 : 0)
     }
-    window.addEventListener('scroll', onScroll)
+    window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  const loadRazorpay = () => new Promise<boolean>((resolve) => {
+    if (window.Razorpay) return resolve(true)
+    const s = document.createElement('script')
+    s.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    s.onload = () => resolve(true)
+    s.onerror = () => resolve(false)
+    document.head.appendChild(s)
+  })
+
+  const handleEnroll = async () => {
+    setIsEnrolling(true)
+    try {
+      const loaded = await loadRazorpay()
+      if (!loaded) { alert('Could not load payment gateway. Please try again.'); setIsEnrolling(false); return }
+      const res = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: 1750 }),
+      })
+      const { orderId, amount, key } = await res.json()
+      new window.Razorpay({
+        key, amount, currency: 'INR',
+        name: 'Beyond Campus',
+        description: 'Internship Program — 4-Week Program',
+        order_id: orderId,
+        theme: { color: '#f59e0b' },
+        modal: { ondismiss: () => setIsEnrolling(false) },
+        handler: async (response: { razorpay_payment_id: string }) => {
+          const supabase = createClient()
+          await supabase.from('bookings').insert({ type: 'internship-program', payment_id: response.razorpay_payment_id, amount: 1750 })
+          setEnrolled(true)
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        },
+      }).open()
+    } catch {
+      alert('Something went wrong. Please try again or reach us on WhatsApp.')
+      setIsEnrolling(false)
+    }
+  }
+
+  if (enrolled) {
+    return (
+      <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: "'DM Sans','Inter',sans-serif", minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}`}</style>
+        <div style={{ maxWidth: 460, textAlign: 'center', animation: 'fadeUp 0.6s ease both' }}>
+          <div style={{ fontSize: 64, marginBottom: 20 }}>🎉</div>
+          <h1 style={{ fontFamily: "'DM Serif Display',serif", fontSize: 'clamp(28px,5vw,40px)', lineHeight: 1.1, marginBottom: 14 }}>You're enrolled!</h1>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, marginBottom: 28 }}>
+            Welcome to the Internship Program. Our team will reach out on WhatsApp within 2 hours with community access and your onboarding details.
+          </p>
+          <div style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 16, padding: '18px 22px', marginBottom: 28, textAlign: 'left' }}>
+            {['WhatsApp community access within 2 hours', 'Resume template + all resources shared immediately', 'First live session scheduled this week'].map((s, i) => (
+              <div key={i} style={{ display: 'flex', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: i < 2 ? 8 : 0 }}>
+                <span style={{ color: '#f59e0b', fontWeight: 700, flexShrink: 0 }}>→</span>{s}
+              </div>
+            ))}
+          </div>
+          <a href="/" style={{ display: 'inline-block', padding: '13px 30px', borderRadius: 100, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: 'white', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>Back to Home</a>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: "'DM Sans','Inter',sans-serif", minHeight: '100vh', overflowX: 'hidden' }}>
@@ -121,8 +191,10 @@ export default function SummerPage() {
           Beyond<span style={{ color: '#f59e0b' }}>Campus</span>
         </a>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <a href="/program" className="btn-outlined-s" style={{ padding: '9px 22px', fontSize: 13 }}>Full Program</a>
-          <a href="/summer/register" className="btn-amber" style={{ padding: '9px 22px', fontSize: 13 }}>Join Waitlist</a>
+          <a href="/cohort" className="btn-outlined-s" style={{ padding: '9px 22px', fontSize: 13 }}>Placement Cohort</a>
+          <button onClick={handleEnroll} disabled={isEnrolling} className="btn-amber" style={{ padding: '9px 22px', fontSize: 13, cursor: isEnrolling ? 'not-allowed' : 'pointer', opacity: isEnrolling ? 0.7 : 1 }}>
+            {isEnrolling ? 'Opening...' : 'Enroll — ₹1,750'}
+          </button>
         </div>
       </nav>
 
@@ -130,28 +202,27 @@ export default function SummerPage() {
       <section style={{ minHeight: '90vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '120px 24px 100px', position: 'relative', textAlign: 'center' }}>
         <div style={{ position: 'absolute', width: 800, height: 800, borderRadius: '50%', background: 'radial-gradient(circle,rgba(245,158,11,0.08),transparent)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', pointerEvents: 'none', animation: 'glowAmber 6s ease-in-out infinite' }} />
         <div style={{ maxWidth: 740, position: 'relative', zIndex: 1, animation: 'fadeUp 0.8s ease both' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 18px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.35)', borderRadius: 100, fontSize: 13, fontWeight: 700, color: '#fca5a5', marginBottom: 28 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444', display: 'inline-block', flexShrink: 0, animation: 'pulse-red 1.5s ease-in-out infinite' }} />
-            Summer 2025 registrations closed
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 18px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 100, fontSize: 13, fontWeight: 700, color: '#4ade80', marginBottom: 28 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block', flexShrink: 0, animation: 'pulse-red 1.5s ease-in-out infinite' }} />
+            Enrollment Open · Internship Program
           </div>
-          <span className="section-label-amber" style={{ display: 'block', marginBottom: 16 }}>SUMMER INTERNSHIP PROGRAM 2025</span>
+          <span className="section-label-amber" style={{ display: 'block', marginBottom: 16 }}>4-WEEK INTERNSHIP PROGRAM</span>
           <h1 style={{ fontFamily: "'DM Serif Display',serif", fontSize: 'clamp(38px,6vw,68px)', lineHeight: 1.05, letterSpacing: -2, marginBottom: 24 }}>
             Your First Internship.<br />
-            <span className="gradient-text-amber">This Summer. For Real.</span>
+            <span className="gradient-text-amber">A Real Plan. Real Results.</span>
           </h1>
           <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.52)', lineHeight: 1.8, maxWidth: 520, margin: '0 auto 40px' }}>
-            A 4-week intensive program that gets non-tech students their first internship — through cold outreach, smart targeting, and real mentor support.
+            A 4-week intensive that gets non-tech students their first internship — through cold outreach, smart targeting, and direct mentor support.
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 32 }}>
-            <a href="/summer/register" className="btn-amber large">Join the Waitlist →</a>
+            <button onClick={handleEnroll} disabled={isEnrolling} className="btn-amber large" style={{ cursor: isEnrolling ? 'not-allowed' : 'pointer', opacity: isEnrolling ? 0.7 : 1 }}>
+              {isEnrolling ? 'Opening...' : 'Enroll Now — ₹1,750 →'}
+            </button>
             <button className="btn-outlined-s" style={{ padding: '17px 36px', fontSize: 16 }} onClick={() => curriculumRef.current?.scrollIntoView({ behavior: 'smooth' })}>See What's Inside ↓</button>
           </div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.32)' }}>
             ⚡ 4 weeks · 📱 WhatsApp support · 🎯 Internship-focused strategy · 🌍 Open to all colleges
           </div>
-          <p style={{ fontSize: 13, color: 'rgba(245,158,11,0.6)', marginTop: 16 }}>
-            Summer 2025 is closed — enter your email to be first in line for the next batch.
-          </p>
         </div>
       </section>
 
@@ -167,7 +238,7 @@ export default function SummerPage() {
             <h3 style={{ fontSize: 'clamp(22px,3vw,34px)', fontWeight: 800, color: '#f59e0b', letterSpacing: -1, marginBottom: 12, lineHeight: 1.1 }}>This was built for you</h3>
             <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.65)', lineHeight: 1.8, marginBottom: 36 }}>If any of these sound like you, you're in the right place.</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-              {['1st, 2nd, or 3rd year student', 'Never had a formal internship', 'College skips the good companies', 'Targeting consulting or finance', 'Want a real plan, not motivation', 'Summer 2025 is your window'].map((pill, i) => (
+              {['1st, 2nd, or 3rd year student', 'Never had a formal internship', 'College skips the good companies', 'Targeting consulting or finance', 'Want a real plan, not motivation', 'Ready to send cold emails this week'].map((pill, i) => (
                 <span key={i} className="for-you-pill">{pill}</span>
               ))}
             </div>
@@ -252,7 +323,7 @@ export default function SummerPage() {
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <span className="section-label-amber">EVERYTHING INCLUDED</span>
-            <h2 style={{ fontSize: 'clamp(32px,5vw,56px)', fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.05 }}>₹699 gets you all of this</h2>
+            <h2 style={{ fontSize: 'clamp(32px,5vw,56px)', fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.05 }}>₹1,750 gets you all of this</h2>
           </div>
           <div className="incl-split" style={{ display: 'flex', gap: 52, alignItems: 'flex-start' }}>
             <div className="incl-left" style={{ width: '65%' }}>
@@ -278,21 +349,21 @@ export default function SummerPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 28 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 14, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                     <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>Total value</span>
-                    <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.28)', textDecoration: 'line-through' }}>₹2,999</span>
+                    <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.28)', textDecoration: 'line-through' }}>₹4,500</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 14, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                     <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>You save</span>
-                    <span style={{ fontSize: 14, color: '#10b981', fontWeight: 700 }}>₹2,400</span>
+                    <span style={{ fontSize: 14, color: '#10b981', fontWeight: 700 }}>₹2,750</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>Your price</span>
-                    <span style={{ fontSize: 36, fontWeight: 900, color: '#f59e0b', letterSpacing: -1.5 }}>₹699</span>
+                    <span style={{ fontSize: 36, fontWeight: 900, color: '#f59e0b', letterSpacing: -1.5 }}>₹1,750</span>
                   </div>
                 </div>
-                <a href="/summer/register" className="btn-amber full" style={{ borderRadius: 14, padding: '15px 24px', fontSize: 15 }}>
-                  Join the Waitlist →
-                </a>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', textAlign: 'center', marginTop: 12 }}>Registrations closed</p>
+                <button onClick={handleEnroll} disabled={isEnrolling} className="btn-amber full" style={{ borderRadius: 14, padding: '15px 24px', fontSize: 15, cursor: isEnrolling ? 'not-allowed' : 'pointer', opacity: isEnrolling ? 0.7 : 1 }}>
+                  {isEnrolling ? 'Opening...' : 'Enroll Now →'}
+                </button>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', textAlign: 'center', marginTop: 12 }}>🔒 Secure checkout via Razorpay</p>
               </div>
             </div>
           </div>
@@ -306,13 +377,13 @@ export default function SummerPage() {
           <h2 style={{ fontSize: 'clamp(32px,5vw,56px)', fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.05 }}>One investment.<br />Your first internship.</h2>
         </div>
         <div style={{ background: '#111827', border: '2px solid rgba(245,158,11,0.4)', borderRadius: 28, padding: '40px 36px', boxShadow: '0 0 0 1px rgba(245,158,11,0.15), 0 24px 64px rgba(245,158,11,0.12)', position: 'relative', marginBottom: 20 }}>
-          <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg,#f59e0b,#f97316)', borderRadius: '0 0 14px 14px', fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Summer 2025</div>
-          <div style={{ marginTop: 16, fontFamily: "'DM Serif Display',serif", fontSize: 26, marginBottom: 8, lineHeight: 1.2 }}>Summer Internship Program 2025</div>
+          <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg,#f59e0b,#f97316)', borderRadius: '0 0 14px 14px', fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Internship Program</div>
+          <div style={{ marginTop: 16, fontFamily: "'DM Serif Display',serif", fontSize: 26, marginBottom: 8, lineHeight: 1.2 }}>4-Week Internship Program</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, justifyContent: 'center', margin: '20px 0 6px' }}>
-            <span style={{ fontSize: 56, fontWeight: 900, color: '#f59e0b', letterSpacing: -2 }}>₹699</span>
-            <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through' }}>₹2,999</span>
+            <span style={{ fontSize: 56, fontWeight: 900, color: '#f59e0b', letterSpacing: -2 }}>₹1,750</span>
+            <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through' }}>₹4,500</span>
           </div>
-          <div style={{ fontSize: 13, color: 'rgba(245,158,11,0.8)', fontWeight: 600, marginBottom: 28 }}>You save ₹2,400</div>
+          <div style={{ fontSize: 13, color: 'rgba(245,158,11,0.8)', fontWeight: 600, marginBottom: 28 }}>You save ₹2,750</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32, textAlign: 'left' }}>
             {INCLUSIONS.map((f, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>
@@ -320,8 +391,10 @@ export default function SummerPage() {
               </div>
             ))}
           </div>
-          <a href="/summer/register" className="btn-amber full">Join the Waitlist →</a>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12 }}>Registrations closed</p>
+          <button onClick={handleEnroll} disabled={isEnrolling} className="btn-amber full" style={{ cursor: isEnrolling ? 'not-allowed' : 'pointer', opacity: isEnrolling ? 0.7 : 1 }}>
+            {isEnrolling ? 'Opening...' : 'Enroll Now →'}
+          </button>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12 }}>🔒 Secure checkout via Razorpay · One-time payment</p>
         </div>
         <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.35)', lineHeight: 1.8 }}>Less than the cost of one coaching class.<br />More impactful than a semester of applications.</p>
       </section>
@@ -347,7 +420,9 @@ export default function SummerPage() {
             ))}
           </div>
           <div style={{ marginTop: 48, textAlign: 'center' }}>
-            <a href="/summer/register" className="btn-amber large">Join the Waitlist →</a>
+            <button onClick={handleEnroll} disabled={isEnrolling} className="btn-amber large" style={{ cursor: isEnrolling ? 'not-allowed' : 'pointer', opacity: isEnrolling ? 0.7 : 1 }}>
+              {isEnrolling ? 'Opening...' : 'Enroll Now — ₹1,750 →'}
+            </button>
           </div>
         </div>
       </section>
@@ -359,15 +434,18 @@ export default function SummerPage() {
 
       {/* STICKY MOBILE BAR */}
       {scrollY > 600 && (
-        <a href="/summer/register" className="mobile-only-bar" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 150, background: 'linear-gradient(135deg,#f59e0b,#f97316)', padding: '14px 20px', display: 'none', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 -8px 32px rgba(245,158,11,0.3)', gap: 12, textDecoration: 'none' }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'white' }}>Registrations closed</div>
+        <button onClick={handleEnroll} disabled={isEnrolling} className="mobile-only-bar" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 150, background: 'linear-gradient(135deg,#f59e0b,#f97316)', padding: '14px 20px', display: 'none', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 -8px 32px rgba(245,158,11,0.3)', gap: 12, border: 'none', cursor: isEnrolling ? 'not-allowed' : 'pointer', opacity: isEnrolling ? 0.7 : 1, width: '100%', fontFamily: "'DM Sans',sans-serif" }}>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'white' }}>Internship Program</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>₹1,750 · Enrollment open</div>
           </div>
           <div style={{ background: 'rgba(0,0,0,0.18)', border: '1.5px solid rgba(255,255,255,0.4)', borderRadius: 100, padding: '9px 18px', color: 'white', fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap', flexShrink: 0 }}>
-            Join Waitlist →
+            {isEnrolling ? 'Opening...' : 'Enroll Now →'}
           </div>
-        </a>
+        </button>
       )}
+
+      <LeadCapturePopup isOpen={popupOpen} onClose={() => setPopupOpen(false)} preselectedCohort="Internship Cohort" />
     </main>
   )
 }
