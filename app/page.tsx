@@ -73,10 +73,11 @@ export default function Home() {
   const trustItems = ['Personalized Mentorship', 'Weekly Accountability', 'Resume & LinkedIn Reviews', 'Internship & Placement Support']
 
   const TrustStrip = () => (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 24px', justifyContent: 'center', marginTop: 20 }}>
-      {trustItems.map(item => (
-        <span key={item} style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ color: '#4F7CFF', fontWeight: 700 }}>✓</span> {item}
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 28px', justifyContent: 'center', marginTop: 20 }}>
+      {trustItems.map((item, i) => (
+        <span key={item} style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          {i > 0 && <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span>}
+          {item}
         </span>
       ))}
     </div>
@@ -270,6 +271,7 @@ export default function Home() {
           </div>
           <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
+          <a href="/book" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', transition: 'all 0.2s' }}>Book Session</a>
           <button onClick={() => openPopup()} className="btn-primary" style={{ padding: '10px 24px', fontSize: 14, fontFamily: 'inherit' }}>
             <span>Book Free Consultation</span>
             <span style={{ position: 'relative', zIndex: 1 }}>→</span>
@@ -528,13 +530,13 @@ export default function Home() {
       </section>
 
       {/* PROGRAMS */}
-      <section id="programs" style={{ padding: '80px 24px', maxWidth: 900, margin: '0 auto' }}>
+      <section id="programs" style={{ padding: '80px 24px', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <span className="section-label">Our Programs</span>
           <h2 className="section-title">Pick your path to placement</h2>
           <p style={{ color: 'var(--muted)', fontSize: 17 }}>Start with a free consultation — we'll recommend the right fit for you.</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 28 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
 
           {/* Internship Cohort */}
           <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(79,124,255,0.06), rgba(123,97,255,0.04))', border: '1px solid rgba(79,124,255,0.2)' }}>
@@ -554,8 +556,8 @@ export default function Home() {
                 'Mock interview prep',
                 'Networking guidance',
               ].map(f => (
-                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
-                  <span style={{ color: '#4F7CFF', fontSize: 16, flexShrink: 0 }}>✓</span>{f}
+                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16, flexShrink: 0, lineHeight: '1.4' }}>—</span>{f}
                 </div>
               ))}
             </div>
@@ -585,8 +587,8 @@ export default function Home() {
                 'Extended mentor support',
                 'Priority profile reviews',
               ].map(f => (
-                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
-                  <span style={{ color: '#7B61FF', fontSize: 16, flexShrink: 0 }}>✓</span>{f}
+                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16, flexShrink: 0, lineHeight: '1.4' }}>—</span>{f}
                 </div>
               ))}
             </div>
@@ -596,6 +598,35 @@ export default function Home() {
               View Program →
             </a>
           </div>
+
+          {/* 1:1 Mentorship */}
+          <div className="product-card">
+            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#93BBFF', marginBottom: 24, letterSpacing: 1 }}>1:1 MENTORSHIP</div>
+            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 8, lineHeight: 1.1 }}>Personal Career<br />Acceleration</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '24px 0' }}>
+              <span style={{ fontSize: 42, fontWeight: 800, color: 'var(--blue)' }}>₹299</span>
+              <span style={{ color: 'var(--muted)', fontSize: 15, textDecoration: 'line-through' }}>₹999</span>
+              <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ session</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
+              {[
+                'Resume review by an industry expert',
+                'Personalized cold email strategy',
+                'LinkedIn & Naukri profile overhaul',
+                'Mock interview + feedback',
+                'Target company hit list',
+              ].map(f => (
+                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16, flexShrink: 0, lineHeight: '1.4' }}>—</span>{f}
+                </div>
+              ))}
+            </div>
+            <a href="/book" className="btn-primary" style={{ width: '100%', justifyContent: 'center', textDecoration: 'none', boxSizing: 'border-box' }}>
+              <span>Book Session Now</span>
+              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+            </a>
+          </div>
+
         </div>
 
         {/* Trust strip below programs */}
@@ -679,7 +710,7 @@ export default function Home() {
                   <div style={{ fontSize: 14, fontWeight: 700, color: t.color }}>{t.days}</div>
                 </div>
               </div>
-              <div style={{ marginTop: 16, padding: '8px 14px', background: `${t.color}15`, border: `1px solid ${t.color}30`, borderRadius: 100, fontSize: 12, fontWeight: 700, color: t.color, display: 'inline-block' }}>✓ {t.result}</div>
+              <div style={{ marginTop: 16, padding: '8px 14px', background: `${t.color}15`, border: `1px solid ${t.color}30`, borderRadius: 100, fontSize: 12, fontWeight: 700, color: t.color, display: 'inline-block' }}>{t.result}</div>
             </div>
           ))}
         </div>
