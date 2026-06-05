@@ -158,7 +158,7 @@ export default function ProgramPage() {
             <a href="/book" className="btn-outlined" style={{ padding: '17px 36px', fontSize: 16 }}>Start with a 1:1 Session</a>
           </div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', letterSpacing: 0.3 }}>
-            📱 WhatsApp support · 🌍 Students from 50+ colleges · 📅 Next batch starts April 1 · 🔒 Secure checkout via Razorpay
+            📱 WhatsApp support · 🌍 Students from 50+ colleges · 📅 Next batch coming soon · 🔒 Secure checkout via Razorpay
           </div>
         </div>
       </section>
@@ -341,7 +341,7 @@ export default function ProgramPage() {
           <div style={{ background: 'linear-gradient(135deg,rgba(79,124,255,0.1),rgba(123,97,255,0.07))', border: '1.5px solid rgba(79,124,255,0.3)', borderRadius: 20, padding: '28px 32px', display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 28 }}>🎁</span>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 16, color: 'white', marginBottom: 4 }}>Bonus: Join before April 1</div>
+              <div style={{ fontWeight: 700, fontSize: 16, color: 'white', marginBottom: 4 }}>Bonus: Early Bird Offer</div>
               <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>Get a personal 30-minute 1:1 strategy call included at no extra cost.</div>
             </div>
           </div>
@@ -380,8 +380,8 @@ export default function ProgramPage() {
                 <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16 }}>For students who want the complete system</div>
                 <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 26, lineHeight: 1.2, marginBottom: 20 }}>8-Week Placement<br />Accelerator</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
-                  <span style={{ fontSize: 40, fontWeight: 800, color: '#7B61FF' }}>₹999</span>
-                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through' }}>₹4,999</span>
+                  <span style={{ fontSize: 40, fontWeight: 800, color: '#7B61FF' }}>₹2,500</span>
+                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through' }}>₹6,000</span>
                 </div>
                 <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 28 }}>8 weeks · Live sessions</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
@@ -390,7 +390,7 @@ export default function ProgramPage() {
                   ))}
                 </div>
                 <a href="/cohort" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '15px 32px', borderRadius: 100, background: 'linear-gradient(135deg,#7B61FF,#4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(123,97,255,0.35)', transition: 'all 0.3s', fontFamily: "'DM Sans',sans-serif" }}>Join the Cohort →</a>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center', marginTop: 12 }}>Next batch April 1 · Only 30 seats</p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center', marginTop: 12 }}>Next batch coming soon · Only 30 seats</p>
               </div>
             </div>
           </div>
@@ -432,14 +432,14 @@ export default function ProgramPage() {
             <span className="gradient-text">Now make the move.</span>
           </h2>
           <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.48)', lineHeight: 1.75, marginBottom: 40 }}>
-            Every week you spend without a strategy is a week someone else gets the role you wanted. The next batch starts April 1.
+            Every week you spend without a strategy is a week someone else gets the role you wanted. The next batch is coming soon.
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
             <a href="/cohort" className="btn-orange large">Join the Next Cohort →</a>
             <a href="/book" className="btn-outlined" style={{ padding: '17px 36px', fontSize: 16 }}>Start with a 1:1 Session</a>
           </div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)', letterSpacing: 0.3 }}>
-            📱 WhatsApp support · 🌍 50+ colleges · 📅 Next batch April 1 · 🔒 Secure checkout via Razorpay
+            📱 WhatsApp support · 🌍 50+ colleges · 📅 Next batch coming soon · 🔒 Secure checkout via Razorpay
           </div>
         </Section>
       </section>
@@ -453,7 +453,7 @@ export default function ProgramPage() {
       {showMobileSticky && (
         <div className="mobile-sticky">
           <a href="/cohort" className="btn-orange" style={{ width: '100%', justifyContent: 'center', fontSize: 15 }}>
-            Join the Cohort — ₹999 →
+            Join the Cohort — ₹2,500 →
           </a>
         </div>
       )}
