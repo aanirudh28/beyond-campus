@@ -81,6 +81,18 @@ type RoastResult = {
   created_at: string
 }
 
+type ConsultationLead = {
+  id: string
+  full_name: string
+  phone: string
+  email: string
+  interested_in: string
+  college: string | null
+  graduation_year: string | null
+  source_page: string
+  created_at: string
+}
+
 type FeedPost = {
   id: string
   type: string
@@ -117,7 +129,7 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts'>('bookings')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads'>('bookings')
   const [roasts, setRoasts] = useState<RoastResult[]>([])
   const [roastsLoading, setRoastsLoading] = useState(false)
   const [summerRegs, setSummerRegs] = useState<SummerReg[]>([])
@@ -126,6 +138,15 @@ export default function AdminPage() {
   const [resourcePurchases, setResourcePurchases] = useState<ResourcePurchase[]>([])
   const [leads, setLeads] = useState<Lead[]>([])
   const [resourcesLoading, setResourcesLoading] = useState(false)
+  const [consultationLeads, setConsultationLeads] = useState<ConsultationLead[]>([])
+  const [consultationLeadsLoading, setConsultationLeadsLoading] = useState(false)
+
+  const fetchConsultationLeads = async () => {
+    setConsultationLeadsLoading(true)
+    const { data } = await supabase.from('consultation_leads').select('*').order('created_at', { ascending: false })
+    if (data) setConsultationLeads(data)
+    setConsultationLeadsLoading(false)
+  }
 
   // ─── Manual Access State ─────────────────────────────────────────────────────
   const [manualAccessList, setManualAccessList] = useState<ManualAccess[]>([])
@@ -311,6 +332,7 @@ export default function AdminPage() {
       fetchFeed()
       fetchManualAccess()
       fetchRoasts()
+      fetchConsultationLeads()
     } else {
       setError('Incorrect password')
     }
@@ -439,6 +461,7 @@ export default function AdminPage() {
             { key: 'feed', label: `💬 Feed (${feedPendingPosts.length + feedPendingReplies.length} pending)`, active: activeTab === 'feed', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
             { key: 'manual-access', label: `🔓 Manual Access (${manualAccessList.length})`, active: activeTab === 'manual-access', color: '#a78bfa', bg: 'rgba(167,139,250,0.15)' },
             { key: 'roasts', label: `🔥 Roasts (${roasts.length})`, active: activeTab === 'roasts', color: '#ef4444', bg: 'rgba(239,68,68,0.15)' },
+            { key: 'leads', label: `📋 Leads (${consultationLeads.length})`, active: activeTab === 'leads', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
           ].map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: tab.active ? tab.color : 'rgba(255,255,255,0.1)', background: tab.active ? tab.bg : 'transparent', color: tab.active ? tab.color : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               {tab.label}
@@ -1064,6 +1087,78 @@ export default function AdminPage() {
             <div style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: 'rgba(255,255,255,0.2)' }}>
               {roasts.length} roasts total · {roasts.filter(r => r.email).length} with email
             </div>
+          </div>
+        )}
+
+        {/* Consultation Leads Tab */}
+        {activeTab === 'leads' && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+              <div>
+                <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Consultation Leads</h2>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>{consultationLeads.length} total · sorted by newest first</p>
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={fetchConsultationLeads} style={{ padding: '8px 16px', borderRadius: 100, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', color: '#6ee7b7', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                  ↻ Refresh
+                </button>
+                <button
+                  onClick={() => {
+                    const headers = ['Name', 'Phone', 'Email', 'Interested In', 'College', 'Grad Year', 'Submitted At']
+                    const rows = consultationLeads.map(l => [l.full_name, l.phone, l.email, l.interested_in, l.college || '', l.graduation_year || '', l.created_at])
+                    const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n')
+                    const blob = new Blob([csv], { type: 'text/csv' })
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement('a')
+                    a.href = url; a.download = 'consultation_leads.csv'; a.click()
+                    URL.revokeObjectURL(url)
+                  }}
+                  style={{ padding: '8px 16px', borderRadius: 100, background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.25)', color: '#93BBFF', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                >
+                  ↓ Export CSV
+                </button>
+              </div>
+            </div>
+            {consultationLeadsLoading ? (
+              <div style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.4)' }}>Loading leads...</div>
+            ) : consultationLeads.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.3)', fontSize: 15 }}>No consultation leads yet. They'll appear here after the first form submission.</div>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                      {['Name', 'Phone', 'Email', 'Interested In', 'College', 'Grad Year', 'Submitted At'].map(h => (
+                        <th key={h} style={{ padding: '10px 12px', textAlign: 'left', color: 'rgba(255,255,255,0.4)', fontWeight: 600, fontSize: 12, whiteSpace: 'nowrap' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {consultationLeads.map((lead, i) => (
+                      <tr key={lead.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)' }}>
+                        <td style={{ padding: '12px 12px', fontWeight: 600, color: 'white' }}>{lead.full_name}</td>
+                        <td style={{ padding: '12px 12px', color: 'rgba(255,255,255,0.7)' }}>
+                          <a href={`tel:${lead.phone}`} style={{ color: '#93BBFF', textDecoration: 'none' }}>{lead.phone}</a>
+                        </td>
+                        <td style={{ padding: '12px 12px', color: 'rgba(255,255,255,0.7)' }}>
+                          <a href={`mailto:${lead.email}`} style={{ color: '#93BBFF', textDecoration: 'none' }}>{lead.email}</a>
+                        </td>
+                        <td style={{ padding: '12px 12px' }}>
+                          <span style={{ padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, background: lead.interested_in.includes('Placement') ? 'rgba(123,97,255,0.15)' : lead.interested_in.includes('Internship') ? 'rgba(79,124,255,0.15)' : 'rgba(255,255,255,0.08)', color: lead.interested_in.includes('Placement') ? '#C4B5FD' : lead.interested_in.includes('Internship') ? '#93BBFF' : 'rgba(255,255,255,0.5)', border: '1px solid', borderColor: lead.interested_in.includes('Placement') ? 'rgba(123,97,255,0.25)' : lead.interested_in.includes('Internship') ? 'rgba(79,124,255,0.25)' : 'rgba(255,255,255,0.1)' }}>
+                            {lead.interested_in}
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px 12px', color: 'rgba(255,255,255,0.55)', fontSize: 12 }}>{lead.college || '—'}</td>
+                        <td style={{ padding: '12px 12px', color: 'rgba(255,255,255,0.55)', fontSize: 12 }}>{lead.graduation_year || '—'}</td>
+                        <td style={{ padding: '12px 12px', color: 'rgba(255,255,255,0.4)', fontSize: 12, whiteSpace: 'nowrap' }}>
+                          {new Date(lead.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
 

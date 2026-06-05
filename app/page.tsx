@@ -1,30 +1,13 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import LeadCapturePopup from './components/LeadCapturePopup'
 
 export default function Home() {
   const [scrollY, setScrollY] = useState(0)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
-  const [timeLeft, setTimeLeft] = useState({ h: 11, m: 47, s: 33 })
   const [counters, setCounters] = useState({ salary: 0, placed: 0, rate: 0 })
   const [openFaq, setOpenFaq] = useState<number | null>(null)
-  const [cohortWaitlist, setCohortWaitlist] = useState<'hidden' | 'open' | 'done'>('hidden')
-  const [cohortWaitlistEmail, setCohortWaitlistEmail] = useState('')
-  const [cohortWaitlistLoading, setCohortWaitlistLoading] = useState(false)
-
-  const submitCohortWaitlist = async () => {
-    if (!cohortWaitlistEmail.trim()) return
-    setCohortWaitlistLoading(true)
-    try {
-      await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cohortWaitlistEmail.trim(), source: 'Cohort Waitlist' }),
-      })
-      setCohortWaitlist('done')
-    } catch { setCohortWaitlist('done') }
-    setCohortWaitlistLoading(false)
-  }
   const [resourcesOpen, setResourcesOpen] = useState(false)
   const resourcesCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [howItWorksVisible, setHowItWorksVisible] = useState(false)
@@ -32,14 +15,22 @@ export default function Home() {
   const statsStarted = useRef(false)
   const howItWorksRef = useRef<HTMLDivElement>(null)
 
+  // Popup state
+  const [popupOpen, setPopupOpen] = useState(false)
+  const [popupPreselect, setPopupPreselect] = useState<string | null>(null)
+  const openPopup = (cohort?: string) => {
+    setPopupPreselect(cohort || null)
+    setPopupOpen(true)
+  }
+
   const FAQS = [
-    { q: 'Is this a recorded course or live sessions?', a: 'Everything is live. The cohort has weekly live sessions directly with your mentor — no pre-recorded lectures. 1:1 sessions are live calls scheduled at your convenience.' },
+    { q: 'Is this a recorded course or live sessions?', a: 'Everything is live. The cohort has weekly live sessions directly with your mentor — no pre-recorded lectures. The consultation call is a live video call scheduled at your convenience.' },
     { q: "I'm from a tier-2 or tier-3 college. Will this actually work for me?", a: "Most of our students are from tier-2 and tier-3 colleges. The strategies we teach work regardless of college name — they're built specifically for students who don't get top companies walking onto their campus. Off-campus hiring is about strategy, not your college rank." },
     { q: 'What kind of roles do your students get placed in?', a: "Most students get placed in the domains they're targeting. Consulting and finance remain the most sought-after, with a strong and rising inclination towards Founder's Office roles at leading startups. We also place students in marketing, operations, and business development across fast-growing companies." },
-    { q: 'How long will it take to see results?', a: 'Most students see their first meaningful result — a reply to a cold email, a LinkedIn connection with a hiring manager, or a referral introduction — within the first 2 weeks. By week 4, most students have at least one interview conversation in progress. The full transformation — from stuck to placed — typically takes 30 days of consistent execution.' },
-    { q: 'What happens immediately after I pay?', a: "You'll receive a confirmation email within 2 minutes with your login details for the student dashboard. For the cohort, you'll also get added to the private WhatsApp group where onboarding starts immediately." },
+    { q: 'How long will it take to see results?', a: 'Most students see their first meaningful result — a reply to a cold email, a LinkedIn connection with a hiring manager, or a referral introduction — within the first 2 weeks. By week 4, most students have at least one interview conversation in progress.' },
+    { q: 'How much does it cost?', a: 'The Internship Cohort is ₹1,750 and the Placement Cohort is ₹2,500. Both include personalized mentorship, resume reviews, weekly accountability, and direct mentor access. Book a free consultation to find the right fit for you.' },
     { q: 'How is this different from watching YouTube videos or buying a course?', a: "Three things: personalization, accountability, and referrals. We review YOUR resume, build YOUR target list, and help you find your initial introductions at your target companies. No YouTube video does that." },
-{ q: 'Is my payment secure?', a: "Yes — payments are processed by Razorpay, India's most trusted payment gateway. We never store your card details." },
+    { q: 'Is my payment secure?', a: "Yes — payments are processed by Razorpay, India's most trusted payment gateway. We never store your card details." },
   ]
 
   useEffect(() => {
@@ -48,20 +39,6 @@ export default function Home() {
     window.addEventListener('scroll', onScroll)
     window.addEventListener('mousemove', onMouse)
     return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('mousemove', onMouse) }
-  }, [])
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(t => {
-        let { h, m, s } = t
-        s--
-        if (s < 0) { s = 59; m-- }
-        if (m < 0) { m = 59; h-- }
-        if (h < 0) return { h: 23, m: 59, s: 59 }
-        return { h, m, s }
-      })
-    }, 1000)
-    return () => clearInterval(timer)
   }, [])
 
   useEffect(() => {
@@ -93,7 +70,17 @@ export default function Home() {
     return () => observer.disconnect()
   }, [])
 
-  const pad = (n: number) => String(n).padStart(2, '0')
+  const trustItems = ['Personalized Mentorship', 'Weekly Accountability', 'Resume & LinkedIn Reviews', 'Internship & Placement Support']
+
+  const TrustStrip = () => (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 24px', justifyContent: 'center', marginTop: 20 }}>
+      {trustItems.map(item => (
+        <span key={item} style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ color: '#4F7CFF', fontWeight: 700 }}>✓</span> {item}
+        </span>
+      ))}
+    </div>
+  )
 
   return (
     <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: "'DM Sans', 'Inter', sans-serif", overflowX: 'hidden' }}>
@@ -129,8 +116,6 @@ export default function Home() {
         .btn-primary span { position:relative; z-index:1; }
         .btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; border-radius: 100px; background: transparent; color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s; border: 1.5px solid rgba(255,255,255,0.2); }
         .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
-        .btn-amber { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: 100px; background: linear-gradient(135deg,#d97706,#c2410c); color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 20px rgba(194,65,12,0.3); text-decoration: none; }
-        .btn-amber:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 36px rgba(194,65,12,0.45); }
         .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; transition: all 0.4s; }
         .card:hover { background: rgba(255,255,255,0.06); border-color: rgba(79,124,255,0.3); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(79,124,255,0.15); }
         .section-label { font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; display: block; }
@@ -146,7 +131,6 @@ export default function Home() {
         .avatar-stack img, .avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0B0B0F; margin-left: -10px; }
         .avatar-stack > :first-child { margin-left: 0; }
         .tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600; }
-        .countdown-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px 24px; text-align: center; min-width: 80px; }
         .pain-item { display: flex; align-items: flex-start; gap: 16px; padding: 24px; border-radius: 20px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); transition: all 0.3s; }
         .pain-item:hover { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.2); }
         .product-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 28px; padding: 40px; transition: all 0.4s; position: relative; overflow: hidden; }
@@ -178,15 +162,23 @@ export default function Home() {
         .hiw-dot-v { position:absolute; left:50%; transform:translateX(-50%); width:10px; height:10px; border-radius:50%; background:#4F7CFF; box-shadow:0 0 10px rgba(79,124,255,0.9); animation:dot-travel-v 2.4s ease-in-out infinite; }
         .proof-strip-card { background:#111827; border-left:4px solid #4F7CFF; border-radius:16px; padding:24px 28px; display:flex; align-items:flex-start; gap:14px; transition:transform 0.3s; }
         .proof-strip-card:hover { transform:translateX(4px); }
+        .comp-table { width:100%; border-collapse:collapse; }
+        .comp-table th, .comp-table td { padding:14px 16px; text-align:center; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.06); }
+        .comp-table th { font-size:13px; font-weight:700; padding-bottom:16px; }
+        .comp-table td:first-child { text-align:left; color:rgba(255,255,255,0.7); font-weight:500; }
+        .comp-table tbody tr:last-child td { border-bottom:none; }
         @media(max-width:768px) {
           .sticky-nav { padding: 16px 20px; }
           .sticky-nav.scrolled { padding: 12px 20px; }
           .hero-headline { font-size: clamp(36px, 10vw, 56px); }
           .hiw-step-num { font-size:100px; }
+          .comp-table th, .comp-table td { padding: 10px 8px; font-size: 12px; }
         }
       `}</style>
 
       <div className="noise-overlay" />
+
+      <LeadCapturePopup isOpen={popupOpen} onClose={() => setPopupOpen(false)} preselectedCohort={popupPreselect} />
 
       {/* NAV */}
       <nav className={`sticky-nav${scrollY > 40 ? ' scrolled' : ''}`}>
@@ -278,14 +270,11 @@ export default function Home() {
           </div>
           <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
-          <a href="/book" className="btn-secondary" style={{ padding: '10px 24px', fontSize: 14 }}>Book Session</a>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <a href="/cohort" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14 }}>
-              <span>Join Cohort</span>
-              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
-            </a>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 8, margin: '8px 0 0' }}>Coming Soon · Join the waitlist</p>
-          </div>
+          <button onClick={() => openPopup()} className="btn-secondary" style={{ padding: '10px 24px', fontSize: 14, fontFamily: 'inherit' }}>Talk to a Mentor</button>
+          <button onClick={() => openPopup()} className="btn-primary" style={{ padding: '10px 24px', fontSize: 14, fontFamily: 'inherit' }}>
+            <span>Book Free Consultation</span>
+            <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+          </button>
         </div>
       </nav>
 
@@ -296,31 +285,31 @@ export default function Home() {
         <div className="orb" style={{ width: 300, height: 300, background: 'radial-gradient(circle, rgba(0,210,255,0.1), transparent)', top: '40%', left: '60%', animation: 'float 8s ease-in-out infinite' }} />
 
         <div style={{ maxWidth: 900, textAlign: 'center', position: 'relative', zIndex: 2, animation: 'fadeUp 0.8s ease both' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.35)', borderRadius: 100, fontSize: 13, fontWeight: 600, color: '#fca5a5', marginBottom: 32 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', display: 'inline-block', animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
-            Summer 2025 registrations closed · Next batch coming soon
-          </div>
-
           <h1 className="hero-headline" style={{ marginBottom: 28 }}>
-            Break Into Top Jobs<br />
-            <span className="gradient-text">Without Campus</span><br />
-            Placements
+            Your Career Deserves<br />
+            <span className="gradient-text">Personal Guidance,</span><br />
+            Not Generic Courses
           </h1>
 
-          <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, margin: '0 auto 48px', fontWeight: 400 }}>
-            Get mentorship, referrals, and battle-tested strategies from people who've actually done it.
+          <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 600, margin: '0 auto 48px', fontWeight: 400 }}>
+            Beyond Campus pairs you with mentors who build a customized strategy for your internship or placement — every step of the way.
           </p>
 
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 56 }}>
-            <a href="/summer/register" className="btn-amber">Join the Summer Waitlist →</a>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <a href="/cohort" className="btn-secondary">Join Next Cohort — ₹999</a>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 8, margin: '8px 0 0' }}>Coming Soon · Join the waitlist</p>
-            </div>
+          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
+            <button onClick={() => openPopup()} className="btn-primary" style={{ fontSize: 16, padding: '18px 36px', fontFamily: 'inherit' }}>
+              <span>Book Your Free Consultation</span>
+              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+            </button>
+            <a href="#programs" className="btn-secondary" style={{ fontSize: 16, padding: '17px 36px' }}>
+              Explore Programs ↓
+            </a>
           </div>
 
+          {/* Trust strip below hero CTAs */}
+          <TrustStrip />
+
           {/* Social proof row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginTop: 48 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div className="avatar-stack">
                 {['#4F7CFF','#7B61FF','#06b6d4','#10b981','#f59e0b'].map((c, i) => (
@@ -407,13 +396,35 @@ export default function Home() {
         </div>
       </section>
 
+      {/* WHY STUDENTS CHOOSE BEYOND CAMPUS */}
+      <section style={{ padding: '80px 24px', maxWidth: 1000, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <span className="section-label">Why Us</span>
+          <h2 className="section-title">Why Students Choose Beyond Campus</h2>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
+          {[
+            { icon: '👤', color: '#4F7CFF', bg: 'rgba(79,124,255,0.12)', title: 'Personal Mentorship', desc: '1-on-1 guidance tailored to your goals — not a pre-recorded course.' },
+            { icon: '📄', color: '#7B61FF', bg: 'rgba(123,97,255,0.12)', title: 'Resume & LinkedIn Reviews', desc: 'Actionable, line-by-line feedback instead of generic templates.' },
+            { icon: '📅', color: '#10b981', bg: 'rgba(16,185,129,0.12)', title: 'Weekly Accountability', desc: 'Stay consistent with applications and networking. No passive learning.' },
+            { icon: '🎯', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', title: 'Real Hiring Strategies', desc: 'Learn the exact tactics used to secure internships and jobs off-campus.' },
+          ].map((c, i) => (
+            <div key={i} className="card" style={{ padding: 32 }}>
+              <div style={{ width: 52, height: 52, borderRadius: '50%', background: c.bg, border: `1px solid ${c.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, marginBottom: 20 }}>
+                {c.icon}
+              </div>
+              <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, lineHeight: 1.3 }}>{c.title}</div>
+              <div style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.7 }}>{c.desc}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* HOW IT WORKS */}
       <section ref={howItWorksRef} style={{ padding: '120px 24px', background: '#0B0B0F', position: 'relative', overflow: 'hidden' }}>
-        {/* Background orbs */}
         <div style={{ position: 'absolute', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,124,255,0.07), transparent)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', pointerEvents: 'none' }} />
 
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: 72 }}>
             <span className="section-label">THE PROCESS</span>
             <h2 className="section-title" style={{ maxWidth: 640, margin: '0 auto 20px' }}>From stuck to placed —<br />here's how it works</h2>
@@ -507,155 +518,131 @@ export default function Home() {
 
           {/* CTAs */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 56, flexWrap: 'wrap' }}>
-            <a href="/get-started" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 36px', borderRadius: 100, background: 'linear-gradient(135deg, #FF6B35, #FF4500)', color: 'white', fontWeight: 700, fontSize: 16, boxShadow: '0 0 36px rgba(255,107,53,0.4)', transition: 'all 0.3s', textDecoration: 'none' }}>
-              Get Started →
-            </a>
-            <a href="/program" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '15px 36px', borderRadius: 100, background: 'transparent', color: 'white', fontWeight: 600, fontSize: 16, border: '1.5px solid rgba(255,255,255,0.2)', transition: 'all 0.3s', textDecoration: 'none' }}>
-              See the Full Program
+            <button onClick={() => openPopup()} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 36px', borderRadius: 100, background: 'linear-gradient(135deg, #FF6B35, #FF4500)', color: 'white', fontWeight: 700, fontSize: 16, boxShadow: '0 0 36px rgba(255,107,53,0.4)', transition: 'all 0.3s', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+              Book Free Consultation →
+            </button>
+            <a href="#programs" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '15px 36px', borderRadius: 100, background: 'transparent', color: 'white', fontWeight: 600, fontSize: 16, border: '1.5px solid rgba(255,255,255,0.2)', transition: 'all 0.3s', textDecoration: 'none' }}>
+              View Programs ↓
             </a>
           </div>
         </div>
       </section>
 
-      {/* SUMMER HIGHLIGHT */}
-      <section style={{ padding: '80px 24px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(245,158,11,0.06), rgba(249,115,22,0.04), transparent)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(245,158,11,0.08), transparent)', top: '50%', right: '-10%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-        <div style={{ maxWidth: 1000, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#f59e0b' }}>SUMMER 2025</span>
-            <span style={{ padding: '3px 12px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, color: '#fca5a5' }}>CLOSED</span>
-          </div>
-          <div style={{ display: 'flex', gap: 48, alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, minWidth: 280 }}>
-              <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px,4vw,48px)', lineHeight: 1.1, letterSpacing: -1, marginBottom: 16 }}>
-                Land Your First<br />
-                <span style={{ background: 'linear-gradient(135deg,#f59e0b,#f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Internship This Summer</span>
-              </h2>
-              <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, marginBottom: 28, maxWidth: 440 }}>
-                A focused 4-week program for students who want a real internship — not just another rejection email.
-              </p>
-              <a href="/summer/register" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 36px', borderRadius: 100, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 32px rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none' }}>
-                Join the Waitlist →
-              </a>
-              <div style={{ marginTop: 14, fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>Registrations closed · Next batch coming soon</div>
-            </div>
-            <div style={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {[
-                { icon: '🗓️', title: '4-Week Program', desc: 'Intensive, focused, and built around the summer hiring calendar' },
-                { icon: '🎯', title: 'Internship-First Strategy', desc: 'Everything is optimized for internship applications, not full-time roles' },
-                { icon: '⚡', title: 'Fast Results', desc: 'First outreach in week 1. First replies within days. Internship secured by end of program.' },
-              ].map((f, i) => (
-                <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start', background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.12)', borderRadius: 16, padding: '18px 20px' }}>
-                  <span style={{ fontSize: 22, flexShrink: 0 }}>{f.icon}</span>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: 'white', marginBottom: 4 }}>{f.title}</div>
-                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>{f.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PRODUCTS */}
-      <section style={{ padding: '80px 24px', maxWidth: 1200, margin: '0 auto' }}>
+      {/* PROGRAMS */}
+      <section id="programs" style={{ padding: '80px 24px', maxWidth: 900, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <span className="section-label">Our Programs</span>
           <h2 className="section-title">Pick your path to placement</h2>
+          <p style={{ color: 'var(--muted)', fontSize: 17 }}>Start with a free consultation — we'll recommend the right fit for you.</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
-          {/* Summer Internship */}
-          <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(249,115,22,0.05))', border: '1px solid rgba(245,158,11,0.25)', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg, #ef4444, #dc2626)', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: 'nowrap' }}>CLOSED</div>
-            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#fcd34d', marginBottom: 24, letterSpacing: 1, marginTop: 20 }}>SUMMER INTERNSHIP PROGRAM</div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, marginBottom: 6, lineHeight: 1.1 }}>Summer Internship<br />Accelerator</div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>4 weeks. Built for students who want their first internship this summer.</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 28 }}>
+
+          {/* Internship Cohort */}
+          <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(79,124,255,0.06), rgba(123,97,255,0.04))', border: '1px solid rgba(79,124,255,0.2)' }}>
+            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#93BBFF', marginBottom: 24, letterSpacing: 1 }}>INTERNSHIP COHORT</div>
+            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Internship Cohort</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>For students seeking their first or next internship.</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '20px 0' }}>
-              <span style={{ fontSize: 42, fontWeight: 800, color: '#f59e0b' }}>₹699</span>
-              <span style={{ color: 'var(--muted)', fontSize: 15, textDecoration: 'line-through' }}>₹2,999</span>
+              <span style={{ fontSize: 42, fontWeight: 800, color: '#4F7CFF' }}>₹1,750</span>
               <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ program</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
-              {['Resume built for internship applications', 'Cold email strategy for summer hiring season', 'Target startup and corporate list for internships', 'LinkedIn profile optimized for internship search', 'Live weekly sessions (4 weeks)', 'Private WhatsApp community access'].map(f => (
-                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
-                  <span style={{ color: '#f59e0b', fontSize: 16, flexShrink: 0 }}>✓</span>{f}
-                </div>
-              ))}
-            </div>
-            <a href="/summer/register" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none' }}>
-              Join the Waitlist →
-            </a>
-            <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>Registrations closed · Next batch coming soon</p>
-          </div>
-
-          {/* Cohort */}
-          <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(79,124,255,0.08), rgba(123,97,255,0.05))', border: '1px solid rgba(79,124,255,0.25)', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1 }}>MOST POPULAR</div>
-            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(123,97,255,0.15)', border: '1px solid rgba(123,97,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#C4B5FD', marginBottom: 24, letterSpacing: 1, marginTop: 20 }}>COHORT PROGRAM</div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 32, marginBottom: 8, lineHeight: 1.1 }}>8-Week Placement<br />Accelerator</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '24px 0' }}>
-              <span style={{ fontSize: 42, fontWeight: 800, color: '#7B61FF' }}>₹999</span>
-              <span style={{ color: 'var(--muted)', fontSize: 15, textDecoration: 'line-through' }}>₹4,999</span>
-              <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ program</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
-              {['Everything in 1:1 Mentorship', 'Live weekly sessions (8 weeks)', 'Cold email + LinkedIn masterclass', 'Resume + Naukri optimization', 'Company targeting strategy', 'Private WhatsApp community', 'Lifetime access to resources', '50+ templates & scripts'].map(f => (
-                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
-                  <span style={{ color: '#7B61FF', fontSize: 16, flexShrink: 0 }}>✓</span>{f}
-                </div>
-              ))}
-            </div>
-            {/* COHORT PAYMENTS DISABLED — to re-enable, remove the waitlist form */}
-            {/* and restore the Razorpay payment flow. Run prompt: "Re-enable cohort payments" */}
-            {/* to activate instantly. */}
-            <button
-              onClick={() => setCohortWaitlist(s => s === 'open' ? 'hidden' : 'open')}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s', border: 'none', cursor: 'pointer', width: '100%', fontFamily: 'inherit' }}>
-              Join Next Cohort →
-            </button>
-            {cohortWaitlist === 'open' && (
-              <div style={{ marginTop: 12, padding: '16px', borderRadius: 16, background: 'rgba(123,97,255,0.08)', border: '1px solid rgba(123,97,255,0.2)', animation: 'fadeUp 0.2s ease both' }}>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 10, fontWeight: 600 }}>Enter your email to get early access</p>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <input type="email" placeholder="you@email.com" value={cohortWaitlistEmail} onChange={e => setCohortWaitlistEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && submitCohortWaitlist()} style={{ flex: 1, padding: '9px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', color: 'white', fontSize: 13, outline: 'none', fontFamily: 'inherit', minWidth: 0 }} />
-                  <button onClick={submitCohortWaitlist} disabled={cohortWaitlistLoading} style={{ padding: '9px 16px', borderRadius: 10, background: 'linear-gradient(135deg,#7B61FF,#4F7CFF)', border: 'none', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
-                    {cohortWaitlistLoading ? '...' : 'Notify Me →'}
-                  </button>
-                </div>
-              </div>
-            )}
-            {cohortWaitlist === 'done' && (
-              <div style={{ marginTop: 12, padding: '12px 16px', borderRadius: 12, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', textAlign: 'center' }}>
-                <p style={{ fontSize: 13, color: '#6ee7b7', fontWeight: 700, margin: 0 }}>✓ You're on the waitlist! We'll notify you first when registrations open.</p>
-              </div>
-            )}
-            <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>Launching Soon · Join the waitlist</p>
-          </div>
-
-          {/* Mentorship */}
-          <div className="product-card">
-            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#93BBFF', marginBottom: 24, letterSpacing: 1 }}>1:1 MENTORSHIP</div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 32, marginBottom: 8, lineHeight: 1.1 }}>Personal Career<br />Acceleration</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '24px 0' }}>
-              <span style={{ fontSize: 42, fontWeight: 800, color: 'var(--blue)' }}>₹299</span>
-              <span style={{ color: 'var(--muted)', fontSize: 15, textDecoration: 'line-through' }}>₹999</span>
-              <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ session</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
-              {['Resume review by an industry expert', 'Personalized cold email strategy', 'LinkedIn & Naukri profile overhaul', 'Mock interview + feedback', 'Target company hit list'].map(f => (
+              {[
+                'Personalized internship strategy',
+                'Resume & LinkedIn optimization',
+                'Weekly mentor check-ins',
+                'Application tracking support',
+                'Mock interview prep',
+                'Networking guidance',
+              ].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
                   <span style={{ color: '#4F7CFF', fontSize: 16, flexShrink: 0 }}>✓</span>{f}
                 </div>
               ))}
             </div>
-            <a href="/book" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-              <span>Book Session Now</span>
-              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
-            </a>
+            <button
+              onClick={() => openPopup('Internship Cohort')}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(79,124,255,0.35)', transition: 'all 0.3s', border: 'none', cursor: 'pointer', width: '100%', fontFamily: 'inherit' }}>
+              Book Free Consultation
+            </button>
           </div>
 
+          {/* Placement Cohort */}
+          <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(123,97,255,0.08), rgba(79,124,255,0.05))', border: '1px solid rgba(123,97,255,0.3)', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: 'nowrap' }}>MOST POPULAR</div>
+            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(123,97,255,0.15)', border: '1px solid rgba(123,97,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#C4B5FD', marginBottom: 24, letterSpacing: 1, marginTop: 20 }}>PLACEMENT COHORT</div>
+            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Placement Cohort</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>For final-year students targeting full-time roles.</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '20px 0' }}>
+              <span style={{ fontSize: 42, fontWeight: 800, color: '#7B61FF' }}>₹2,500</span>
+              <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ program</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
+              {[
+                'Everything in Internship Cohort',
+                'Advanced placement strategy',
+                'Company-specific preparation',
+                'Salary negotiation guidance',
+                'Extended mentor support',
+                'Priority profile reviews',
+              ].map(f => (
+                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
+                  <span style={{ color: '#7B61FF', fontSize: 16, flexShrink: 0 }}>✓</span>{f}
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => openPopup('Placement Cohort')}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s', border: 'none', cursor: 'pointer', width: '100%', fontFamily: 'inherit' }}>
+              Book Free Consultation
+            </button>
+          </div>
+        </div>
+
+        {/* Trust strip below programs */}
+        <TrustStrip />
+      </section>
+
+      {/* COMPARISON TABLE */}
+      <section style={{ padding: '80px 24px', maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <span className="section-label">Compare</span>
+          <h2 className="section-title">Beyond Campus vs. The Alternatives</h2>
+        </div>
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' as never, borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.02)' }}>
+          <table className="comp-table">
+            <thead>
+              <tr>
+                <th style={{ textAlign: 'left', color: 'rgba(255,255,255,0.4)' }}>Feature</th>
+                <th style={{ color: '#4F7CFF', background: 'rgba(79,124,255,0.08)', borderLeft: '2px solid rgba(79,124,255,0.3)', borderRight: '2px solid rgba(79,124,255,0.3)' }}>Beyond Campus</th>
+                <th style={{ color: 'rgba(255,255,255,0.5)' }}>Free Content (YouTube)</th>
+                <th style={{ color: 'rgba(255,255,255,0.5)' }}>Online Courses</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ['Personalized strategy', '✓', '✗', '✗'],
+                ['1-on-1 mentor access', '✓', '✗', '✗'],
+                ['Resume reviews', '✓', '✗', 'Limited'],
+                ['Weekly accountability', '✓', '✗', '✗'],
+                ['Small cohort experience', '✓', '✗', '✗'],
+                ['Affordable pricing', '₹1,750+', 'Free', '₹5,000–₹50,000'],
+              ].map(([feature, bc, free, course], i) => (
+                <tr key={i}>
+                  <td>{feature}</td>
+                  <td style={{ background: 'rgba(79,124,255,0.06)', borderLeft: '2px solid rgba(79,124,255,0.3)', borderRight: '2px solid rgba(79,124,255,0.3)', fontWeight: 700, color: bc === '✓' ? '#4ade80' : bc === '✗' ? '#f87171' : '#93BBFF' }}>{bc}</td>
+                  <td style={{ color: free === '✓' ? '#4ade80' : free === '✗' ? '#f87171' : 'rgba(255,255,255,0.5)', fontWeight: free === '✗' ? 500 : 400 }}>{free}</td>
+                  <td style={{ color: course === '✓' ? '#4ade80' : course === '✗' ? '#f87171' : 'rgba(255,255,255,0.5)', fontWeight: course === '✗' ? 500 : 400 }}>{course}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ textAlign: 'center', marginTop: 32 }}>
+          <button onClick={() => openPopup()} className="btn-primary" style={{ fontFamily: 'inherit', fontSize: 15, padding: '14px 32px' }}>
+            <span>Get Personalized Career Guidance</span>
+            <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+          </button>
         </div>
       </section>
 
@@ -669,7 +656,7 @@ export default function Home() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
           {[
             { initial: 'P', name: 'Commerce student, Delhi', role: 'Marketing Intern at a D2C Startup', days: '38 days', quote: 'I had zero replies for months. After week 2 of the cohort, I got 3 responses from cold emails. Got my internship offer in 38 days.', color: '#4F7CFF', result: 'Dream internship secured' },
-            { initial: 'A', name: 'BBA student, Tier-2 college', role: 'Analyst at a Big 4 Firm', days: '45 days', quote: 'My mentor rebuilt my resume and gave me a target company list. I had an offer in 45 days. Best ₹999 I ever spent.', color: '#7B61FF', result: 'Big 4 offer without referral' },
+            { initial: 'A', name: 'BBA student, Tier-2 college', role: 'Analyst at a Big 4 Firm', days: '45 days', quote: 'My mentor rebuilt my resume and gave me a target company list. I had an offer in 45 days. Best investment I ever made.', color: '#7B61FF', result: 'Big 4 offer without referral' },
             { initial: 'S', name: 'BCom student, Tier-3 college', role: 'BD Intern at a Series B Startup', days: '52 days', quote: 'Nobody from my college had ever cracked a startup this good. The LinkedIn DM strategy completely changed the game for me.', color: '#06b6d4', result: '3 competing offers' },
             { initial: 'R', name: 'BBA graduate, Tier-2 college', role: "Founder's Office at a Leading Startup", days: '60 days', quote: 'No campus placements, no referrals, no IIM tag. But with the right outreach strategy, I landed my dream role. This program is real.', color: '#10b981', result: "Founder's Office role" },
             { initial: 'A', name: 'MBA student, Delhi', role: 'Consulting Intern at a Boutique Firm', days: '41 days', quote: 'I switched my target from finance to consulting through this cohort. The mentor connections and the strategy made it happen.', color: '#f59e0b', result: 'Career pivot successful' },
@@ -704,7 +691,7 @@ export default function Home() {
         <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 40, textAlign: 'center' }}>
           {[
             { num: '12 Days', label: 'Fastest placement so far', sub: '' },
-            { num: '₹999', label: 'Most affordable placement program in India', sub: '' },
+            { num: '300+', label: 'Students helped across 50+ colleges', sub: '' },
             { num: '100%', label: 'Live sessions, never recorded', sub: '' },
           ].map((s, i) => (
             <div key={i}>
@@ -725,7 +712,7 @@ export default function Home() {
             Real interview stories, stipend data, and honest doubts — anonymous and unfiltered.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8, WebkitOverflowScrolling: 'touch' as any }}>
+        <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8, WebkitOverflowScrolling: 'touch' as never }}>
           {[
             { id: 'p1', type: 'experience' as const, content: "Got a Founder's Office offer after 3 rounds — a task, a case discussion, and a founder call. No technical questions at all. Just thinking and communication.", degree: 'BBA', college_tier: 'Tier 2', city: 'Delhi', domain: "Founder's Office", tags: ["Founder's Office", 'Interview'], upvotes: 47, created_at: new Date(Date.now() - 2*3600000).toISOString(), reply_count: 8 },
             { id: 'p2', type: 'stipend' as const, content: 'BD intern at a fintech startup — ₹12,000/month + ₹3,000 travel allowance. Remote for first month, hybrid after that.', degree: 'BCom', college_tier: 'Tier 3', city: 'Mumbai', domain: 'BD', tags: ['BD', 'Stipend', 'Fintech'], upvotes: 31, created_at: new Date(Date.now() - 5*3600000).toISOString(), reply_count: 3 },
@@ -761,7 +748,7 @@ export default function Home() {
                 <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 10 }}>
                   {[post.degree, post.college_tier, post.city].filter(Boolean).join(' · ')}
                 </div>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 12, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical' as any, flex: 1 }}>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 12, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical' as never, flex: 1 }}>
                   {post.content}
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
@@ -821,47 +808,28 @@ export default function Home() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 2, marginBottom: 56 }}>
-
-          {/* ── Founder 1 ── */}
+          {/* Founder 1 */}
           <div style={{ padding: 2, borderRadius: 32, background: 'linear-gradient(145deg, rgba(79,70,229,0.6) 0%, rgba(123,97,255,0.25) 50%, rgba(255,255,255,0.04) 100%)' }}>
             <div style={{ background: 'linear-gradient(160deg, #131020 0%, #0c0b15 100%)', borderRadius: 30, padding: '44px 40px', height: '100%', position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
-
-              {/* ambient glows */}
               <div style={{ position: 'absolute', top: -100, left: -60, width: 260, height: 260, background: 'radial-gradient(circle, rgba(79,70,229,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
               <div style={{ position: 'absolute', bottom: -80, right: -80, width: 220, height: 220, background: 'radial-gradient(circle, rgba(123,97,255,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-              {/* decorative large quote */}
               <div style={{ position: 'absolute', top: 16, right: 24, fontFamily: 'Georgia,serif', fontSize: 140, lineHeight: 1, color: 'rgba(79,70,229,0.07)', userSelect: 'none', pointerEvents: 'none' }}>"</div>
-
-              {/* avatar */}
               <div style={{ width: 84, height: 84, borderRadius: '50%', background: 'linear-gradient(135deg, #4F46E5, #7B61FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 800, color: 'white', marginBottom: 24, boxShadow: '0 0 0 5px rgba(79,70,229,0.18), 0 0 40px rgba(79,70,229,0.28)' }}>AA</div>
-
-              {/* name */}
               <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, fontWeight: 400, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>Anirudh Agarwal</div>
-
-              {/* role badge */}
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', background: 'rgba(79,70,229,0.18)', border: '1px solid rgba(79,70,229,0.35)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#a5b4fc', marginBottom: 6, letterSpacing: '0.3px' }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#a5b4fc', display: 'inline-block' }} />
                 Associate Consultant @ Aon
               </div>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 28, letterSpacing: '0.2px' }}>Christ University, Bangalore</div>
-
-              {/* divider */}
               <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(79,70,229,0.4), rgba(123,97,255,0.15), transparent)', marginBottom: 28 }} />
-
-              {/* bio */}
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.85, marginBottom: 28, position: 'relative', zIndex: 1 }}>
                 Placed off-campus into consulting from a non-IIM background. Spent months reverse-engineering what actually gets you interviews — cold outreach, positioning, and showing up before others even start applying.
               </p>
-
-              {/* tags */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
                 {['Consulting', 'Off-Campus Strategy', 'Cold Outreach'].map(tag => (
                   <span key={tag} style={{ padding: '5px 13px', background: 'rgba(79,70,229,0.12)', border: '1px solid rgba(79,70,229,0.22)', borderRadius: 100, fontSize: 12, color: '#a5b4fc', fontWeight: 600 }}>{tag}</span>
                 ))}
               </div>
-
-              {/* LinkedIn button */}
               <a href="https://www.linkedin.com/in/anirudh-agarwal-36591220b/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', background: 'rgba(79,70,229,0.14)', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 12, fontSize: 13, color: '#a5b4fc', textDecoration: 'none', fontWeight: 600 }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                 View LinkedIn
@@ -869,39 +837,23 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ── Founder 2 ── */}
+          {/* Founder 2 */}
           <div style={{ padding: 2, borderRadius: 32, background: 'linear-gradient(145deg, rgba(6,182,212,0.5) 0%, rgba(8,145,178,0.2) 50%, rgba(255,255,255,0.04) 100%)' }}>
             <div style={{ background: 'linear-gradient(160deg, #0a1418 0%, #0b0f14 100%)', borderRadius: 30, padding: '44px 40px', height: '100%', position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
-
-              {/* ambient glows */}
               <div style={{ position: 'absolute', top: -100, left: -60, width: 260, height: 260, background: 'radial-gradient(circle, rgba(6,182,212,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
               <div style={{ position: 'absolute', bottom: -80, right: -80, width: 220, height: 220, background: 'radial-gradient(circle, rgba(8,145,178,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-              {/* decorative large quote */}
               <div style={{ position: 'absolute', top: 16, right: 24, fontFamily: 'Georgia,serif', fontSize: 140, lineHeight: 1, color: 'rgba(6,182,212,0.07)', userSelect: 'none', pointerEvents: 'none' }}>"</div>
-
-              {/* avatar */}
               <div style={{ width: 84, height: 84, borderRadius: '50%', background: 'linear-gradient(135deg, #0891B2, #06b6d4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 800, color: 'white', marginBottom: 24, boxShadow: '0 0 0 5px rgba(6,182,212,0.15), 0 0 40px rgba(6,182,212,0.22)' }}>SS</div>
-
-              {/* name */}
               <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, fontWeight: 400, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>Sanya Srivastava</div>
-
-              {/* role badge */}
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#67e8f9', marginBottom: 6, letterSpacing: '0.3px' }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#67e8f9', display: 'inline-block' }} />
                 FP&A @ Palo Alto Networks
               </div>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 28, letterSpacing: '0.2px' }}>Finance · Corporate Strategy</div>
-
-              {/* divider */}
               <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(6,182,212,0.4), rgba(8,145,178,0.15), transparent)', marginBottom: 28 }} />
-
-              {/* bio */}
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.85, marginBottom: 28, position: 'relative', zIndex: 1 }}>
                 Built a career in finance and corporate strategy at a global tech company — without the "right" pedigree. Knows exactly what finance and strategy roles look for, and how to get there when no one hands you a roadmap.
               </p>
-
-              {/* tags */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {['Finance', 'FP&A', 'Corporate Strategy'].map(tag => (
                   <span key={tag} style={{ padding: '5px 13px', background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.22)', borderRadius: 100, fontSize: 12, color: '#67e8f9', fontWeight: 600 }}>{tag}</span>
@@ -926,24 +878,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* URGENCY */}
+      {/* FINAL CTA */}
       <section style={{ padding: '80px 24px', maxWidth: 800, margin: '0 auto' }}>
         <div style={{ background: 'linear-gradient(135deg, rgba(79,124,255,0.1), rgba(123,97,255,0.08))', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 28, padding: '56px 48px', textAlign: 'center', position: 'relative', overflow: 'hidden', animation: 'border-glow 4s ease-in-out infinite' }}>
           <div style={{ position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)', width: 300, height: 200, background: 'radial-gradient(circle, rgba(79,124,255,0.2), transparent)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 18px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#FCA5A5', marginBottom: 24 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', display: 'inline-block', animation: 'glow-pulse 1s ease-in-out infinite' }} />
-            SUMMER 2025 — REGISTRATIONS CLOSED
-          </div>
-          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 12, lineHeight: 1.1 }}>The Next Summer Batch Is Coming Soon</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 40 }}>Join the waitlist and be the first to know when we open registrations — you'll get early access and a founding member discount.</p>
-
+          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 16, lineHeight: 1.1 }}>
+            Your Career Won't Wait.<br />Neither Should You.
+          </h2>
+          <p style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 36, lineHeight: 1.75, maxWidth: 460, margin: '0 auto 36px' }}>
+            Book a free consultation and get a personalized roadmap — no pressure, no commitments.
+          </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/summer/register" className="btn-amber" style={{ fontSize: 17, padding: '18px 40px' }}>
-              Join the Waitlist →
-            </a>
-            <a href="/book" className="btn-secondary" style={{ fontSize: 17, padding: '17px 36px' }}>Book a Call First</a>
+            <button onClick={() => openPopup()} className="btn-primary" style={{ fontSize: 17, padding: '18px 40px', fontFamily: 'inherit' }}>
+              <span>Book Your Free Consultation</span>
+              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+            </button>
           </div>
-          <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 20 }}>Registrations closed · Next batch coming soon</p>
+          {/* Trust strip in CTA */}
+          <TrustStrip />
         </div>
       </section>
 
@@ -955,14 +907,11 @@ export default function Home() {
             <div style={{ fontSize: 14, color: 'var(--muted)' }}>Breaking campus barriers since 2023</div>
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
-            <a href="/book" className="btn-secondary" style={{ padding: '12px 24px', fontSize: 14 }}>Book Session</a>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <a href="/cohort" className="btn-primary" style={{ padding: '12px 24px', fontSize: 14 }}>
-                <span>Join Cohort</span>
-                <span style={{ position: 'relative', zIndex: 1 }}>→</span>
-              </a>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 8, margin: '8px 0 0' }}>Coming Soon · Join the waitlist</p>
-            </div>
+            <button onClick={() => openPopup()} className="btn-secondary" style={{ padding: '12px 24px', fontSize: 14, fontFamily: 'inherit' }}>Talk to a Mentor</button>
+            <button onClick={() => openPopup()} className="btn-primary" style={{ padding: '12px 24px', fontSize: 14, fontFamily: 'inherit' }}>
+              <span>Book Free Consultation</span>
+              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+            </button>
           </div>
         </div>
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
