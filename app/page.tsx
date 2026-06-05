@@ -270,7 +270,6 @@ export default function Home() {
           </div>
           <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
-          <button onClick={() => openPopup()} className="btn-secondary" style={{ padding: '10px 24px', fontSize: 14, fontFamily: 'inherit' }}>Talk to a Mentor</button>
           <button onClick={() => openPopup()} className="btn-primary" style={{ padding: '10px 24px', fontSize: 14, fontFamily: 'inherit' }}>
             <span>Book Free Consultation</span>
             <span style={{ position: 'relative', zIndex: 1 }}>→</span>
@@ -286,13 +285,13 @@ export default function Home() {
 
         <div style={{ maxWidth: 900, textAlign: 'center', position: 'relative', zIndex: 2, animation: 'fadeUp 0.8s ease both' }}>
           <h1 className="hero-headline" style={{ marginBottom: 28 }}>
-            Your Career Deserves<br />
-            <span className="gradient-text">Personal Guidance,</span><br />
-            Not Generic Courses
+            Break Into Top Jobs<br />
+            <span className="gradient-text">Without Campus</span><br />
+            Placements
           </h1>
 
-          <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 600, margin: '0 auto 48px', fontWeight: 400 }}>
-            Beyond Campus pairs you with mentors who build a customized strategy for your internship or placement — every step of the way.
+          <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, margin: '0 auto 48px', fontWeight: 400 }}>
+            Get mentorship, referrals, and battle-tested strategies from people who've actually done it.
           </p>
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
@@ -560,11 +559,11 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <button
-              onClick={() => openPopup('Internship Cohort')}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(79,124,255,0.35)', transition: 'all 0.3s', border: 'none', cursor: 'pointer', width: '100%', fontFamily: 'inherit' }}>
-              Book Free Consultation
-            </button>
+            <a
+              href="/cohort"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(79,124,255,0.35)', transition: 'all 0.3s', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
+              View Program →
+            </a>
           </div>
 
           {/* Placement Cohort */}
@@ -591,11 +590,11 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <button
-              onClick={() => openPopup('Placement Cohort')}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s', border: 'none', cursor: 'pointer', width: '100%', fontFamily: 'inherit' }}>
-              Book Free Consultation
-            </button>
+            <a
+              href="/cohort"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
+              View Program →
+            </a>
           </div>
         </div>
 
