@@ -187,7 +187,7 @@ export default function Home() {
           Beyond<span style={{ color: 'var(--blue)' }}>Campus</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <a href="/summer" style={{ padding: '10px 22px', fontSize: 14, fontWeight: 800, color: '#fff', textDecoration: 'none', borderRadius: 100, background: 'linear-gradient(135deg, #f59e0b, #f97316)', boxShadow: '0 0 18px rgba(245,158,11,0.45)', transition: 'all 0.2s', letterSpacing: 0.2 }}>Summer ☀️</a>
+          <a href="/summer" style={{ padding: '10px 22px', fontSize: 14, fontWeight: 800, color: '#fff', textDecoration: 'none', borderRadius: 100, background: 'linear-gradient(135deg, #f59e0b, #f97316)', boxShadow: '0 0 18px rgba(245,158,11,0.45)', transition: 'all 0.2s', letterSpacing: 0.2 }}>Internship Cohort</a>
           <div
             style={{ position: 'relative' }}
             onMouseEnter={() => {
@@ -272,10 +272,10 @@ export default function Home() {
           <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
           <a href="/book" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', transition: 'all 0.2s' }}>Book Session</a>
-          <button onClick={() => openPopup()} className="btn-primary" style={{ padding: '10px 24px', fontSize: 14, fontFamily: 'inherit' }}>
-            <span>Book Free Consultation</span>
+          <a href="/cohort" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14, fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <span>Placement Cohort</span>
             <span style={{ position: 'relative', zIndex: 1 }}>→</span>
-          </button>
+          </a>
         </div>
       </nav>
 
