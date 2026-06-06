@@ -175,7 +175,9 @@ export default function Home() {
           .hero-headline { font-size: clamp(36px, 10vw, 56px); }
           .hiw-step-num { font-size:100px; }
           .comp-table th, .comp-table td { padding: 10px 8px; font-size: 12px; }
+          .mobile-cta-bar { display: flex !important; }
         }
+        .mobile-cta-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: rgba(11,11,15,0.96); backdrop-filter: blur(16px); border-top: 1px solid rgba(255,255,255,0.08); padding: 12px 20px; align-items: center; justify-content: center; gap: 10px; }
       `}</style>
 
       <div className="noise-overlay" />
@@ -271,10 +273,10 @@ export default function Home() {
           </div>
           <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
-          <button onClick={() => openPopup('Strategy Session')} style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s' }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}>
-            Book Session
+          <button onClick={() => openPopup('Strategy Session')} style={{ padding: '8px 4px', fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s', letterSpacing: 0.1, whiteSpace: 'nowrap' }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+            Lost? Let's talk →
           </button>
           <div style={{ width: 1, height: 22, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
           <a href="/summer" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 600, color: '#fbbf24', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.06)', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
@@ -288,6 +290,16 @@ export default function Home() {
           </a>
         </div>
       </nav>
+
+      {/* Mobile sticky bottom CTA — "Lost? Let's talk →" */}
+      <div className="mobile-cta-bar">
+        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>Not sure where to start?</span>
+        <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.75)', fontFamily: 'inherit', padding: 0, transition: 'color 0.2s' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}>
+          Lost? Let's talk →
+        </button>
+      </div>
 
       {/* HERO */}
       <section className="grid-bg" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '140px 24px 80px', position: 'relative', overflow: 'hidden' }}>
