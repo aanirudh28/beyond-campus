@@ -191,7 +191,7 @@ export default function Home() {
         <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, letterSpacing: -0.5 }}>
           Beyond<span style={{ color: 'var(--blue)' }}>Campus</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
           <div
             style={{ position: 'relative' }}
             onMouseEnter={() => {
@@ -202,8 +202,9 @@ export default function Home() {
               resourcesCloseTimer.current = setTimeout(() => setResourcesOpen(false), 120)
             }}
           >
-            <a href="/free" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: resourcesOpen ? '#93BBFF' : 'rgba(255,255,255,0.75)', background: resourcesOpen ? 'rgba(79,124,255,0.12)' : 'rgba(79,124,255,0.07)', border: `1px solid ${resourcesOpen ? 'rgba(79,124,255,0.45)' : 'rgba(79,124,255,0.2)'}`, borderRadius: 100, cursor: 'pointer', fontFamily: "'DM Sans','Inter',sans-serif", transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
-              Free Resources <span style={{ fontSize: 10, opacity: 0.5 }}>▾</span>
+            <a href="/free" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: resourcesOpen ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontFamily: "'DM Sans','Inter',sans-serif", transition: 'color 0.2s', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
+              Free Resources
+              <span style={{ fontSize: 10, opacity: 0.7, display: 'inline-block', transform: resourcesOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▾</span>
             </a>
             {resourcesOpen && (
               <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 8, zIndex: 200 }}>
@@ -273,17 +274,22 @@ export default function Home() {
               </div>
             )}
           </div>
-          <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
-          <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
-          <a href="/book" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Book Session</a>
-          <button onClick={() => openPopup('Strategy Session')} style={{ padding: '8px 16px', fontSize: 14, fontWeight: 600, color: '#4F7CFF', background: 'rgba(79,124,255,0.06)', border: '1.5px solid rgba(79,124,255,0.38)', borderRadius: 100, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.25s', letterSpacing: 0.1, whiteSpace: 'nowrap', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 7, boxShadow: '0 0 14px rgba(79,124,255,0.18)' }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#93BBFF'; e.currentTarget.style.borderColor = 'rgba(79,124,255,0.65)'; e.currentTarget.style.background = 'rgba(79,124,255,0.11)'; e.currentTarget.style.boxShadow = '0 0 22px rgba(79,124,255,0.38)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#4F7CFF'; e.currentTarget.style.borderColor = 'rgba(79,124,255,0.38)'; e.currentTarget.style.background = 'rgba(79,124,255,0.06)'; e.currentTarget.style.boxShadow = '0 0 14px rgba(79,124,255,0.18)'; }}>
+          <a href="/community" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.2s' }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}>Community</a>
+          <a href="/dashboard" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.2s' }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}>Dashboard</a>
+          <a href="/book" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.2s' }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}>Book Session</a>
+          <button onClick={() => openPopup('Strategy Session')} style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: '#4F7CFF', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s', letterSpacing: 0.1, whiteSpace: 'nowrap', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 7 }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#93BBFF')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#4F7CFF')}>
             <span className="pulse-dot" />
             Lost? Let's talk →
           </button>
-          <div style={{ width: 1, height: 22, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
-          <a href="/summer" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 600, color: '#fbbf24', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.06)', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+          <a href="/summer" style={{ marginLeft: 8, padding: '10px 20px', fontSize: 14, fontWeight: 600, color: '#fbbf24', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.06)', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.55)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.35)'; }}>
             Internship Cohort
