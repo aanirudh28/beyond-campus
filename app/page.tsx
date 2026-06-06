@@ -112,7 +112,7 @@ export default function Home() {
         .pulse-dot { width:7px; height:7px; border-radius:50%; background:#4F7CFF; flex-shrink:0; display:inline-block; animation:pulse-dot 2s ease-in-out infinite; }
 
         .hero-headline { font-family: 'DM Serif Display', serif; font-size: clamp(48px, 7vw, 88px); line-height: 1.0; letter-spacing: -2px; font-weight: 400; }
-        .gradient-text { background: linear-gradient(135deg, #4F7CFF, #7B61FF, #00D2FF); background-size: 300% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: shimmer 4s linear infinite; }
+        .gradient-text { color: #4F7CFF; }
         .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: 100px; background: linear-gradient(135deg, #4F7CFF, #7B61FF); color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 30px rgba(79,124,255,0.4); position: relative; overflow: hidden; }
         .btn-primary::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#7B61FF,#4F7CFF); opacity:0; transition:opacity 0.3s; }
         .btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 50px rgba(79,124,255,0.6); }
@@ -150,20 +150,9 @@ export default function Home() {
         .feature-pill { display: flex; align-items: center; gap: 10px; padding: 12px 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; font-size: 14px; font-weight: 500; }
         .logo-pill { padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; font-size: 13px; font-weight: 700; color: var(--muted); transition: all 0.3s; white-space: nowrap; }
         .logo-pill:hover { background: rgba(79,124,255,0.1); border-color: rgba(79,124,255,0.3); color: white; }
-        @keyframes dash-move { 0%{stroke-dashoffset:0} 100%{stroke-dashoffset:-400} }
-        @keyframes dot-travel { 0%{left:0%;opacity:0} 5%{opacity:1} 95%{opacity:1} 100%{left:100%;opacity:0} }
-        @keyframes dot-travel-v { 0%{top:0%;opacity:0} 5%{opacity:1} 95%{opacity:1} 100%{top:100%;opacity:0} }
-        .hiw-card { background:#111827; border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:40px 32px; position:relative; overflow:hidden; transition:border-color 0.4s, transform 0.4s, box-shadow 0.4s; opacity:0; transform:translateY(40px); }
+        .hiw-card { background:#111827; border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:36px 32px; transition:border-color 0.4s, transform 0.4s, box-shadow 0.4s; opacity:0; transform:translateY(40px); }
         .hiw-card.visible { opacity:1; transform:translateY(0); }
-        .hiw-card:hover { border-color:rgba(79,124,255,0.45); transform:translateY(-8px); box-shadow:0 24px 64px rgba(79,124,255,0.18); }
-        .hiw-step-num { position:absolute; top:-20px; right:16px; font-family:'DM Serif Display',serif; font-size:140px; font-weight:800; color:rgba(255,255,255,0.025); line-height:1; pointer-events:none; user-select:none; }
-        .hiw-icon-wrap { width:56px; height:56px; border-radius:16px; background:linear-gradient(135deg,#4F7CFF,#7B61FF); display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:24px; box-shadow:0 8px 24px rgba(79,124,255,0.35); flex-shrink:0; }
-        .hiw-connector { position:relative; flex:1; height:2px; margin:0 8px; align-self:center; }
-        .hiw-connector-line { width:100%; height:2px; background:repeating-linear-gradient(90deg,rgba(79,124,255,0.5) 0,rgba(79,124,255,0.5) 8px,transparent 8px,transparent 16px); }
-        .hiw-dot { position:absolute; top:50%; transform:translateY(-50%); width:10px; height:10px; border-radius:50%; background:#4F7CFF; box-shadow:0 0 10px rgba(79,124,255,0.9); animation:dot-travel 2.4s ease-in-out infinite; }
-        .hiw-connector-v { position:relative; width:2px; height:64px; margin:4px auto; }
-        .hiw-connector-v-line { width:2px; height:100%; background:repeating-linear-gradient(180deg,rgba(79,124,255,0.5) 0,rgba(79,124,255,0.5) 8px,transparent 8px,transparent 16px); }
-        .hiw-dot-v { position:absolute; left:50%; transform:translateX(-50%); width:10px; height:10px; border-radius:50%; background:#4F7CFF; box-shadow:0 0 10px rgba(79,124,255,0.9); animation:dot-travel-v 2.4s ease-in-out infinite; }
+        .hiw-card:hover { border-color:rgba(79,124,255,0.4); transform:translateY(-6px); box-shadow:0 20px 48px rgba(79,124,255,0.14); }
         .proof-strip-card { background:#111827; border-left:4px solid #4F7CFF; border-radius:16px; padding:24px 28px; display:flex; align-items:flex-start; gap:14px; transition:transform 0.3s; }
         .proof-strip-card:hover { transform:translateX(4px); }
         .comp-table { width:100%; border-collapse:separate; border-spacing:0; }
@@ -173,8 +162,8 @@ export default function Home() {
         .comp-table .ct-head { padding:36px 16px 24px; vertical-align:bottom; text-align:center; position:relative; border-bottom:1px solid rgba(255,255,255,0.1); }
         .comp-table .ct-head-other { background:rgba(255,255,255,0.015); }
         .comp-table .ct-head-bc { background:linear-gradient(180deg, rgba(79,124,255,0.22), rgba(79,124,255,0.06)); position:relative; }
-        .comp-table .ct-head-bc::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:linear-gradient(90deg, #4F7CFF, #7B61FF); }
-        .comp-table .ct-bc-badge { position:absolute; top:0; left:50%; transform:translateX(-50%); padding:5px 18px; background:linear-gradient(135deg, #4F7CFF, #7B61FF); border-radius:0 0 12px 12px; font-size:10px; font-weight:800; letter-spacing:1.5px; color:white; white-space:nowrap; box-shadow:0 4px 16px rgba(79,124,255,0.4); }
+        .comp-table .ct-head-bc::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:#4F7CFF; }
+        .comp-table .ct-bc-badge { position:absolute; top:0; left:50%; transform:translateX(-50%); padding:5px 18px; background:#4F7CFF; border-radius:0 0 12px 12px; font-size:10px; font-weight:800; letter-spacing:1.5px; color:white; white-space:nowrap; }
         .comp-table .ct-cell { text-align:center; border-bottom:1px solid rgba(255,255,255,0.05); }
         .comp-table .ct-cell-other { background:rgba(255,255,255,0.012); }
         .comp-table .ct-cell-bc { background:rgba(79,124,255,0.05); }
@@ -183,7 +172,6 @@ export default function Home() {
           .sticky-nav { padding: 16px 20px; }
           .sticky-nav.scrolled { padding: 12px 20px; }
           .hero-headline { font-size: clamp(36px, 10vw, 56px); }
-          .hiw-step-num { font-size:100px; }
           .comp-table th, .comp-table td { padding: 14px 10px; font-size: 12px; }
           .comp-table .ct-label { padding-left: 14px; }
           .comp-table .ct-head { padding: 32px 10px 18px; }
@@ -511,51 +499,35 @@ export default function Home() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section ref={howItWorksRef} style={{ padding: '120px 24px', background: '#0B0B0F', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,124,255,0.07), transparent)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', pointerEvents: 'none' }} />
-
+      <section ref={howItWorksRef} style={{ padding: '100px 24px', background: '#0B0B0F' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 72 }}>
-            <h2 className="section-title" style={{ maxWidth: 640, margin: '0 auto 20px' }}>From stuck to placed,<br />in three moves</h2>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <h2 className="section-title" style={{ maxWidth: 640, margin: '0 auto 8px' }}>From stuck to placed,<br />in three moves</h2>
           </div>
 
           <style>{`
-            .hiw-row { display: flex; align-items: stretch; gap: 0; }
+            .hiw-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
             @media(max-width: 768px) {
-              .hiw-row { flex-direction: column; align-items: stretch; }
-              .hiw-connector-wrap { display: none; }
-              .hiw-row .hiw-card { margin-bottom: 0; }
+              .hiw-row { grid-template-columns: 1fr; gap: 14px; }
             }
           `}</style>
 
           <div className="hiw-row">
             {[
               { num: '01', title: 'Diagnose what\'s blocking you', desc: 'We start by understanding exactly where you\'re stuck — resume, LinkedIn, cold outreach, or targeting. No generic advice. A sharp, honest assessment of what needs to change.', delay: '0s' },
-              { num: '02', title: 'Fix your profile and strategy', desc: 'We rebuild your resume and outreach approach for the roles you want — consulting, finance, Founder\'s Office, BD. You get scripts, templates, a target list, and warm introductions.', delay: '0.18s' },
-              { num: '03', title: 'Execute until you\'re placed', desc: "Weekly accountability and direct support until you have an offer. We don't disappear after onboarding. We stay until the job is done.", delay: '0.36s' },
-            ].flatMap((step, i) => {
-              const card = (
-                <div
-                  key={step.num}
-                  className={`hiw-card${howItWorksVisible ? ' visible' : ''}`}
-                  style={{ flex: 1, transitionDelay: step.delay, transitionDuration: '0.7s' }}
-                >
-                  <div className="hiw-step-num">{step.num}</div>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: 'white', lineHeight: 1.3, marginBottom: 16 }}>{step.title}</div>
-                  <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.85 }}>{step.desc}</div>
-                </div>
-              )
-              if (i < 2) {
-                return [card, (
-                  <div key={`conn-${i}`} className="hiw-connector-wrap" style={{ width: 40, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                    <div style={{ width: '100%', height: 2, background: 'repeating-linear-gradient(90deg,rgba(79,124,255,0.5) 0,rgba(79,124,255,0.5) 8px,transparent 8px,transparent 16px)', position: 'relative' }}>
-                      <div className="hiw-dot" style={{ animationDelay: `${i * 0.8}s` }} />
-                    </div>
-                  </div>
-                )]
-              }
-              return [card]
-            })}
+              { num: '02', title: 'Fix your profile and strategy', desc: 'We rebuild your resume and outreach approach for the roles you want — consulting, finance, Founder\'s Office, BD. You get scripts, templates, a target list, and warm introductions.', delay: '0.15s' },
+              { num: '03', title: 'Execute until you\'re placed', desc: "Weekly accountability and direct support until you have an offer. We don't disappear after onboarding. We stay until the job is done.", delay: '0.3s' },
+            ].map(step => (
+              <div
+                key={step.num}
+                className={`hiw-card${howItWorksVisible ? ' visible' : ''}`}
+                style={{ transitionDelay: step.delay, transitionDuration: '0.6s' }}
+              >
+                <div style={{ display: 'inline-flex', alignItems: 'center', padding: '5px 12px', background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.22)', borderRadius: 100, fontSize: 11, fontWeight: 800, letterSpacing: 1.5, color: '#93BBFF', marginBottom: 20 }}>STEP {step.num}</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: 'white', lineHeight: 1.3, marginBottom: 14 }}>{step.title}</div>
+                <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.85 }}>{step.desc}</div>
+              </div>
+            ))}
           </div>
 
           {/* Proof strip */}
@@ -644,7 +616,7 @@ export default function Home() {
 
           {/* Placement Cohort — bolder */}
           <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(123,97,255,0.08), rgba(79,124,255,0.05))', border: '1px solid rgba(123,97,255,0.3)', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: 'nowrap' }}>MOST POPULAR</div>
+            <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: '#4F7CFF', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: 'nowrap', color: 'white' }}>MOST POPULAR</div>
             <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(123,97,255,0.15)', border: '1px solid rgba(123,97,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#C4B5FD', marginBottom: 24, letterSpacing: 1, marginTop: 20 }}>PLACEMENT COHORT</div>
             <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Placement Cohort</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>An extended program with weekly accountability, live sessions, and mentor support until you're placed.</div>
@@ -826,7 +798,7 @@ export default function Home() {
             { num: '100%', label: 'Live sessions, never recorded', sub: '' },
           ].map((s, i) => (
             <div key={i}>
-              <div className="stat-num" style={{ background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: 8 }}>{s.num}</div>
+              <div className="stat-num" style={{ color: '#4F7CFF', marginBottom: 8 }}>{s.num}</div>
               <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{s.label}</div>
               <div style={{ fontSize: 13, color: 'var(--muted)' }}>{s.sub}</div>
             </div>
