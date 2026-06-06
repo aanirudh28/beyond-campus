@@ -29,6 +29,8 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
       setFormData(f => ({ ...f, interestedIn: 'Internship Cohort (₹1,750)' }))
     } else if (preselectedCohort === 'Placement Cohort') {
       setFormData(f => ({ ...f, interestedIn: 'Placement Cohort (₹2,500)' }))
+    } else if (preselectedCohort === 'Strategy Session') {
+      setFormData(f => ({ ...f, interestedIn: '1:1 Strategy Session (₹549)' }))
     } else {
       setFormData(f => ({ ...f, interestedIn: '' }))
     }
@@ -281,9 +283,10 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
                   onChange={e => setField('interestedIn', e.target.value)}
                   style={{ ...inputStyle(!!errors.interestedIn), color: formData.interestedIn ? '#111' : '#999', appearance: 'auto' as never }}
                 >
-                  <option value="">Select a cohort...</option>
-                  <option value="Internship Cohort (₹1,750)">Internship Cohort (₹1,750)</option>
+                  <option value="">Select an option...</option>
+                  <option value="1:1 Strategy Session (₹549)">1:1 Strategy Session (₹549)</option>
                   <option value="Placement Cohort (₹2,500)">Placement Cohort (₹2,500)</option>
+                  <option value="Internship Cohort (₹1,750)">Internship Cohort (₹1,750)</option>
                   <option value="Not Sure Yet">Not Sure Yet</option>
                 </select>
                 {errors.interestedIn && <p style={{ fontSize: 12, color: '#ef4444', marginTop: 4 }}>{errors.interestedIn}</p>}

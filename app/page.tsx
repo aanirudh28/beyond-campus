@@ -288,9 +288,8 @@ export default function Home() {
 
         <div style={{ maxWidth: 900, textAlign: 'center', position: 'relative', zIndex: 2, animation: 'fadeUp 0.8s ease both' }}>
           <h1 className="hero-headline" style={{ marginBottom: 28 }}>
-            No campus placements.<br />
-            No referrals.<br />
-            <span className="gradient-text">They got the job anyway.</span>
+            Break Into Top Jobs<br />
+            <span className="gradient-text">Without Campus Placements</span>
           </h1>
 
           <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, margin: '0 auto 40px', fontWeight: 400 }}>
