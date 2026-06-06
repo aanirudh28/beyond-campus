@@ -178,6 +178,9 @@ export default function Home() {
           .hiw-step-num { font-size:100px; }
           .comp-table th, .comp-table td { padding: 10px 8px; font-size: 12px; }
           .mobile-cta-bar { display: flex !important; }
+          .transformation-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .transformation-arrow { padding: 4px 0 !important; min-width: 0 !important; }
+          .transformation-arrow svg { transform: rotate(90deg); }
         }
         .mobile-cta-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: rgba(11,11,15,0.96); backdrop-filter: blur(16px); border-top: 1px solid rgba(255,255,255,0.08); padding: 12px 20px; align-items: center; justify-content: center; gap: 10px; }
       `}</style>
@@ -423,36 +426,78 @@ export default function Home() {
         </div>
       </section>
 
-      {/* WHAT CHANGES — FROM / TO */}
-      <section style={{ padding: '80px 24px', maxWidth: 1100, margin: '0 auto' }}>
+      {/* WHAT CHANGES — TRANSFORMATION */}
+      <section style={{ padding: '100px 24px', maxWidth: 1140, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <h2 className="section-title">Here's what changes</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 17, marginTop: 8 }}>The transformation, in plain English.</p>
+          <p style={{ color: 'var(--muted)', fontSize: 17, marginTop: 8 }}>Same effort. Completely different outcome.</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 18 }}>
-          {[
-            { from: 'Resume ignored after 50 sends', to: 'A resume tailored to land in the right inboxes' },
-            { from: 'Cold emails into the void', to: 'Cold emails that bring back 25+ replies' },
-            { from: 'No idea who to reach out to', to: 'Warm intros to actual hiring managers' },
-            { from: 'Generic course modules and silence', to: 'Weekly 1:1s until you have an offer' },
-          ].map((s, i) => (
-            <div key={i} className="card" style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: 'rgba(248,113,113,0.8)', textTransform: 'uppercase', marginBottom: 8 }}>From</div>
-                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.55, textDecoration: 'line-through', textDecorationColor: 'rgba(248,113,113,0.35)', textDecorationThickness: '1.5px' }}>{s.from}</div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-                <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, fontWeight: 700 }}>↓</span>
-                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-              </div>
-              <div>
-                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: '#6ee7b7', textTransform: 'uppercase', marginBottom: 8 }}>To</div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: 'white', lineHeight: 1.55 }}>{s.to}</div>
-              </div>
+
+        <div className="transformation-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)', gap: 24, alignItems: 'stretch' }}>
+
+          {/* TODAY panel */}
+          <div style={{ background: 'linear-gradient(180deg, rgba(239,68,68,0.07), rgba(239,68,68,0.015))', border: '1px solid rgba(239,68,68,0.18)', borderRadius: 24, padding: '36px 32px', position: 'relative' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 100, fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#f87171', marginBottom: 22 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f87171' }} />
+              TODAY
             </div>
-          ))}
+            <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, fontWeight: 400, color: 'rgba(255,255,255,0.62)', marginBottom: 26, lineHeight: 1.25 }}>Where most students get stuck</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {[
+                "50 applications. 1 reply (if you're lucky).",
+                "Resume rewritten 3 times. Still ignored.",
+                "\"Just network!\" — but with who?",
+                "YouTube + ChatGPT + nothing happens.",
+              ].map(item => (
+                <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: 14, lineHeight: 1.55 }}>
+                  <span style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.28)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1, color: '#f87171', fontSize: 11, fontWeight: 700 }}>✕</span>
+                  <span style={{ color: 'rgba(255,255,255,0.55)', textDecoration: 'line-through', textDecorationColor: 'rgba(248,113,113,0.4)', textDecorationThickness: '1px' }}>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Arrow */}
+          <div className="transformation-arrow" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 72 }}>
+            <svg width="72" height="48" viewBox="0 0 72 48" fill="none" style={{ display: 'block' }}>
+              <defs>
+                <linearGradient id="arrowGrad" x1="0" y1="0" x2="72" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="rgba(248,113,113,0.55)" />
+                  <stop offset="100%" stopColor="#4F7CFF" />
+                </linearGradient>
+              </defs>
+              <path d="M 4 24 L 62 24 M 50 12 L 64 24 L 50 36" stroke="url(#arrowGrad)" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+
+          {/* IN 2 WEEKS panel */}
+          <div style={{ background: 'linear-gradient(180deg, rgba(79,124,255,0.1), rgba(123,97,255,0.025))', border: '1px solid rgba(79,124,255,0.32)', borderRadius: 24, padding: '36px 32px', position: 'relative', boxShadow: '0 0 60px rgba(79,124,255,0.08)' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.32)', borderRadius: 100, fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#93BBFF', marginBottom: 22 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#93BBFF', animation: 'pulse-dot 2s ease-in-out infinite' }} />
+              IN 2 WEEKS
+            </div>
+            <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, fontWeight: 400, color: 'white', marginBottom: 26, lineHeight: 1.25 }}>Where the cohort gets you</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {[
+                { bold: '25+ replies', rest: ' on your first batch of cold emails.' },
+                { bold: 'Resume opened', rest: ' by real hiring managers.' },
+                { bold: 'Warm intros', rest: ' from mentors who actually hire.' },
+                { bold: 'A weekly mentor', rest: ' — until you have an offer in hand.' },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: 14, lineHeight: 1.55 }}>
+                  <span style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(79,124,255,0.18)', border: '1px solid rgba(79,124,255,0.4)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1, color: '#93BBFF', fontSize: 11, fontWeight: 700 }}>✓</span>
+                  <span style={{ color: 'rgba(255,255,255,0.85)' }}>
+                    <strong style={{ color: 'white', fontWeight: 700 }}>{item.bold}</strong>{item.rest}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+
+        <p style={{ textAlign: 'center', fontSize: 14, color: 'rgba(255,255,255,0.45)', marginTop: 36, lineHeight: 1.6 }}>
+          The work doesn't change. <span style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>The system does.</span>
+        </p>
       </section>
 
       {/* HOW IT WORKS */}
