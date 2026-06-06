@@ -273,9 +273,9 @@ export default function Home() {
           </div>
           <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
-          <button onClick={() => openPopup('Strategy Session')} style={{ padding: '8px 4px', fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.72)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s, text-decoration-color 0.2s', letterSpacing: 0.1, whiteSpace: 'nowrap', textDecoration: 'none' }}
-            onMouseEnter={e => { e.currentTarget.style.color = 'white'; e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.textUnderlineOffset = '3px'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.72)'; e.currentTarget.style.textDecoration = 'none'; }}>
+          <button onClick={() => openPopup('Strategy Session')} style={{ padding: '8px 4px', fontSize: 14, fontWeight: 600, color: '#4F7CFF', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s', letterSpacing: 0.1, whiteSpace: 'nowrap', textDecoration: 'underline', textDecorationColor: 'transparent', textUnderlineOffset: '3px' }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#93BBFF'; e.currentTarget.style.textDecorationColor = '#93BBFF'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#4F7CFF'; e.currentTarget.style.textDecorationColor = 'transparent'; }}>
             Lost? Let's talk →
           </button>
           <div style={{ width: 1, height: 22, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
