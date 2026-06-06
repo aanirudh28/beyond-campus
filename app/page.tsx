@@ -287,10 +287,6 @@ export default function Home() {
         <div className="orb" style={{ width: 300, height: 300, background: 'radial-gradient(circle, rgba(0,210,255,0.1), transparent)', top: '40%', left: '60%', animation: 'float 8s ease-in-out infinite' }} />
 
         <div style={{ maxWidth: 900, textAlign: 'center', position: 'relative', zIndex: 2, animation: 'fadeUp 0.8s ease both' }}>
-          <div style={{ display: 'inline-block', marginBottom: 20, padding: '6px 16px', background: 'rgba(79,124,255,0.12)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 13, fontWeight: 600, color: '#93BBFF', letterSpacing: 0.3 }}>
-            For non-tech students from tier-2 &amp; tier-3 colleges
-          </div>
-
           <h1 className="hero-headline" style={{ marginBottom: 28 }}>
             No campus placements.<br />
             No referrals.<br />
