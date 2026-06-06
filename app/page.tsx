@@ -336,7 +336,7 @@ export default function Home() {
                 No campus placement, no clue what's next? Let's talk →
               </button>
               <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.48)', letterSpacing: 0.2 }}>
-                Free 15-min call · just real advice, no pitch
+                Free 15-min call · we'll tell you exactly what to fix
               </span>
             </div>
           </div>
