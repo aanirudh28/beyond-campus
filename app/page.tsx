@@ -108,6 +108,8 @@ export default function Home() {
         @keyframes glow-pulse { 0%,100%{opacity:0.4} 50%{opacity:0.9} }
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes border-glow { 0%,100%{border-color:rgba(79,124,255,0.3)} 50%{border-color:rgba(79,124,255,0.8)} }
+        @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:0.6} 50%{transform:scale(1.55);opacity:1} }
+        .pulse-dot { width:7px; height:7px; border-radius:50%; background:#4F7CFF; flex-shrink:0; display:inline-block; animation:pulse-dot 2s ease-in-out infinite; }
 
         .hero-headline { font-family: 'DM Serif Display', serif; font-size: clamp(48px, 7vw, 88px); line-height: 1.0; letter-spacing: -2px; font-weight: 400; }
         .gradient-text { background: linear-gradient(135deg, #4F7CFF, #7B61FF, #00D2FF); background-size: 300% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: shimmer 4s linear infinite; }
@@ -273,9 +275,10 @@ export default function Home() {
           </div>
           <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
-          <button onClick={() => openPopup('Strategy Session')} style={{ padding: '8px 4px', fontSize: 14, fontWeight: 600, color: '#4F7CFF', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s', letterSpacing: 0.1, whiteSpace: 'nowrap', textDecoration: 'underline', textDecorationColor: 'transparent', textUnderlineOffset: '3px' }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#93BBFF'; e.currentTarget.style.textDecorationColor = '#93BBFF'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#4F7CFF'; e.currentTarget.style.textDecorationColor = 'transparent'; }}>
+          <button onClick={() => openPopup('Strategy Session')} style={{ padding: '8px 16px', fontSize: 14, fontWeight: 600, color: '#4F7CFF', background: 'rgba(79,124,255,0.06)', border: '1.5px solid rgba(79,124,255,0.38)', borderRadius: 100, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.25s', letterSpacing: 0.1, whiteSpace: 'nowrap', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 7, boxShadow: '0 0 14px rgba(79,124,255,0.18)' }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#93BBFF'; e.currentTarget.style.borderColor = 'rgba(79,124,255,0.65)'; e.currentTarget.style.background = 'rgba(79,124,255,0.11)'; e.currentTarget.style.boxShadow = '0 0 22px rgba(79,124,255,0.38)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#4F7CFF'; e.currentTarget.style.borderColor = 'rgba(79,124,255,0.38)'; e.currentTarget.style.background = 'rgba(79,124,255,0.06)'; e.currentTarget.style.boxShadow = '0 0 14px rgba(79,124,255,0.18)'; }}>
+            <span className="pulse-dot" />
             Lost? Let's talk →
           </button>
           <div style={{ width: 1, height: 22, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
