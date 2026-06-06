@@ -1,51 +1,26 @@
 @import "tailwindcss";
 
-/* ─── Brand color tokens ─────────────────────────────────────── */
 :root {
-  --paper:       #F7F1E6;   /* warm cream — default page bg     */
-  --paper-deep:  #EFE7D7;   /* slightly deeper cream — alt sections */
-  --ink:         #211C18;   /* warm near-black — headlines & body   */
-  --ink-soft:    #5B524A;   /* muted brown-grey — secondary text    */
-  --clay:        #C75B39;   /* terracotta — primary accent, CTAs    */
-  --clay-deep:   #A8462B;   /* darker terracotta — hover states     */
-  --forest:      #2E5E54;   /* muted teal-green — used sparingly    */
-  --butter:      #F3D27E;   /* highlighter yellow — motif only      */
-  --line:        #DCD2C0;   /* hairline borders on cream            */
-
-  /* legacy tokens kept for other pages that still reference them */
-  --blue:        #4F7CFF;
-  --purple:      #7B61FF;
-  --bg:          #0B0B0F;
-  --bg2:         #111827;
-  --text:        #F9FAFB;
-  --muted:       rgba(255,255,255,0.5);
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
-/* ─── Tailwind v4 theme mapping ──────────────────────────────── */
 @theme inline {
-  --color-paper:       var(--paper);
-  --color-paper-deep:  var(--paper-deep);
-  --color-ink:         var(--ink);
-  --color-ink-soft:    var(--ink-soft);
-  --color-clay:        var(--clay);
-  --color-clay-deep:   var(--clay-deep);
-  --color-forest:      var(--forest);
-  --color-butter:      var(--butter);
-  --color-line:        var(--line);
-
-  --color-background:  var(--paper);
-  --color-foreground:  var(--ink);
-
-  --font-display:      var(--font-fraunces), Georgia, serif;
-  --font-body:         var(--font-hanken), system-ui, sans-serif;
-  --font-sans:         var(--font-hanken), system-ui, sans-serif;
-  --font-mono:         var(--font-geist-mono), monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
-/* ─── Base ───────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
 body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-hanken), system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
 }
