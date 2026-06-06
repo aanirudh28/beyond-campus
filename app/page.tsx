@@ -392,40 +392,58 @@ export default function Home() {
 
       {/* PAIN SECTION */}
       <section style={{ padding: '100px 24px', maxWidth: 760, margin: '0 auto' }}>
-        <div style={{ marginBottom: 48 }}>
-          <h2 className="section-title">You're doing the work. It's just not landing.</h2>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85 }}>
-            You've sent applications. You've updated your resume. You've even tried cold emailing a few times. But the replies aren't coming, the interviews aren't happening, and everyone around you seems to have a connection you don't.
-          </p>
-          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85 }}>
-            Most students from tier-2 and tier-3 colleges face the same wall. No campus placements. No alumni network. No idea what's actually wrong or where to start fixing it.
-          </p>
-          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85 }}>
-            The hard part isn't effort — you're clearly putting that in. The hard part is knowing exactly what to change and how to reach the right people.
+        <div style={{ marginBottom: 40, textAlign: 'center' }}>
+          <h2 className="section-title">Sound familiar?</h2>
+          <p style={{ fontSize: 16, color: 'var(--muted)', lineHeight: 1.6, marginTop: 8 }}>
+            If even one of these hits, you're not alone — and it isn't your fault.
           </p>
         </div>
-        <div style={{ marginTop: 40, padding: '24px 32px', background: 'linear-gradient(135deg, rgba(79,124,255,0.08), rgba(123,97,255,0.05))', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 20 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {[
+            "You've sent 50+ applications. Maybe one or two replies.",
+            "Your resume gets ignored — and no one will tell you why.",
+            "Cold emails feel like shouting into a void.",
+            'Everyone around you "knows someone." You don\'t.',
+            "You're working hard, but with no idea what's actually broken.",
+          ].map(item => (
+            <div className="pain-item" key={item}>
+              <div style={{ width: 22, height: 22, borderRadius: 6, border: '2px solid rgba(255,255,255,0.22)', flexShrink: 0, marginTop: 3, transition: 'all 0.3s' }} />
+              <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6, fontWeight: 500 }}>{item}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 36, padding: '24px 32px', background: 'linear-gradient(135deg, rgba(79,124,255,0.08), rgba(123,97,255,0.05))', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 20 }}>
           <p style={{ fontSize: 17, fontWeight: 600, color: '#93BBFF', lineHeight: 1.6 }}>This isn't a talent problem. It's a strategy problem. That's exactly what we fix.</p>
         </div>
       </section>
 
-      {/* WHAT WE ACTUALLY DO */}
-      <section style={{ padding: '80px 24px', maxWidth: 1000, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <h2 className="section-title">What changes when you work with us</h2>
+      {/* WHAT CHANGES — FROM / TO */}
+      <section style={{ padding: '80px 24px', maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <h2 className="section-title">Here's what changes</h2>
+          <p style={{ color: 'var(--muted)', fontSize: 17, marginTop: 8 }}>The transformation, in plain English.</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 18 }}>
           {[
-            { title: 'A resume that gets read', desc: 'We rewrite it specifically for the roles you\'re targeting. ATS-friendly, human-reviewed, and positioned to stand out.' },
-            { title: 'A cold outreach strategy that works', desc: 'Templates and targeting that get replies. Most students land their first response within two weeks.' },
-            { title: 'A direct line to decision-makers', desc: 'Warm introductions to hiring managers and founders at companies you actually want to work at.' },
-            { title: 'Weekly accountability, not passive content', desc: 'We stay in your corner until you have an offer — not just until you finish a module.' },
+            { from: 'Resume ignored after 50 sends', to: 'A resume tailored to land in the right inboxes' },
+            { from: 'Cold emails into the void', to: 'Cold emails that bring back 25+ replies' },
+            { from: 'No idea who to reach out to', to: 'Warm intros to actual hiring managers' },
+            { from: 'Generic course modules and silence', to: 'Weekly 1:1s until you have an offer' },
           ].map((s, i) => (
-            <div key={i} className="card" style={{ padding: 32 }}>
-              <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, lineHeight: 1.3 }}>{s.title}</div>
-              <div style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.7 }}>{s.desc}</div>
+            <div key={i} className="card" style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: 'rgba(248,113,113,0.8)', textTransform: 'uppercase', marginBottom: 8 }}>From</div>
+                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.55, textDecoration: 'line-through', textDecorationColor: 'rgba(248,113,113,0.35)', textDecorationThickness: '1.5px' }}>{s.from}</div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+                <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, fontWeight: 700 }}>↓</span>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+              </div>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: '#6ee7b7', textTransform: 'uppercase', marginBottom: 8 }}>To</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'white', lineHeight: 1.55 }}>{s.to}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -516,9 +534,19 @@ export default function Home() {
 
       {/* PROGRAMS */}
       <section id="programs" style={{ padding: '80px 24px', maxWidth: 960, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 64 }}>
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <h2 className="section-title">Two ways to work with us</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 17 }}>Both are live programs with real mentors — pick the one that fits your goal.</p>
+          <p style={{ color: 'var(--muted)', fontSize: 17, marginBottom: 24 }}>Both are live programs with real mentors — pick the one that fits your goal.</p>
+          <div style={{ display: 'inline-flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '10px 22px', background: 'rgba(79,124,255,0.08)', border: '1px solid rgba(79,124,255,0.22)', borderRadius: 100, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.88)' }}>
+            <span>One-time payment</span>
+            <span style={{ color: 'rgba(255,255,255,0.25)' }}>·</span>
+            <span>No subscriptions</span>
+            <span style={{ color: 'rgba(255,255,255,0.25)' }}>·</span>
+            <span>Stay until you're placed</span>
+          </div>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginTop: 16, lineHeight: 1.6 }}>
+            Most students see <span style={{ color: '#93BBFF', fontWeight: 700 }}>25+ cold email replies</span> in their first 2 weeks of doing the work.
+          </p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
 
@@ -904,8 +932,10 @@ export default function Home() {
           <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 16, lineHeight: 1.15 }}>
             Your next offer is one email<br />away from being sent.
           </h2>
-          <p style={{ color: 'var(--muted)', fontSize: 16, lineHeight: 1.75, maxWidth: 460, margin: '0 auto 36px' }}>
-            One session is all it takes to know exactly what to change and who to reach out to first.
+          <p style={{ fontSize: 17, lineHeight: 1.65, maxWidth: 560, margin: '0 auto 36px', color: 'rgba(255,255,255,0.78)' }}>
+            Most students who follow the system see{' '}
+            <span style={{ color: '#93BBFF', fontWeight: 700 }}>25+ cold email replies</span>{' '}
+            in their first 2 weeks. Yours could start this week.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
