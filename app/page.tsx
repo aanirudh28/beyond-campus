@@ -30,7 +30,7 @@ export default function Home() {
     { q: 'How long will it take to see results?', a: 'Most students get their first meaningful signal — a reply, a LinkedIn intro, or an interview call — within two weeks. By week four, most have at least one active conversation going.' },
     { q: 'How much does it cost?', a: 'The 1:1 strategy session is ₹549. The Placement Cohort is ₹2,500. Both come with personalized guidance — the session is a single focused call, the cohort is an extended program with weekly accountability.' },
     { q: 'How is this different from watching YouTube videos or buying a course?', a: "Personalization and accountability. We review your resume, build your specific target list, and stay with you until something moves. No generic content." },
-    { q: 'What if I\'ve been scammed by a placement program before?', a: "That's a fair concern — there are a lot of programs that over-promise. We don't. We offer a 30-day refund if you do the work and nothing moves. We also keep the free resources available so you can see exactly how we think before spending anything." },
+    { q: 'What if I\'ve been scammed by a placement program before?', a: "That's a fair concern — there are a lot of programs that over-promise. We keep all our free resources fully open so you can see exactly how we think before spending anything. If you want a low-commitment way to test us, start with the ₹549 strategy session — one focused call, then you decide." },
     { q: 'Is my payment secure?', a: "Yes — payments go through Razorpay. We never store card details." },
   ]
 
@@ -751,7 +751,6 @@ export default function Home() {
                   { label: 'Cold emails written with you',   yt: { kind: 'no',      text: 'DIY in the dark' },    bc: { kind: 'yes',     text: 'Drafted with mentor' },  c: { kind: 'partial', text: 'Generic templates' } },
                   { label: 'Warm intros to hiring managers', yt: { kind: 'no',      text: 'None' },               bc: { kind: 'yes',     text: 'Mentor-driven' },        c: { kind: 'no',      text: 'None' } },
                   { label: 'Weekly accountability',          yt: { kind: 'no',      text: "No one's watching" },  bc: { kind: 'yes',     text: "Until you're placed" },  c: { kind: 'no',      text: 'You + a video' } },
-                  { label: '30-day refund if nothing moves', yt: { kind: 'na',      text: 'N/A' },                bc: { kind: 'yes',     text: 'Full refund' },          c: { kind: 'partial', text: 'Rarely' } },
                   { label: 'Total investment',               yt: { kind: 'price',   text: 'Free*' },              bc: { kind: 'price',   text: '₹549–₹2,500' },          c: { kind: 'price',   text: '₹5K–₹50K' } },
                 ]
 
@@ -926,23 +925,6 @@ export default function Home() {
               </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* GUARANTEE */}
-      <section style={{ padding: '80px 24px', maxWidth: 760, margin: '0 auto' }}>
-        <div style={{ padding: '48px 40px', background: 'linear-gradient(135deg, rgba(16,185,129,0.06), rgba(79,124,255,0.04))', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 24, textAlign: 'center' }}>
-          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#6ee7b7', marginBottom: 16 }}>Our guarantee</div>
-          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(24px, 3vw, 36px)', lineHeight: 1.2, marginBottom: 20 }}>
-            Do the work for 30 days.<br />If nothing moves, we refund you.
-          </h2>
-          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, maxWidth: 520, margin: '0 auto 24px' }}>
-            We ask that you show up — attend your sessions, send your emails, and implement the feedback. If you do that for 30 days and don't see a single meaningful signal (a reply, a conversation, a connection that leads somewhere), we'll give your money back.
-          </p>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)', lineHeight: 1.7 }}>
-            Not sure yet? Start with the free resources — no credit card, no commitment.{' '}
-            <a href="/free" style={{ color: '#6ee7b7', textDecoration: 'none', fontWeight: 600 }}>Browse them here →</a>
-          </p>
         </div>
       </section>
 
