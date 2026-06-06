@@ -330,12 +330,12 @@ export default function Home() {
               </a>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
-              <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.55)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}>
+              <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.78)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.78)')}>
                 No campus placement, no clue what's next? Let's talk →
               </button>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', letterSpacing: 0.2 }}>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.48)', letterSpacing: 0.2 }}>
                 Free 15-min call · just real advice, no pitch
               </span>
             </div>
