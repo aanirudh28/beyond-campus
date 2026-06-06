@@ -166,17 +166,27 @@ export default function Home() {
         .hiw-dot-v { position:absolute; left:50%; transform:translateX(-50%); width:10px; height:10px; border-radius:50%; background:#4F7CFF; box-shadow:0 0 10px rgba(79,124,255,0.9); animation:dot-travel-v 2.4s ease-in-out infinite; }
         .proof-strip-card { background:#111827; border-left:4px solid #4F7CFF; border-radius:16px; padding:24px 28px; display:flex; align-items:flex-start; gap:14px; transition:transform 0.3s; }
         .proof-strip-card:hover { transform:translateX(4px); }
-        .comp-table { width:100%; border-collapse:collapse; }
-        .comp-table th, .comp-table td { padding:14px 16px; text-align:center; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.06); }
-        .comp-table th { font-size:13px; font-weight:700; padding-bottom:16px; }
-        .comp-table td:first-child { text-align:left; color:rgba(255,255,255,0.7); font-weight:500; }
+        .comp-table { width:100%; border-collapse:separate; border-spacing:0; }
+        .comp-table th, .comp-table td { padding:18px 16px; font-size:14px; vertical-align:middle; }
+        .comp-table .ct-corner { width:26%; background:transparent; border-bottom:1px solid rgba(255,255,255,0.08); }
+        .comp-table .ct-label { text-align:left; color:rgba(255,255,255,0.9); font-weight:600; padding-left:24px; padding-right:8px; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .comp-table .ct-head { padding:36px 16px 24px; vertical-align:bottom; text-align:center; position:relative; border-bottom:1px solid rgba(255,255,255,0.1); }
+        .comp-table .ct-head-other { background:rgba(255,255,255,0.015); }
+        .comp-table .ct-head-bc { background:linear-gradient(180deg, rgba(79,124,255,0.22), rgba(79,124,255,0.06)); position:relative; }
+        .comp-table .ct-head-bc::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:linear-gradient(90deg, #4F7CFF, #7B61FF); }
+        .comp-table .ct-bc-badge { position:absolute; top:0; left:50%; transform:translateX(-50%); padding:5px 18px; background:linear-gradient(135deg, #4F7CFF, #7B61FF); border-radius:0 0 12px 12px; font-size:10px; font-weight:800; letter-spacing:1.5px; color:white; white-space:nowrap; box-shadow:0 4px 16px rgba(79,124,255,0.4); }
+        .comp-table .ct-cell { text-align:center; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .comp-table .ct-cell-other { background:rgba(255,255,255,0.012); }
+        .comp-table .ct-cell-bc { background:rgba(79,124,255,0.05); }
         .comp-table tbody tr:last-child td { border-bottom:none; }
         @media(max-width:768px) {
           .sticky-nav { padding: 16px 20px; }
           .sticky-nav.scrolled { padding: 12px 20px; }
           .hero-headline { font-size: clamp(36px, 10vw, 56px); }
           .hiw-step-num { font-size:100px; }
-          .comp-table th, .comp-table td { padding: 10px 8px; font-size: 12px; }
+          .comp-table th, .comp-table td { padding: 14px 10px; font-size: 12px; }
+          .comp-table .ct-label { padding-left: 14px; }
+          .comp-table .ct-head { padding: 32px 10px 18px; }
           .mobile-cta-bar { display: flex !important; }
           .transformation-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
           .transformation-arrow { padding: 4px 0 !important; min-width: 0 !important; }
@@ -682,41 +692,86 @@ export default function Home() {
       </section>
 
       {/* COMPARISON TABLE */}
-      <section style={{ padding: '80px 24px', maxWidth: 900, margin: '0 auto' }}>
+      <section style={{ padding: '100px 24px', maxWidth: 1080, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <span className="section-label">Compare</span>
-          <h2 className="section-title">Beyond Campus vs. The Alternatives</h2>
+          <span className="section-label">COMPARE</span>
+          <h2 className="section-title">Why students keep choosing this</h2>
+          <p style={{ color: 'var(--muted)', fontSize: 17, marginTop: 8 }}>Same goal. Three very different paths.</p>
         </div>
-        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' as never, borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.02)' }}>
-          <table className="comp-table">
+
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' as never, borderRadius: 28, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.012)' }}>
+          <table className="comp-table" style={{ minWidth: 760 }}>
             <thead>
               <tr>
-                <th style={{ textAlign: 'left', color: 'rgba(255,255,255,0.4)' }}>Feature</th>
-                <th style={{ color: '#4F7CFF', background: 'rgba(79,124,255,0.08)', borderLeft: '2px solid rgba(79,124,255,0.3)', borderRight: '2px solid rgba(79,124,255,0.3)' }}>Beyond Campus</th>
-                <th style={{ color: 'rgba(255,255,255,0.5)' }}>Free Content (YouTube)</th>
-                <th style={{ color: 'rgba(255,255,255,0.5)' }}>Online Courses</th>
+                <th className="ct-corner"></th>
+                <th className="ct-head ct-head-other">
+                  <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.65)', marginBottom: 6 }}>Watching YouTube</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>Self-study path</div>
+                </th>
+                <th className="ct-head ct-head-bc">
+                  <div className="ct-bc-badge">★ RECOMMENDED</div>
+                  <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, fontWeight: 400, color: 'white', marginBottom: 6 }}>Beyond Campus</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: '#93BBFF' }}>Most students start here</div>
+                </th>
+                <th className="ct-head ct-head-other">
+                  <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.65)', marginBottom: 6 }}>Pre-recorded courses</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>Video modules</div>
+                </th>
               </tr>
             </thead>
             <tbody>
-              {[
-                ['Personalized strategy', '✓', '✗', '✗'],
-                ['1-on-1 mentor access', '✓', '✗', '✗'],
-                ['Resume reviews', '✓', '✗', 'Limited'],
-                ['Weekly accountability', '✓', '✗', '✗'],
-                ['Small cohort experience', '✓', '✗', '✗'],
-                ['Affordable pricing', '₹549+', 'Free', '₹5,000–₹50,000'],
-              ].map(([feature, bc, free, course], i) => (
-                <tr key={i}>
-                  <td>{feature}</td>
-                  <td style={{ background: 'rgba(79,124,255,0.06)', borderLeft: '2px solid rgba(79,124,255,0.3)', borderRight: '2px solid rgba(79,124,255,0.3)', fontWeight: 700, color: bc === '✓' ? '#4ade80' : bc === '✗' ? '#f87171' : '#93BBFF' }}>{bc}</td>
-                  <td style={{ color: free === '✓' ? '#4ade80' : free === '✗' ? '#f87171' : 'rgba(255,255,255,0.5)', fontWeight: free === '✗' ? 500 : 400 }}>{free}</td>
-                  <td style={{ color: course === '✓' ? '#4ade80' : course === '✗' ? '#f87171' : 'rgba(255,255,255,0.5)', fontWeight: course === '✗' ? 500 : 400 }}>{course}</td>
-                </tr>
-              ))}
+              {(() => {
+                type CellKind = 'yes' | 'no' | 'partial' | 'na' | 'price'
+                const ICONS: Record<string, { icon: string; color: string; bg: string; border: string }> = {
+                  yes: { icon: '✓', color: '#4ade80', bg: 'rgba(74,222,128,0.14)', border: 'rgba(74,222,128,0.32)' },
+                  no: { icon: '✗', color: '#f87171', bg: 'rgba(248,113,113,0.08)', border: 'rgba(248,113,113,0.22)' },
+                  partial: { icon: '△', color: '#fbbf24', bg: 'rgba(251,191,36,0.1)', border: 'rgba(251,191,36,0.28)' },
+                  na: { icon: '—', color: 'rgba(255,255,255,0.45)', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)' },
+                }
+                const renderCell = (cell: { kind: CellKind; text: string }, highlight: boolean) => {
+                  if (cell.kind === 'price') {
+                    return (
+                      <span style={{ fontWeight: highlight ? 800 : 500, color: highlight ? 'white' : 'rgba(255,255,255,0.55)', fontSize: highlight ? 15 : 14 }}>
+                        {cell.text}
+                      </span>
+                    )
+                  }
+                  const m = ICONS[cell.kind]
+                  return (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9, justifyContent: 'center' }}>
+                      <span style={{ width: 22, height: 22, borderRadius: '50%', background: m.bg, border: `1px solid ${m.border}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: m.color, fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{m.icon}</span>
+                      <span style={{ color: highlight ? 'white' : 'rgba(255,255,255,0.62)', fontWeight: highlight ? 600 : 500, fontSize: 13 }}>{cell.text}</span>
+                    </span>
+                  )
+                }
+
+                const rows: Array<{ label: string; yt: { kind: CellKind; text: string }; bc: { kind: CellKind; text: string }; c: { kind: CellKind; text: string } }> = [
+                  { label: 'Personalized strategy',          yt: { kind: 'no',      text: 'Generic videos' },     bc: { kind: 'yes',     text: 'Built for your goal' },  c: { kind: 'no',      text: 'Pre-scripted' } },
+                  { label: 'Resume reviewed by a human',     yt: { kind: 'no',      text: 'Never' },              bc: { kind: 'yes',     text: 'Every week' },           c: { kind: 'partial', text: 'AI tools only' } },
+                  { label: 'Cold emails written with you',   yt: { kind: 'no',      text: 'DIY in the dark' },    bc: { kind: 'yes',     text: 'Drafted with mentor' },  c: { kind: 'partial', text: 'Generic templates' } },
+                  { label: 'Warm intros to hiring managers', yt: { kind: 'no',      text: 'None' },               bc: { kind: 'yes',     text: 'Mentor-driven' },        c: { kind: 'no',      text: 'None' } },
+                  { label: 'Weekly accountability',          yt: { kind: 'no',      text: "No one's watching" },  bc: { kind: 'yes',     text: "Until you're placed" },  c: { kind: 'no',      text: 'You + a video' } },
+                  { label: '30-day refund if nothing moves', yt: { kind: 'na',      text: 'N/A' },                bc: { kind: 'yes',     text: 'Full refund' },          c: { kind: 'partial', text: 'Rarely' } },
+                  { label: 'Total investment',               yt: { kind: 'price',   text: 'Free*' },              bc: { kind: 'price',   text: '₹549–₹2,500' },          c: { kind: 'price',   text: '₹5K–₹50K' } },
+                ]
+
+                return rows.map((row, i) => (
+                  <tr key={i}>
+                    <td className="ct-label">{row.label}</td>
+                    <td className="ct-cell ct-cell-other">{renderCell(row.yt, false)}</td>
+                    <td className="ct-cell ct-cell-bc">{renderCell(row.bc, true)}</td>
+                    <td className="ct-cell ct-cell-other">{renderCell(row.c, false)}</td>
+                  </tr>
+                ))
+              })()}
             </tbody>
           </table>
         </div>
-        <div style={{ textAlign: 'center', marginTop: 32, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+        <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 14 }}>
+          * Free to watch. Not free to spend 6 months figuring it out alone.
+        </p>
+
+        <div style={{ textAlign: 'center', marginTop: 36, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
           <a href="/cohort" className="btn-primary" style={{ fontFamily: 'inherit', fontSize: 15, padding: '14px 32px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <span>Explore Placement Cohort</span>
             <span style={{ position: 'relative', zIndex: 1 }}>→</span>
