@@ -188,7 +188,6 @@ export default function Home() {
           Beyond<span style={{ color: 'var(--blue)' }}>Campus</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <a href="/summer" style={{ padding: '10px 22px', fontSize: 14, fontWeight: 800, color: '#fff', textDecoration: 'none', borderRadius: 100, background: 'linear-gradient(135deg, #f59e0b, #f97316)', boxShadow: '0 0 18px rgba(245,158,11,0.45)', transition: 'all 0.2s', letterSpacing: 0.2 }}>Internship Cohort</a>
           <div
             style={{ position: 'relative' }}
             onMouseEnter={() => {
@@ -272,7 +271,17 @@ export default function Home() {
           </div>
           <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
-          <a href="/book" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', transition: 'all 0.2s' }}>Book Session</a>
+          <button onClick={() => openPopup('Strategy Session')} style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s' }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}>
+            Book Session
+          </button>
+          <div style={{ width: 1, height: 22, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+          <a href="/summer" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 600, color: '#fbbf24', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.06)', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.55)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.35)'; }}>
+            Internship Cohort
+          </a>
           <a href="/cohort" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14, fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <span>Placement Cohort</span>
             <span style={{ position: 'relative', zIndex: 1 }}>→</span>
@@ -296,16 +305,23 @@ export default function Home() {
             We show non-tech students how to reach companies directly — cold email, LinkedIn, and the right targeting strategy. No campus. No connections required.
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginBottom: 28 }}>
-            <button onClick={() => openPopup()} className="btn-primary" style={{ fontSize: 16, padding: '18px 36px', fontFamily: 'inherit' }}>
-              <span>Start with a 1:1 strategy call — ₹549</span>
-              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, marginBottom: 28 }}>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <a href="/cohort" className="btn-primary" style={{ fontSize: 16, padding: '18px 36px', fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span>Explore Placement Cohort</span>
+                <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+              </a>
+              <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '17px 36px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 16, border: '1.5px solid rgba(245,158,11,0.4)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: 'inherit' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.65)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.4)'; }}>
+                Explore Internship Cohort →
+              </a>
+            </div>
+            <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.4)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+              Not sure which fits? Book a 1:1 strategy call (₹549) →
             </button>
-            <a href="/free" style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
-              or grab the free resources first →
-            </a>
           </div>
 
           {/* Trust strip below hero CTAs */}
@@ -456,56 +472,67 @@ export default function Home() {
           </div>
 
           {/* CTAs */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 56, flexWrap: 'wrap' }}>
-            <button onClick={() => openPopup()} className="btn-primary" style={{ fontSize: 16, padding: '18px 36px', fontFamily: 'inherit' }}>
-              <span>Start with a 1:1 session — ₹549</span>
-              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginTop: 56 }}>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <a href="/cohort" className="btn-primary" style={{ fontSize: 16, padding: '18px 36px', fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span>Explore Placement Cohort</span>
+                <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+              </a>
+              <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '17px 36px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 16, border: '1.5px solid rgba(245,158,11,0.4)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: 'inherit' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.65)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.4)'; }}>
+                Explore Internship Cohort →
+              </a>
+            </div>
+            <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.4)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+              Not sure which fits? Book a 1:1 strategy call (₹549) →
             </button>
-            <a href="#programs" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '15px 36px', borderRadius: 100, background: 'transparent', color: 'white', fontWeight: 600, fontSize: 16, border: '1.5px solid rgba(255,255,255,0.2)', transition: 'all 0.3s', textDecoration: 'none' }}>
-              See all options ↓
-            </a>
           </div>
         </div>
       </section>
 
       {/* PROGRAMS */}
-      <section id="programs" style={{ padding: '80px 24px', maxWidth: 900, margin: '0 auto' }}>
+      <section id="programs" style={{ padding: '80px 24px', maxWidth: 960, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <h2 className="section-title">Two ways to work with us</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 17 }}>Not sure which fits? Book the session first — we'll tell you honestly.</p>
+          <p style={{ color: 'var(--muted)', fontSize: 17 }}>Both are live programs with real mentors — pick the one that fits your goal.</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
 
-          {/* 1:1 Strategy Session */}
-          <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(79,124,255,0.06), rgba(123,97,255,0.04))', border: '1px solid rgba(79,124,255,0.25)' }}>
-            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#93BBFF', marginBottom: 24, letterSpacing: 1 }}>1:1 STRATEGY SESSION</div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Strategy Session</div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>A focused one-hour call. Walk away with a clear, personalized action plan.</div>
+          {/* Internship Cohort — lighter */}
+          <div className="product-card" style={{ background: 'rgba(245,158,11,0.03)', border: '1px solid rgba(245,158,11,0.2)' }}>
+            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#fbbf24', marginBottom: 24, letterSpacing: 1 }}>INTERNSHIP COHORT</div>
+            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Internship Cohort</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>A 4-week live program to land your first off-campus internship in consulting, finance, or startups.</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '20px 0' }}>
-              <span style={{ fontSize: 42, fontWeight: 800, color: '#4F7CFF' }}>₹549</span>
-              <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ session</span>
+              <span style={{ fontSize: 42, fontWeight: 800, color: '#fbbf24' }}>₹1,750</span>
+              <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ program</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
               {[
-                'Resume review by an industry expert',
-                'Personalized cold email strategy',
-                'LinkedIn & Naukri profile audit',
+                'Weekly live sessions with your mentor',
+                'Resume and LinkedIn profile review',
+                'Cold email templates and targeting strategy',
                 'Target company list for your goals',
-                'A clear next-30-days action plan',
+                'Interview preparation and mock rounds',
               ].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
-                  <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16, flexShrink: 0, lineHeight: '1.4' }}>—</span>{f}
+                  <span style={{ color: 'rgba(245,158,11,0.4)', fontSize: 16, flexShrink: 0, lineHeight: '1.4' }}>—</span>{f}
                 </div>
               ))}
             </div>
-            <button
-              onClick={() => openPopup()}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(79,124,255,0.35)', transition: 'all 0.3s', border: 'none', cursor: 'pointer', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' }}>
-              Book a session — ₹549 →
-            </button>
+            <a
+              href="/summer"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'transparent', color: '#fbbf24', fontWeight: 700, fontSize: 15, border: '1.5px solid rgba(245,158,11,0.45)', transition: 'all 0.3s', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.1)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.7)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.45)'; }}>
+              Explore Internship Cohort →
+            </a>
           </div>
 
-          {/* Placement Cohort */}
+          {/* Placement Cohort — bolder */}
           <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(123,97,255,0.08), rgba(79,124,255,0.05))', border: '1px solid rgba(123,97,255,0.3)', position: 'relative' }}>
             <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: 'nowrap' }}>MOST POPULAR</div>
             <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(123,97,255,0.15)', border: '1px solid rgba(123,97,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#C4B5FD', marginBottom: 24, letterSpacing: 1, marginTop: 20 }}>PLACEMENT COHORT</div>
@@ -517,12 +544,12 @@ export default function Home() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
               {[
-                'Everything in the strategy session',
-                'Weekly live sessions with your mentor',
+                'Everything in the Internship Cohort',
                 'Company-specific targeting and prep',
                 'Resume and LinkedIn reviewed every week',
                 'Direct introductions at target companies',
                 'Support until you have an offer',
+                'Longer mentorship engagement',
               ].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
                   <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16, flexShrink: 0, lineHeight: '1.4' }}>—</span>{f}
@@ -532,13 +559,25 @@ export default function Home() {
             <a
               href="/cohort"
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
-              Enroll — ₹2,500 →
+              Explore Placement Cohort →
             </a>
           </div>
 
         </div>
 
-        {/* Trust strip below programs */}
+        {/* Strategy call — demoted to text line */}
+        <div style={{ textAlign: 'center', marginTop: 28 }}>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.38)' }}>
+            Want to talk before committing?{' '}
+            <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3, padding: 0, transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.9)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}>
+              Book a 1:1 strategy call — ₹549
+            </button>
+            {' '}and we'll tell you which fits.
+          </p>
+        </div>
+
         <TrustStrip />
       </section>
 
@@ -577,11 +616,16 @@ export default function Home() {
             </tbody>
           </table>
         </div>
-        <div style={{ textAlign: 'center', marginTop: 32 }}>
-          <button onClick={() => openPopup()} className="btn-primary" style={{ fontFamily: 'inherit', fontSize: 15, padding: '14px 32px' }}>
-            <span>Get Personalized Career Guidance</span>
+        <div style={{ textAlign: 'center', marginTop: 32, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <a href="/cohort" className="btn-primary" style={{ fontFamily: 'inherit', fontSize: 15, padding: '14px 32px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <span>Explore Placement Cohort</span>
             <span style={{ position: 'relative', zIndex: 1 }}>→</span>
-          </button>
+          </a>
+          <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 32px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 15, border: '1.5px solid rgba(245,158,11,0.4)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: 'inherit' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.65)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.4)'; }}>
+            Explore Internship Cohort →
+          </a>
         </div>
       </section>
 
@@ -842,18 +886,24 @@ export default function Home() {
           <p style={{ color: 'var(--muted)', fontSize: 16, lineHeight: 1.75, maxWidth: 460, margin: '0 auto 36px' }}>
             One session is all it takes to know exactly what to change and who to reach out to first.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-            <button onClick={() => openPopup()} className="btn-primary" style={{ fontSize: 17, padding: '18px 40px', fontFamily: 'inherit' }}>
-              <span>Start with a 1:1 session — ₹549</span>
-              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <a href="/cohort" className="btn-primary" style={{ fontSize: 17, padding: '18px 40px', fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span>Explore Placement Cohort</span>
+                <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+              </a>
+              <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '17px 40px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 17, border: '1.5px solid rgba(245,158,11,0.4)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: 'inherit' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.65)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.4)'; }}>
+                Explore Internship Cohort →
+              </a>
+            </div>
+            <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.38)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.38)')}>
+              Not sure which fits? Book a 1:1 strategy call (₹549) →
             </button>
-            <a href="/free" style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
-              Not ready? Browse the free resources →
-            </a>
           </div>
-          {/* Trust strip in CTA */}
           <TrustStrip />
         </div>
       </section>
@@ -865,12 +915,16 @@ export default function Home() {
             <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, marginBottom: 6 }}>Beyond<span style={{ color: 'var(--blue)' }}>Campus</span></div>
             <div style={{ fontSize: 14, color: 'var(--muted)' }}>Breaking campus barriers since 2023</div>
           </div>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <button onClick={() => openPopup()} className="btn-secondary" style={{ padding: '12px 24px', fontSize: 14, fontFamily: 'inherit' }}>Talk to a Mentor</button>
-            <button onClick={() => openPopup()} className="btn-primary" style={{ padding: '12px 24px', fontSize: 14, fontFamily: 'inherit' }}>
-              <span>Start with a 1:1 session — ₹549</span>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 14, border: '1.5px solid rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: 'inherit' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.6)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.35)'; }}>
+              Internship Cohort →
+            </a>
+            <a href="/cohort" className="btn-primary" style={{ padding: '12px 24px', fontSize: 14, fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <span>Placement Cohort</span>
               <span style={{ position: 'relative', zIndex: 1 }}>→</span>
-            </button>
+            </a>
           </div>
         </div>
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
