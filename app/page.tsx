@@ -273,9 +273,9 @@ export default function Home() {
           </div>
           <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
           <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
-          <button onClick={() => openPopup('Strategy Session')} style={{ padding: '8px 4px', fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s', letterSpacing: 0.1, whiteSpace: 'nowrap' }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+          <button onClick={() => openPopup('Strategy Session')} style={{ padding: '8px 4px', fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.72)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s, text-decoration-color 0.2s', letterSpacing: 0.1, whiteSpace: 'nowrap', textDecoration: 'none' }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'white'; e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.textUnderlineOffset = '3px'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.72)'; e.currentTarget.style.textDecoration = 'none'; }}>
             Lost? Let's talk →
           </button>
           <div style={{ width: 1, height: 22, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
@@ -329,11 +329,16 @@ export default function Home() {
                 Explore Internship Cohort →
               </a>
             </div>
-            <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.4)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
-              Not sure which fits? Book a 1:1 strategy call (₹549) →
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+              <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.55)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}>
+                No campus placement, no clue what's next? Let's talk →
+              </button>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', letterSpacing: 0.2 }}>
+                Free 15-min call · just real advice, no pitch
+              </span>
+            </div>
           </div>
 
           {/* Trust strip below hero CTAs */}
