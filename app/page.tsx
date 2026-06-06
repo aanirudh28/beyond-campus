@@ -74,10 +74,10 @@ export default function Home() {
   const trustItems = ['Personalized Mentorship', 'Weekly Accountability', 'Resume & LinkedIn Reviews', 'Internship & Placement Support']
 
   const TrustStrip = () => (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 28px', justifyContent: 'center', marginTop: 20 }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 24px', justifyContent: 'center', marginTop: 20 }}>
       {trustItems.map((item, i) => (
-        <span key={item} style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', display: 'flex', alignItems: 'center', gap: 8 }}>
-          {i > 0 && <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span>}
+        <span key={item} style={{ fontSize: 13, color: 'var(--ink-soft)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          {i > 0 && <span style={{ color: 'var(--line)' }}>·</span>}
           {item}
         </span>
       ))}
@@ -85,110 +85,146 @@ export default function Home() {
   )
 
   return (
-    <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: "'DM Sans', 'Inter', sans-serif", overflowX: 'hidden' }}>
+    <main style={{ background: 'var(--paper)', color: 'var(--ink)', fontFamily: 'var(--font-hanken), system-ui, sans-serif', overflowX: 'hidden' }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-          --blue: #4F7CFF;
-          --purple: #7B61FF;
-          --bg: #0B0B0F;
-          --bg2: #111827;
-          --text: #F9FAFB;
-          --muted: rgba(255,255,255,0.5);
-        }
         html { scroll-behavior: smooth; }
         a { text-decoration: none; color: inherit; }
 
-        @keyframes fadeUp { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes shimmer { 0%{background-position:-400% center} 100%{background-position:400% center} }
-        @keyframes pulse-ring { 0%{transform:scale(1);opacity:0.6} 100%{transform:scale(1.5);opacity:0} }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-        @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        @keyframes glow-pulse { 0%,100%{opacity:0.4} 50%{opacity:0.9} }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-        @keyframes border-glow { 0%,100%{border-color:rgba(79,124,255,0.3)} 50%{border-color:rgba(79,124,255,0.8)} }
-
-        .hero-headline { font-family: 'DM Serif Display', serif; font-size: clamp(48px, 7vw, 88px); line-height: 1.0; letter-spacing: -2px; font-weight: 400; }
-        .gradient-text { background: linear-gradient(135deg, #4F7CFF, #7B61FF, #00D2FF); background-size: 300% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: shimmer 4s linear infinite; }
-        .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: 100px; background: linear-gradient(135deg, #4F7CFF, #7B61FF); color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 30px rgba(79,124,255,0.4); position: relative; overflow: hidden; }
-        .btn-primary::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#7B61FF,#4F7CFF); opacity:0; transition:opacity 0.3s; }
-        .btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 50px rgba(79,124,255,0.6); }
-        .btn-primary:hover::before { opacity:1; }
-        .btn-primary span { position:relative; z-index:1; }
-        .btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; border-radius: 100px; background: transparent; color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s; border: 1.5px solid rgba(255,255,255,0.2); }
-        .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
-        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; transition: all 0.4s; }
-        .card:hover { background: rgba(255,255,255,0.06); border-color: rgba(79,124,255,0.3); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(79,124,255,0.15); }
-        .section-label { font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; display: block; }
-        .section-title { font-family: 'DM Serif Display', serif; font-size: clamp(32px, 4vw, 52px); line-height: 1.1; letter-spacing: -1px; margin-bottom: 20px; }
-        .grid-bg { background-image: linear-gradient(rgba(79,124,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,124,255,0.06) 1px, transparent 1px); background-size: 80px 80px; }
-        .noise-overlay { position:fixed; inset:0; pointer-events:none; z-index:999; opacity:0.025; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
-        .reveal { opacity:0; transform:translateY(40px); transition:opacity 0.8s ease, transform 0.8s ease; }
-        .reveal.visible { opacity:1; transform:translateY(0); }
-        .ticker-wrap { overflow: hidden; }
-        .ticker { display: flex; width: max-content; animation: ticker 30s linear infinite; }
-        .ticker-item { white-space: nowrap; padding: 0 40px; font-size: 14px; font-weight: 600; color: var(--muted); display: flex; align-items: center; gap: 12px; }
-        .avatar-stack { display: flex; }
-        .avatar-stack img, .avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0B0B0F; margin-left: -10px; }
-        .avatar-stack > :first-child { margin-left: 0; }
-        .tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600; }
-        .pain-item { display: flex; align-items: flex-start; gap: 16px; padding: 24px; border-radius: 20px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); transition: all 0.3s; }
-        .pain-item:hover { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.2); }
-        .product-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 28px; padding: 40px; transition: all 0.4s; position: relative; overflow: hidden; }
-        .product-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(79,124,255,0.08),transparent); opacity:0; transition:opacity 0.4s; pointer-events:none; }
-        .product-card:hover { border-color: rgba(79,124,255,0.4); transform: translateY(-8px); box-shadow: 0 30px 80px rgba(79,124,255,0.15); }
-        .product-card:hover::before { opacity:1; }
-        .proof-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 28px; transition: all 0.3s; }
-        .proof-card:hover { border-color: rgba(79,124,255,0.3); transform: translateY(-4px); }
-        .stat-num { font-family: 'DM Serif Display', serif; font-size: clamp(48px, 6vw, 72px); line-height: 1; letter-spacing: -2px; }
-        .sticky-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: all 0.3s; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; }
-        .sticky-nav.scrolled { background: rgba(11,11,15,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 14px 40px; }
-        .orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
-        .feature-pill { display: flex; align-items: center; gap: 10px; padding: 12px 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; font-size: 14px; font-weight: 500; }
-        .logo-pill { padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; font-size: 13px; font-weight: 700; color: var(--muted); transition: all 0.3s; white-space: nowrap; }
-        .logo-pill:hover { background: rgba(79,124,255,0.1); border-color: rgba(79,124,255,0.3); color: white; }
-        @keyframes dash-move { 0%{stroke-dashoffset:0} 100%{stroke-dashoffset:-400} }
+        @keyframes border-glow { 0%,100%{border-color:rgba(199,91,57,0.3)} 50%{border-color:rgba(199,91,57,0.7)} }
         @keyframes dot-travel { 0%{left:0%;opacity:0} 5%{opacity:1} 95%{opacity:1} 100%{left:100%;opacity:0} }
         @keyframes dot-travel-v { 0%{top:0%;opacity:0} 5%{opacity:1} 95%{opacity:1} 100%{top:100%;opacity:0} }
+
+        .hero-headline {
+          font-family: var(--font-fraunces), Georgia, serif;
+          font-size: clamp(3.25rem, 6vw, 5.5rem);
+          line-height: 0.98;
+          letter-spacing: -0.03em;
+          font-weight: 600;
+          color: var(--ink);
+        }
+        .section-title {
+          font-family: var(--font-fraunces), Georgia, serif;
+          font-size: clamp(2rem, 3.5vw, 3.25rem);
+          line-height: 1.02;
+          letter-spacing: -0.02em;
+          margin-bottom: 20px;
+          color: var(--ink);
+        }
+        .section-label {
+          font-family: var(--font-hanken), system-ui, sans-serif;
+          font-size: 0.8125rem;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: var(--clay);
+          margin-bottom: 16px;
+          display: block;
+        }
+        .stat-num {
+          font-family: var(--font-fraunces), Georgia, serif;
+          font-size: clamp(2.75rem, 5vw, 4.5rem);
+          line-height: 1;
+          letter-spacing: -0.03em;
+          font-weight: 600;
+          color: var(--ink);
+        }
+
+        /* Primary CTA — flat terracotta, no glow */
+        .btn-primary {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 15px 28px; border-radius: 6px;
+          background: var(--clay); color: white;
+          font-weight: 700; font-size: 15px;
+          font-family: var(--font-hanken), system-ui, sans-serif;
+          cursor: pointer; transition: background 0.2s, transform 0.15s;
+          border: none;
+        }
+        .btn-primary:hover { background: var(--clay-deep); transform: translateY(-1px); }
+        .btn-primary span { position: relative; }
+
+        /* Secondary — quiet ink border */
+        .btn-secondary {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 14px 28px; border-radius: 6px;
+          background: transparent; color: var(--ink);
+          font-weight: 600; font-size: 15px;
+          font-family: var(--font-hanken), system-ui, sans-serif;
+          cursor: pointer; transition: all 0.2s;
+          border: 1.5px solid var(--line);
+        }
+        .btn-secondary:hover { background: var(--paper-deep); border-color: var(--ink-soft); }
+
+        /* Nav */
+        .sticky-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: all 0.3s; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; }
+        .sticky-nav.scrolled { background: rgba(247,241,230,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); padding: 14px 40px; }
+
+        /* Cards */
+        .card { background: white; border: 1px solid var(--line); border-radius: 16px; transition: all 0.3s; }
+        .card:hover { border-color: var(--clay); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(199,91,57,0.08); }
+        .product-card { background: white; border: 1px solid var(--line); border-radius: 20px; padding: 40px; transition: all 0.3s; position: relative; overflow: hidden; }
+        .product-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(199,91,57,0.04),transparent); opacity:0; transition:opacity 0.3s; pointer-events:none; }
+        .product-card:hover { border-color: var(--clay); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(199,91,57,0.1); }
+        .product-card:hover::before { opacity:1; }
+        .proof-card { background: white; border: 1px solid var(--line); border-radius: 16px; padding: 28px; transition: all 0.3s; }
+        .proof-card:hover { border-color: var(--clay); transform: translateY(-3px); box-shadow: 0 8px 28px rgba(199,91,57,0.08); }
+
+        /* Logo strip */
+        .logo-pill { font-size: 13px; font-weight: 700; color: var(--ink-soft); white-space: nowrap; letter-spacing: 0.02em; }
+
+        /* HIW (still dark-bg section — updated in later pass) */
         .hiw-card { background:#111827; border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:40px 32px; position:relative; overflow:hidden; transition:border-color 0.4s, transform 0.4s, box-shadow 0.4s; opacity:0; transform:translateY(40px); }
         .hiw-card.visible { opacity:1; transform:translateY(0); }
-        .hiw-card:hover { border-color:rgba(79,124,255,0.45); transform:translateY(-8px); box-shadow:0 24px 64px rgba(79,124,255,0.18); }
-        .hiw-step-num { position:absolute; top:-20px; right:16px; font-family:'DM Serif Display',serif; font-size:140px; font-weight:800; color:rgba(255,255,255,0.025); line-height:1; pointer-events:none; user-select:none; }
-        .hiw-icon-wrap { width:56px; height:56px; border-radius:16px; background:linear-gradient(135deg,#4F7CFF,#7B61FF); display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:24px; box-shadow:0 8px 24px rgba(79,124,255,0.35); flex-shrink:0; }
-        .hiw-connector { position:relative; flex:1; height:2px; margin:0 8px; align-self:center; }
-        .hiw-connector-line { width:100%; height:2px; background:repeating-linear-gradient(90deg,rgba(79,124,255,0.5) 0,rgba(79,124,255,0.5) 8px,transparent 8px,transparent 16px); }
-        .hiw-dot { position:absolute; top:50%; transform:translateY(-50%); width:10px; height:10px; border-radius:50%; background:#4F7CFF; box-shadow:0 0 10px rgba(79,124,255,0.9); animation:dot-travel 2.4s ease-in-out infinite; }
-        .hiw-connector-v { position:relative; width:2px; height:64px; margin:4px auto; }
-        .hiw-connector-v-line { width:2px; height:100%; background:repeating-linear-gradient(180deg,rgba(79,124,255,0.5) 0,rgba(79,124,255,0.5) 8px,transparent 8px,transparent 16px); }
-        .hiw-dot-v { position:absolute; left:50%; transform:translateX(-50%); width:10px; height:10px; border-radius:50%; background:#4F7CFF; box-shadow:0 0 10px rgba(79,124,255,0.9); animation:dot-travel-v 2.4s ease-in-out infinite; }
-        .proof-strip-card { background:#111827; border-left:4px solid #4F7CFF; border-radius:16px; padding:24px 28px; display:flex; align-items:flex-start; gap:14px; transition:transform 0.3s; }
-        .proof-strip-card:hover { transform:translateX(4px); }
+        .hiw-card:hover { border-color:rgba(199,91,57,0.4); transform:translateY(-6px); box-shadow:0 24px 64px rgba(199,91,57,0.12); }
+        .hiw-step-num { position:absolute; top:-20px; right:16px; font-family:var(--font-fraunces),Georgia,serif; font-size:140px; font-weight:600; color:rgba(255,255,255,0.04); line-height:1; pointer-events:none; user-select:none; }
+        .hiw-dot { position:absolute; top:50%; transform:translateY(-50%); width:8px; height:8px; border-radius:50%; background:var(--clay); animation:dot-travel 2.4s ease-in-out infinite; }
+        .hiw-dot-v { position:absolute; left:50%; transform:translateX(-50%); width:8px; height:8px; border-radius:50%; background:var(--clay); animation:dot-travel-v 2.4s ease-in-out infinite; }
+        .proof-strip-card { background:#111827; border-left:3px solid var(--clay); border-radius:12px; padding:20px 24px; display:flex; align-items:flex-start; gap:14px; transition:transform 0.2s; }
+        .proof-strip-card:hover { transform:translateX(3px); }
+
+        /* Comparison table (dark section) */
         .comp-table { width:100%; border-collapse:collapse; }
         .comp-table th, .comp-table td { padding:14px 16px; text-align:center; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.06); }
         .comp-table th { font-size:13px; font-weight:700; padding-bottom:16px; }
         .comp-table td:first-child { text-align:left; color:rgba(255,255,255,0.7); font-weight:500; }
         .comp-table tbody tr:last-child td { border-bottom:none; }
+
+        /* Ticker */
+        .ticker { display: flex; width: max-content; animation: ticker 30s linear infinite; }
+        .ticker-item { white-space: nowrap; padding: 0 40px; font-size: 13px; font-weight: 500; color: var(--ink-soft); display: flex; align-items: center; gap: 12px; }
+
+        /* Reveal */
+        .reveal { opacity:0; transform:translateY(32px); transition:opacity 0.7s ease, transform 0.7s ease; }
+        .reveal.visible { opacity:1; transform:translateY(0); }
+
+        /* Avatar */
+        .avatar-stack { display: flex; }
+        .avatar-stack img, .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--paper); margin-left: -8px; }
+        .avatar-stack > :first-child { margin-left: 0; }
+
+        /* FAQ */
+        .faq-item { border-bottom: 1px solid var(--line); }
+
         @media(max-width:768px) {
           .sticky-nav { padding: 16px 20px; }
           .sticky-nav.scrolled { padding: 12px 20px; }
-          .hero-headline { font-size: clamp(36px, 10vw, 56px); }
+          .hero-headline { font-size: clamp(2.5rem, 10vw, 3.5rem); }
           .hiw-step-num { font-size:100px; }
           .comp-table th, .comp-table td { padding: 10px 8px; font-size: 12px; }
         }
       `}</style>
 
-      <div className="noise-overlay" />
-
       <LeadCapturePopup isOpen={popupOpen} onClose={() => setPopupOpen(false)} preselectedCohort={popupPreselect} />
 
       {/* NAV */}
       <nav className={`sticky-nav${scrollY > 40 ? ' scrolled' : ''}`}>
-        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, letterSpacing: -0.5 }}>
-          Beyond<span style={{ color: 'var(--blue)' }}>Campus</span>
+        <div style={{ fontFamily: 'var(--font-fraunces), Georgia, serif', fontSize: 22, letterSpacing: -0.5, fontWeight: 600, color: 'var(--ink)' }}>
+          Beyond<span style={{ color: 'var(--clay)' }}>Campus</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <a href="/summer" style={{ padding: '10px 22px', fontSize: 14, fontWeight: 800, color: '#fff', textDecoration: 'none', borderRadius: 100, background: 'linear-gradient(135deg, #f59e0b, #f97316)', boxShadow: '0 0 18px rgba(245,158,11,0.45)', transition: 'all 0.2s', letterSpacing: 0.2 }}>Internship Cohort</a>
+          <a href="/summer" style={{ padding: '9px 18px', fontSize: 13, fontWeight: 700, color: 'var(--ink)', textDecoration: 'none', borderRadius: 6, background: '#FEF3C7', border: '1px solid #F59E0B', transition: 'all 0.2s', letterSpacing: 0.2 }}>Internship Cohort</a>
           <div
             style={{ position: 'relative' }}
             onMouseEnter={() => {
@@ -270,73 +306,66 @@ export default function Home() {
               </div>
             )}
           </div>
-          <a href="/community" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>Community</a>
-          <a href="/dashboard" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>Dashboard</a>
-          <a href="/book" style={{ padding: '10px 20px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', transition: 'all 0.2s' }}>Book Session</a>
-          <a href="/cohort" className="btn-primary" style={{ padding: '10px 24px', fontSize: 14, fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <a href="/community" style={{ padding: '9px 16px', fontSize: 13, fontWeight: 600, color: 'var(--ink-soft)', textDecoration: 'none', transition: 'color 0.2s' }}>Community</a>
+          <a href="/dashboard" style={{ padding: '9px 16px', fontSize: 13, fontWeight: 600, color: 'var(--ink-soft)', textDecoration: 'none', transition: 'color 0.2s' }}>Dashboard</a>
+          <a href="/book" style={{ padding: '9px 16px', fontSize: 13, fontWeight: 600, color: 'var(--ink-soft)', textDecoration: 'none', transition: 'color 0.2s' }}>Book Session</a>
+          <a href="/cohort" className="btn-primary" style={{ padding: '10px 20px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             <span>Placement Cohort</span>
-            <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+            <span>→</span>
           </a>
         </div>
       </nav>
 
       {/* HERO */}
-      <section className="grid-bg" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '140px 24px 80px', position: 'relative', overflow: 'hidden' }}>
-        <div className="orb" style={{ width: 600, height: 600, background: 'radial-gradient(circle, rgba(79,124,255,0.2), transparent)', top: '10%', left: '-10%', animation: 'glow-pulse 6s ease-in-out infinite' }} />
-        <div className="orb" style={{ width: 500, height: 500, background: 'radial-gradient(circle, rgba(123,97,255,0.15), transparent)', bottom: '5%', right: '-5%', animation: 'glow-pulse 8s ease-in-out infinite 2s' }} />
-        <div className="orb" style={{ width: 300, height: 300, background: 'radial-gradient(circle, rgba(0,210,255,0.1), transparent)', top: '40%', left: '60%', animation: 'float 8s ease-in-out infinite' }} />
+      <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '140px 24px 100px', background: 'var(--paper)' }}>
+        <div style={{ maxWidth: 860, textAlign: 'center', animation: 'fadeUp 0.6s ease both' }}>
 
-        <div style={{ maxWidth: 900, textAlign: 'center', position: 'relative', zIndex: 2, animation: 'fadeUp 0.8s ease both' }}>
-          <h1 className="hero-headline" style={{ marginBottom: 28 }}>
+          <h1 className="hero-headline" style={{ marginBottom: 32 }}>
             No campus placements.<br />
-            No referrals.<br />
-            <span className="gradient-text">They got the job anyway.</span>
+            No referrals.{' '}
+            <span style={{ position: 'relative', display: 'inline-block' }}>
+              <svg
+                style={{ position: 'absolute', zIndex: 0, left: '-0.25rem', top: '0.1em', width: 'calc(100% + 0.5rem)', height: '0.82em', display: 'block' }}
+                viewBox="0 0 300 56"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path d="M5,44 Q80,32 150,36 Q220,40 295,38 L293,14 Q218,10 148,14 Q78,18 7,12 Z" fill="var(--butter)" opacity="0.9"/>
+              </svg>
+              <span style={{ position: 'relative', zIndex: 1 }}>They got the job anyway.</span>
+            </span>
           </h1>
 
-          <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, margin: '0 auto 40px', fontWeight: 400 }}>
-            We show non-tech students how to reach companies directly — cold email, LinkedIn, and the right targeting strategy. No campus. No connections required.
+          <p style={{ fontSize: '1.2rem', color: 'var(--ink-soft)', lineHeight: 1.7, maxWidth: 520, margin: '0 auto 48px', fontWeight: 400 }}>
+            We teach non-tech students how to reach companies directly — cold email, LinkedIn, and the right targeting strategy. No campus. No connections required.
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginBottom: 28 }}>
-            <button onClick={() => openPopup()} className="btn-primary" style={{ fontSize: 16, padding: '18px 36px', fontFamily: 'inherit' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, marginBottom: 56 }}>
+            <button onClick={() => openPopup()} className="btn-primary" style={{ fontSize: 16, padding: '17px 32px' }}>
               <span>Start with a 1:1 strategy call — ₹549</span>
-              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+              <span>→</span>
             </button>
-            <a href="/free" style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+            <a href="/free" style={{ fontSize: 14, color: 'var(--ink-soft)', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--clay)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--ink-soft)')}>
               or grab the free resources first →
             </a>
           </div>
 
-          {/* Trust strip below hero CTAs */}
-          <TrustStrip />
-
-          {/* Social proof row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginTop: 48 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div className="avatar-stack">
-                {['#4F7CFF','#7B61FF','#06b6d4','#10b981','#f59e0b'].map((c, i) => (
-                  <div key={i} className="avatar" style={{ background: `linear-gradient(135deg, ${c}, #0B0B0F)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: 'white' }}>
-                    {['P','A','S','R','M'][i]}
-                  </div>
-                ))}
-              </div>
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: 14, fontWeight: 700 }}>A network of 300+</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)' }}>students across 50+ Indian colleges</div>
-              </div>
-            </div>
-            <div style={{ width: 1, height: 36, background: 'rgba(255,255,255,0.1)' }} />
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: 1, fontWeight: 600, textTransform: 'uppercase' }}>Where our students have interned</div>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {['BCG', 'EY', 'Deloitte', 'Razorpay', 'Swiggy', 'Zepto'].map(c => (
-                  <span key={c} className="logo-pill">{c}</span>
-                ))}
-              </div>
-            </div>
+          {/* Divider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20, maxWidth: 480, margin: '0 auto 40px' }}>
+            <div style={{ flex: 1, height: 1, background: 'var(--line)' }} />
+            <span style={{ fontSize: 12, color: 'var(--ink-soft)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Where our students have interned</span>
+            <div style={{ flex: 1, height: 1, background: 'var(--line)' }} />
           </div>
+
+          {/* Logo strip — mono ink, no pills */}
+          <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+            {['BCG', 'EY', 'Deloitte', 'Razorpay', 'Swiggy', 'Zepto'].map(c => (
+              <span key={c} className="logo-pill">{c}</span>
+            ))}
+          </div>
+
         </div>
       </section>
 
