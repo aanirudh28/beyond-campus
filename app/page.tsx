@@ -24,13 +24,14 @@ export default function Home() {
   }
 
   const FAQS = [
-    { q: 'Is this a recorded course or live sessions?', a: 'Everything is live. The cohort has weekly live sessions directly with your mentor — no pre-recorded lectures. The consultation call is a live video call scheduled at your convenience.' },
-    { q: "I'm from a tier-2 or tier-3 college. Will this actually work for me?", a: "Most of our students are from tier-2 and tier-3 colleges. The strategies we teach work regardless of college name — they're built specifically for students who don't get top companies walking onto their campus. Off-campus hiring is about strategy, not your college rank." },
-    { q: 'What kind of roles do your students get placed in?', a: "Most students get placed in the domains they're targeting. Consulting and finance remain the most sought-after, with a strong and rising inclination towards Founder's Office roles at leading startups. We also place students in marketing, operations, and business development across fast-growing companies." },
-    { q: 'How long will it take to see results?', a: 'Most students see their first meaningful result — a reply to a cold email, a LinkedIn connection with a hiring manager, or a referral introduction — within the first 2 weeks. By week 4, most students have at least one interview conversation in progress.' },
-    { q: 'How much does it cost?', a: 'The Internship Cohort is ₹1,750 and the Placement Cohort is ₹2,500. Both include personalized mentorship, resume reviews, weekly accountability, and direct mentor access. Book a free consultation to find the right fit for you.' },
-    { q: 'How is this different from watching YouTube videos or buying a course?', a: "Three things: personalization, accountability, and referrals. We review YOUR resume, build YOUR target list, and help you find your initial introductions at your target companies. No YouTube video does that." },
-    { q: 'Is my payment secure?', a: "Yes — payments are processed by Razorpay, India's most trusted payment gateway. We never store your card details." },
+    { q: 'Is this a recorded course or live sessions?', a: 'Everything is live — no pre-recorded lectures. The 1:1 session is a live video call you schedule at your convenience. The cohort has weekly live sessions with your mentor.' },
+    { q: "I'm from a tier-2 or tier-3 college. Will this actually work for me?", a: "Most of our students are from tier-2 and tier-3 colleges. Off-campus hiring is about strategy, not your college name. The tactics we teach are built specifically for students who don't get recruiters walking onto campus." },
+    { q: 'What kind of roles do your students get placed in?', a: "Consulting and finance are the most common. We also see a lot of placements in Founder's Office roles at startups, and in marketing, operations, and BD at fast-growing companies." },
+    { q: 'How long will it take to see results?', a: 'Most students get their first meaningful signal — a reply, a LinkedIn intro, or an interview call — within two weeks. By week four, most have at least one active conversation going.' },
+    { q: 'How much does it cost?', a: 'The 1:1 strategy session is ₹549. The Placement Cohort is ₹2,500. Both come with personalized guidance — the session is a single focused call, the cohort is an extended program with weekly accountability.' },
+    { q: 'How is this different from watching YouTube videos or buying a course?', a: "Personalization and accountability. We review your resume, build your specific target list, and stay with you until something moves. No generic content." },
+    { q: 'What if I\'ve been scammed by a placement program before?', a: "That's a fair concern — there are a lot of programs that over-promise. We don't. We offer a 30-day refund if you do the work and nothing moves. We also keep the free resources available so you can see exactly how we think before spending anything." },
+    { q: 'Is my payment secure?', a: "Yes — payments go through Razorpay. We never store card details." },
   ]
 
   useEffect(() => {
@@ -286,23 +287,29 @@ export default function Home() {
         <div className="orb" style={{ width: 300, height: 300, background: 'radial-gradient(circle, rgba(0,210,255,0.1), transparent)', top: '40%', left: '60%', animation: 'float 8s ease-in-out infinite' }} />
 
         <div style={{ maxWidth: 900, textAlign: 'center', position: 'relative', zIndex: 2, animation: 'fadeUp 0.8s ease both' }}>
+          <div style={{ display: 'inline-block', marginBottom: 20, padding: '6px 16px', background: 'rgba(79,124,255,0.12)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 13, fontWeight: 600, color: '#93BBFF', letterSpacing: 0.3 }}>
+            For non-tech students from tier-2 &amp; tier-3 colleges
+          </div>
+
           <h1 className="hero-headline" style={{ marginBottom: 28 }}>
-            Break Into Top Jobs<br />
-            <span className="gradient-text">Without Campus</span><br />
-            Placements
+            No campus placements.<br />
+            No referrals.<br />
+            <span className="gradient-text">They got the job anyway.</span>
           </h1>
 
-          <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, margin: '0 auto 48px', fontWeight: 400 }}>
-            Get mentorship, referrals, and battle-tested strategies from people who've actually done it.
+          <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, margin: '0 auto 40px', fontWeight: 400 }}>
+            We show non-tech students how to reach companies directly — cold email, LinkedIn, and the right targeting strategy. No campus. No connections required.
           </p>
 
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginBottom: 28 }}>
             <button onClick={() => openPopup()} className="btn-primary" style={{ fontSize: 16, padding: '18px 36px', fontFamily: 'inherit' }}>
-              <span>Book Your Free Consultation</span>
+              <span>Start with a 1:1 strategy call — ₹549</span>
               <span style={{ position: 'relative', zIndex: 1 }}>→</span>
             </button>
-            <a href="#programs" className="btn-secondary" style={{ fontSize: 16, padding: '17px 36px' }}>
-              Explore Programs ↓
+            <a href="/free" style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+              or grab the free resources first →
             </a>
           </div>
 
@@ -325,10 +332,13 @@ export default function Home() {
               </div>
             </div>
             <div style={{ width: 1, height: 36, background: 'rgba(255,255,255,0.1)' }} />
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-              {['BCG', 'EY', 'Deloitte', 'Razorpay', 'Swiggy', 'Zepto'].map(c => (
-                <span key={c} className="logo-pill">{c}</span>
-              ))}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: 1, fontWeight: 600, textTransform: 'uppercase' }}>Where our students have interned</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {['BCG', 'EY', 'Deloitte', 'Razorpay', 'Swiggy', 'Zepto'].map(c => (
+                  <span key={c} className="logo-pill">{c}</span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -338,7 +348,7 @@ export default function Home() {
       <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '14px 0', background: 'rgba(79,124,255,0.04)', overflow: 'hidden' }}>
         <div className="ticker">
           {[...Array(2)].map((_, ri) => (
-            ["🎉 A commerce student from Delhi landed a Founder's Office role at a leading startup", "⚡ A BBA student cracked a Big 4 analyst role without a single referral", "🚀 A tier-3 college student got a BD internship at a Series B fintech", "💼 A BCom graduate secured 3 competing offers in 30 days", "🔥 A student with no network broke into consulting off-campus", "✅ A finance student cracked their dream company in 29 days"].map((item, i) => (
+            ["A commerce student from Delhi landed a Founder's Office role at a leading startup", "A BBA student cracked a Big 4 analyst role without a single referral", "A tier-3 college student got a BD internship at a Series B fintech", "A BCom graduate secured 3 competing offers in 30 days", "A student with no network broke into consulting off-campus"].map((item, i) => (
               <span key={`${ri}-${i}`} className="ticker-item">
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>◆</span>
                 {item}
@@ -349,73 +359,41 @@ export default function Home() {
       </div>
 
       {/* PAIN SECTION */}
-      <section style={{ padding: '100px 24px', maxWidth: 1000, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <span className="section-label">The Problem</span>
-          <h2 className="section-title">Does this sound like you?</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 17, maxWidth: 500, margin: '0 auto' }}>You're doing everything right. But nothing is working.</p>
+      <section style={{ padding: '100px 24px', maxWidth: 760, margin: '0 auto' }}>
+        <div style={{ marginBottom: 48 }}>
+          <h2 className="section-title">You're doing the work. It's just not landing.</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-          {[
-            { icon: '😤', text: 'Applying to 50+ jobs a week with zero replies' },
-            { icon: '🏫', text: 'No campus placements. Left on your own.' },
-            { icon: '😶', text: 'No idea what\'s wrong with your resume or profile' },
-            { icon: '🔗', text: 'No referrals, no network, no way in' },
-            { icon: '⏳', text: 'Watching peers get placed while you\'re still waiting' },
-            { icon: '😰', text: 'Confused about what to actually do next' },
-          ].map((p, i) => (
-            <div key={i} className="pain-item">
-              <span style={{ fontSize: 28, flexShrink: 0 }}>{p.icon}</span>
-              <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 500 }}>{p.text}</span>
-            </div>
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85 }}>
+            You've sent applications. You've updated your resume. You've even tried cold emailing a few times. But the replies aren't coming, the interviews aren't happening, and everyone around you seems to have a connection you don't.
+          </p>
+          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85 }}>
+            Most students from tier-2 and tier-3 colleges face the same wall. No campus placements. No alumni network. No idea what's actually wrong or where to start fixing it.
+          </p>
+          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.65)', lineHeight: 1.85 }}>
+            The hard part isn't effort — you're clearly putting that in. The hard part is knowing exactly what to change and how to reach the right people.
+          </p>
         </div>
-        <div style={{ textAlign: 'center', marginTop: 48, padding: '28px 40px', background: 'linear-gradient(135deg, rgba(79,124,255,0.08), rgba(123,97,255,0.05))', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 20 }}>
-          <p style={{ fontSize: 18, fontWeight: 600, color: '#93BBFF' }}>You don't have a talent problem. You have a strategy problem. We fix that.</p>
+        <div style={{ marginTop: 40, padding: '24px 32px', background: 'linear-gradient(135deg, rgba(79,124,255,0.08), rgba(123,97,255,0.05))', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 20 }}>
+          <p style={{ fontSize: 17, fontWeight: 600, color: '#93BBFF', lineHeight: 1.6 }}>This isn't a talent problem. It's a strategy problem. That's exactly what we fix.</p>
         </div>
       </section>
 
-      {/* SOLUTION */}
+      {/* WHAT WE ACTUALLY DO */}
       <section style={{ padding: '80px 24px', maxWidth: 1000, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <span className="section-label">The Solution</span>
-          <h2 className="section-title">We give you the unfair advantage</h2>
+          <h2 className="section-title">What changes when you work with us</h2>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20 }}>
           {[
-            { icon: '🎯', title: 'Crack off-campus roles', desc: 'A proven playbook to get interviews at companies that don\'t come to your campus.' },
-            { icon: '📄', title: 'Resume that gets you in', desc: 'ATS-optimized, human-reviewed resumes that actually get read.' },
-            { icon: '🔗', title: 'Referrals that convert', desc: 'Direct intros to hiring managers and alumni at your target companies.' },
-            { icon: '📈', title: '3x your interview rate', desc: 'Cold email + LinkedIn strategy that gets 10x more responses.' },
+            { title: 'A resume that gets read', desc: 'We rewrite it specifically for the roles you\'re targeting. ATS-friendly, human-reviewed, and positioned to stand out.' },
+            { title: 'A cold outreach strategy that works', desc: 'Templates and targeting that get replies. Most students land their first response within two weeks.' },
+            { title: 'A direct line to decision-makers', desc: 'Warm introductions to hiring managers and founders at companies you actually want to work at.' },
+            { title: 'Weekly accountability, not passive content', desc: 'We stay in your corner until you have an offer — not just until you finish a module.' },
           ].map((s, i) => (
             <div key={i} className="card" style={{ padding: 32 }}>
-              <div style={{ fontSize: 36, marginBottom: 16 }}>{s.icon}</div>
               <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, lineHeight: 1.3 }}>{s.title}</div>
               <div style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.7 }}>{s.desc}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* WHY STUDENTS CHOOSE BEYOND CAMPUS */}
-      <section style={{ padding: '80px 24px', maxWidth: 1000, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <span className="section-label">Why Us</span>
-          <h2 className="section-title">Why Students Choose Beyond Campus</h2>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
-          {[
-            { icon: '👤', color: '#4F7CFF', bg: 'rgba(79,124,255,0.12)', title: 'Personal Mentorship', desc: '1-on-1 guidance tailored to your goals — not a pre-recorded course.' },
-            { icon: '📄', color: '#7B61FF', bg: 'rgba(123,97,255,0.12)', title: 'Resume & LinkedIn Reviews', desc: 'Actionable, line-by-line feedback instead of generic templates.' },
-            { icon: '📅', color: '#10b981', bg: 'rgba(16,185,129,0.12)', title: 'Weekly Accountability', desc: 'Stay consistent with applications and networking. No passive learning.' },
-            { icon: '🎯', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', title: 'Real Hiring Strategies', desc: 'Learn the exact tactics used to secure internships and jobs off-campus.' },
-          ].map((c, i) => (
-            <div key={i} className="card" style={{ padding: 32 }}>
-              <div style={{ width: 52, height: 52, borderRadius: '50%', background: c.bg, border: `1px solid ${c.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, marginBottom: 20 }}>
-                {c.icon}
-              </div>
-              <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, lineHeight: 1.3 }}>{c.title}</div>
-              <div style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.7 }}>{c.desc}</div>
             </div>
           ))}
         </div>
@@ -427,18 +405,23 @@ export default function Home() {
 
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 72 }}>
-            <span className="section-label">THE PROCESS</span>
-            <h2 className="section-title" style={{ maxWidth: 640, margin: '0 auto 20px' }}>From stuck to placed —<br />here's how it works</h2>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 17, maxWidth: 500, margin: '0 auto', lineHeight: 1.7 }}>
-              A proven system built for students who don't have the luxury of campus placements
-            </p>
+            <h2 className="section-title" style={{ maxWidth: 640, margin: '0 auto 20px' }}>From stuck to placed,<br />in three moves</h2>
           </div>
-          {/* Desktop row */}
-          <div style={{ display: 'flex', alignItems: 'stretch', gap: 0 }} className="hiw-desktop-row">
+
+          <style>{`
+            .hiw-row { display: flex; align-items: stretch; gap: 0; }
+            @media(max-width: 768px) {
+              .hiw-row { flex-direction: column; align-items: stretch; }
+              .hiw-connector-wrap { display: none; }
+              .hiw-row .hiw-card { margin-bottom: 0; }
+            }
+          `}</style>
+
+          <div className="hiw-row">
             {[
-              { num: '01', icon: '🎯', title: 'Diagnose What\'s Blocking You', desc: 'We start by understanding exactly where you\'re stuck — resume, LinkedIn, cold outreach, or targeting. No generic advice. Just a sharp, honest assessment of what needs to change.', delay: '0s' },
-              { num: '02', icon: '🛠️', title: 'Build Your Unfair Advantage', desc: 'We rebuild your profile and strategy from scratch for the roles you want — consulting, finance, Founder\'s Office, marketing, operations. You get scripts, templates, a target list, and warm introductions.', delay: '0.18s' },
-              { num: '03', icon: '🎉', title: 'Execute Until You\'re Placed', desc: "Weekly accountability, live sessions, and direct support until you have an offer. We don't disappear after onboarding. We stay in your corner until the job is done.", delay: '0.36s' },
+              { num: '01', title: 'Diagnose what\'s blocking you', desc: 'We start by understanding exactly where you\'re stuck — resume, LinkedIn, cold outreach, or targeting. No generic advice. A sharp, honest assessment of what needs to change.', delay: '0s' },
+              { num: '02', title: 'Fix your profile and strategy', desc: 'We rebuild your resume and outreach approach for the roles you want — consulting, finance, Founder\'s Office, BD. You get scripts, templates, a target list, and warm introductions.', delay: '0.18s' },
+              { num: '03', title: 'Execute until you\'re placed', desc: "Weekly accountability and direct support until you have an offer. We don't disappear after onboarding. We stay until the job is done.", delay: '0.36s' },
             ].flatMap((step, i) => {
               const card = (
                 <div
@@ -447,15 +430,13 @@ export default function Home() {
                   style={{ flex: 1, transitionDelay: step.delay, transitionDuration: '0.7s' }}
                 >
                   <div className="hiw-step-num">{step.num}</div>
-                  <div className="hiw-icon-wrap">{step.icon}</div>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: '#4F7CFF', textTransform: 'uppercase', marginBottom: 12 }}>Step {step.num}</div>
                   <div style={{ fontSize: 20, fontWeight: 800, color: 'white', lineHeight: 1.3, marginBottom: 16 }}>{step.title}</div>
                   <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.85 }}>{step.desc}</div>
                 </div>
               )
               if (i < 2) {
                 return [card, (
-                  <div key={`conn-${i}`} style={{ width: 40, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                  <div key={`conn-${i}`} className="hiw-connector-wrap" style={{ width: 40, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                     <div style={{ width: '100%', height: 2, background: 'repeating-linear-gradient(90deg,rgba(79,124,255,0.5) 0,rgba(79,124,255,0.5) 8px,transparent 8px,transparent 16px)', position: 'relative' }}>
                       <div className="hiw-dot" style={{ animationDelay: `${i * 0.8}s` }} />
                     </div>
@@ -466,95 +447,87 @@ export default function Home() {
             })}
           </div>
 
-          {/* Mobile vertical stack */}
-          <div className="hiw-mobile-col" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 0 }}>
-            {[
-              { num: '01', icon: '🎯', title: 'Diagnose What\'s Blocking You', desc: 'We start by understanding exactly where you\'re stuck — resume, LinkedIn, cold outreach, or targeting. No generic advice. Just a sharp, honest assessment of what needs to change.', delay: '0s' },
-              { num: '02', icon: '🛠️', title: 'Build Your Unfair Advantage', desc: 'We rebuild your profile and strategy from scratch for the roles you want — consulting, finance, Founder\'s Office, marketing, operations. You get scripts, templates, a target list, and warm introductions.', delay: '0.18s' },
-              { num: '03', icon: '🎉', title: 'Execute Until You\'re Placed', desc: "Weekly accountability, live sessions, and direct support until you have an offer. We don't disappear after onboarding. We stay in your corner until the job is done.", delay: '0.36s' },
-            ].map((step, i) => (
-              <div key={step.num}>
-                <div
-                  className={`hiw-card${howItWorksVisible ? ' visible' : ''}`}
-                  style={{ transitionDelay: step.delay, transitionDuration: '0.7s' }}
-                >
-                  <div className="hiw-step-num">{step.num}</div>
-                  <div className="hiw-icon-wrap">{step.icon}</div>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: '#4F7CFF', textTransform: 'uppercase', marginBottom: 12 }}>Step {step.num}</div>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: 'white', lineHeight: 1.3, marginBottom: 16 }}>{step.title}</div>
-                  <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.85 }}>{step.desc}</div>
-                </div>
-                {i < 2 && (
-                  <div className="hiw-connector-v">
-                    <div className="hiw-connector-v-line" />
-                    <div className="hiw-dot-v" style={{ animationDelay: `${i * 0.8}s` }} />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <style>{`
-            .hiw-desktop-row { display: flex; }
-            .hiw-mobile-col { display: none; }
-            @media(max-width: 768px) {
-              .hiw-desktop-row { display: none; }
-              .hiw-mobile-col { display: flex; }
-            }
-          `}</style>
-
           {/* Proof strip */}
           <div style={{ marginTop: 64, display: 'flex', flexDirection: 'column', gap: 12 }}>
             {[
-              { icon: '⚡', text: 'Cold emails using our templates get replies within 24 hours on average' },
-              { icon: '📅', text: 'Most students land their first interview conversation within 30 days' },
-              { icon: '🌍', text: 'Students from 50+ colleges across India have used this system' },
+              'Cold emails using our templates get replies within 24 hours on average',
+              'Most students land their first interview conversation within 30 days',
+              'Students from 50+ colleges across India have gone through this process',
             ].map((fact, i) => (
               <div key={i} className="proof-strip-card">
-                <span style={{ fontSize: 22, flexShrink: 0, marginTop: 2 }}>{fact.icon}</span>
-                <span style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>{fact.text}</span>
+                <span style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>{fact}</span>
               </div>
             ))}
           </div>
 
           {/* CTAs */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 56, flexWrap: 'wrap' }}>
-            <button onClick={() => openPopup()} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 36px', borderRadius: 100, background: 'linear-gradient(135deg, #FF6B35, #FF4500)', color: 'white', fontWeight: 700, fontSize: 16, boxShadow: '0 0 36px rgba(255,107,53,0.4)', transition: 'all 0.3s', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
-              Book Free Consultation →
+            <button onClick={() => openPopup()} className="btn-primary" style={{ fontSize: 16, padding: '18px 36px', fontFamily: 'inherit' }}>
+              <span>Start with a 1:1 session — ₹549</span>
+              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
             </button>
             <a href="#programs" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '15px 36px', borderRadius: 100, background: 'transparent', color: 'white', fontWeight: 600, fontSize: 16, border: '1.5px solid rgba(255,255,255,0.2)', transition: 'all 0.3s', textDecoration: 'none' }}>
-              View Programs ↓
+              See all options ↓
             </a>
           </div>
         </div>
       </section>
 
       {/* PROGRAMS */}
-      <section id="programs" style={{ padding: '80px 24px', maxWidth: 1200, margin: '0 auto' }}>
+      <section id="programs" style={{ padding: '80px 24px', maxWidth: 900, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <span className="section-label">Our Programs</span>
-          <h2 className="section-title">Pick your path to placement</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 17 }}>Start with a free consultation — we'll recommend the right fit for you.</p>
+          <h2 className="section-title">Two ways to work with us</h2>
+          <p style={{ color: 'var(--muted)', fontSize: 17 }}>Not sure which fits? Book the session first — we'll tell you honestly.</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
 
-          {/* Internship Cohort */}
-          <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(79,124,255,0.06), rgba(123,97,255,0.04))', border: '1px solid rgba(79,124,255,0.2)' }}>
-            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#93BBFF', marginBottom: 24, letterSpacing: 1 }}>INTERNSHIP COHORT</div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Internship Cohort</div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>For students seeking their first or next internship.</div>
+          {/* 1:1 Strategy Session */}
+          <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(79,124,255,0.06), rgba(123,97,255,0.04))', border: '1px solid rgba(79,124,255,0.25)' }}>
+            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#93BBFF', marginBottom: 24, letterSpacing: 1 }}>1:1 STRATEGY SESSION</div>
+            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Strategy Session</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>A focused one-hour call. Walk away with a clear, personalized action plan.</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '20px 0' }}>
-              <span style={{ fontSize: 42, fontWeight: 800, color: '#4F7CFF' }}>₹1,750</span>
+              <span style={{ fontSize: 42, fontWeight: 800, color: '#4F7CFF' }}>₹549</span>
+              <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ session</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
+              {[
+                'Resume review by an industry expert',
+                'Personalized cold email strategy',
+                'LinkedIn & Naukri profile audit',
+                'Target company list for your goals',
+                'A clear next-30-days action plan',
+              ].map(f => (
+                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16, flexShrink: 0, lineHeight: '1.4' }}>—</span>{f}
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => openPopup()}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(79,124,255,0.35)', transition: 'all 0.3s', border: 'none', cursor: 'pointer', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' }}>
+              Book a session — ₹549 →
+            </button>
+          </div>
+
+          {/* Placement Cohort */}
+          <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(123,97,255,0.08), rgba(79,124,255,0.05))', border: '1px solid rgba(123,97,255,0.3)', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: 'nowrap' }}>MOST POPULAR</div>
+            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(123,97,255,0.15)', border: '1px solid rgba(123,97,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#C4B5FD', marginBottom: 24, letterSpacing: 1, marginTop: 20 }}>PLACEMENT COHORT</div>
+            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Placement Cohort</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>An extended program with weekly accountability, live sessions, and mentor support until you're placed.</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '20px 0' }}>
+              <span style={{ fontSize: 42, fontWeight: 800, color: '#7B61FF' }}>₹2,500</span>
               <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ program</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
               {[
-                'Personalized internship strategy',
-                'Resume & LinkedIn optimization',
-                'Weekly mentor check-ins',
-                'Application tracking support',
-                'Mock interview prep',
-                'Networking guidance',
+                'Everything in the strategy session',
+                'Weekly live sessions with your mentor',
+                'Company-specific targeting and prep',
+                'Resume and LinkedIn reviewed every week',
+                'Direct introductions at target companies',
+                'Support until you have an offer',
               ].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
                   <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16, flexShrink: 0, lineHeight: '1.4' }}>—</span>{f}
@@ -563,67 +536,8 @@ export default function Home() {
             </div>
             <a
               href="/cohort"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(79,124,255,0.35)', transition: 'all 0.3s', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
-              View Program →
-            </a>
-          </div>
-
-          {/* Placement Cohort */}
-          <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(123,97,255,0.08), rgba(79,124,255,0.05))', border: '1px solid rgba(123,97,255,0.3)', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: 'nowrap' }}>MOST POPULAR</div>
-            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(123,97,255,0.15)', border: '1px solid rgba(123,97,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#C4B5FD', marginBottom: 24, letterSpacing: 1, marginTop: 20 }}>PLACEMENT COHORT</div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Placement Cohort</div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>For final-year students targeting full-time roles.</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '20px 0' }}>
-              <span style={{ fontSize: 42, fontWeight: 800, color: '#7B61FF' }}>₹2,500</span>
-              <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ program</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
-              {[
-                'Everything in Internship Cohort',
-                'Advanced placement strategy',
-                'Company-specific preparation',
-                'Salary negotiation guidance',
-                'Extended mentor support',
-                'Priority profile reviews',
-              ].map(f => (
-                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
-                  <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16, flexShrink: 0, lineHeight: '1.4' }}>—</span>{f}
-                </div>
-              ))}
-            </div>
-            <a
-              href="/program"
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
-              View Program →
-            </a>
-          </div>
-
-          {/* 1:1 Mentorship */}
-          <div className="product-card">
-            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#93BBFF', marginBottom: 24, letterSpacing: 1 }}>1:1 MENTORSHIP</div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 8, lineHeight: 1.1 }}>Personal Career<br />Acceleration</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '24px 0' }}>
-              <span style={{ fontSize: 42, fontWeight: 800, color: 'var(--blue)' }}>₹299</span>
-              <span style={{ color: 'var(--muted)', fontSize: 15, textDecoration: 'line-through' }}>₹999</span>
-              <span style={{ color: 'var(--muted)', fontSize: 14 }}>/ session</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
-              {[
-                'Resume review by an industry expert',
-                'Personalized cold email strategy',
-                'LinkedIn & Naukri profile overhaul',
-                'Mock interview + feedback',
-                'Target company hit list',
-              ].map(f => (
-                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
-                  <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16, flexShrink: 0, lineHeight: '1.4' }}>—</span>{f}
-                </div>
-              ))}
-            </div>
-            <a href="/book" className="btn-primary" style={{ width: '100%', justifyContent: 'center', textDecoration: 'none', boxSizing: 'border-box' }}>
-              <span>Book Session Now</span>
-              <span style={{ position: 'relative', zIndex: 1 }}>→</span>
+              Enroll — ₹2,500 →
             </a>
           </div>
 
@@ -656,7 +570,7 @@ export default function Home() {
                 ['Resume reviews', '✓', '✗', 'Limited'],
                 ['Weekly accountability', '✓', '✗', '✗'],
                 ['Small cohort experience', '✓', '✗', '✗'],
-                ['Affordable pricing', '₹1,750+', 'Free', '₹5,000–₹50,000'],
+                ['Affordable pricing', '₹549+', 'Free', '₹5,000–₹50,000'],
               ].map(([feature, bc, free, course], i) => (
                 <tr key={i}>
                   <td>{feature}</td>
@@ -677,37 +591,31 @@ export default function Home() {
       </section>
 
       {/* SOCIAL PROOF */}
+      {/* PLACEHOLDER: Replace these cards with real named students, photos, and LinkedIn profile links once collected */}
       <section style={{ padding: '80px 24px', maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <span className="section-label">Social Proof</span>
-          <h2 className="section-title">Real students. Real results.</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 17 }}>Not just testimonials — actual placement stories.</p>
+          <h2 className="section-title">Students who made it work</h2>
+          <p style={{ color: 'var(--muted)', fontSize: 17 }}>Consulting, finance, startups — different paths, same starting point.</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
           {[
-            { initial: 'P', name: 'Commerce student, Delhi', role: 'Marketing Intern at a D2C Startup', days: '38 days', quote: 'I had zero replies for months. After week 2 of the cohort, I got 3 responses from cold emails. Got my internship offer in 38 days.', color: '#4F7CFF', result: 'Dream internship secured' },
-            { initial: 'A', name: 'BBA student, Tier-2 college', role: 'Analyst at a Big 4 Firm', days: '45 days', quote: 'My mentor rebuilt my resume and gave me a target company list. I had an offer in 45 days. Best investment I ever made.', color: '#7B61FF', result: 'Big 4 offer without referral' },
-            { initial: 'S', name: 'BCom student, Tier-3 college', role: 'BD Intern at a Series B Startup', days: '52 days', quote: 'Nobody from my college had ever cracked a startup this good. The LinkedIn DM strategy completely changed the game for me.', color: '#06b6d4', result: '3 competing offers' },
-            { initial: 'R', name: 'BBA graduate, Tier-2 college', role: "Founder's Office at a Leading Startup", days: '60 days', quote: 'No campus placements, no referrals, no IIM tag. But with the right outreach strategy, I landed my dream role. This program is real.', color: '#10b981', result: "Founder's Office role" },
-            { initial: 'A', name: 'MBA student, Delhi', role: 'Consulting Intern at a Boutique Firm', days: '41 days', quote: 'I switched my target from finance to consulting through this cohort. The mentor connections and the strategy made it happen.', color: '#f59e0b', result: 'Career pivot successful' },
-            { initial: 'M', name: 'Commerce graduate, Tier-2 college', role: 'Finance Intern at a Fast-Growing Fintech', days: '29 days', quote: "This company wasn't even on my radar. My mentor pushed me to apply and helped me prep. Got the call in 29 days.", color: '#ec4899', result: 'Dream company cracked' },
+            { initial: 'P', name: 'Commerce student, Delhi', role: 'Marketing Intern at a D2C Startup', quote: 'I had zero replies for months. After week 2 of the cohort, I got 3 responses from cold emails. Got my internship offer shortly after.', color: '#4F7CFF', result: 'Internship secured' },
+            { initial: 'A', name: 'BBA student, Tier-2 college', role: 'Analyst at a Big 4 Firm', quote: 'My mentor rebuilt my resume and gave me a target company list. Best investment I ever made.', color: '#7B61FF', result: 'Big 4 offer without referral' },
+            { initial: 'S', name: 'BCom student, Tier-3 college', role: 'BD Intern at a Series B Startup', quote: 'Nobody from my college had ever cracked a startup this good. The LinkedIn outreach strategy completely changed things for me.', color: '#06b6d4', result: '3 competing offers' },
+            { initial: 'R', name: 'BBA graduate, Tier-2 college', role: "Founder's Office at a Leading Startup", quote: 'No campus placements, no referrals. But with the right outreach strategy, I landed my dream role.', color: '#10b981', result: "Founder's Office role" },
+            { initial: 'A', name: 'MBA student, Delhi', role: 'Consulting Intern at a Boutique Firm', quote: 'I switched my target from finance to consulting through this cohort. The mentor connections and the strategy made it happen.', color: '#f59e0b', result: 'Career pivot successful' },
+            { initial: 'M', name: 'Commerce graduate, Tier-2 college', role: 'Finance Intern at a Fast-Growing Fintech', quote: "This company wasn't even on my radar. My mentor pushed me to apply and helped me prep. The call came through.", color: '#ec4899', result: 'Dream company cracked' },
           ].map((t, i) => (
             <div key={i} className="proof-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
                 {[...Array(5)].map((_, s) => <span key={s} style={{ color: '#f59e0b', fontSize: 14 }}>★</span>)}
               </div>
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: 24, fontStyle: 'italic' }}>"{t.quote}"</p>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg, ${t.color}, #0B0B0F)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, flexShrink: 0 }}>{t.initial}</div>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 13 }}>{t.name}</div>
-                    <div style={{ fontSize: 12, color: 'var(--muted)' }}>{t.role}</div>
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 11, color: 'var(--muted)' }}>placed in</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: t.color }}>{t.days}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg, ${t.color}, #0B0B0F)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, flexShrink: 0 }}>{t.initial}</div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 13 }}>{t.name}</div>
+                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>{t.role}</div>
                 </div>
               </div>
               <div style={{ marginTop: 16, padding: '8px 14px', background: `${t.color}15`, border: `1px solid ${t.color}30`, borderRadius: 100, fontSize: 12, fontWeight: 700, color: t.color, display: 'inline-block' }}>{t.result}</div>
@@ -827,6 +735,23 @@ export default function Home() {
         </div>
       </section>
 
+      {/* GUARANTEE */}
+      <section style={{ padding: '80px 24px', maxWidth: 760, margin: '0 auto' }}>
+        <div style={{ padding: '48px 40px', background: 'linear-gradient(135deg, rgba(16,185,129,0.06), rgba(79,124,255,0.04))', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 24, textAlign: 'center' }}>
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#6ee7b7', marginBottom: 16 }}>Our guarantee</div>
+          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(24px, 3vw, 36px)', lineHeight: 1.2, marginBottom: 20 }}>
+            Do the work for 30 days.<br />If nothing moves, we refund you.
+          </h2>
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, maxWidth: 520, margin: '0 auto 24px' }}>
+            We ask that you show up — attend your sessions, send your emails, and implement the feedback. If you do that for 30 days and don't see a single meaningful signal (a reply, a conversation, a connection that leads somewhere), we'll give your money back.
+          </p>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)', lineHeight: 1.7 }}>
+            Not sure yet? Start with the free resources — no credit card, no commitment.{' '}
+            <a href="/free" style={{ color: '#6ee7b7', textDecoration: 'none', fontWeight: 600 }}>Browse them here →</a>
+          </p>
+        </div>
+      </section>
+
       {/* FOUNDERS */}
       <section style={{ padding: '100px 24px', maxWidth: 1000, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
@@ -853,7 +778,7 @@ export default function Home() {
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 28, letterSpacing: '0.2px' }}>Christ University, Bangalore</div>
               <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(79,70,229,0.4), rgba(123,97,255,0.15), transparent)', marginBottom: 28 }} />
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.85, marginBottom: 28, position: 'relative', zIndex: 1 }}>
-                Placed off-campus into consulting from a non-IIM background. Spent months reverse-engineering what actually gets you interviews — cold outreach, positioning, and showing up before others even start applying.
+                Cracked consulting off-campus straight after his undergrad. Spent months figuring out what actually gets you interviews — then wrote it down so you don't have to.
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
                 {['Consulting', 'Off-Campus Strategy', 'Cold Outreach'].map(tag => (
@@ -884,11 +809,15 @@ export default function Home() {
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.85, marginBottom: 28, position: 'relative', zIndex: 1 }}>
                 Built a career in finance and corporate strategy at a global tech company — without the "right" pedigree. Knows exactly what finance and strategy roles look for, and how to get there when no one hands you a roadmap.
               </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
                 {['Finance', 'FP&A', 'Corporate Strategy'].map(tag => (
                   <span key={tag} style={{ padding: '5px 13px', background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.22)', borderRadius: 100, fontSize: 12, color: '#67e8f9', fontWeight: 600 }}>{tag}</span>
                 ))}
               </div>
+              <a href="https://www.linkedin.com/in/sanya-srivastava-bb8806273/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.25)', borderRadius: 12, fontSize: 13, color: '#67e8f9', textDecoration: 'none', fontWeight: 600 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                View LinkedIn
+              </a>
             </div>
           </div>
         </div>
@@ -912,17 +841,22 @@ export default function Home() {
       <section style={{ padding: '80px 24px', maxWidth: 800, margin: '0 auto' }}>
         <div style={{ background: 'linear-gradient(135deg, rgba(79,124,255,0.1), rgba(123,97,255,0.08))', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 28, padding: '56px 48px', textAlign: 'center', position: 'relative', overflow: 'hidden', animation: 'border-glow 4s ease-in-out infinite' }}>
           <div style={{ position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)', width: 300, height: 200, background: 'radial-gradient(circle, rgba(79,124,255,0.2), transparent)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 16, lineHeight: 1.1 }}>
-            Your Career Won't Wait.<br />Neither Should You.
+          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 16, lineHeight: 1.15 }}>
+            Your next offer is one email<br />away from being sent.
           </h2>
-          <p style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 36, lineHeight: 1.75, maxWidth: 460, margin: '0 auto 36px' }}>
-            Book a free consultation and get a personalized roadmap — no pressure, no commitments.
+          <p style={{ color: 'var(--muted)', fontSize: 16, lineHeight: 1.75, maxWidth: 460, margin: '0 auto 36px' }}>
+            One session is all it takes to know exactly what to change and who to reach out to first.
           </p>
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
             <button onClick={() => openPopup()} className="btn-primary" style={{ fontSize: 17, padding: '18px 40px', fontFamily: 'inherit' }}>
-              <span>Book Your Free Consultation</span>
+              <span>Start with a 1:1 session — ₹549</span>
               <span style={{ position: 'relative', zIndex: 1 }}>→</span>
             </button>
+            <a href="/free" style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+              Not ready? Browse the free resources →
+            </a>
           </div>
           {/* Trust strip in CTA */}
           <TrustStrip />
@@ -939,7 +873,7 @@ export default function Home() {
           <div style={{ display: 'flex', gap: 12 }}>
             <button onClick={() => openPopup()} className="btn-secondary" style={{ padding: '12px 24px', fontSize: 14, fontFamily: 'inherit' }}>Talk to a Mentor</button>
             <button onClick={() => openPopup()} className="btn-primary" style={{ padding: '12px 24px', fontSize: 14, fontFamily: 'inherit' }}>
-              <span>Book Free Consultation</span>
+              <span>Start with a 1:1 session — ₹549</span>
               <span style={{ position: 'relative', zIndex: 1 }}>→</span>
             </button>
           </div>
