@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import LeadCapturePopup from './components/LeadCapturePopup'
 
+// Feature flag — flip to true when Mission Control / Phase 1B is ready to ship
+const SHOW_COMMUNITY = false
+
 export default function Home() {
   const [scrollY, setScrollY] = useState(0)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
@@ -275,9 +278,11 @@ export default function Home() {
               </div>
             )}
           </div>
-          <a href="/community" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.2s' }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}>Community</a>
+          {SHOW_COMMUNITY && (
+            <a href="/community" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}>Community</a>
+          )}
           <a href="/dashboard" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.2s' }}
             onMouseEnter={e => (e.currentTarget.style.color = 'white')}
             onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}>Dashboard</a>
@@ -806,7 +811,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FROM THE FEED */}
+      {/* FROM THE FEED — hidden while Mission Control / Phase 1B is WIP */}
+      {SHOW_COMMUNITY && (
       <section style={{ padding: '80px 24px', maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <span className="section-label">THE FEED</span>
@@ -873,6 +879,7 @@ export default function Home() {
           </a>
         </div>
       </section>
+      )}
 
       {/* FAQ */}
       <section style={{ padding: '100px 24px', maxWidth: 800, margin: '0 auto' }}>
