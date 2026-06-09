@@ -167,8 +167,9 @@ export default function Home() {
         .logo-pill { padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; font-size: 13px; font-weight: 700; color: var(--muted); transition: all 0.3s; white-space: nowrap; }
         .logo-pill:hover { background: rgba(79,124,255,0.1); border-color: rgba(79,124,255,0.3); color: white; }
         .logo-card { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 14px; background: #fff; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); transition: transform 0.25s ease, box-shadow 0.25s ease; flex-shrink: 0; }
-        .logo-card img { display: block; width: auto; max-width: 110px; object-fit: contain; }
+        .logo-card img { display: block; width: auto; max-width: 110px; object-fit: contain; filter: grayscale(1) opacity(0.6); transition: filter 0.25s ease; }
         .logo-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(79,124,255,0.22); }
+        .logo-card:hover img { filter: grayscale(0) opacity(1); }
         .logo-strip { display: flex; gap: 10px; flex-wrap: wrap; }
         @media(max-width: 540px) { .logo-card { height: 32px; padding: 0 10px; } .logo-card img { max-width: 88px; } }
         .hiw-card { background:#111827; border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:36px 32px; transition:border-color 0.4s, transform 0.4s, box-shadow 0.4s; opacity:0; transform:translateY(40px); }
