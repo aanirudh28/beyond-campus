@@ -79,6 +79,8 @@ export default function Home() {
   const COMPANY_LOGOS = [
     { name: 'BCG',           src: '/logos/bcg.svg',          h: 22 },
     { name: 'Bain & Company',src: '/logos/bain.svg',         h: 14 },
+    { name: 'Deloitte',      src: '/logos/Deloitte.png',     h: 18 },
+    { name: 'EY',            src: '/logos/EY.png',           h: 20 },
     { name: 'Citi',          src: '/logos/citi.svg',         h: 18 },
     { name: 'Aon',           src: '/logos/aon.svg',          h: 16 },
     { name: 'Razorpay',      src: '/logos/razorpay.svg',     h: 16 },
