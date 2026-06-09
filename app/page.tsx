@@ -76,6 +76,17 @@ export default function Home() {
 
   const trustItems = ['Personalized Mentorship', 'Weekly Accountability', 'Resume & LinkedIn Reviews', 'Internship & Placement Support']
 
+  const COMPANY_LOGOS = [
+    { name: 'BCG',           src: '/logos/bcg.svg',          h: 22 },
+    { name: 'Bain & Company',src: '/logos/bain.svg',         h: 14 },
+    { name: 'Citi',          src: '/logos/citi.svg',         h: 18 },
+    { name: 'Aon',           src: '/logos/aon.svg',          h: 16 },
+    { name: 'Razorpay',      src: '/logos/razorpay.svg',     h: 16 },
+    { name: 'Zomato',        src: '/logos/zomato.svg',       h: 14 },
+    { name: 'Blinkit',       src: '/logos/blinkit.svg',      h: 22 },
+    { name: 'Urban Company', src: '/logos/urbancompany.png', h: 22 },
+  ]
+
   const TrustStrip = () => (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 28px', justifyContent: 'center', marginTop: 20 }}>
       {trustItems.map((item, i) => (
@@ -153,6 +164,11 @@ export default function Home() {
         .feature-pill { display: flex; align-items: center; gap: 10px; padding: 12px 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; font-size: 14px; font-weight: 500; }
         .logo-pill { padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; font-size: 13px; font-weight: 700; color: var(--muted); transition: all 0.3s; white-space: nowrap; }
         .logo-pill:hover { background: rgba(79,124,255,0.1); border-color: rgba(79,124,255,0.3); color: white; }
+        .logo-card { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 14px; background: #fff; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); transition: transform 0.25s ease, box-shadow 0.25s ease; flex-shrink: 0; }
+        .logo-card img { display: block; width: auto; max-width: 110px; object-fit: contain; }
+        .logo-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(79,124,255,0.22); }
+        .logo-strip { display: flex; gap: 10px; flex-wrap: wrap; }
+        @media(max-width: 540px) { .logo-card { height: 32px; padding: 0 10px; } .logo-card img { max-width: 88px; } }
         .hiw-card { background:#111827; border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:36px 32px; transition:border-color 0.4s, transform 0.4s, box-shadow 0.4s; opacity:0; transform:translateY(40px); }
         .hiw-card.visible { opacity:1; transform:translateY(0); }
         .hiw-card:hover { border-color:rgba(79,124,255,0.4); transform:translateY(-6px); box-shadow:0 20px 48px rgba(79,124,255,0.14); }
@@ -378,9 +394,11 @@ export default function Home() {
             <div style={{ width: 1, height: 36, background: 'rgba(255,255,255,0.1)' }} />
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: 1, fontWeight: 600, textTransform: 'uppercase' }}>Where our students have interned</div>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {['BCG', 'EY', 'Deloitte', 'Razorpay', 'Swiggy', 'Zepto'].map(c => (
-                  <span key={c} className="logo-pill">{c}</span>
+              <div className="logo-strip">
+                {COMPANY_LOGOS.map(c => (
+                  <span key={c.name} className="logo-card" title={c.name}>
+                    <img src={c.src} alt={c.name} style={{ height: c.h }} />
+                  </span>
                 ))}
               </div>
             </div>
