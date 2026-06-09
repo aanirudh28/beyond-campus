@@ -393,7 +393,7 @@ export default function Home() {
             </div>
             <div style={{ width: 1, height: 36, background: 'rgba(255,255,255,0.1)' }} />
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: 1, fontWeight: 600, textTransform: 'uppercase' }}>Where our students have interned</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: 1, fontWeight: 600, textTransform: 'uppercase' }}>Shortlisted Across Top Employers</div>
               <div className="logo-strip">
                 {COMPANY_LOGOS.map(c => (
                   <span key={c.name} className="logo-card" title={c.name}>
