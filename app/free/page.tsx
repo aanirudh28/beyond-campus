@@ -218,6 +218,33 @@ export default function FreePage() {
         {/* ── RESOURCE CARDS ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
+          {/* Card: Job Tracker — NEW */}
+          <div className="resource-card" style={{ borderColor: 'rgba(79,124,255,0.25)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.2, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', border: '1px solid rgba(79,124,255,0.4)', color: 'white' }}>
+                  NEW 🎯
+                </span>
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, color: 'rgba(255,255,255,0.3)' }}>AI-powered · Free</span>
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 8 }}>🎯 Job Application Tracker</div>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 16 }}>
+              Stop tracking applications in your Notes app. A kanban board for every application, follow-up reminders so companies never forget you, AI that writes your cold emails &amp; follow-ups, and streaks to keep you applying.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
+              {['Kanban Board', 'Follow-up Reminders', 'AI Email Writer', 'Streaks'].map(tag => (
+                <span key={tag} style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, background: 'rgba(79,124,255,0.08)', border: '1px solid rgba(79,124,255,0.2)', color: '#93BBFF', fontWeight: 600 }}>{tag}</span>
+              ))}
+            </div>
+            <a href="/signup" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 0', borderRadius: 12, background: 'linear-gradient(135deg,rgba(79,124,255,0.2),rgba(123,97,255,0.15))', border: '1.5px solid rgba(79,124,255,0.4)', color: '#93BBFF', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
+              Start Tracking Free →
+            </a>
+            <div style={{ textAlign: 'center', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>
+              Free forever · Sign in with Google · 30-second setup
+            </div>
+          </div>
+
           {/* Card 0: Resume Roast — NEW */}
           <div className="resource-card" style={{ borderColor: 'rgba(239,68,68,0.2)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
