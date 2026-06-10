@@ -25,6 +25,7 @@ export default function TrackerPage() {
   const [showUpgrade, setShowUpgrade] = useState(false)
   const [showShare, setShowShare] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [showRoastNudge, setShowRoastNudge] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -42,7 +43,9 @@ export default function TrackerPage() {
 
       // server-side entitlement sync (grandfathers resource-pack buyers into Pro)
       fetch('/api/tracker/usage').then(r => r.json()).then(u => {
-        if (!cancelled && u.isPro) setProfile(p => p ? { ...p, is_pro: true } : p)
+        if (cancelled) return
+        if (u.isPro) setProfile(p => p ? { ...p, is_pro: true } : p)
+        if (u.hasRoast === false && !localStorage.getItem('bc_roast_nudge_dismissed')) setShowRoastNudge(true)
       }).catch(() => {})
 
       const [{ data: prof }, { data: apps }] = await Promise.all([
@@ -216,6 +219,27 @@ export default function TrackerPage() {
         />
 
         <InsightsDigest isPro={!!profile?.is_pro} appCount={applications.length} onUpgradeClick={() => openUpgrade('analytics')} />
+
+        {/* Resume Roast cross-sell — roast data makes the AI emails sharper */}
+        {showRoastNudge && applications.length > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 18, padding: '14px 18px', marginBottom: 24, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 22, flexShrink: 0 }}>🔥</span>
+            <p style={{ flex: 1, minWidth: 220, color: 'rgba(255,255,255,0.7)', fontSize: 13.5, lineHeight: 1.55, margin: 0 }}>
+              <span style={{ fontWeight: 700, color: 'white' }}>Make your AI emails sharper.</span> Get your resume roasted (free, 30 seconds) and the AI writer will weave your real achievements into every cold email.
+            </p>
+            <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+              <a href="/resources/resume-roast" style={{ padding: '9px 16px', borderRadius: 100, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', color: '#f87171', fontSize: 12.5, fontWeight: 700, textDecoration: 'none' }}>
+                Roast my resume →
+              </a>
+              <button
+                onClick={() => { localStorage.setItem('bc_roast_nudge_dismissed', '1'); setShowRoastNudge(false) }}
+                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: 13, cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* First-run empty state */}
         {applications.length === 0 && (

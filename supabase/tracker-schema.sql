@@ -107,6 +107,26 @@ create table if not exists ai_generations (
 );
 create index if not exists idx_ai_user_month on ai_generations(user_id, created_at);
 
+-- ============ NURTURE EMAILS (drip sequences, sent by daily cron) ============
+create table if not exists nurture_sends (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  sequence text not null,
+  step int not null,
+  sent_at timestamptz not null default now(),
+  unique (email, sequence, step)
+);
+create index if not exists idx_nurture_email on nurture_sends(email);
+
+create table if not exists nurture_optouts (
+  email text primary key,
+  created_at timestamptz not null default now()
+);
+
+-- service-role only: RLS on, no policies
+alter table nurture_sends enable row level security;
+alter table nurture_optouts enable row level security;
+
 -- ============ ROW LEVEL SECURITY ============
 alter table tracker_profiles enable row level security;
 alter table applications enable row level security;

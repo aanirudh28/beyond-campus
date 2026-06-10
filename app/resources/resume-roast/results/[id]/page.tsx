@@ -470,6 +470,22 @@ export default function RoastResultsPage() {
           </div>
         </div>
 
+        {/* SECTION 8.5 — JOB TRACKER CTA */}
+        <div className="reveal" style={{ animationDelay: '750ms' }}>
+          <div style={{ background: 'linear-gradient(135deg,rgba(79,124,255,0.12),rgba(123,97,255,0.1))', border: '1.5px solid rgba(79,124,255,0.35)', borderRadius: 20, padding: '28px 28px', display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+            <div style={{ fontSize: 34, flexShrink: 0 }}>🎯</div>
+            <div style={{ flex: 1, minWidth: 240 }}>
+              <div style={{ fontSize: 17, fontWeight: 800, color: 'white', marginBottom: 6 }}>Now track where you send this resume</div>
+              <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.65, margin: 0 }}>
+                A fixed resume is step one. Our free Job Tracker keeps every application on a board, reminds you to follow up, and uses this roast to write sharper cold emails for you.
+              </p>
+            </div>
+            <a href="/job-tracker" style={{ display: 'inline-flex', alignItems: 'center', padding: '13px 26px', borderRadius: 100, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', color: 'white', fontWeight: 700, fontSize: 14, textDecoration: 'none', whiteSpace: 'nowrap', boxShadow: '0 6px 20px rgba(79,124,255,0.35)', flexShrink: 0 }}>
+              Start tracking free →
+            </a>
+          </div>
+        </div>
+
         {/* SECTION 9 — CTA */}
         <div className="reveal" style={{ animationDelay: '800ms' }}>
           <div className="cta-row" style={{ display: 'flex', gap: 16 }}>
