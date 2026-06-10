@@ -15,8 +15,6 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [resourcesOpen, setResourcesOpen] = useState(false)
   const resourcesCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [howItWorksVisible, setHowItWorksVisible] = useState(false)
-  const howItWorksRef = useRef<HTMLDivElement>(null)
 
   // Popup state
   const [popupOpen, setPopupOpen] = useState(false)
@@ -94,7 +92,7 @@ export default function Home() {
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY)
-    window.addEventListener('scroll', onScroll)
+    window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
@@ -115,7 +113,7 @@ export default function Home() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Exit intent — desktop only, once per session: catch leavers with the free consultation
+  // Exit intent — desktop only, once per session
   useEffect(() => {
     const onMouseOut = (e: MouseEvent) => {
       if (e.clientY <= 8 && !e.relatedTarget && !sessionStorage.getItem('bc_exit_shown')) {
@@ -129,15 +127,15 @@ export default function Home() {
     return () => document.removeEventListener('mouseout', onMouseOut)
   }, [])
 
+  // One observer powers every [data-reveal] element on the page
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setHowItWorksVisible(true)
-    }, { threshold: 0.15 })
-    if (howItWorksRef.current) observer.observe(howItWorksRef.current)
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); observer.unobserve(e.target) } }),
+      { threshold: 0.12 }
+    )
+    document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el))
     return () => observer.disconnect()
   }, [])
-
-  const trustItems = ['Personalized Mentorship', 'Weekly Accountability', 'Resume & LinkedIn Reviews', 'Internship & Placement Support']
 
   const COMPANY_LOGOS = [
     { name: 'BCG',           src: '/logos/bcg.svg',          h: 22 },
@@ -152,6 +150,8 @@ export default function Home() {
     { name: 'Urban Company', src: '/logos/urbancompany.png', h: 22 },
   ]
 
+  const trustItems = ['Personalized Mentorship', 'Weekly Accountability', 'Resume & LinkedIn Reviews', 'Internship & Placement Support']
+
   const TrustStrip = () => (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 28px', justifyContent: 'center', marginTop: 20 }}>
       {trustItems.map((item, i) => (
@@ -163,29 +163,60 @@ export default function Home() {
     </div>
   )
 
+  // Editorial section header — ledger number + rule + mono label
+  const Ledger = ({ no, label }: { no: string; label: string }) => (
+    <div data-reveal style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 40 }}>
+      <span style={{ fontFamily: 'var(--font-geist-mono), monospace', fontSize: 13, fontWeight: 500, color: '#4F7CFF', letterSpacing: 1 }}>{no}</span>
+      <span style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(79,124,255,0.4), rgba(255,255,255,0.06))' }} />
+      <span style={{ fontFamily: 'var(--font-geist-mono), monospace', fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.38)', letterSpacing: 3, textTransform: 'uppercase' }}>{label}</span>
+    </div>
+  )
+
   return (
     <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: "var(--font-dm-sans), 'Inter', sans-serif", overflowX: 'hidden' }}>
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
-          --blue: #4F7CFF;
-          --purple: #7B61FF;
-          --bg: #0B0B0F;
-          --bg2: #111827;
-          --text: #F9FAFB;
+          --blue: #4F7CFF; --purple: #7B61FF; --bg: #0B0B0F; --bg2: #111827;
           --muted: rgba(255,255,255,0.5);
+          --serif: var(--font-dm-serif), 'DM Serif Display', serif;
+          --mono: var(--font-geist-mono), monospace;
         }
         html { scroll-behavior: smooth; }
         a { text-decoration: none; color: inherit; }
+        ::selection { background: rgba(79,124,255,0.4); }
 
-        @keyframes fadeUp { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-        @keyframes glow-pulse { 0%,100%{opacity:0.4} 50%{opacity:0.9} }
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-        @keyframes border-glow { 0%,100%{border-color:rgba(79,124,255,0.3)} 50%{border-color:rgba(79,124,255,0.8)} }
         @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:0.6} 50%{transform:scale(1.55);opacity:1} }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        .roast-widget { width:100%; max-width:560px; background:rgba(17,24,39,0.85); border:1px solid rgba(239,68,68,0.25); border-radius:24px; padding:22px; backdrop-filter:blur(8px); box-shadow:0 24px 80px rgba(0,0,0,0.4); text-align:left; }
+        @keyframes underline-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+        /* Scroll reveal — one class, staggered with inline transition-delay */
+        [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity 0.7s cubic-bezier(0.2,0.6,0.2,1), transform 0.7s cubic-bezier(0.2,0.6,0.2,1); }
+        [data-reveal].in { opacity: 1; transform: translateY(0); }
+
+        .pulse-dot { width:7px; height:7px; border-radius:50%; background:#4F7CFF; flex-shrink:0; display:inline-block; animation:pulse-dot 2s ease-in-out infinite; }
+
+        .hero-headline { font-family: var(--serif); font-size: clamp(46px, 7.6vw, 96px); line-height: 1.02; letter-spacing: -2.5px; font-weight: 400; }
+        .hero-em { font-style: italic; color: #93BBFF; position: relative; white-space: nowrap; }
+        .hero-em::after { content:''; position:absolute; left:2%; right:2%; bottom:6%; height:clamp(8px,1.2vw,16px); background:linear-gradient(90deg, rgba(79,124,255,0.32), rgba(123,97,255,0.32)); z-index:-1; transform-origin:left; animation:underline-in 0.9s 0.5s cubic-bezier(0.2,0.6,0.2,1) both; }
+
+        .watermark { position:absolute; left:50%; transform:translateX(-50%); bottom:-1vw; font-family:var(--serif); font-size:clamp(80px,15vw,220px); line-height:1; letter-spacing:4px; color:transparent; -webkit-text-stroke:1px rgba(79,124,255,0.07); user-select:none; pointer-events:none; white-space:nowrap; }
+
+        .mono-label { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.38); }
+        .section-title { font-family: var(--serif); font-size: clamp(30px, 4.2vw, 50px); line-height: 1.08; letter-spacing: -1px; }
+        .section-title em { font-style: italic; color: #93BBFF; }
+
+        .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: 100px; background: linear-gradient(135deg, #4F7CFF, #7B61FF); color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 30px rgba(79,124,255,0.35); position: relative; overflow: hidden; }
+        .btn-primary::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#7B61FF,#4F7CFF); opacity:0; transition:opacity 0.3s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(79,124,255,0.55); }
+        .btn-primary:hover::before { opacity:1; }
+        .btn-primary span { position:relative; z-index:1; }
+        .btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; border-radius: 100px; background: transparent; color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s; border: 1.5px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
+
+        .roast-widget { width:100%; max-width:560px; background:rgba(17,24,39,0.85); border:1px solid rgba(239,68,68,0.25); border-radius:24px; padding:22px; backdrop-filter:blur(8px); box-shadow:0 24px 80px rgba(0,0,0,0.4); text-align:left; position:relative; }
+        .roast-exhibit { position:absolute; top:-11px; left:24px; padding:3px 12px; background:#0B0B0F; border:1px solid rgba(239,68,68,0.4); border-radius:100px; font-family:var(--mono); font-size:10px; letter-spacing:2.5px; color:#f87171; font-weight:500; }
         .roast-drop { border:2px dashed rgba(239,68,68,0.35); border-radius:16px; padding:26px 20px; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:6px; }
         .roast-drop:hover, .roast-drop.drag-over { border-color:#ef4444; background:rgba(239,68,68,0.06); }
         .roast-input { width:100%; padding:13px 16px; border-radius:12px; background:#0B0B0F; border:1.5px solid rgba(255,255,255,0.1); color:white; font-size:14px; outline:none; font-family:inherit; transition:border-color 0.2s; }
@@ -193,57 +224,34 @@ export default function Home() {
         .roast-submit { width:100%; padding:15px; border-radius:100px; background:linear-gradient(135deg,#ef4444,#dc2626); border:none; color:white; font-size:16px; font-weight:800; cursor:pointer; font-family:inherit; transition:opacity 0.2s; display:flex; align-items:center; justify-content:center; gap:9px; }
         .roast-submit:disabled { opacity:0.45; cursor:not-allowed; }
         .roast-submit:not(:disabled):hover { opacity:0.9; }
-        .pulse-dot { width:7px; height:7px; border-radius:50%; background:#4F7CFF; flex-shrink:0; display:inline-block; animation:pulse-dot 2s ease-in-out infinite; }
 
-        .hero-headline { font-family: var(--font-dm-serif), serif; font-size: clamp(48px, 7vw, 88px); line-height: 1.0; letter-spacing: -2px; font-weight: 400; }
-        .gradient-text { color: #4F7CFF; }
-        .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: 100px; background: linear-gradient(135deg, #4F7CFF, #7B61FF); color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 30px rgba(79,124,255,0.4); position: relative; overflow: hidden; }
-        .btn-primary::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#7B61FF,#4F7CFF); opacity:0; transition:opacity 0.3s; }
-        .btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 50px rgba(79,124,255,0.6); }
-        .btn-primary:hover::before { opacity:1; }
-        .btn-primary span { position:relative; z-index:1; }
-        .btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; border-radius: 100px; background: transparent; color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s; border: 1.5px solid rgba(255,255,255,0.2); }
-        .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
-        .btn-roast { display: inline-flex; align-items: center; gap: 10px; padding: 18px 36px; border-radius: 100px; background: linear-gradient(135deg, #4F7CFF, #7B61FF); color: white; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 36px rgba(79,124,255,0.45); position: relative; }
-        .btn-roast:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 56px rgba(79,124,255,0.65); }
-        .section-label { font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; display: block; }
-        .section-title { font-family: var(--font-dm-serif), serif; font-size: clamp(32px, 4vw, 52px); line-height: 1.1; letter-spacing: -1px; margin-bottom: 20px; }
-        .grid-bg { background-image: linear-gradient(rgba(79,124,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,124,255,0.06) 1px, transparent 1px); background-size: 80px 80px; }
-        .noise-overlay { position:fixed; inset:0; pointer-events:none; z-index:999; opacity:0.025; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
         .ticker-wrap { overflow: hidden; }
-        .ticker { display: flex; width: max-content; animation: ticker 30s linear infinite; }
-        .ticker-item { white-space: nowrap; padding: 0 40px; font-size: 14px; font-weight: 600; color: var(--muted); display: flex; align-items: center; gap: 12px; }
-        .avatar-stack { display: flex; }
-        .avatar-stack img, .avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0B0B0F; margin-left: -10px; }
-        .avatar-stack > :first-child { margin-left: 0; }
-        .pain-item { display: flex; align-items: flex-start; gap: 16px; padding: 24px; border-radius: 20px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); transition: all 0.3s; }
-        .pain-item:hover { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.2); }
-        .product-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 28px; padding: 40px; transition: all 0.4s; position: relative; overflow: hidden; }
-        .product-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(79,124,255,0.08),transparent); opacity:0; transition:opacity 0.4s; pointer-events:none; }
-        .product-card:hover { border-color: rgba(79,124,255,0.4); transform: translateY(-8px); box-shadow: 0 30px 80px rgba(79,124,255,0.15); }
-        .product-card:hover::before { opacity:1; }
+        .ticker { display: flex; width: max-content; animation: ticker 32s linear infinite; }
+        .ticker-item { white-space: nowrap; padding: 0 40px; font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 12px; font-family: var(--mono); }
+
+        .math-row { display:grid; grid-template-columns: minmax(150px, 280px) 1fr; gap: 28px; align-items: baseline; padding: 30px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        .math-num { font-family: var(--serif); font-size: clamp(44px, 6vw, 76px); line-height: 0.95; letter-spacing: -2px; color: white; }
+        .math-num small { font-size: 0.45em; color: rgba(255,255,255,0.4); letter-spacing: 0; }
+        @media(max-width: 560px) { .math-row { grid-template-columns: 1fr; gap: 8px; padding: 24px 0; } }
+
+        .panel { border-radius: 24px; padding: 36px 32px; position: relative; }
+        .panel-today { background: linear-gradient(180deg, rgba(239,68,68,0.07), rgba(239,68,68,0.015)); border: 1px solid rgba(239,68,68,0.18); }
+        .panel-after { background: linear-gradient(180deg, rgba(79,124,255,0.1), rgba(123,97,255,0.025)); border: 1px solid rgba(79,124,255,0.32); box-shadow: 0 0 60px rgba(79,124,255,0.08); }
+
+        .tool-card { background:#111827; border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:36px 32px; display:flex; flex-direction:column; transition:all 0.35s; position:relative; overflow:hidden; }
+        .tool-card::after { content:attr(data-index); position:absolute; right:18px; bottom:2px; font-family:var(--serif); font-size:96px; line-height:1; color:rgba(79,124,255,0.06); pointer-events:none; }
+        .tool-card:hover { transform:translateY(-6px); border-color:rgba(79,124,255,0.45); box-shadow:0 24px 64px rgba(79,124,255,0.16); }
+        .tool-cta { display:inline-flex; align-items:center; gap:8px; font-size:14px; font-weight:700; color:#93BBFF; margin-top:auto; transition:gap 0.2s; position:relative; z-index:1; }
+        .tool-card:hover .tool-cta { gap:12px; }
+
         .proof-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 28px; transition: all 0.3s; }
         .proof-card:hover { border-color: rgba(79,124,255,0.3); transform: translateY(-4px); }
-        .stat-num { font-family: var(--font-dm-serif), serif; font-size: clamp(48px, 6vw, 72px); line-height: 1; letter-spacing: -2px; }
-        .sticky-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: all 0.3s; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; }
-        .sticky-nav.scrolled { background: rgba(11,11,15,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 14px 40px; }
-        .orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
-        .logo-card { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 14px; background: #fff; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); transition: transform 0.25s ease, box-shadow 0.25s ease; flex-shrink: 0; }
-        .logo-card img { display: block; width: auto; max-width: 110px; object-fit: contain; filter: grayscale(1) opacity(0.6); transition: filter 0.25s ease; }
-        .logo-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(79,124,255,0.22); }
-        .logo-card:hover img { filter: grayscale(0) opacity(1); }
-        .logo-strip { display: flex; gap: 10px; flex-wrap: wrap; }
-        @media(max-width: 540px) { .logo-card { height: 32px; padding: 0 10px; } .logo-card img { max-width: 88px; } }
-        .hiw-card { background:#111827; border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:36px 32px; transition:border-color 0.4s, transform 0.4s, box-shadow 0.4s; opacity:0; transform:translateY(40px); }
-        .hiw-card.visible { opacity:1; transform:translateY(0); }
-        .hiw-card:hover { border-color:rgba(79,124,255,0.4); transform:translateY(-6px); box-shadow:0 20px 48px rgba(79,124,255,0.14); }
-        .proof-strip-card { background:#111827; border-left:4px solid #4F7CFF; border-radius:16px; padding:24px 28px; display:flex; align-items:flex-start; gap:14px; transition:transform 0.3s; }
-        .proof-strip-card:hover { transform:translateX(4px); }
-        .tool-card { background:#111827; border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:36px 32px; display:flex; flex-direction:column; transition:all 0.35s; position:relative; overflow:hidden; }
-        .tool-card:hover { transform:translateY(-6px); border-color:rgba(79,124,255,0.45); box-shadow:0 24px 64px rgba(79,124,255,0.16); }
-        .tool-cta { display:inline-flex; align-items:center; gap:8px; font-size:14px; font-weight:700; color:#93BBFF; margin-top:auto; transition:gap 0.2s; }
-        .tool-card:hover .tool-cta { gap:12px; }
+        .stat-num { font-family: var(--serif); font-size: clamp(48px, 6vw, 72px); line-height: 1; letter-spacing: -2px; }
+
+        .product-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 28px; padding: 40px; transition: all 0.4s; position: relative; overflow: hidden; }
+        .product-card:hover { border-color: rgba(79,124,255,0.4); transform: translateY(-8px); box-shadow: 0 30px 80px rgba(79,124,255,0.15); }
         .ladder { display:inline-flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px 14px; padding:12px 24px; background:rgba(79,124,255,0.07); border:1px solid rgba(79,124,255,0.2); border-radius:100px; font-size:13px; font-weight:600; color:rgba(255,255,255,0.85); }
+
         .comp-table { width:100%; border-collapse:separate; border-spacing:0; }
         .comp-table th, .comp-table td { padding:18px 16px; font-size:14px; vertical-align:middle; }
         .comp-table .ct-corner { width:26%; background:transparent; border-bottom:1px solid rgba(255,255,255,0.08); }
@@ -257,21 +265,33 @@ export default function Home() {
         .comp-table .ct-cell-other { background:rgba(255,255,255,0.012); }
         .comp-table .ct-cell-bc { background:rgba(79,124,255,0.05); }
         .comp-table tbody tr:last-child td { border-bottom:none; }
+
+        .sticky-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: all 0.3s; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; }
+        .sticky-nav.scrolled { background: rgba(11,11,15,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 14px 40px; }
         .nav-links { display: flex; align-items: center; gap: 22px; }
         @media(max-width:900px) { .nav-links .nav-hide-mobile { display: none; } }
+
+        .logo-card { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 14px; background: #fff; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); transition: transform 0.25s ease, box-shadow 0.25s ease; flex-shrink: 0; }
+        .logo-card img { display: block; width: auto; max-width: 110px; object-fit: contain; filter: grayscale(1) opacity(0.6); transition: filter 0.25s ease; }
+        .logo-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(79,124,255,0.22); }
+        .logo-card:hover img { filter: grayscale(0) opacity(1); }
+        .logo-strip { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        @media(max-width: 540px) { .logo-card { height: 32px; padding: 0 10px; } .logo-card img { max-width: 88px; } }
+
+        .noise-overlay { position:fixed; inset:0; pointer-events:none; z-index:999; opacity:0.025; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+        .mobile-cta-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: rgba(11,11,15,0.96); backdrop-filter: blur(16px); border-top: 1px solid rgba(255,255,255,0.08); padding: 10px 16px; align-items: center; justify-content: center; gap: 12px; }
         @media(max-width:768px) {
           .sticky-nav { padding: 16px 20px; }
           .sticky-nav.scrolled { padding: 12px 20px; }
-          .hero-headline { font-size: clamp(36px, 10vw, 56px); }
+          .mobile-cta-bar { display: flex !important; }
+          .panel-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .panel-arrow { padding: 4px 0 !important; min-width: 0 !important; }
+          .panel-arrow svg { transform: rotate(90deg); }
           .comp-table th, .comp-table td { padding: 14px 10px; font-size: 12px; }
           .comp-table .ct-label { padding-left: 14px; }
           .comp-table .ct-head { padding: 32px 10px 18px; }
-          .mobile-cta-bar { display: flex !important; }
-          .transformation-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
-          .transformation-arrow { padding: 4px 0 !important; min-width: 0 !important; }
-          .transformation-arrow svg { transform: rotate(90deg); }
         }
-        .mobile-cta-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: rgba(11,11,15,0.96); backdrop-filter: blur(16px); border-top: 1px solid rgba(255,255,255,0.08); padding: 10px 16px; align-items: center; justify-content: center; gap: 12px; }
       `}</style>
 
       <div className="noise-overlay" />
@@ -280,8 +300,11 @@ export default function Home() {
 
       {/* NAV — one primary action; everything else is quiet */}
       <nav className={`sticky-nav${scrollY > 40 ? ' scrolled' : ''}`}>
-        <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 22, letterSpacing: -0.5 }}>
-          Beyond<span style={{ color: 'var(--blue)' }}>Campus</span>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+          <span style={{ fontFamily: 'var(--serif)', fontSize: 22, letterSpacing: -0.5 }}>
+            Beyond<span style={{ color: 'var(--blue)' }}>Campus</span>
+          </span>
+          <span className="nav-hide-mobile" style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.3)' }}>EST. 2023</span>
         </div>
         <div className="nav-links">
           <div
@@ -295,7 +318,7 @@ export default function Home() {
               resourcesCloseTimer.current = setTimeout(() => setResourcesOpen(false), 120)
             }}
           >
-            <a href="/free" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: resourcesOpen ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontFamily: "var(--font-dm-sans),'Inter',sans-serif", transition: 'color 0.2s', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
+            <a href="/free" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: resourcesOpen ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', transition: 'color 0.2s', display: 'flex', alignItems: 'center', gap: 6 }}>
               Free Tools
               <span style={{ fontSize: 10, opacity: 0.7, display: 'inline-block', transform: resourcesOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▾</span>
             </a>
@@ -310,7 +333,7 @@ export default function Home() {
                   { href: '/resources/cold-email-pack', label: '✉️ Cold Email Pack', badge: '50 templates', badgeStyle: { color: '#93BBFF' } },
                   { href: '/resources/linkedin-scripts', label: '💬 LinkedIn Scripts', badge: '20 scripts', badgeStyle: { color: '#7dd3fc' } },
                 ].map(item => (
-                  <a key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, padding: '10px 12px', borderRadius: 10, color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, textDecoration: 'none', transition: 'background 0.15s' }}
+                  <a key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, padding: '10px 12px', borderRadius: 10, color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, transition: 'background 0.15s' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(79,124,255,0.1)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
@@ -319,7 +342,7 @@ export default function Home() {
                   </a>
                 ))}
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '6px 0' }} />
-                <a href="/free" style={{ display: 'block', padding: '10px 12px', borderRadius: 10, textAlign: 'center', background: 'linear-gradient(135deg,rgba(79,124,255,0.15),rgba(123,97,255,0.1))', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+                <a href="/free" style={{ display: 'block', padding: '10px 12px', borderRadius: 10, textAlign: 'center', background: 'linear-gradient(135deg,rgba(79,124,255,0.15),rgba(123,97,255,0.1))', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF', fontSize: 13, fontWeight: 700 }}>
                   See all free resources →
                 </a>
               </div>
@@ -327,31 +350,31 @@ export default function Home() {
             )}
           </div>
           {SHOW_COMMUNITY && (
-            <a href="/community" className="nav-hide-mobile" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.2s' }}
+            <a href="/community" className="nav-hide-mobile" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'color 0.2s' }}
               onMouseEnter={e => (e.currentTarget.style.color = 'white')}
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}>Community</a>
           )}
-          <a href="#programs" className="nav-hide-mobile" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.2s' }}
+          <a href="#programs" className="nav-hide-mobile" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'color 0.2s' }}
             onMouseEnter={e => (e.currentTarget.style.color = 'white')}
             onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}>Cohorts</a>
-          <a href="/dashboard" className="nav-hide-mobile" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.2s' }}
+          <a href="/dashboard" className="nav-hide-mobile" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'color 0.2s' }}
             onMouseEnter={e => (e.currentTarget.style.color = 'white')}
             onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}>Dashboard</a>
-          <button onClick={() => openPopup('Strategy Session', 'nav')} className="nav-hide-mobile" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: '#4F7CFF', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s', letterSpacing: 0.1, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 7 }}
+          <button onClick={() => openPopup('Strategy Session', 'nav')} className="nav-hide-mobile" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: '#4F7CFF', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 7 }}
             onMouseEnter={e => (e.currentTarget.style.color = '#93BBFF')}
             onMouseLeave={e => (e.currentTarget.style.color = '#4F7CFF')}>
             <span className="pulse-dot" />
             Lost? Let&apos;s talk →
           </button>
-          <a href="/resources/resume-roast" className="btn-primary" style={{ padding: '10px 22px', fontSize: 14, fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }} onClick={cta('roast', 'nav')}>
+          <a href="/resources/resume-roast" className="btn-primary" style={{ padding: '10px 22px', fontSize: 14, fontFamily: 'inherit' }} onClick={cta('roast', 'nav')}>
             <span>🔥 Free Resume Roast</span>
           </a>
         </div>
       </nav>
 
-      {/* Mobile sticky bottom CTA — free hook, zero-risk */}
+      {/* Mobile sticky bottom CTA */}
       <div className="mobile-cta-bar">
-        <a href="/resources/resume-roast" style={{ flex: 1, maxWidth: 280, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px 20px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 14, textDecoration: 'none', boxShadow: '0 0 24px rgba(79,124,255,0.4)' }} onClick={cta('roast', 'mobile_bar')}>
+        <a href="/resources/resume-roast" style={{ flex: 1, maxWidth: 280, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px 20px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 14, boxShadow: '0 0 24px rgba(79,124,255,0.4)' }} onClick={cta('roast', 'mobile_bar')}>
           🔥 Free AI Resume Roast
         </a>
         <button onClick={() => openPopup('Strategy Session', 'mobile_bar')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', fontFamily: 'inherit', padding: '8px 4px', whiteSpace: 'nowrap' }}>
@@ -359,32 +382,34 @@ export default function Home() {
         </button>
       </div>
 
-      {/* HERO — one promise, one free action */}
-      <section className="grid-bg" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '140px 24px 80px', position: 'relative', overflow: 'hidden' }}>
-        <div className="orb" style={{ width: 600, height: 600, background: 'radial-gradient(circle, rgba(79,124,255,0.2), transparent)', top: '10%', left: '-10%', animation: 'glow-pulse 6s ease-in-out infinite' }} />
-        <div className="orb" style={{ width: 500, height: 500, background: 'radial-gradient(circle, rgba(123,97,255,0.15), transparent)', bottom: '5%', right: '-5%', animation: 'glow-pulse 8s ease-in-out infinite 2s' }} />
-        <div className="orb" style={{ width: 300, height: 300, background: 'radial-gradient(circle, rgba(0,210,255,0.1), transparent)', top: '40%', left: '60%', animation: 'float 8s ease-in-out infinite' }} />
+      {/* ───────────────────────── HERO ───────────────────────── */}
+      <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '150px 24px 90px', position: 'relative', overflow: 'hidden' }}>
+        {/* single editorial glow, not an orb field */}
+        <div style={{ position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)', width: '90vw', maxWidth: 1100, height: 500, background: 'radial-gradient(ellipse at center, rgba(79,124,255,0.13), transparent 65%)', pointerEvents: 'none' }} />
+        <div className="watermark">OFF·CAMPUS</div>
 
-        <div style={{ maxWidth: 940, textAlign: 'center', position: 'relative', zIndex: 2, animation: 'fadeUp 0.8s ease both' }}>
-          {/* Proof eyebrow — earns attention before the ask */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '7px 18px', background: 'rgba(79,124,255,0.08)', border: '1px solid rgba(79,124,255,0.25)', borderRadius: 100, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 28 }}>
+        <div style={{ maxWidth: 960, textAlign: 'center', position: 'relative', zIndex: 2 }}>
+          <div data-reveal style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '7px 18px', background: 'rgba(79,124,255,0.08)', border: '1px solid rgba(79,124,255,0.25)', borderRadius: 100, fontFamily: 'var(--mono)', fontSize: 12, color: 'rgba(255,255,255,0.75)', marginBottom: 32, letterSpacing: 0.5 }}>
             <span className="pulse-dot" />
             300+ students · 50+ colleges · fastest placement: 12 days
           </div>
 
-          <h1 className="hero-headline" style={{ marginBottom: 28 }}>
-            Break Into Top Jobs<br />
-            <span className="gradient-text">Without Campus Placements</span>
+          <h1 className="hero-headline" data-reveal style={{ transitionDelay: '0.08s', marginBottom: 30 }}>
+            The best companies<br />
+            never visited your campus.<br />
+            <span className="hero-em">Walk in anyway.</span>
           </h1>
 
-          <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, margin: '0 auto 40px', fontWeight: 400 }}>
-            We show non-tech students how to reach companies directly — cold email, LinkedIn, and the right targeting strategy. No campus. No connections required.
+          <p data-reveal style={{ transitionDelay: '0.16s', fontSize: 19, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 580, margin: '0 auto 44px', fontWeight: 400 }}>
+            The off-campus system for non-tech students — cold email, LinkedIn, and
+            targeting that actually gets replies. No placement cell. No connections. No excuses needed.
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, marginBottom: 28 }}>
-            {/* Embedded roast — zero clicks between impulse and action */}
+          <div data-reveal style={{ transitionDelay: '0.24s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, marginBottom: 28 }}>
+            {/* Exhibit A — the roast widget: zero clicks between impulse and action */}
             <div className="roast-widget">
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <span className="roast-exhibit">EXHIBIT A — YOUR RESUME</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, marginTop: 6 }}>
                 <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: 2, color: '#f87171' }}>🔥 FREE AI RESUME ROAST</span>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontWeight: 600 }}>takes ~30 seconds</span>
               </div>
@@ -442,13 +467,13 @@ export default function Home() {
                   ⚠️ {roastError}
                 </div>
               )}
-              <div style={{ textAlign: 'center', marginTop: 12, fontSize: 12, color: 'rgba(255,255,255,0.3)', fontWeight: 500 }}>
-                3,200+ resumes roasted · Average score: 51/100
+              <div style={{ textAlign: 'center', marginTop: 12, fontFamily: 'var(--mono)', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
+                3,200+ resumes roasted · average score: 51/100
               </div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <a href="#programs" className="btn-secondary" style={{ fontSize: 15, padding: '13px 30px', fontFamily: 'inherit', textDecoration: 'none' }} onClick={cta('cohorts_anchor', 'hero')}>
+              <a href="#programs" className="btn-secondary" style={{ fontSize: 15, padding: '13px 30px', fontFamily: 'inherit' }} onClick={cta('cohorts_anchor', 'hero')}>
                 See the cohorts ↓
               </a>
               <button onClick={() => openPopup('Strategy Session', 'hero')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.78)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
@@ -459,43 +484,28 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Social proof row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginTop: 44 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div className="avatar-stack">
-                {['#4F7CFF','#7B61FF','#06b6d4','#10b981','#f59e0b'].map((c, i) => (
-                  <div key={i} className="avatar" style={{ background: `linear-gradient(135deg, ${c}, #0B0B0F)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: 'white' }}>
-                    {['P','A','S','R','M'][i]}
-                  </div>
-                ))}
-              </div>
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: 14, fontWeight: 700 }}>A network of 300+</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)' }}>students across 50+ Indian colleges</div>
-              </div>
-            </div>
-            <div style={{ width: 1, height: 36, background: 'rgba(255,255,255,0.1)' }} />
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: 1, fontWeight: 600, textTransform: 'uppercase' }}>Shortlisted Across Top Employers</div>
-              <div className="logo-strip">
-                {COMPANY_LOGOS.map(c => (
-                  <span key={c.name} className="logo-card" title={c.name}>
-                    <img src={c.src} alt={c.name} style={{ height: c.h }} />
-                  </span>
-                ))}
-              </div>
+          {/* Where our students got shortlisted */}
+          <div data-reveal style={{ transitionDelay: '0.32s', marginTop: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <span className="mono-label">Shortlisted across top employers</span>
+            <div className="logo-strip">
+              {COMPANY_LOGOS.map(c => (
+                <span key={c.name} className="logo-card" title={c.name}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.src} alt={c.name} style={{ height: c.h }} />
+                </span>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* TICKER */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '14px 0', background: 'rgba(79,124,255,0.04)', overflow: 'hidden' }}>
+      {/* ── RECEIPTS TICKER ── */}
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '13px 0', background: 'rgba(79,124,255,0.04)', overflow: 'hidden' }}>
         <div className="ticker">
           {[...Array(2)].map((_, ri) => (
-            ["A commerce student from Delhi landed a Founder's Office role at a leading startup", "A BBA student cracked a Big 4 analyst role without a single referral", "A tier-3 college student got a BD internship at a Series B fintech", "A BCom graduate secured 3 competing offers in 30 days", "A student with no network broke into consulting off-campus"].map((item, i) => (
+            ["A commerce student from Delhi landed a Founder's Office role at a leading startup", 'A BBA student cracked a Big 4 analyst role without a single referral', 'A tier-3 college student got a BD internship at a Series B fintech', 'A BCom graduate secured 3 competing offers in 30 days', 'A student with no network broke into consulting off-campus'].map((item, i) => (
               <span key={`${ri}-${i}`} className="ticker-item">
-                <span style={{ color: 'rgba(255,255,255,0.2)' }}>◆</span>
+                <span style={{ color: 'rgba(79,124,255,0.5)' }}>→</span>
                 {item}
               </span>
             ))
@@ -503,60 +513,63 @@ export default function Home() {
         </div>
       </div>
 
-      {/* PAIN SECTION */}
-      <section style={{ padding: '100px 24px', maxWidth: 760, margin: '0 auto' }}>
-        <div style={{ marginBottom: 40, textAlign: 'center' }}>
-          <h2 className="section-title">Sound familiar?</h2>
-          <p style={{ fontSize: 16, color: 'var(--muted)', lineHeight: 1.6, marginTop: 8 }}>
-            If even one of these hits, you&apos;re not alone — and it isn&apos;t your fault.
-          </p>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {/* ───────────────── Nº 01 — THE MATH ───────────────── */}
+      <section style={{ padding: '110px 24px', maxWidth: 860, margin: '0 auto' }}>
+        <Ledger no="Nº 01" label="The math nobody shows you" />
+        <h2 className="section-title" data-reveal style={{ marginBottom: 12 }}>
+          You&apos;re not failing.<br />You&apos;re playing a game <em>designed for someone else.</em>
+        </h2>
+        <p data-reveal style={{ fontSize: 16, color: 'var(--muted)', lineHeight: 1.7, maxWidth: 560, marginBottom: 28 }}>
+          Campus placement reaches a fraction of students at a fraction of colleges. For everyone else, the numbers look like this:
+        </p>
+
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
           {[
-            "You've sent 50+ applications. Maybe one or two replies.",
-            "Your resume gets ignored — and no one will tell you why.",
-            "Cold emails feel like shouting into a void.",
-            'Everyone around you "knows someone." You don\'t.',
-            "You're working hard, but with no idea what's actually broken.",
-          ].map(item => (
-            <div className="pain-item" key={item}>
-              <div style={{ width: 22, height: 22, borderRadius: 6, border: '2px solid rgba(255,255,255,0.22)', flexShrink: 0, marginTop: 3, transition: 'all 0.3s' }} />
-              <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6, fontWeight: 500 }}>{item}</span>
+            { num: <>50<small> : 1</small></>, label: 'Applications sent for every reply received — the off-campus default when you apply like everyone else.' },
+            { num: <>0</>, label: 'Recruiters who will ever tell you why your resume got ignored. Silence is the only feedback.' },
+            { num: <>6<small> months</small></>, label: 'Average time spent guessing — rewriting the resume, watching videos, applying into the void.' },
+          ].map((row, i) => (
+            <div key={i} className="math-row" data-reveal style={{ transitionDelay: `${i * 0.1}s` }}>
+              <div className="math-num">{row.num}</div>
+              <p style={{ fontSize: 15.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}>{row.label}</p>
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 36, padding: '24px 32px', background: 'linear-gradient(135deg, rgba(79,124,255,0.08), rgba(123,97,255,0.05))', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 20 }}>
-          <p style={{ fontSize: 17, fontWeight: 600, color: '#93BBFF', lineHeight: 1.6 }}>This isn&apos;t a talent problem. It&apos;s a strategy problem. That&apos;s exactly what we fix.</p>
+
+        <div data-reveal style={{ marginTop: 40, padding: '26px 32px', background: 'linear-gradient(135deg, rgba(79,124,255,0.08), rgba(123,97,255,0.05))', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 20 }}>
+          <p style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(18px, 2.4vw, 23px)', color: '#cdd9ff', lineHeight: 1.55 }}>
+            This isn&apos;t a talent problem. It&apos;s a <em style={{ color: 'white' }}>distribution</em> problem —
+            your work never reaches a human who can say yes. That&apos;s the part we fix.
+          </p>
         </div>
-        <div style={{ textAlign: 'center', marginTop: 28 }}>
-          <a href="/resources/resume-roast" style={{ fontSize: 14, fontWeight: 700, color: '#93BBFF', textDecoration: 'none' }} onClick={cta('roast', 'pain_section')}>
-            Want to know what&apos;s broken in <em>your</em> resume? Get the free roast →
+        <div data-reveal style={{ textAlign: 'center', marginTop: 26 }}>
+          <a href="/resources/resume-roast" style={{ fontSize: 14, fontWeight: 700, color: '#93BBFF' }} onClick={cta('roast', 'pain_section')}>
+            Start with the part you control — get the free resume roast →
           </a>
         </div>
       </section>
 
-      {/* WHAT CHANGES — TRANSFORMATION */}
-      <section style={{ padding: '100px 24px', maxWidth: 1140, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <h2 className="section-title">Here&apos;s what changes</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 17, marginTop: 8 }}>Same effort. Completely different outcome.</p>
-        </div>
+      {/* ───────────────── Nº 02 — THE SYSTEM ───────────────── */}
+      <section style={{ padding: '110px 24px', maxWidth: 1140, margin: '0 auto' }}>
+        <Ledger no="Nº 02" label="The system" />
+        <h2 className="section-title" data-reveal style={{ marginBottom: 12 }}>
+          Same effort. <em>Different physics.</em>
+        </h2>
+        <p data-reveal style={{ color: 'var(--muted)', fontSize: 16, maxWidth: 540, lineHeight: 1.7, marginBottom: 48 }}>
+          Diagnose what&apos;s blocking you, rebuild the resume and targeting, then execute with a mentor
+          watching your numbers every week — until something signs.
+        </p>
 
-        <div className="transformation-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)', gap: 24, alignItems: 'stretch' }}>
-
-          {/* TODAY panel */}
-          <div style={{ background: 'linear-gradient(180deg, rgba(239,68,68,0.07), rgba(239,68,68,0.015))', border: '1px solid rgba(239,68,68,0.18)', borderRadius: 24, padding: '36px 32px', position: 'relative' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 100, fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#f87171', marginBottom: 22 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f87171' }} />
-              TODAY
-            </div>
-            <h3 style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 24, fontWeight: 400, color: 'rgba(255,255,255,0.62)', marginBottom: 26, lineHeight: 1.25 }}>Where most students get stuck</h3>
+        <div className="panel-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)', gap: 24, alignItems: 'stretch' }}>
+          <div className="panel panel-today" data-reveal>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: 2.5, color: '#f87171', display: 'block', marginBottom: 20 }}>TODAY</span>
+            <h3 style={{ fontFamily: 'var(--serif)', fontSize: 24, fontWeight: 400, color: 'rgba(255,255,255,0.62)', marginBottom: 26, lineHeight: 1.25 }}>Where most students get stuck</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
                 "50 applications. 1 reply (if you're lucky).",
-                "Resume rewritten 3 times. Still ignored.",
-                "\"Just network!\" — but with who?",
-                "YouTube + ChatGPT + nothing happens.",
+                'Resume rewritten 3 times. Still ignored.',
+                '"Just network!" — but with who?',
+                'YouTube + ChatGPT + nothing happens.',
               ].map(item => (
                 <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: 14, lineHeight: 1.55 }}>
                   <span style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.28)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1, color: '#f87171', fontSize: 11, fontWeight: 700 }}>✕</span>
@@ -566,8 +579,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Arrow */}
-          <div className="transformation-arrow" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 72 }}>
+          <div className="panel-arrow" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 72 }}>
             <svg width="72" height="48" viewBox="0 0 72 48" fill="none" style={{ display: 'block' }}>
               <defs>
                 <linearGradient id="arrowGrad" x1="0" y1="0" x2="72" y2="0" gradientUnits="userSpaceOnUse">
@@ -579,13 +591,12 @@ export default function Home() {
             </svg>
           </div>
 
-          {/* IN 2 WEEKS panel */}
-          <div style={{ background: 'linear-gradient(180deg, rgba(79,124,255,0.1), rgba(123,97,255,0.025))', border: '1px solid rgba(79,124,255,0.32)', borderRadius: 24, padding: '36px 32px', position: 'relative', boxShadow: '0 0 60px rgba(79,124,255,0.08)' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.32)', borderRadius: 100, fontSize: 11, fontWeight: 800, letterSpacing: 2, color: '#93BBFF', marginBottom: 22 }}>
+          <div className="panel panel-after" data-reveal style={{ transitionDelay: '0.12s' }}>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: 2.5, color: '#93BBFF', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#93BBFF', animation: 'pulse-dot 2s ease-in-out infinite' }} />
               IN 2 WEEKS
-            </div>
-            <h3 style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 24, fontWeight: 400, color: 'white', marginBottom: 26, lineHeight: 1.25 }}>Where the cohort gets you</h3>
+            </span>
+            <h3 style={{ fontFamily: 'var(--serif)', fontSize: 24, fontWeight: 400, color: 'white', marginBottom: 26, lineHeight: 1.25 }}>Where the cohort gets you</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
                 { bold: '25+ replies', rest: ' on your first batch of cold emails.' },
@@ -604,68 +615,22 @@ export default function Home() {
           </div>
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: 14, color: 'rgba(255,255,255,0.45)', marginTop: 36, lineHeight: 1.6 }}>
+        <p data-reveal style={{ textAlign: 'center', fontSize: 14, color: 'rgba(255,255,255,0.45)', marginTop: 36, lineHeight: 1.6 }}>
           The work doesn&apos;t change. <span style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>The system does.</span>
         </p>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section ref={howItWorksRef} style={{ padding: '100px 24px', background: '#0B0B0F' }}>
+      {/* ───────────────── Nº 03 — THE FREE ARSENAL ───────────────── */}
+      <section style={{ padding: '110px 24px', background: 'linear-gradient(180deg, rgba(79,124,255,0.04), transparent)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <h2 className="section-title" style={{ maxWidth: 640, margin: '0 auto 8px' }}>From stuck to placed,<br />in three moves</h2>
-          </div>
-
-          <style>{`
-            .hiw-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-            @media(max-width: 768px) {
-              .hiw-row { grid-template-columns: 1fr; gap: 14px; }
-            }
-          `}</style>
-
-          <div className="hiw-row">
-            {[
-              { num: '01', title: 'Diagnose what\'s blocking you', desc: 'We start by understanding exactly where you\'re stuck — resume, LinkedIn, cold outreach, or targeting. No generic advice. A sharp, honest assessment of what needs to change.', delay: '0s' },
-              { num: '02', title: 'Fix your profile and strategy', desc: 'We rebuild your resume and outreach approach for the roles you want — consulting, finance, Founder\'s Office, BD. You get scripts, templates, a target list, and warm introductions.', delay: '0.15s' },
-              { num: '03', title: 'Execute until you\'re placed', desc: "Weekly accountability and direct support until you have an offer. We don't disappear after onboarding. We stay until the job is done.", delay: '0.3s' },
-            ].map(step => (
-              <div
-                key={step.num}
-                className={`hiw-card${howItWorksVisible ? ' visible' : ''}`}
-                style={{ transitionDelay: step.delay, transitionDuration: '0.6s' }}
-              >
-                <div style={{ display: 'inline-flex', alignItems: 'center', padding: '5px 12px', background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.22)', borderRadius: 100, fontSize: 11, fontWeight: 800, letterSpacing: 1.5, color: '#93BBFF', marginBottom: 20 }}>STEP {step.num}</div>
-                <div style={{ fontSize: 20, fontWeight: 800, color: 'white', lineHeight: 1.3, marginBottom: 14 }}>{step.title}</div>
-                <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.85 }}>{step.desc}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Proof strip */}
-          <div style={{ marginTop: 64, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {[
-              'Cold emails using our templates get replies within 24 hours on average',
-              'Most students land their first interview conversation within 30 days',
-              'Students from 50+ colleges across India have gone through this process',
-            ].map((fact, i) => (
-              <div key={i} className="proof-strip-card">
-                <span style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>{fact}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FREE TOOLS — convert skeptics with value before any ask */}
-      <section style={{ padding: '100px 24px', background: 'linear-gradient(180deg, rgba(79,124,255,0.04), transparent)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <span className="section-label">START FREE</span>
-            <h2 className="section-title">Don&apos;t trust us yet? Smart.<br />Start with the free stuff.</h2>
-            <p style={{ color: 'var(--muted)', fontSize: 17, maxWidth: 560, margin: '8px auto 0', lineHeight: 1.7 }}>
-              Everything below is genuinely free. Use it, see how we think, and only then decide if you want us in your corner.
-            </p>
-          </div>
+          <Ledger no="Nº 03" label="The free arsenal" />
+          <h2 className="section-title" data-reveal style={{ marginBottom: 12 }}>
+            Don&apos;t trust us yet? <em>Smart.</em><br />Start with the free stuff.
+          </h2>
+          <p data-reveal style={{ color: 'var(--muted)', fontSize: 16, maxWidth: 560, lineHeight: 1.7, marginBottom: 48 }}>
+            Everything below is genuinely free. Use it, see how we think, and only then decide
+            if you want us in your corner.
+          </p>
 
           <style>{`
             .tools-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -675,34 +640,22 @@ export default function Home() {
           <div className="tools-row">
             {[
               {
-                icon: '🔥',
-                title: 'AI Resume Roast',
-                badge: 'MOST POPULAR',
-                badgeColor: '#ef4444',
+                index: '01', icon: '🔥', title: 'AI Resume Roast', badge: 'MOST POPULAR', badgeColor: '#ef4444',
                 desc: 'Upload your resume. Our AI tells you exactly why recruiters ignore it — brutally, line by line. Takes under a minute.',
-                cta: 'Roast my resume →',
-                href: '/resources/resume-roast',
+                cta: 'Roast my resume →', href: '/resources/resume-roast',
               },
               {
-                icon: '🎯',
-                title: 'Job Tracker',
-                badge: 'NEW',
-                badgeColor: '#4F7CFF',
-                desc: 'Stop tracking 50 applications in your head. Kanban board, follow-up reminders, streaks, and an AI outreach writer.',
-                cta: 'Track my applications →',
-                href: '/job-tracker',
+                index: '02', icon: '🎯', title: 'Job Tracker', badge: 'NEW', badgeColor: '#4F7CFF',
+                desc: 'Stop tracking 50 applications in your head. Kanban board, follow-up reminders, a curated feed of fresher openings, and an AI outreach writer.',
+                cta: 'Track my applications →', href: '/job-tracker',
               },
               {
-                icon: '🛠️',
-                title: 'Templates & Toolkits',
-                badge: 'OPEN ACCESS',
-                badgeColor: '#10b981',
+                index: '03', icon: '🛠️', title: 'Templates & Toolkits', badge: 'OPEN ACCESS', badgeColor: '#10b981',
                 desc: '50 cold email templates, 20 LinkedIn scripts, resume guides and toolkits for 15 roles — the same materials our cohort students use.',
-                cta: 'Browse free resources →',
-                href: '/free',
+                cta: 'Browse free resources →', href: '/free',
               },
-            ].map(tool => (
-              <a key={tool.title} href={tool.href} className="tool-card" style={{ textDecoration: 'none', color: 'inherit' }} onClick={cta(tool.title, 'free_tools')}>
+            ].map((tool, i) => (
+              <a key={tool.title} href={tool.href} className="tool-card" data-reveal data-index={tool.index} style={{ transitionDelay: `${i * 0.1}s`, color: 'inherit' }} onClick={cta(tool.title, 'free_tools')}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
                   <span style={{ fontSize: 34, lineHeight: 1 }}>{tool.icon}</span>
                   <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: '4px 10px', borderRadius: 100, color: tool.badgeColor, background: `${tool.badgeColor}1a`, border: `1px solid ${tool.badgeColor}40` }}>{tool.badge}</span>
@@ -714,14 +667,14 @@ export default function Home() {
             ))}
           </div>
 
-          <p style={{ textAlign: 'center', fontSize: 14, color: 'rgba(255,255,255,0.45)', marginTop: 36, lineHeight: 1.7 }}>
+          <p data-reveal style={{ textAlign: 'center', fontSize: 14, color: 'rgba(255,255,255,0.45)', marginTop: 36, lineHeight: 1.7 }}>
             Why free? Because once you see what a sharp strategy looks like,{' '}
             <span style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>you&apos;ll know exactly what working with us feels like.</span>
           </p>
         </div>
       </section>
 
-      {/* STATS */}
+      {/* ── STATS BAND ── */}
       <section style={{ padding: '80px 24px', background: 'linear-gradient(135deg, rgba(79,124,255,0.06), rgba(123,97,255,0.04))', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 40, textAlign: 'center' }}>
           {[
@@ -729,21 +682,22 @@ export default function Home() {
             { num: '300+', label: 'Students helped across 50+ colleges' },
             { num: '100%', label: 'Live sessions, never recorded' },
           ].map((s, i) => (
-            <div key={i}>
+            <div key={i} data-reveal style={{ transitionDelay: `${i * 0.1}s` }}>
               <div className="stat-num" style={{ color: '#4F7CFF', marginBottom: 8 }}>{s.num}</div>
-              <div style={{ fontSize: 16, fontWeight: 600 }}>{s.label}</div>
+              <div style={{ fontSize: 15, fontWeight: 600 }}>{s.label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* SOCIAL PROOF */}
-      {/* PLACEHOLDER: Replace these cards with real named students, photos, and LinkedIn profile links once collected */}
-      <section style={{ padding: '80px 24px', maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <h2 className="section-title">Students who made it work</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 17 }}>Consulting, finance, startups — different paths, same starting point.</p>
-        </div>
+      {/* ───────────────── Nº 04 — THE RECEIPTS ───────────────── */}
+      {/* PLACEHOLDER: Replace cards with real named students, photos, LinkedIn links once collected */}
+      <section style={{ padding: '110px 24px', maxWidth: 1100, margin: '0 auto' }}>
+        <Ledger no="Nº 04" label="The receipts" />
+        <h2 className="section-title" data-reveal style={{ marginBottom: 12 }}>
+          Students who <em>made it work</em>
+        </h2>
+        <p data-reveal style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 48 }}>Consulting, finance, startups — different paths, same starting point.</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
           {[
             { initial: 'P', name: 'Commerce student, Delhi', role: 'Marketing Intern at a D2C Startup', quote: 'I had zero replies for months. After week 2 of the cohort, I got 3 responses from cold emails. Got my internship offer shortly after.', color: '#4F7CFF', result: 'Internship secured' },
@@ -753,11 +707,9 @@ export default function Home() {
             { initial: 'A', name: 'MBA student, Delhi', role: 'Consulting Intern at a Boutique Firm', quote: 'I switched my target from finance to consulting through this cohort. The mentor connections and the strategy made it happen.', color: '#f59e0b', result: 'Career pivot successful' },
             { initial: 'M', name: 'Commerce graduate, Tier-2 college', role: 'Finance Intern at a Fast-Growing Fintech', quote: "This company wasn't even on my radar. My mentor pushed me to apply and helped me prep. The call came through.", color: '#ec4899', result: 'Dream company cracked' },
           ].map((t, i) => (
-            <div key={i} className="proof-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
-                {[...Array(5)].map((_, s) => <span key={s} style={{ color: '#f59e0b', fontSize: 14 }}>★</span>)}
-              </div>
-              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: 24, fontStyle: 'italic' }}>&ldquo;{t.quote}&rdquo;</p>
+            <div key={i} className="proof-card" data-reveal style={{ transitionDelay: `${(i % 3) * 0.08}s` }}>
+              <div style={{ fontFamily: 'var(--serif)', fontSize: 40, lineHeight: 0.6, color: `${t.color}66`, marginBottom: 14 }}>&ldquo;</div>
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: 24, fontStyle: 'italic' }}>{t.quote}</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg, ${t.color}, #0B0B0F)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, flexShrink: 0 }}>{t.initial}</div>
                 <div>
@@ -765,36 +717,36 @@ export default function Home() {
                   <div style={{ fontSize: 12, color: 'var(--muted)' }}>{t.role}</div>
                 </div>
               </div>
-              <div style={{ marginTop: 16, padding: '8px 14px', background: `${t.color}15`, border: `1px solid ${t.color}30`, borderRadius: 100, fontSize: 12, fontWeight: 700, color: t.color, display: 'inline-block' }}>{t.result}</div>
+              <div style={{ marginTop: 16, padding: '7px 14px', background: `${t.color}15`, border: `1px solid ${t.color}30`, borderRadius: 100, fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 500, letterSpacing: 0.5, color: t.color, display: 'inline-block' }}>{t.result}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* FOUNDERS */}
-      <section style={{ padding: '100px 24px', maxWidth: 1000, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <span className="section-label">WHO WE ARE</span>
-          <h2 className="section-title">Built by people who&apos;ve been exactly where you are</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 16, maxWidth: 520, margin: '16px auto 0', lineHeight: 1.8 }}>
-            No professors. No career coaches who&apos;ve never applied. Just two people who cracked off-campus hiring — and built a system so you don&apos;t have to figure it out alone.
-          </p>
-        </div>
+      {/* ───────────────── Nº 05 — THE PEOPLE ───────────────── */}
+      <section style={{ padding: '110px 24px', maxWidth: 1000, margin: '0 auto' }}>
+        <Ledger no="Nº 05" label="The people" />
+        <h2 className="section-title" data-reveal style={{ marginBottom: 12 }}>
+          Built by people who&apos;ve been<br /><em>exactly where you are</em>
+        </h2>
+        <p data-reveal style={{ color: 'var(--muted)', fontSize: 16, maxWidth: 520, lineHeight: 1.8, marginBottom: 56 }}>
+          No professors. No career coaches who&apos;ve never applied. Just two people who cracked
+          off-campus hiring — and built a system so you don&apos;t have to figure it out alone.
+        </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 2, marginBottom: 56 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20, marginBottom: 56 }}>
           {/* Founder 1 */}
-          <div style={{ padding: 2, borderRadius: 32, background: 'linear-gradient(145deg, rgba(79,70,229,0.6) 0%, rgba(123,97,255,0.25) 50%, rgba(255,255,255,0.04) 100%)' }}>
-            <div style={{ background: 'linear-gradient(160deg, #131020 0%, #0c0b15 100%)', borderRadius: 30, padding: '44px 40px', height: '100%', position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
+          <div data-reveal style={{ padding: 2, borderRadius: 32, background: 'linear-gradient(145deg, rgba(79,70,229,0.6) 0%, rgba(123,97,255,0.25) 50%, rgba(255,255,255,0.04) 100%)' }}>
+            <div style={{ background: 'linear-gradient(160deg, #131020 0%, #0c0b15 100%)', borderRadius: 30, padding: '44px 40px', height: '100%', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: -100, left: -60, width: 260, height: 260, background: 'radial-gradient(circle, rgba(79,70,229,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', bottom: -80, right: -80, width: 220, height: 220, background: 'radial-gradient(circle, rgba(123,97,255,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', top: 16, right: 24, fontFamily: 'Georgia,serif', fontSize: 140, lineHeight: 1, color: 'rgba(79,70,229,0.07)', userSelect: 'none', pointerEvents: 'none' }}>&ldquo;</div>
+              <div style={{ position: 'absolute', top: 16, right: 24, fontFamily: 'var(--serif)', fontSize: 140, lineHeight: 1, color: 'rgba(79,70,229,0.07)', userSelect: 'none', pointerEvents: 'none' }}>&ldquo;</div>
               <Image src="/founders/anirudh.png" alt="Anirudh Agarwal" width={84} height={84} quality={80} style={{ width: 84, height: 84, borderRadius: '50%', objectFit: 'cover', marginBottom: 24, boxShadow: '0 0 0 5px rgba(79,70,229,0.18), 0 0 40px rgba(79,70,229,0.28)', display: 'block' }} />
-              <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 26, fontWeight: 400, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>Anirudh Agarwal</div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', background: 'rgba(79,70,229,0.18)', border: '1px solid rgba(79,70,229,0.35)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#a5b4fc', marginBottom: 6, letterSpacing: '0.3px' }}>
+              <div style={{ fontFamily: 'var(--serif)', fontSize: 26, fontWeight: 400, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>Anirudh Agarwal</div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', background: 'rgba(79,70,229,0.18)', border: '1px solid rgba(79,70,229,0.35)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#a5b4fc', marginBottom: 6 }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#a5b4fc', display: 'inline-block' }} />
                 Associate Consultant @ Aon
               </div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 28, letterSpacing: '0.2px' }}>Christ University, Bangalore</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 28 }}>Christ University, Bangalore</div>
               <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(79,70,229,0.4), rgba(123,97,255,0.15), transparent)', marginBottom: 28 }} />
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.85, marginBottom: 28, position: 'relative', zIndex: 1 }}>
                 Cracked consulting off-campus straight after his undergrad. Spent months figuring out what actually gets you interviews — then wrote it down so you don&apos;t have to.
@@ -804,7 +756,7 @@ export default function Home() {
                   <span key={tag} style={{ padding: '5px 13px', background: 'rgba(79,70,229,0.12)', border: '1px solid rgba(79,70,229,0.22)', borderRadius: 100, fontSize: 12, color: '#a5b4fc', fontWeight: 600 }}>{tag}</span>
                 ))}
               </div>
-              <a href="https://www.linkedin.com/in/anirudh-agarwal-36591220b/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', background: 'rgba(79,70,229,0.14)', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 12, fontSize: 13, color: '#a5b4fc', textDecoration: 'none', fontWeight: 600 }}>
+              <a href="https://www.linkedin.com/in/anirudh-agarwal-36591220b/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', background: 'rgba(79,70,229,0.14)', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 12, fontSize: 13, color: '#a5b4fc', fontWeight: 600 }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                 View LinkedIn
               </a>
@@ -812,18 +764,17 @@ export default function Home() {
           </div>
 
           {/* Founder 2 */}
-          <div style={{ padding: 2, borderRadius: 32, background: 'linear-gradient(145deg, rgba(6,182,212,0.5) 0%, rgba(8,145,178,0.2) 50%, rgba(255,255,255,0.04) 100%)' }}>
-            <div style={{ background: 'linear-gradient(160deg, #0a1418 0%, #0b0f14 100%)', borderRadius: 30, padding: '44px 40px', height: '100%', position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
+          <div data-reveal style={{ transitionDelay: '0.12s', padding: 2, borderRadius: 32, background: 'linear-gradient(145deg, rgba(6,182,212,0.5) 0%, rgba(8,145,178,0.2) 50%, rgba(255,255,255,0.04) 100%)' }}>
+            <div style={{ background: 'linear-gradient(160deg, #0a1418 0%, #0b0f14 100%)', borderRadius: 30, padding: '44px 40px', height: '100%', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: -100, left: -60, width: 260, height: 260, background: 'radial-gradient(circle, rgba(6,182,212,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', bottom: -80, right: -80, width: 220, height: 220, background: 'radial-gradient(circle, rgba(8,145,178,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', top: 16, right: 24, fontFamily: 'Georgia,serif', fontSize: 140, lineHeight: 1, color: 'rgba(6,182,212,0.07)', userSelect: 'none', pointerEvents: 'none' }}>&ldquo;</div>
+              <div style={{ position: 'absolute', top: 16, right: 24, fontFamily: 'var(--serif)', fontSize: 140, lineHeight: 1, color: 'rgba(6,182,212,0.07)', userSelect: 'none', pointerEvents: 'none' }}>&ldquo;</div>
               <Image src="/founders/sanya.png" alt="Sanya Srivastava" width={84} height={84} quality={80} style={{ width: 84, height: 84, borderRadius: '50%', objectFit: 'cover', marginBottom: 24, boxShadow: '0 0 0 5px rgba(6,182,212,0.15), 0 0 40px rgba(6,182,212,0.22)', display: 'block' }} />
-              <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 26, fontWeight: 400, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>Sanya Srivastava</div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#67e8f9', marginBottom: 6, letterSpacing: '0.3px' }}>
+              <div style={{ fontFamily: 'var(--serif)', fontSize: 26, fontWeight: 400, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>Sanya Srivastava</div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#67e8f9', marginBottom: 6 }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#67e8f9', display: 'inline-block' }} />
                 FP&amp;A @ Palo Alto Networks
               </div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 28, letterSpacing: '0.2px' }}>Finance · Corporate Strategy</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 28 }}>Finance · Corporate Strategy</div>
               <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(6,182,212,0.4), rgba(8,145,178,0.15), transparent)', marginBottom: 28 }} />
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.85, marginBottom: 28, position: 'relative', zIndex: 1 }}>
                 Built a career in finance and corporate strategy at a global tech company — without the &ldquo;right&rdquo; pedigree. Knows exactly what finance and strategy roles look for, and how to get there when no one hands you a roadmap.
@@ -833,7 +784,7 @@ export default function Home() {
                   <span key={tag} style={{ padding: '5px 13px', background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.22)', borderRadius: 100, fontSize: 12, color: '#67e8f9', fontWeight: 600 }}>{tag}</span>
                 ))}
               </div>
-              <a href="https://www.linkedin.com/in/sanya-srivastava-bb8806273/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.25)', borderRadius: 12, fontSize: 13, color: '#67e8f9', textDecoration: 'none', fontWeight: 600 }}>
+              <a href="https://www.linkedin.com/in/sanya-srivastava-bb8806273/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.25)', borderRadius: 12, fontSize: 13, color: '#67e8f9', fontWeight: 600 }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                 View LinkedIn
               </a>
@@ -841,44 +792,36 @@ export default function Home() {
           </div>
         </div>
 
-        {/* shared quote */}
-        <div style={{ textAlign: 'center', padding: '0 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
-            <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1))' }} />
-            <div style={{ display: 'flex', gap: 6 }}>
-              {[0,1,2].map(i => <div key={i} style={{ width: 4, height: 4, borderRadius: '50%', background: i === 1 ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)' }} />)}
-            </div>
-            <div style={{ flex: 1, height: 1, background: 'linear-gradient(270deg, transparent, rgba(255,255,255,0.1))' }} />
-          </div>
-          <p style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 'clamp(20px, 3vw, 28px)', color: 'rgba(255,255,255,0.82)', lineHeight: 1.55, fontStyle: 'italic', maxWidth: 600, margin: '0 auto' }}>
+        <div data-reveal style={{ textAlign: 'center', padding: '0 16px' }}>
+          <p style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(20px, 3vw, 28px)', color: 'rgba(255,255,255,0.82)', lineHeight: 1.55, fontStyle: 'italic', maxWidth: 600, margin: '0 auto' }}>
             &ldquo;We built this because the system wasn&apos;t built for us.<br />Now it&apos;s built for you.&rdquo;
           </p>
         </div>
       </section>
 
-      {/* PROGRAMS — the ask, made after value and proof */}
-      <section id="programs" style={{ padding: '80px 24px', maxWidth: 960, margin: '0 auto' }}>
+      {/* ───────────────── Nº 06 — THE ASK ───────────────── */}
+      <section id="programs" style={{ padding: '110px 24px 80px', maxWidth: 960, margin: '0 auto' }}>
+        <Ledger no="Nº 06" label="Work with us" />
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <span className="section-label">WORK WITH US</span>
-          <h2 className="section-title">Two ways to work with us</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 17, marginBottom: 24 }}>Both are live programs with real mentors — pick the one that fits your goal.</p>
-          <div className="ladder">
+          <h2 className="section-title" data-reveal style={{ marginBottom: 12 }}>Two ways to <em>work with us</em></h2>
+          <p data-reveal style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 24 }}>Both are live programs with real mentors — pick the one that fits your goal.</p>
+          <div data-reveal className="ladder">
             <span>Start with the free tools</span>
             <span style={{ color: 'rgba(255,255,255,0.3)' }}>→</span>
             <span>Test us with a ₹549 strategy call</span>
             <span style={{ color: 'rgba(255,255,255,0.3)' }}>→</span>
             <span style={{ color: '#93BBFF' }}>Join a cohort when you&apos;re ready</span>
           </div>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginTop: 18, lineHeight: 1.6 }}>
+          <p data-reveal style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginTop: 18, lineHeight: 1.6 }}>
             One-time payment · no subscriptions · most students see <span style={{ color: '#93BBFF', fontWeight: 700 }}>25+ cold email replies</span> in their first 2 weeks of doing the work.
           </p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
 
-          {/* Internship Cohort — lighter */}
-          <div className="product-card" style={{ background: 'rgba(245,158,11,0.03)', border: '1px solid rgba(245,158,11,0.2)' }}>
-            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#fbbf24', marginBottom: 24, letterSpacing: 1 }}>INTERNSHIP COHORT</div>
-            <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Internship Cohort</div>
+          {/* Internship Cohort */}
+          <div className="product-card" data-reveal style={{ background: 'rgba(245,158,11,0.03)', border: '1px solid rgba(245,158,11,0.2)' }}>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: 2.5, color: '#fbbf24', display: 'block', marginBottom: 22 }}>INTERNSHIP COHORT — 4 WEEKS</span>
+            <div style={{ fontFamily: 'var(--serif)', fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Internship Cohort</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>A 4-week live program to land your first off-campus internship in consulting, finance, or startups.</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '20px 0' }}>
               <span style={{ fontSize: 42, fontWeight: 800, color: '#fbbf24' }}>₹1,750</span>
@@ -900,18 +843,18 @@ export default function Home() {
             <a
               href="/summer"
               onClick={cta('internship_cohort', 'programs')}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'transparent', color: '#fbbf24', fontWeight: 700, fontSize: 15, border: '1.5px solid rgba(245,158,11,0.45)', transition: 'all 0.3s', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'transparent', color: '#fbbf24', fontWeight: 700, fontSize: 15, border: '1.5px solid rgba(245,158,11,0.45)', transition: 'all 0.3s', width: '100%' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.1)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.7)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.45)'; }}>
               Explore Internship Cohort →
             </a>
           </div>
 
-          {/* Placement Cohort — bolder */}
-          <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(123,97,255,0.08), rgba(79,124,255,0.05))', border: '1px solid rgba(123,97,255,0.3)', position: 'relative' }}>
+          {/* Placement Cohort */}
+          <div className="product-card" data-reveal style={{ transitionDelay: '0.12s', background: 'linear-gradient(135deg, rgba(123,97,255,0.08), rgba(79,124,255,0.05))', border: '1px solid rgba(123,97,255,0.3)' }}>
             <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: '#4F7CFF', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: 'nowrap', color: 'white' }}>MOST POPULAR</div>
-            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(123,97,255,0.15)', border: '1px solid rgba(123,97,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#C4B5FD', marginBottom: 24, letterSpacing: 1, marginTop: 20 }}>PLACEMENT COHORT</div>
-            <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Placement Cohort</div>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: 2.5, color: '#C4B5FD', display: 'block', marginBottom: 22, marginTop: 20 }}>PLACEMENT COHORT — UNTIL PLACED</span>
+            <div style={{ fontFamily: 'var(--serif)', fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Placement Cohort</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>An extended program with weekly accountability, live sessions, and mentor support until you&apos;re placed.</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '20px 0' }}>
               <span style={{ fontSize: 42, fontWeight: 800, color: '#7B61FF' }}>₹2,500</span>
@@ -934,15 +877,13 @@ export default function Home() {
             <a
               href="/cohort"
               onClick={cta('placement_cohort', 'programs')}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s', width: '100%' }}>
               Explore Placement Cohort →
             </a>
           </div>
-
         </div>
 
-        {/* Honest scarcity + risk reversal */}
-        <div style={{ textAlign: 'center', marginTop: 28, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div data-reveal style={{ textAlign: 'center', marginTop: 28, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
             Batches stay small on purpose — every resume gets a weekly human review. When a batch fills, the next one opens.
           </p>
@@ -960,30 +901,29 @@ export default function Home() {
         <TrustStrip />
       </section>
 
-      {/* COMPARISON TABLE */}
+      {/* ── COMPARISON ── */}
       <section style={{ padding: '100px 24px', maxWidth: 1080, margin: '0 auto' }}>
+        <Ledger no="Nº 07" label="Compare the paths" />
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <span className="section-label">COMPARE</span>
-          <h2 className="section-title">Why students keep choosing this</h2>
-          <p style={{ color: 'var(--muted)', fontSize: 17, marginTop: 8 }}>Same goal. Three very different paths.</p>
+          <h2 className="section-title" data-reveal>Same goal. <em>Three very different paths.</em></h2>
         </div>
 
-        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' as never, borderRadius: 28, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.012)' }}>
+        <div data-reveal style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' as never, borderRadius: 28, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.012)' }}>
           <table className="comp-table" style={{ minWidth: 760 }}>
             <thead>
               <tr>
                 <th className="ct-corner"></th>
                 <th className="ct-head ct-head-other">
-                  <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.65)', marginBottom: 6 }}>Watching YouTube</div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.65)', marginBottom: 6 }}>Watching YouTube</div>
                   <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>Self-study path</div>
                 </th>
                 <th className="ct-head ct-head-bc">
                   <div className="ct-bc-badge">★ RECOMMENDED</div>
-                  <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 20, fontWeight: 400, color: 'white', marginBottom: 6 }}>Beyond Campus</div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 20, fontWeight: 400, color: 'white', marginBottom: 6 }}>Beyond Campus</div>
                   <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: '#93BBFF' }}>Most students start here</div>
                 </th>
                 <th className="ct-head ct-head-other">
-                  <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.65)', marginBottom: 6 }}>Pre-recorded courses</div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.65)', marginBottom: 6 }}>Pre-recorded courses</div>
                   <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>Video modules</div>
                 </th>
               </tr>
@@ -1039,12 +979,12 @@ export default function Home() {
           * Free to watch. Not free to spend 6 months figuring it out alone.
         </p>
 
-        <div style={{ textAlign: 'center', marginTop: 36, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href="/cohort" className="btn-primary" style={{ fontFamily: 'inherit', fontSize: 15, padding: '14px 32px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }} onClick={cta('placement_cohort', 'compare')}>
+        <div data-reveal style={{ textAlign: 'center', marginTop: 36, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <a href="/cohort" className="btn-primary" style={{ fontFamily: 'inherit', fontSize: 15, padding: '14px 32px' }} onClick={cta('placement_cohort', 'compare')}>
             <span>Explore Placement Cohort</span>
             <span style={{ position: 'relative', zIndex: 1 }}>→</span>
           </a>
-          <a href="/summer" onClick={cta('internship_cohort', 'compare')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 32px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 15, border: '1.5px solid rgba(245,158,11,0.4)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: 'inherit' }}
+          <a href="/summer" onClick={cta('internship_cohort', 'compare')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 32px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 15, border: '1.5px solid rgba(245,158,11,0.4)', transition: 'all 0.3s', fontFamily: 'inherit' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.65)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.4)'; }}>
             Explore Internship Cohort →
@@ -1052,20 +992,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FAQ */}
+      {/* ── FAQ ── */}
       <section style={{ padding: '100px 24px', maxWidth: 800, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <span className="section-label">FAQ</span>
-          <h2 className="section-title">Questions we always get</h2>
-        </div>
+        <Ledger no="Nº 08" label="Questions we always get" />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {FAQS.map((faq, i) => (
-            <div key={i} style={{ background: '#111827', border: `1px solid ${openFaq === i ? 'rgba(79,124,255,0.35)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 16, overflow: 'hidden', transition: 'border-color 0.3s' }}>
+            <div key={i} data-reveal style={{ transitionDelay: `${Math.min(i, 4) * 0.05}s`, background: '#111827', border: `1px solid ${openFaq === i ? 'rgba(79,124,255,0.35)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 16, overflow: 'hidden', transition: 'border-color 0.3s' }}>
               <button
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 style={{ width: '100%', padding: '22px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', gap: 16 }}
               >
-                <span style={{ fontSize: 15, fontWeight: 600, color: openFaq === i ? 'white' : 'rgba(255,255,255,0.85)', lineHeight: 1.5 }}>{faq.q}</span>
+                <span style={{ fontSize: 15, fontWeight: 600, color: openFaq === i ? 'white' : 'rgba(255,255,255,0.85)', lineHeight: 1.5, fontFamily: 'inherit' }}>{faq.q}</span>
                 <span style={{ fontSize: 22, color: '#4F7CFF', flexShrink: 0, transition: 'transform 0.3s', transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0deg)', display: 'inline-block', lineHeight: 1 }}>+</span>
               </button>
               <div style={{ maxHeight: openFaq === i ? 300 : 0, overflow: 'hidden', transition: 'max-height 0.35s ease' }}>
@@ -1078,12 +1015,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FINAL CTA — one last fork: ready (cohort) or not ready (free roast) */}
-      <section style={{ padding: '80px 24px 100px', maxWidth: 800, margin: '0 auto' }}>
-        <div style={{ background: 'linear-gradient(135deg, rgba(79,124,255,0.1), rgba(123,97,255,0.08))', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 28, padding: '56px 48px', textAlign: 'center', position: 'relative', overflow: 'hidden', animation: 'border-glow 4s ease-in-out infinite' }}>
-          <div style={{ position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)', width: 300, height: 200, background: 'radial-gradient(circle, rgba(79,124,255,0.2), transparent)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-          <h2 style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 16, lineHeight: 1.15 }}>
-            Your next offer is one email<br />away from being sent.
+      {/* ── FINAL CTA ── */}
+      <section style={{ padding: '80px 24px 110px', maxWidth: 860, margin: '0 auto' }}>
+        <div data-reveal style={{ position: 'relative', borderRadius: 28, padding: '64px 48px', textAlign: 'center', overflow: 'hidden', background: 'linear-gradient(135deg, rgba(79,124,255,0.1), rgba(123,97,255,0.08))', border: '1px solid rgba(79,124,255,0.3)' }}>
+          <div style={{ position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)', width: 360, height: 220, background: 'radial-gradient(circle, rgba(79,124,255,0.22), transparent)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+          <span className="mono-label" style={{ display: 'block', marginBottom: 18, color: 'rgba(147,187,255,0.7)' }}>The last section. The first step.</span>
+          <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(28px, 4.4vw, 46px)', marginBottom: 16, lineHeight: 1.12, letterSpacing: -1 }}>
+            Your next offer is one email<br />away from <em style={{ color: '#93BBFF' }}>being sent.</em>
           </h2>
           <p style={{ fontSize: 17, lineHeight: 1.65, maxWidth: 560, margin: '0 auto 36px', color: 'rgba(255,255,255,0.78)' }}>
             Most students who follow the system see{' '}
@@ -1092,11 +1030,11 @@ export default function Home() {
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <a href="/cohort" className="btn-primary" style={{ fontSize: 17, padding: '18px 40px', fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }} onClick={cta('placement_cohort', 'final_cta')}>
+              <a href="/cohort" className="btn-primary" style={{ fontSize: 17, padding: '18px 40px', fontFamily: 'inherit' }} onClick={cta('placement_cohort', 'final_cta')}>
                 <span>Explore Placement Cohort</span>
                 <span style={{ position: 'relative', zIndex: 1 }}>→</span>
               </a>
-              <a href="/resources/resume-roast" className="btn-secondary" style={{ fontSize: 17, padding: '17px 40px', fontFamily: 'inherit', textDecoration: 'none' }} onClick={cta('roast', 'final_cta')}>
+              <a href="/resources/resume-roast" className="btn-secondary" style={{ fontSize: 17, padding: '17px 40px', fontFamily: 'inherit' }} onClick={cta('roast', 'final_cta')}>
                 Not ready? Get the free roast 🔥
               </a>
             </div>
@@ -1110,20 +1048,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
+      {/* ── FOOTER ── */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '48px 24px 32px', maxWidth: 1000, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24, marginBottom: 40 }}>
           <div>
-            <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 24, marginBottom: 6 }}>Beyond<span style={{ color: 'var(--blue)' }}>Campus</span></div>
-            <div style={{ fontSize: 14, color: 'var(--muted)' }}>Breaking campus barriers since 2023</div>
+            <div style={{ fontFamily: 'var(--serif)', fontSize: 24, marginBottom: 6 }}>Beyond<span style={{ color: 'var(--blue)' }}>Campus</span></div>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)', letterSpacing: 0.5 }}>Breaking campus barriers since 2023</div>
           </div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <a href="/summer" onClick={cta('internship_cohort', 'footer')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 14, border: '1.5px solid rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: 'inherit' }}
+            <a href="/summer" onClick={cta('internship_cohort', 'footer')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 14, border: '1.5px solid rgba(245,158,11,0.35)', transition: 'all 0.3s', fontFamily: 'inherit' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.6)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.35)'; }}>
               Internship Cohort →
             </a>
-            <a href="/cohort" className="btn-primary" style={{ padding: '12px 24px', fontSize: 14, fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }} onClick={cta('placement_cohort', 'footer')}>
+            <a href="/cohort" className="btn-primary" style={{ padding: '12px 24px', fontSize: 14, fontFamily: 'inherit' }} onClick={cta('placement_cohort', 'footer')}>
               <span>Placement Cohort</span>
               <span style={{ position: 'relative', zIndex: 1 }}>→</span>
             </a>
@@ -1131,7 +1069,7 @@ export default function Home() {
         </div>
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <p style={{ fontSize: 13, color: 'var(--muted)' }}>© {new Date().getFullYear()} Beyond Campus. All rights reserved.</p>
-          <p style={{ fontSize: 13, color: 'var(--muted)' }}>beyond-campus.in</p>
+          <p style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)' }}>beyond-campus.in</p>
         </div>
       </footer>
     </main>
