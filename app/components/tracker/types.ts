@@ -33,13 +33,14 @@ export interface TrackerProfile {
   email_reminders_enabled: boolean
 }
 
-export const STATUSES: { key: AppStatus; label: string; color: string; emoji: string }[] = [
-  { key: 'saved', label: 'Saved', color: '#93BBFF', emoji: '🔖' },
-  { key: 'applied', label: 'Applied', color: '#4F7CFF', emoji: '📨' },
-  { key: 'replied', label: 'Replied', color: '#00D2FF', emoji: '💬' },
-  { key: 'interview', label: 'Interview', color: '#f59e0b', emoji: '🎙️' },
-  { key: 'offer', label: 'Offer', color: '#10b981', emoji: '🎉' },
-  { key: 'rejected', label: 'Rejected', color: '#ef4444', emoji: '✕' },
+// icon names refer to the tracker SVG set in ui.tsx; emoji stays for native <option> lists
+export const STATUSES: { key: AppStatus; label: string; color: string; emoji: string; icon: 'bookmark' | 'send' | 'message' | 'mic' | 'trophy' | 'x' }[] = [
+  { key: 'saved', label: 'Saved', color: '#93BBFF', emoji: '🔖', icon: 'bookmark' },
+  { key: 'applied', label: 'Applied', color: '#4F7CFF', emoji: '📨', icon: 'send' },
+  { key: 'replied', label: 'Replied', color: '#00D2FF', emoji: '💬', icon: 'message' },
+  { key: 'interview', label: 'Interview', color: '#f59e0b', emoji: '🎙️', icon: 'mic' },
+  { key: 'offer', label: 'Offer', color: '#10b981', emoji: '🎉', icon: 'trophy' },
+  { key: 'rejected', label: 'Rejected', color: '#ef4444', emoji: '✕', icon: 'x' },
 ]
 
 export const SOURCES: { key: AppSource; label: string }[] = [

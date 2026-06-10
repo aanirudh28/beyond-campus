@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { GRAD, Icon, IconName } from './ui'
 
 interface RazorpayResponse {
   razorpay_payment_id: string
@@ -14,13 +15,13 @@ declare global {
   interface Window { Razorpay: any }
 }
 
-const PERKS = [
-  ['✨', 'Unlimited AI writing', 'Cold emails, follow-ups & DMs on tap'],
-  ['🧠', 'Full weekly AI insights', 'Know exactly what\'s working in your pipeline'],
-  ['📊', 'Full analytics', 'Reply rates by source, funnel, best days'],
-  ['📧', '50+ cold email templates', 'The complete Beyond Campus pack'],
-  ['💼', 'LinkedIn DM scripts', 'Word-for-word outreach scripts'],
-  ['📄', 'Resume guide + templates', '7-chapter guide & 6 formats'],
+const PERKS: [IconName, string, string][] = [
+  ['sparkles', 'Unlimited AI writing', 'Cold emails, follow-ups & DMs on tap'],
+  ['brain', 'Full weekly AI insights', 'Know exactly what\'s working in your pipeline'],
+  ['chart', 'Full analytics', 'Reply rates by source, funnel, best days'],
+  ['mail', '50+ cold email templates', 'The complete Beyond Campus pack'],
+  ['briefcase', 'LinkedIn DM scripts', 'Word-for-word outreach scripts'],
+  ['pencil', 'Resume guide + templates', '7-chapter guide & 6 formats'],
 ]
 
 export default function ProUpgradeModal({
@@ -97,11 +98,15 @@ export default function ProUpgradeModal({
   }
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)', zIndex: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, maxHeight: '92vh', overflowY: 'auto', background: '#111827', border: '1px solid rgba(123,97,255,0.35)', borderRadius: 26, padding: 30, boxShadow: '0 0 80px rgba(123,97,255,0.25)' }}>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)', zIndex: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, animation: 'overlayIn 0.2s ease both' }}>
+      <style>{`
+        @keyframes modalIn { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: none; } }
+        @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+      `}</style>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, maxHeight: '92vh', overflowY: 'auto', background: 'linear-gradient(180deg, #141b30, #0f1424)', border: '1px solid rgba(123,97,255,0.35)', borderRadius: 26, padding: 30, boxShadow: '0 0 80px rgba(123,97,255,0.25)', animation: 'modalIn 0.25s cubic-bezier(0.32, 0.72, 0, 1) both' }}>
         <div style={{ textAlign: 'center', marginBottom: 22 }}>
-          <div style={{ display: 'inline-block', padding: '5px 14px', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', borderRadius: 100, fontSize: 11, fontWeight: 800, color: 'white', letterSpacing: 1.5, marginBottom: 14 }}>
-            TRACKER PRO
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', background: GRAD, borderRadius: 100, fontSize: 11, fontWeight: 800, color: 'white', letterSpacing: 1.5, marginBottom: 14, boxShadow: '0 4px 16px rgba(79,124,255,0.4)' }}>
+            <Icon name="zap" size={12} /> TRACKER PRO
           </div>
           <h2 style={{ color: 'white', fontSize: 23, fontWeight: 800, margin: '0 0 8px', letterSpacing: -0.5 }}>{headline}</h2>
           <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13.5, margin: 0, lineHeight: 1.5 }}>
@@ -110,9 +115,11 @@ export default function ProUpgradeModal({
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 22 }}>
-          {PERKS.map(([emoji, title, sub]) => (
-            <div key={title} style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: 13, padding: '10px 14px' }}>
-              <span style={{ fontSize: 18 }}>{emoji}</span>
+          {PERKS.map(([icon, title, sub], i) => (
+            <div key={title} style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 13, padding: '10px 14px', animation: 'modalIn 0.3s ease both', animationDelay: `${i * 40}ms` }}>
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 10, background: 'rgba(123,97,255,0.14)', color: '#a5b4fc', flexShrink: 0 }}>
+                <Icon name={icon} size={15} />
+              </span>
               <div>
                 <div style={{ color: 'white', fontSize: 13.5, fontWeight: 700 }}>{title}</div>
                 <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{sub}</div>

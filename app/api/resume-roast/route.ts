@@ -4,7 +4,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Anthropic from '@anthropic-ai/sdk'
 
-const supabase = createClient(
+// created lazily so the module can be imported without env vars (local builds)
+const getSupabase = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
@@ -115,7 +116,7 @@ export async function POST(req: NextRequest) {
     const cleanJson = responseText.replace(/```json|```/g, '').trim()
     const roastData = JSON.parse(cleanJson)
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('roast_results')
       .insert({
         resume_text: '',

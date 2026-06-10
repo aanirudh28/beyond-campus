@@ -1,6 +1,7 @@
 'use client'
 
 import { Application, todayStr, daysBetween, addDays } from './types'
+import { GRAD, Icon, IconName } from './ui'
 
 interface Action {
   app: Application
@@ -22,7 +23,7 @@ export function buildTodayActions(applications: Application[]): Action[] {
       actions.push({
         app,
         label: late > 0 ? `Follow up with ${app.company} — ${late}d overdue` : `Follow up with ${app.company} today`,
-        cta: '✨ Write follow-up',
+        cta: 'Write follow-up',
         urgency: -late,
         kind: 'follow_up',
       })
@@ -48,6 +49,12 @@ export function buildTodayActions(applications: Application[]): Action[] {
   return actions.sort((a, b) => a.urgency - b.urgency).slice(0, 5)
 }
 
+const KIND_META: Record<Action['kind'], { icon: IconName; color: string }> = {
+  follow_up: { icon: 'clock', color: '#fbbf24' },
+  apply: { icon: 'pin', color: '#93BBFF' },
+  prep: { icon: 'pencil', color: '#c4b5fd' },
+}
+
 export default function TodayQueue({
   applications,
   onOpenApp,
@@ -61,35 +68,53 @@ export default function TodayQueue({
   if (actions.length === 0) return null
 
   return (
-    <div style={{ background: 'linear-gradient(135deg, rgba(79,124,255,0.08), rgba(123,97,255,0.08))', border: '1px solid rgba(79,124,255,0.25)', borderRadius: 20, padding: '18px 20px', marginBottom: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <span style={{ fontSize: 16 }}>⚡</span>
-        <h3 style={{ color: 'white', fontSize: 15, fontWeight: 800, margin: 0 }}>Today</h3>
+    <div style={{
+      background: 'linear-gradient(135deg, rgba(79,124,255,0.09), rgba(123,97,255,0.06))',
+      border: '1px solid rgba(79,124,255,0.25)',
+      borderRadius: 20, padding: '18px 20px', marginBottom: 24,
+      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 13 }}>
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 9, background: GRAD, color: 'white', boxShadow: '0 4px 14px rgba(79,124,255,0.45)' }}>
+          <Icon name="zap" size={14} strokeWidth={2.2} />
+        </span>
+        <h3 style={{ color: 'white', fontSize: 15, fontWeight: 800, margin: 0, letterSpacing: -0.2 }}>Today&apos;s focus</h3>
         <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12.5 }}>— {actions.length} thing{actions.length === 1 ? '' : 's'} that move the needle</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {actions.map((action, i) => (
-          <div key={action.app.id + i} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(11,11,15,0.5)', borderRadius: 13, padding: '11px 14px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 14, flexShrink: 0 }}>{action.kind === 'follow_up' ? '⏰' : action.kind === 'apply' ? '📌' : '📝'}</span>
-            <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13.5, flex: 1, minWidth: 180 }}>{action.label}</span>
-            <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-              {action.kind === 'follow_up' && (
+        {actions.map((action, i) => {
+          const km = KIND_META[action.kind]
+          return (
+            <div key={action.app.id + i} style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              background: 'rgba(11,11,15,0.55)', border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: 14, padding: '10px 14px', flexWrap: 'wrap',
+              animation: 'cardIn 0.35s ease both', animationDelay: `${i * 50}ms`,
+            }}>
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 9, background: `${km.color}1a`, color: km.color, flexShrink: 0 }}>
+                <Icon name={km.icon} size={14} />
+              </span>
+              <span style={{ color: 'rgba(255,255,255,0.82)', fontSize: 13.5, flex: 1, minWidth: 180, fontWeight: 500 }}>{action.label}</span>
+              <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                {action.kind === 'follow_up' && (
+                  <button
+                    onClick={() => onSnooze(action.app, addDays(todayStr(), 2))}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 9, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    <Icon name="clock" size={12} /> 2d
+                  </button>
+                )}
                 <button
-                  onClick={() => onSnooze(action.app, addDays(todayStr(), 2))}
-                  style={{ padding: '7px 12px', borderRadius: 9, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                  onClick={() => onOpenApp(action.app, action.kind === 'follow_up')}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 9, background: GRAD, border: 'none', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 14px rgba(79,124,255,0.3)' }}
                 >
-                  Snooze 2d
+                  {action.kind === 'follow_up' && <Icon name="sparkles" size={12} />}
+                  {action.cta}
                 </button>
-              )}
-              <button
-                onClick={() => onOpenApp(action.app, action.kind === 'follow_up')}
-                style={{ padding: '7px 14px', borderRadius: 9, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', border: 'none', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-              >
-                {action.cta}
-              </button>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

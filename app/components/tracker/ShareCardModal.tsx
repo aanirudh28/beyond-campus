@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import { Application } from './types'
 import { computeStreak } from './StreakWidget'
+import { GRAD, Icon } from './ui'
 
 export default function ShareCardModal({
   applications,
@@ -52,8 +53,12 @@ export default function ShareCardModal({
   }
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)', zIndex: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 420 }}>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)', zIndex: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, animation: 'overlayIn 0.2s ease both' }}>
+      <style>{`
+        @keyframes modalIn { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: none; } }
+        @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+      `}</style>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 420, animation: 'modalIn 0.25s cubic-bezier(0.32, 0.72, 0, 1) both' }}>
 
         {/* The card itself — rendered live, captured by html2canvas */}
         <div
@@ -97,9 +102,10 @@ export default function ShareCardModal({
           <button
             onClick={handleDownload}
             disabled={generating}
-            style={{ flex: 1, padding: 14, borderRadius: 13, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 14, border: 'none', cursor: generating ? 'wait' : 'pointer', opacity: generating ? 0.7 : 1 }}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 14, borderRadius: 13, background: GRAD, color: 'white', fontWeight: 700, fontSize: 14, border: 'none', cursor: generating ? 'wait' : 'pointer', opacity: generating ? 0.8 : 1, boxShadow: '0 6px 20px rgba(79,124,255,0.3)' }}
           >
-            {generating ? '⏳ Generating...' : '⬇️ Share / Download'}
+            <Icon name={generating ? 'clock' : 'download'} size={15} />
+            {generating ? 'Generating...' : 'Share / Download'}
           </button>
           <button onClick={onClose} style={{ padding: '14px 20px', borderRadius: 13, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
             Close

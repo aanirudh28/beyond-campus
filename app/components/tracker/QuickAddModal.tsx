@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AppSource, AppStatus, SOURCES, STATUSES, todayStr, addDays } from './types'
+import { GRAD, Icon } from './ui'
 
 export interface NewApplication {
   company: string
@@ -114,30 +115,50 @@ export default function QuickAddModal({
   return (
     <div
       onClick={onClose}
-      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, animation: 'overlayIn 0.2s ease both' }}
     >
+      <style>{`
+        @keyframes modalIn { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: none; } }
+        @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
       <div
         onClick={e => e.stopPropagation()}
-        style={{ width: '100%', maxWidth: 520, maxHeight: '90vh', overflowY: 'auto', background: '#111827', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, padding: 28 }}
+        style={{
+          width: '100%', maxWidth: 520, maxHeight: '90vh', overflowY: 'auto',
+          background: 'linear-gradient(180deg, #131a2e, #0f1424)', border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: 24, padding: 28,
+          animation: 'modalIn 0.25s cubic-bezier(0.32, 0.72, 0, 1) both',
+          boxShadow: '0 30px 90px rgba(0,0,0,0.6)',
+        }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <h2 style={{ color: 'white', fontSize: 20, fontWeight: 800, margin: 0 }}>Add application</h2>
-          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 10, color: 'rgba(255,255,255,0.5)', width: 32, height: 32, fontSize: 16, cursor: 'pointer' }}>✕</button>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'white', fontSize: 20, fontWeight: 800, margin: 0, letterSpacing: -0.4 }}>
+            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 10, background: GRAD, boxShadow: '0 4px 14px rgba(79,124,255,0.4)' }}>
+              <Icon name="plus" size={16} strokeWidth={2.5} />
+            </span>
+            Add application
+          </h2>
+          <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 10, color: 'rgba(255,255,255,0.5)', width: 32, height: 32, cursor: 'pointer' }}>
+            <Icon name="x" size={15} />
+          </button>
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 20, background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 4 }}>
-          {([['smart', '✨ Smart paste'], ['manual', '✍️ Manual']] as const).map(([key, label]) => (
+        <div style={{ display: 'flex', gap: 6, marginBottom: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: 4 }}>
+          {([['smart', 'Smart paste', 'sparkles'], ['manual', 'Manual', 'pencil']] as const).map(([key, label, icon]) => (
             <button
               key={key}
               onClick={() => setTab(key)}
               style={{
-                flex: 1, padding: '9px 12px', borderRadius: 9, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700,
-                background: tab === key ? 'linear-gradient(135deg, #4F7CFF, #7B61FF)' : 'transparent',
+                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+                padding: '9px 12px', borderRadius: 9, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700,
+                background: tab === key ? GRAD : 'transparent',
                 color: tab === key ? 'white' : 'rgba(255,255,255,0.45)',
+                boxShadow: tab === key ? '0 4px 14px rgba(79,124,255,0.3)' : 'none',
               }}
             >
-              {label}
+              <Icon name={icon} size={13} /> {label}
             </button>
           ))}
         </div>
@@ -152,15 +173,23 @@ export default function QuickAddModal({
               onChange={e => setPasted(e.target.value)}
               placeholder="https://linkedin.com/jobs/... or paste the full JD text"
               rows={6}
+              autoFocus
               style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }}
             />
             {extractError && <p style={{ color: '#fbbf24', fontSize: 13, lineHeight: 1.5, marginTop: 10 }}>{extractError}</p>}
             <button
               onClick={handleExtract}
               disabled={extracting}
-              style={{ width: '100%', marginTop: 14, padding: 13, borderRadius: 12, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 14, border: 'none', cursor: extracting ? 'wait' : 'pointer', opacity: extracting ? 0.7 : 1 }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', marginTop: 14, padding: 13, borderRadius: 12, background: GRAD, color: 'white', fontWeight: 700, fontSize: 14, border: 'none', cursor: extracting ? 'wait' : 'pointer', opacity: extracting ? 0.8 : 1, boxShadow: '0 6px 20px rgba(79,124,255,0.3)' }}
             >
-              {extracting ? '✨ Reading the job post...' : '✨ Extract details'}
+              {extracting ? (
+                <>
+                  <span style={{ display: 'inline-block', width: 14, height: 14, border: '2px solid rgba(255,255,255,0.35)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                  Reading the job post...
+                </>
+              ) : (
+                <><Icon name="sparkles" size={15} /> Extract details</>
+              )}
             </button>
           </div>
         ) : (
@@ -212,12 +241,15 @@ export default function QuickAddModal({
                       key={d}
                       onClick={() => setFollowUpDays(d)}
                       style={{
-                        flex: 1, padding: '10px 0', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                        padding: '10px 0', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer',
                         background: followUpDays === d ? 'rgba(79,124,255,0.2)' : 'rgba(255,255,255,0.04)',
                         border: `1px solid ${followUpDays === d ? '#4F7CFF' : 'rgba(255,255,255,0.1)'}`,
                         color: followUpDays === d ? '#93BBFF' : 'rgba(255,255,255,0.5)',
+                        transition: 'background 0.15s, border-color 0.15s, color 0.15s',
                       }}
                     >
+                      {followUpDays === d && <Icon name="clock" size={12} />}
                       {d} days
                     </button>
                   ))}
@@ -230,9 +262,16 @@ export default function QuickAddModal({
             <button
               onClick={handleSave}
               disabled={saving}
-              style={{ width: '100%', padding: 14, borderRadius: 12, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 15, border: 'none', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1 }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 14, borderRadius: 12, background: GRAD, color: 'white', fontWeight: 700, fontSize: 15, border: 'none', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.8 : 1, boxShadow: '0 6px 20px rgba(79,124,255,0.3)' }}
             >
-              {saving ? '⏳ Adding...' : 'Add to board →'}
+              {saving ? (
+                <>
+                  <span style={{ display: 'inline-block', width: 14, height: 14, border: '2px solid rgba(255,255,255,0.35)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                  Adding...
+                </>
+              ) : (
+                <>Add to board <Icon name="arrowRight" size={15} /></>
+              )}
             </button>
           </div>
         )}

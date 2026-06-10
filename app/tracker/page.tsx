@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -14,6 +14,7 @@ import WeeklyGoalRing from '@/app/components/tracker/WeeklyGoalRing'
 import InsightsDigest from '@/app/components/tracker/InsightsDigest'
 import ShareCardModal from '@/app/components/tracker/ShareCardModal'
 import ProUpgradeModal from '@/app/components/tracker/ProUpgradeModal'
+import { GRAD, Icon } from '@/app/components/tracker/ui'
 
 export default function TrackerPage() {
   const [loading, setLoading] = useState(true)
@@ -26,6 +27,8 @@ export default function TrackerPage() {
   const [showShare, setShowShare] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showRoastNudge, setShowRoastNudge] = useState(false)
+  const [search, setSearch] = useState('')
+  const searchRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -60,6 +63,24 @@ export default function TrackerPage() {
     loadAll()
     return () => { cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // keyboard shortcuts: n = new application, / = search, Esc = close overlays
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName
+      const typing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)
+      if (e.key === 'Escape') {
+        setQuickAdd(null); setDrawer(null); setShowShare(false); setShowSettings(false)
+        ;(e.target as HTMLElement)?.blur?.()
+        return
+      }
+      if (typing) return
+      if (e.key === 'n' && !e.metaKey && !e.ctrlKey) { e.preventDefault(); setQuickAdd('saved') }
+      if (e.key === '/') { e.preventDefault(); searchRef.current?.focus() }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
   }, [])
 
   const handleAdd = async (newApp: NewApplication): Promise<string | null> => {
@@ -120,17 +141,41 @@ export default function TrackerPage() {
     setShowUpgrade(true)
   }
 
+  const active = applications.filter(a => !['offer', 'rejected'].includes(a.status))
+  const replies = applications.filter(a => ['replied', 'interview', 'offer'].includes(a.status)).length
+  const interviews = applications.filter(a => ['interview', 'offer'].includes(a.status)).length
+
   if (loading) {
     return (
-      <main style={{ minHeight: '100vh', background: '#0B0B0F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <style>{`@keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }`}</style>
-        <div style={{ color: 'rgba(255,255,255,0.5)', fontFamily: "'DM Sans', sans-serif", fontSize: 14, animation: 'pulse 1.2s infinite' }}>Loading your pipeline...</div>
+      <main style={{ minHeight: '100vh', background: '#0B0B0F', fontFamily: "'DM Sans', sans-serif", padding: '0 0 80px' }}>
+        <style>{`
+          @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+          .sk { background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%); background-size: 800px 100%; animation: shimmer 1.4s linear infinite; border-radius: 14px; }
+        `}</style>
+        <div style={{ height: 61, borderBottom: '1px solid rgba(255,255,255,0.06)' }} />
+        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '26px 24px 0' }}>
+          <div style={{ display: 'flex', gap: 14, marginBottom: 24, alignItems: 'center' }}>
+            <div className="sk" style={{ width: 280, height: 44, marginRight: 'auto' }} />
+            <div className="sk" style={{ width: 130, height: 62, borderRadius: 16 }} />
+            <div className="sk" style={{ width: 170, height: 62, borderRadius: 16 }} />
+          </div>
+          <div style={{ display: 'flex', gap: 14, overflow: 'hidden' }}>
+            {[0, 1, 2, 3, 4].map(i => (
+              <div key={i} style={{ flex: '0 0 256px' }}>
+                <div className="sk" style={{ height: 34, marginBottom: 12, borderRadius: 12 }} />
+                {Array.from({ length: 3 - (i % 2) }).map((_, j) => (
+                  <div key={j} className="sk" style={{ height: 88, marginBottom: 10 }} />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
       </main>
     )
   }
 
   return (
-    <main style={{ minHeight: '100vh', background: '#0B0B0F', fontFamily: "'DM Sans', sans-serif", padding: '0 0 80px' }}>
+    <main style={{ minHeight: '100vh', background: '#0B0B0F', fontFamily: "'DM Sans', sans-serif", padding: '0 0 80px', position: 'relative', overflow: 'clip' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap');
         * { box-sizing: border-box; }
@@ -139,6 +184,12 @@ export default function TrackerPage() {
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 100px; }
         ::-webkit-scrollbar-track { background: transparent; }
         .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        .bc-navlink { transition: color 0.15s, background 0.15s; }
+        .bc-navlink:hover { color: white !important; background: rgba(255,255,255,0.06); }
+        .bc-fab:hover { transform: scale(1.07); box-shadow: 0 14px 40px rgba(79,124,255,0.6); }
+        .bc-search:focus-within { border-color: rgba(79,124,255,0.5) !important; box-shadow: 0 0 0 3px rgba(79,124,255,0.12); }
         @media (max-width: 640px) {
           .hide-mobile { display: none !important; }
           .form-grid-2 { grid-template-columns: 1fr; }
@@ -147,34 +198,48 @@ export default function TrackerPage() {
         }
       `}</style>
 
+      {/* ambient background glows */}
+      <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(900px 480px at 85% -8%, rgba(123,97,255,0.13), transparent 65%), radial-gradient(700px 420px at -5% 12%, rgba(79,124,255,0.09), transparent 60%)' }} />
+
       {/* Top bar */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(11,11,15,0.85)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(11,11,15,0.82)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ padding: '6px 14px', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', borderRadius: 100, fontSize: 11, fontWeight: 800, color: 'white', letterSpacing: 1 }}>BEYOND CAMPUS</span>
-            <span className="hide-mobile" style={{ color: 'white', fontWeight: 800, fontSize: 15 }}>Job Tracker</span>
+            <span style={{ padding: '6px 14px', background: GRAD, borderRadius: 100, fontSize: 11, fontWeight: 800, color: 'white', letterSpacing: 1, boxShadow: '0 4px 16px rgba(79,124,255,0.35)' }}>BEYOND CAMPUS</span>
           </Link>
-          {profile?.is_pro ? (
-            <span style={{ fontSize: 10.5, fontWeight: 800, color: '#6ee7b7', background: 'rgba(16,185,129,0.12)', padding: '4px 10px', borderRadius: 100, letterSpacing: 0.5 }}>PRO</span>
-          ) : (
-            <button onClick={() => openUpgrade(null)} style={{ fontSize: 10.5, fontWeight: 800, color: '#93BBFF', background: 'rgba(79,124,255,0.12)', border: '1px solid rgba(79,124,255,0.3)', padding: '4px 10px', borderRadius: 100, letterSpacing: 0.5, cursor: 'pointer' }}>
-              GO PRO ₹299
-            </button>
-          )}
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
-            <Link href="/tracker/jobs" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-              💼<span className="hide-mobile"> Jobs</span>
-              <span style={{ fontSize: 8.5, fontWeight: 800, padding: '2px 6px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', letterSpacing: 0.5 }}>NEW</span>
+
+          {/* segmented nav */}
+          <nav style={{ display: 'flex', gap: 2, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: 3 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 13px', borderRadius: 9, background: 'rgba(255,255,255,0.09)', color: 'white', fontSize: 12.5, fontWeight: 700 }}>
+              <Icon name="target" size={13} /><span className="hide-mobile">Board</span>
+            </span>
+            <Link href="/tracker/jobs" className="bc-navlink" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 13px', borderRadius: 9, color: 'rgba(255,255,255,0.5)', fontSize: 12.5, fontWeight: 600, textDecoration: 'none' }}>
+              <Icon name="briefcase" size={13} /><span className="hide-mobile">Jobs</span>
+              <span style={{ fontSize: 8, fontWeight: 800, padding: '2px 5px', borderRadius: 100, background: GRAD, color: 'white', letterSpacing: 0.5 }}>NEW</span>
             </Link>
-            <Link href="/tracker/analytics" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>📊<span className="hide-mobile"> Analytics</span></Link>
-            <button onClick={() => setShowShare(true)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: 'rgba(255,255,255,0.6)', fontSize: 12.5, fontWeight: 600, padding: '7px 12px', cursor: 'pointer' }}>
-              <span className="hide-mobile">Share </span>📤
+            <Link href="/tracker/analytics" className="bc-navlink" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 13px', borderRadius: 9, color: 'rgba(255,255,255,0.5)', fontSize: 12.5, fontWeight: 600, textDecoration: 'none' }}>
+              <Icon name="chart" size={13} /><span className="hide-mobile">Analytics</span>
+            </Link>
+          </nav>
+
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+            {profile?.is_pro ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 10.5, fontWeight: 800, color: '#6ee7b7', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', padding: '5px 11px', borderRadius: 100, letterSpacing: 0.5 }}>
+                <Icon name="zap" size={11} /> PRO
+              </span>
+            ) : (
+              <button onClick={() => openUpgrade(null)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 10.5, fontWeight: 800, color: '#93BBFF', background: 'rgba(79,124,255,0.12)', border: '1px solid rgba(79,124,255,0.3)', padding: '5px 11px', borderRadius: 100, letterSpacing: 0.5, cursor: 'pointer' }}>
+                <Icon name="zap" size={11} /> GO PRO ₹299
+              </button>
+            )}
+            <button onClick={() => setShowShare(true)} title="Share your stats" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: 'rgba(255,255,255,0.6)', cursor: 'pointer' }}>
+              <Icon name="share" size={14} />
             </button>
-            <button onClick={() => setShowSettings(v => !v)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: 'rgba(255,255,255,0.6)', fontSize: 13, padding: '7px 11px', cursor: 'pointer' }}>
-              ⚙️
+            <button onClick={() => setShowSettings(v => !v)} title="Settings" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: showSettings ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: 'rgba(255,255,255,0.6)', cursor: 'pointer' }}>
+              <Icon name="settings" size={14} />
             </button>
-            <button onClick={handleSignOut} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', fontSize: 12.5, cursor: 'pointer' }}>
-              Sign out
+            <button onClick={handleSignOut} title="Sign out" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', cursor: 'pointer' }}>
+              <Icon name="logout" size={14} />
             </button>
           </div>
         </div>
@@ -183,7 +248,10 @@ export default function TrackerPage() {
       {/* Settings popover */}
       {showSettings && profile && (
         <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px', position: 'relative' }}>
-          <div style={{ position: 'absolute', right: 24, top: 8, zIndex: 60, background: '#1a2236', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 16, padding: 18, width: 280, boxShadow: '0 16px 48px rgba(0,0,0,0.5)' }}>
+          <div style={{ position: 'absolute', right: 24, top: 8, zIndex: 60, background: 'linear-gradient(180deg, #1a2236, #151c2e)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 16, padding: 18, width: 290, boxShadow: '0 16px 48px rgba(0,0,0,0.5)', animation: 'cardIn 0.18s ease both' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, color: 'rgba(255,255,255,0.75)', fontSize: 13, fontWeight: 700 }}>
+              <Icon name="settings" size={14} /> Preferences
+            </div>
             <div style={{ marginBottom: 14 }}>
               <label style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 8 }}>Weekly application goal</label>
               <div style={{ display: 'flex', gap: 6 }}>
@@ -207,16 +275,18 @@ export default function TrackerPage() {
         </div>
       )}
 
-      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '26px 24px 0' }}>
+      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '26px 24px 0', position: 'relative' }}>
 
-        {/* Greeting + widgets */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', marginBottom: 24 }}>
+        {/* Greeting + stats */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 22 }}>
           <div style={{ marginRight: 'auto' }}>
-            <h1 style={{ color: 'white', fontSize: 26, fontWeight: 800, margin: 0, letterSpacing: -0.5 }}>
+            <h1 style={{ color: 'white', fontSize: 27, fontWeight: 800, margin: 0, letterSpacing: -0.7 }}>
               {profile?.name ? `Let's go, ${profile.name.split(' ')[0]} 💪` : "Let's get you hired 💪"}
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13.5, margin: '4px 0 0' }}>
-              {applications.length === 0 ? 'Add your first application below.' : `${applications.length} application${applications.length === 1 ? '' : 's'} in your pipeline`}
+              {applications.length === 0
+                ? 'Add your first application below.'
+                : <>{active.length} active · {replies} repl{replies === 1 ? 'y' : 'ies'} · {interviews} interview{interviews === 1 ? '' : 's'}</>}
             </p>
           </div>
           <StreakWidget applications={applications} />
@@ -234,19 +304,21 @@ export default function TrackerPage() {
         {/* Resume Roast cross-sell — roast data makes the AI emails sharper */}
         {showRoastNudge && applications.length > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 18, padding: '14px 18px', marginBottom: 24, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 22, flexShrink: 0 }}>🔥</span>
+            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 10, background: 'rgba(239,68,68,0.14)', color: '#f87171', flexShrink: 0 }}>
+              <Icon name="flame" size={17} />
+            </span>
             <p style={{ flex: 1, minWidth: 220, color: 'rgba(255,255,255,0.7)', fontSize: 13.5, lineHeight: 1.55, margin: 0 }}>
               <span style={{ fontWeight: 700, color: 'white' }}>Make your AI emails sharper.</span> Get your resume roasted (free, 30 seconds) and the AI writer will weave your real achievements into every cold email.
             </p>
-            <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+            <div style={{ display: 'flex', gap: 8, flexShrink: 0, alignItems: 'center' }}>
               <a href="/resources/resume-roast" style={{ padding: '9px 16px', borderRadius: 100, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', color: '#f87171', fontSize: 12.5, fontWeight: 700, textDecoration: 'none' }}>
                 Roast my resume →
               </a>
               <button
                 onClick={() => { localStorage.setItem('bc_roast_nudge_dismissed', '1'); setShowRoastNudge(false) }}
-                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: 13, cursor: 'pointer' }}
+                style={{ display: 'flex', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', padding: 4 }}
               >
-                ✕
+                <Icon name="x" size={14} />
               </button>
             </div>
           </div>
@@ -254,31 +326,60 @@ export default function TrackerPage() {
 
         {/* First-run empty state */}
         {applications.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '50px 20px', background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.12)', borderRadius: 24, marginBottom: 24 }}>
-            <div style={{ fontSize: 44, marginBottom: 14 }}>🎯</div>
-            <h2 style={{ color: 'white', fontSize: 20, fontWeight: 800, margin: '0 0 8px' }}>Your pipeline starts here</h2>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, maxWidth: 420, margin: '0 auto 20px', lineHeight: 1.6 }}>
+          <div style={{ textAlign: 'center', padding: '54px 20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01))', border: '1px dashed rgba(255,255,255,0.12)', borderRadius: 24, marginBottom: 24 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 72, height: 72, borderRadius: 24, background: 'linear-gradient(135deg, rgba(79,124,255,0.18), rgba(123,97,255,0.12))', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF', marginBottom: 18, boxShadow: '0 0 40px rgba(79,124,255,0.2)' }}>
+              <Icon name="target" size={34} strokeWidth={1.6} />
+            </div>
+            <h2 style={{ color: 'white', fontSize: 21, fontWeight: 800, margin: '0 0 8px', letterSpacing: -0.4 }}>Your pipeline starts here</h2>
+            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, maxWidth: 420, margin: '0 auto 22px', lineHeight: 1.6 }}>
               Paste any job link or JD and AI fills in the details. Every application gets a follow-up reminder, so nothing slips through.
             </p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button
                 onClick={() => setQuickAdd('saved')}
-                style={{ padding: '13px 28px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 14.5, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(79,124,255,0.35)' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 100, background: GRAD, color: 'white', fontWeight: 700, fontSize: 14.5, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(79,124,255,0.35)' }}
               >
-                ✨ Add your first application
+                <Icon name="sparkles" size={15} /> Add your first application
               </button>
               <Link
                 href="/tracker/jobs"
-                style={{ padding: '13px 28px', borderRadius: 100, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.75)', fontWeight: 700, fontSize: 14.5, textDecoration: 'none' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 100, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.75)', fontWeight: 700, fontSize: 14.5, textDecoration: 'none' }}
               >
-                💼 Browse fresh openings →
+                <Icon name="briefcase" size={15} /> Browse fresh openings
               </Link>
             </div>
           </div>
         )}
 
+        {/* Board toolbar */}
+        {applications.length > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
+            <div className="bc-search" style={{ display: 'flex', alignItems: 'center', gap: 9, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 12, padding: '9px 14px', width: 300, maxWidth: '100%', transition: 'border-color 0.15s, box-shadow 0.15s' }}>
+              <span style={{ color: 'rgba(255,255,255,0.35)', display: 'flex' }}><Icon name="search" size={14} /></span>
+              <input
+                ref={searchRef}
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search company or role..."
+                style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: 'white', fontSize: 13.5 }}
+              />
+              {search ? (
+                <button onClick={() => setSearch('')} style={{ display: 'flex', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', padding: 0 }}>
+                  <Icon name="x" size={13} />
+                </button>
+              ) : (
+                <kbd className="hide-mobile" style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 700, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '2px 7px', fontFamily: 'inherit' }}>/</kbd>
+              )}
+            </div>
+            <span className="hide-mobile" style={{ color: 'rgba(255,255,255,0.25)', fontSize: 12 }}>
+              press <kbd style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '2px 7px', fontFamily: 'inherit' }}>n</kbd> to add an application
+            </span>
+          </div>
+        )}
+
         <KanbanBoard
           applications={applications}
+          filter={search}
           onOpen={app => setDrawer({ app, aiTab: false })}
           onMove={handleMove}
           onQuickAdd={status => setQuickAdd(status)}
@@ -287,11 +388,12 @@ export default function TrackerPage() {
 
       {/* Floating add button */}
       <button
+        className="bc-fab"
         onClick={() => setQuickAdd('saved')}
-        title="Add application"
-        style={{ position: 'fixed', bottom: 26, right: 26, zIndex: 60, width: 58, height: 58, borderRadius: '50%', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', border: 'none', color: 'white', fontSize: 26, cursor: 'pointer', boxShadow: '0 10px 30px rgba(79,124,255,0.5)' }}
+        title="Add application (n)"
+        style={{ position: 'fixed', bottom: 26, right: 26, zIndex: 60, width: 58, height: 58, borderRadius: '50%', background: GRAD, border: 'none', color: 'white', cursor: 'pointer', boxShadow: '0 10px 30px rgba(79,124,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.18s, box-shadow 0.18s' }}
       >
-        +
+        <Icon name="plus" size={24} strokeWidth={2.2} />
       </button>
 
       {quickAdd && (

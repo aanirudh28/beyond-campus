@@ -42,7 +42,15 @@ export default function WeeklyGoalRing({ applications, goal }: { applications: A
   }, [hit])
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,0.04)', border: `1px solid ${hit ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 16, padding: '10px 18px', position: 'relative', overflow: 'visible' }}>
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 12,
+      background: hit
+        ? 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.04))'
+        : 'linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02))',
+      border: `1px solid ${hit ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.08)'}`,
+      borderRadius: 16, padding: '10px 18px', position: 'relative', overflow: 'visible',
+      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+    }}>
       <style>{`
         @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(70px) rotate(280deg); opacity: 0; } }
         @keyframes ringFill { from { stroke-dashoffset: ${circ}; } }

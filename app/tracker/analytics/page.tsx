@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Application, TrackerProfile, sourceLabel, AppSource } from '@/app/components/tracker/types'
 import ProGate from '@/app/components/tracker/ProGate'
 import ProUpgradeModal from '@/app/components/tracker/ProUpgradeModal'
+import { Icon } from '@/app/components/tracker/ui'
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -75,23 +76,35 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <main style={{ minHeight: '100vh', background: '#0B0B0F', fontFamily: "'DM Sans', sans-serif", padding: '0 0 80px' }}>
+    <main style={{ minHeight: '100vh', background: '#0B0B0F', fontFamily: "'DM Sans', sans-serif", padding: '0 0 80px', position: 'relative', overflow: 'clip' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap');
         * { box-sizing: border-box; }
         @keyframes growBar { from { width: 0; } }
         @keyframes growCol { from { height: 0; } }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
       `}</style>
 
-      <div style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(11,11,15,0.85)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(900px 480px at 85% -8%, rgba(123,97,255,0.13), transparent 65%), radial-gradient(700px 420px at -5% 12%, rgba(79,124,255,0.09), transparent 60%)' }} />
+
+      <div style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(11,11,15,0.82)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: 980, margin: '0 auto', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 14 }}>
-          <a href="/tracker" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13.5, fontWeight: 600, textDecoration: 'none' }}>← Back to board</a>
-          <h1 style={{ color: 'white', fontSize: 17, fontWeight: 800, margin: 0 }}>Analytics</h1>
-          {profile?.is_pro && <span style={{ fontSize: 10.5, fontWeight: 800, color: '#6ee7b7', background: 'rgba(16,185,129,0.12)', padding: '4px 10px', borderRadius: 100 }}>PRO</span>}
+          <a href="/tracker" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, color: 'rgba(255,255,255,0.55)', fontSize: 13.5, fontWeight: 600, textDecoration: 'none' }}>
+            <Icon name="arrowRight" size={14} style={{ transform: 'rotate(180deg)' }} /> Board
+          </a>
+          <span style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.1)' }} />
+          <h1 style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'white', fontSize: 17, fontWeight: 800, margin: 0, letterSpacing: -0.3 }}>
+            <Icon name="chart" size={16} /> Analytics
+          </h1>
+          {profile?.is_pro && (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 10.5, fontWeight: 800, color: '#6ee7b7', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', padding: '4px 10px', borderRadius: 100 }}>
+              <Icon name="zap" size={11} /> PRO
+            </span>
+          )}
         </div>
       </div>
 
-      <div style={{ maxWidth: 980, margin: '0 auto', padding: '30px 24px 0' }}>
+      <div style={{ maxWidth: 980, margin: '0 auto', padding: '30px 24px 0', position: 'relative' }}>
 
         {applied.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.4)', fontSize: 14.5, lineHeight: 1.7 }}>
@@ -108,10 +121,10 @@ export default function AnalyticsPage() {
                 [`${applied.length ? Math.round((repliedPlus.length / applied.length) * 100) : 0}%`, 'Reply rate'],
                 [`${applied.length ? Math.round((interviewPlus.length / applied.length) * 100) : 0}%`, 'Interview rate'],
                 [String(offers.length), 'Offers'],
-              ].map(([num, label]) => (
-                <div key={label} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: '18px 20px' }}>
-                  <div style={{ color: 'white', fontSize: 28, fontWeight: 800 }}>{num}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12.5, marginTop: 4 }}>{label}</div>
+              ].map(([num, label], i) => (
+                <div key={label} style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02))', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: '18px 20px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)', animation: 'cardIn 0.35s ease both', animationDelay: `${i * 60}ms` }}>
+                  <div style={{ color: 'white', fontSize: 28, fontWeight: 800, letterSpacing: -0.5, fontVariantNumeric: 'tabular-nums' }}>{num}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12.5, marginTop: 4, fontWeight: 600 }}>{label}</div>
                 </div>
               ))}
             </div>
