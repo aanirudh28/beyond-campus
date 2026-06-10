@@ -37,6 +37,15 @@ export default function Home() {
     { q: 'Is my payment secure?', a: "Yes — payments go through Razorpay. We never store card details." },
   ]
 
+  // OAuth rescue: if Supabase falls back to the Site URL, the login code lands
+  // here as /?code=... — forward it to the callback so the session completes
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('code')) {
+      window.location.replace(`/auth/callback${window.location.search}`)
+    }
+  }, [])
+
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY)
     const onMouse = (e: MouseEvent) => setMousePos({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight })

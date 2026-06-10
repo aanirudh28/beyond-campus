@@ -9,9 +9,12 @@ export default function OAuthButtons({ next = '/tracker' }: { next?: string }) {
 
   const handleOAuth = async (provider: 'google' | 'linkedin_oidc') => {
     setLoadingProvider(provider)
+    // keep the redirect URL bare (query params can fail Supabase's allowlist
+    // matching) — carry the destination in a short-lived cookie instead
+    document.cookie = `oauth_next=${encodeURIComponent(next)}; path=/; max-age=600; SameSite=Lax`
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     })
     if (error) setLoadingProvider(null)
   }
