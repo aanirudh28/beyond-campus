@@ -116,7 +116,7 @@ export async function GET(req: NextRequest) {
   const [{ data: optoutRows }, { data: sentRows }, { data: trackerUsers }] = await Promise.all([
     svc.from('nurture_optouts').select('email'),
     svc.from('nurture_sends').select('email, sequence, step'),
-    svc.from('tracker_profiles').select('email, name, created_at'),
+    svc.from('tracker_profiles').select('email, name, created_at, email_reminders_enabled'),
   ])
 
   const optouts = new Set((optoutRows || []).map(r => r.email.toLowerCase()))
@@ -207,6 +207,52 @@ export async function GET(req: NextRequest) {
     for (const step of LEAD_STEPS) {
       if (createdAt <= daysAgo(step.afterDays)) await trySend(email, null, step)
     }
+  }
+
+  // ---- Monday jobs digest (reuses trySend: optouts, dedupe, caps) ----
+  if (new Date().getUTCDay() === 1) {
+    try {
+      const { data: topJobs } = await svc
+        .from('jobs')
+        .select('company, role, location')
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(8)
+
+      if (topJobs && topJobs.length >= 3) {
+        const now = new Date()
+        const jan1 = new Date(Date.UTC(now.getUTCFullYear(), 0, 1))
+        const isoWeek = now.getUTCFullYear() * 100 + Math.ceil(((now.getTime() - jan1.getTime()) / 86400000 + 1) / 7)
+
+        const rows = topJobs.map(j => `
+          <tr><td style="padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <strong style="color: white;">${j.company}</strong>
+            <span style="color: rgba(255,255,255,0.55);"> — ${j.role}</span>
+            ${j.location ? `<span style="color: rgba(255,255,255,0.35); font-size: 12px;"> · ${j.location}</span>` : ''}
+          </td></tr>`).join('')
+
+        const digestStep: Step = {
+          sequence: 'jobs_digest',
+          step: isoWeek,
+          afterDays: 0,
+          subject: `${topJobs.length} fresh openings for off-campus hustlers 💼`,
+          body: name => `
+            <h1 style="font-size: 22px; margin: 0 0 12px;">${name ? `${name.split(' ')[0]}, new` : 'New'} roles just dropped 👇</h1>
+            <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7;">Hand-picked, fresher-friendly, non-tech. One click saves any of them to your board with a follow-up reminder set.</p>
+            <table style="width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden;">${rows}</table>
+            ${ctaButton(`${SITE}/tracker/jobs`, 'Browse all openings →')}`,
+        }
+
+        let digestSends = 0
+        for (const u of trackerUsers || []) {
+          if (digestSends >= 25 || sends >= MAX_SENDS_PER_RUN) break
+          if (!u.email || u.email_reminders_enabled === false) continue
+          const before = sends
+          await trySend(u.email, u.name, digestStep)
+          if (sends > before) digestSends++
+        }
+      }
+    } catch { /* digest failure must not affect the nurture run */ }
   }
 
   return NextResponse.json({ sent: sends })

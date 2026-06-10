@@ -529,6 +529,172 @@ export default function AdminPage() {
           ))}
         </div>
 
+        {/* Jobs Tab */}
+        {activeTab === 'jobs' && (
+          <div>
+            {jobsLoading && !jobsData ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Loading jobs engine...</p>
+            ) : !jobsData ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Could not load. Has the jobs SQL been run in Supabase?</p>
+            ) : (
+              <>
+                {/* Sources + sync */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginBottom: 20 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: 'white' }}>Company watchlist ({jobsData.sources.length})</div>
+                    <button
+                      onClick={async () => { setSyncing(true); setSyncReport(null); const r = await adminJobs({ action: 'sync_now' }); setSyncReport(r.report || null); setSyncing(false); fetchJobs() }}
+                      disabled={syncing}
+                      style={{ padding: '9px 18px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', border: 'none', color: 'white', fontSize: 12.5, fontWeight: 700, cursor: syncing ? 'wait' : 'pointer', opacity: syncing ? 0.7 : 1 }}
+                    >
+                      {syncing ? '⏳ Syncing...' : '🔄 Sync Now'}
+                    </button>
+                  </div>
+
+                  {syncReport && (
+                    <div style={{ background: 'rgba(0,210,255,0.05)', border: '1px solid rgba(0,210,255,0.2)', borderRadius: 10, padding: '10px 14px', marginBottom: 14 }}>
+                      {syncReport.map((r, i) => (
+                        <div key={i} style={{ fontSize: 12.5, color: r.error ? '#f87171' : 'rgba(255,255,255,0.65)', padding: '2px 0' }}>
+                          {r.source}: {r.error ? `❌ ${r.error}` : `${r.fetched} fetched · ${r.fresh} new · ${r.kept} kept → pending · ${r.expired} expired`}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add source */}
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
+                    <input value={srcForm.company} onChange={e => setSrcForm(f => ({ ...f, company: e.target.value }))} placeholder="Company name" style={{ flex: 1, minWidth: 140, padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none' }} />
+                    <select value={srcForm.ats} onChange={e => setSrcForm(f => ({ ...f, ats: e.target.value }))} style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none' }}>
+                      <option value="greenhouse" style={{ background: '#111827' }}>Greenhouse</option>
+                      <option value="lever" style={{ background: '#111827' }}>Lever</option>
+                      <option value="ashby" style={{ background: '#111827' }}>Ashby</option>
+                    </select>
+                    <input value={srcForm.slug} onChange={e => setSrcForm(f => ({ ...f, slug: e.target.value }))} placeholder="board slug (e.g. razorpay)" style={{ flex: 1, minWidth: 140, padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none' }} />
+                    <button
+                      onClick={async () => {
+                        setSrcMsg('Testing board...')
+                        const r = await adminJobs({ action: 'add_source', ...srcForm })
+                        if (r.error) setSrcMsg(`❌ ${r.error}`)
+                        else { setSrcMsg(`✓ Added — board has ${r.postingCount} live postings`); setSrcForm({ company: '', ats: 'greenhouse', slug: '' }); fetchJobs() }
+                      }}
+                      style={{ padding: '10px 18px', borderRadius: 10, background: 'rgba(0,210,255,0.12)', border: '1px solid rgba(0,210,255,0.35)', color: '#00D2FF', fontSize: 12.5, fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      + Add
+                    </button>
+                  </div>
+                  {srcMsg && <p style={{ fontSize: 12.5, color: srcMsg.startsWith('❌') ? '#f87171' : '#6ee7b7', margin: '0 0 12px' }}>{srcMsg}</p>}
+
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {jobsData.sources.map(s => (
+                      <button
+                        key={s.id}
+                        onClick={async () => { await adminJobs({ action: 'toggle_source', id: s.id, active: !s.active }); fetchJobs() }}
+                        title={s.active ? 'Click to pause' : 'Click to activate'}
+                        style={{ padding: '6px 12px', borderRadius: 100, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: s.active ? 'rgba(16,185,129,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${s.active ? 'rgba(16,185,129,0.35)' : 'rgba(255,255,255,0.12)'}`, color: s.active ? '#6ee7b7' : 'rgba(255,255,255,0.35)' }}
+                      >
+                        {s.company} · {s.ats}{!s.active && ' (paused)'}
+                      </button>
+                    ))}
+                    {jobsData.sources.length === 0 && <span style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.3)' }}>No sources yet — add companies above. Slug = the last part of boards.greenhouse.io/&lt;slug&gt; or jobs.lever.co/&lt;slug&gt;.</span>}
+                  </div>
+                </div>
+
+                {/* Manual add */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginBottom: 20 }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 12 }}>Add a job manually (LinkedIn / Naukri / anywhere)</div>
+                  {!manualForm ? (
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <input value={manualPaste} onChange={e => setManualPaste(e.target.value)} placeholder="Paste job URL or full JD text" style={{ flex: 1, minWidth: 220, padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none' }} />
+                      <button
+                        onClick={async () => {
+                          if (!manualPaste.trim()) return
+                          setManualExtracting(true); setManualMsg('')
+                          const isUrl = /^https?:\/\/\S+$/.test(manualPaste.trim())
+                          const r = await adminJobs({ action: 'extract', ...(isUrl ? { url: manualPaste.trim() } : { text: manualPaste.trim() }) })
+                          setManualExtracting(false)
+                          if (r.error) setManualMsg(`❌ ${r.error}`)
+                          else setManualForm({ company: r.company || '', role: r.role || '', location: r.location || '', job_url: isUrl ? manualPaste.trim() : '', jd_summary: r.jd_summary || '', domain: r.domain || 'other' })
+                        }}
+                        disabled={manualExtracting}
+                        style={{ padding: '10px 18px', borderRadius: 10, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', border: 'none', color: 'white', fontSize: 12.5, fontWeight: 700, cursor: manualExtracting ? 'wait' : 'pointer' }}
+                      >
+                        {manualExtracting ? '✨ Reading...' : '✨ Extract'}
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 }}>
+                        <input value={manualForm.company} onChange={e => setManualForm(f => f && { ...f, company: e.target.value })} placeholder="Company *" style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none' }} />
+                        <input value={manualForm.role} onChange={e => setManualForm(f => f && { ...f, role: e.target.value })} placeholder="Role *" style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none' }} />
+                        <input value={manualForm.location} onChange={e => setManualForm(f => f && { ...f, location: e.target.value })} placeholder="Location" style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none' }} />
+                        <select value={manualForm.domain} onChange={e => setManualForm(f => f && { ...f, domain: e.target.value })} style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none' }}>
+                          {['consulting', 'finance', 'marketing', 'bd', 'operations', 'founders_office', 'other'].map(d => <option key={d} value={d} style={{ background: '#111827' }}>{d}</option>)}
+                        </select>
+                      </div>
+                      <input value={manualForm.job_url} onChange={e => setManualForm(f => f && { ...f, job_url: e.target.value })} placeholder="Job URL *" style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none' }} />
+                      <textarea value={manualForm.jd_summary} onChange={e => setManualForm(f => f && { ...f, jd_summary: e.target.value })} placeholder="One-line summary" rows={2} style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none', resize: 'vertical', fontFamily: 'inherit' }} />
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={async () => {
+                            const r = await adminJobs({ action: 'manual_add', ...manualForm, publish: true })
+                            if (r.error) setManualMsg(`❌ ${r.error}`)
+                            else { setManualMsg('✓ Published'); setManualForm(null); setManualPaste(''); fetchJobs() }
+                          }}
+                          style={{ padding: '10px 20px', borderRadius: 10, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.4)', color: '#6ee7b7', fontSize: 12.5, fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          Publish now
+                        </button>
+                        <button onClick={() => { setManualForm(null); setManualMsg('') }} style={{ padding: '10px 20px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)', fontSize: 12.5, fontWeight: 700, cursor: 'pointer' }}>
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {manualMsg && <p style={{ fontSize: 12.5, color: manualMsg.startsWith('❌') ? '#f87171' : '#6ee7b7', margin: '10px 0 0' }}>{manualMsg}</p>}
+                </div>
+
+                {/* Pending queue */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginBottom: 20 }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 12 }}>Pending review ({jobsData.pending.length})</div>
+                  {jobsData.pending.length === 0 && <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', margin: 0 }}>Queue is clear 🎉 Run a sync or add sources to fill it.</p>}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {jobsData.pending.map(j => (
+                      <div key={j.id} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: '12px 14px', flexWrap: 'wrap' }}>
+                        <div style={{ flex: 1, minWidth: 220 }}>
+                          <div style={{ fontSize: 13.5, fontWeight: 700, color: 'white' }}>{j.company} — {j.role}</div>
+                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>{j.location || 'Location n/a'} · <span style={{ color: '#93BBFF' }}>{j.domain}</span>{j.jd_summary ? ` · ${j.jd_summary}` : ''}</div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                          <a href={j.job_url} target="_blank" rel="noopener noreferrer" style={{ padding: '7px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.55)', fontSize: 11.5, fontWeight: 700, textDecoration: 'none' }}>View ↗</a>
+                          <button onClick={() => jobAction('approve', j.id)} style={{ padding: '7px 14px', borderRadius: 8, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.4)', color: '#6ee7b7', fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}>✓ Publish</button>
+                          <button onClick={() => jobAction('reject', j.id)} style={{ padding: '7px 14px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.35)', color: '#f87171', fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}>✕</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Published */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20 }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 12 }}>
+                    Live on the board ({jobsData.counts.published}) <span style={{ color: 'rgba(255,255,255,0.3)', fontWeight: 600, fontSize: 12 }}>· {jobsData.counts.expired} expired</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {jobsData.published.map(j => (
+                      <div key={j.id} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: '9px 14px', flexWrap: 'wrap' }}>
+                        <div style={{ flex: 1, minWidth: 200, fontSize: 12.5, color: 'rgba(255,255,255,0.7)' }}>
+                          <span style={{ fontWeight: 700, color: 'white' }}>{j.company}</span> — {j.role} <span style={{ color: 'rgba(255,255,255,0.35)' }}>· {j.domain}</span>
+                        </div>
+                        <button onClick={() => jobAction('expire', j.id)} style={{ padding: '5px 12px', borderRadius: 8, background: 'none', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}>Take down</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
         {/* Tracker Tab */}
         {activeTab === 'tracker' && (
           <div>

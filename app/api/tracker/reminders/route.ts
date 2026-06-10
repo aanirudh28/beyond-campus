@@ -1,8 +1,10 @@
 export const runtime = 'nodejs'
+export const maxDuration = 60
 
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { serviceClient } from '@/lib/tracker'
+import { syncSources, SourceReport } from '@/lib/jobs'
 
 // Hit daily at 09:00 IST by Vercel cron (vercel.json). Vercel sends
 // Authorization: Bearer ${CRON_SECRET} automatically when the env var exists.
@@ -22,7 +24,11 @@ export async function GET(req: NextRequest) {
     .lte('follow_up_date', today)
     .in('status', ['applied', 'replied', 'interview'])
 
-  if (!due || due.length === 0) return NextResponse.json({ sent: 0 })
+  // daily jobs sync rides along on this cron (Vercel Hobby allows only 2 crons)
+  let jobsSync: SourceReport[] = []
+  try { jobsSync = await syncSources({ maxSources: 4, maxNewPostings: 40 }) } catch { /* sync failure must not block reminders */ }
+
+  if (!due || due.length === 0) return NextResponse.json({ sent: 0, jobsSync })
 
   const userIds = [...new Set(due.map(d => d.user_id))]
   const { data: profiles } = await svc
@@ -72,5 +78,5 @@ export async function GET(req: NextRequest) {
     } catch { /* one failed email shouldn't kill the batch */ }
   }
 
-  return NextResponse.json({ sent })
+  return NextResponse.json({ sent, jobsSync })
 }

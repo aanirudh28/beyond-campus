@@ -47,6 +47,11 @@ const FEATURES = [
     desc: 'Application streaks, weekly goals, and a progress ring that fills as you apply. The job hunt is a numbers game — we make the numbers addictive.',
   },
   {
+    emoji: '💼',
+    title: 'Fresh openings, hand-picked',
+    desc: 'A curated feed of fresher-friendly non-tech roles, updated daily — consulting, finance, marketing, BD. One click saves any of them to your board.',
+  },
+  {
     emoji: '📊',
     title: 'Know what actually works',
     desc: 'Reply rate by source, funnel conversion, best day to apply. Stop guessing whether LinkedIn or cold email works better — see it in your own data.',

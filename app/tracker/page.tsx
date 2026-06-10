@@ -162,6 +162,10 @@ export default function TrackerPage() {
             </button>
           )}
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
+            <Link href="/tracker/jobs" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+              💼<span className="hide-mobile"> Jobs</span>
+              <span style={{ fontSize: 8.5, fontWeight: 800, padding: '2px 6px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', letterSpacing: 0.5 }}>NEW</span>
+            </Link>
             <Link href="/tracker/analytics" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>📊<span className="hide-mobile"> Analytics</span></Link>
             <button onClick={() => setShowShare(true)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: 'rgba(255,255,255,0.6)', fontSize: 12.5, fontWeight: 600, padding: '7px 12px', cursor: 'pointer' }}>
               <span className="hide-mobile">Share </span>📤
@@ -256,12 +260,20 @@ export default function TrackerPage() {
             <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, maxWidth: 420, margin: '0 auto 20px', lineHeight: 1.6 }}>
               Paste any job link or JD and AI fills in the details. Every application gets a follow-up reminder, so nothing slips through.
             </p>
-            <button
-              onClick={() => setQuickAdd('saved')}
-              style={{ padding: '13px 28px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 14.5, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(79,124,255,0.35)' }}
-            >
-              ✨ Add your first application
-            </button>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => setQuickAdd('saved')}
+                style={{ padding: '13px 28px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 14.5, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(79,124,255,0.35)' }}
+              >
+                ✨ Add your first application
+              </button>
+              <Link
+                href="/tracker/jobs"
+                style={{ padding: '13px 28px', borderRadius: 100, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.75)', fontWeight: 700, fontSize: 14.5, textDecoration: 'none' }}
+              >
+                💼 Browse fresh openings →
+              </Link>
+            </div>
           </div>
         )}
 
