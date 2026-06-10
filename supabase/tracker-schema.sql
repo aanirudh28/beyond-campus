@@ -127,6 +127,42 @@ create table if not exists nurture_optouts (
 alter table nurture_sends enable row level security;
 alter table nurture_optouts enable row level security;
 
+-- ============ JOBS ENGINE (curated fresher job feed) ============
+create table if not exists job_sources (
+  id uuid primary key default gen_random_uuid(),
+  company text not null,
+  ats text not null check (ats in ('greenhouse','lever','ashby')),
+  slug text not null,
+  active boolean not null default true,
+  last_synced_at timestamptz,
+  created_at timestamptz not null default now(),
+  unique (ats, slug)
+);
+
+create table if not exists jobs (
+  id uuid primary key default gen_random_uuid(),
+  source_id uuid references job_sources(id) on delete set null,
+  external_id text,
+  company text not null,
+  role text not null,
+  location text,
+  job_url text not null unique,
+  jd_summary text,
+  domain text not null default 'other'
+    check (domain in ('consulting','finance','marketing','bd','operations','founders_office','other')),
+  status text not null default 'pending'
+    check (status in ('pending','published','rejected','expired')),
+  posted_at timestamptz,
+  created_at timestamptz not null default now(),
+  published_at timestamptz,
+  unique (source_id, external_id)   -- NULLs distinct: manual adds (source_id null) coexist
+);
+create index if not exists idx_jobs_status_published on jobs(status, published_at desc);
+
+alter table job_sources enable row level security;   -- service-role only: no policies
+alter table jobs enable row level security;
+create policy "published jobs are public" on jobs for select using (status = 'published');
+
 -- ============ ROW LEVEL SECURITY ============
 alter table tracker_profiles enable row level security;
 alter table applications enable row level security;

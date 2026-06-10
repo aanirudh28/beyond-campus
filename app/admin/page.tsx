@@ -129,7 +129,42 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads' | 'tracker'>('bookings')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads' | 'tracker' | 'jobs'>('bookings')
+
+  // ─── Jobs Engine State ───────────────────────────────────────────────────────
+  interface JobRow { id: string; company: string; role: string; location: string | null; job_url: string; jd_summary: string | null; domain: string; status: string; created_at: string }
+  interface JobSource { id: string; company: string; ats: string; slug: string; active: boolean; last_synced_at: string | null }
+  const [jobsData, setJobsData] = useState<{ sources: JobSource[]; pending: JobRow[]; published: JobRow[]; counts: { pending: number; published: number; expired: number } } | null>(null)
+  const [jobsLoading, setJobsLoading] = useState(false)
+  const [syncReport, setSyncReport] = useState<{ source: string; fetched: number; fresh: number; kept: number; expired: number; error?: string }[] | null>(null)
+  const [syncing, setSyncing] = useState(false)
+  const [srcForm, setSrcForm] = useState({ company: '', ats: 'greenhouse', slug: '' })
+  const [srcMsg, setSrcMsg] = useState('')
+  const [manualPaste, setManualPaste] = useState('')
+  const [manualExtracting, setManualExtracting] = useState(false)
+  const [manualForm, setManualForm] = useState<{ company: string; role: string; location: string; job_url: string; jd_summary: string; domain: string } | null>(null)
+  const [manualMsg, setManualMsg] = useState('')
+
+  const adminJobs = async (payload: Record<string, unknown>) => {
+    const res = await fetch('/api/admin/jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: ADMIN_PASSWORD, ...payload }),
+    })
+    return res.json()
+  }
+
+  const fetchJobs = async () => {
+    setJobsLoading(true)
+    const data = await adminJobs({ action: 'overview' })
+    if (data.sources) setJobsData(data)
+    setJobsLoading(false)
+  }
+
+  const jobAction = async (action: string, id: string) => {
+    await adminJobs({ action, id })
+    fetchJobs()
+  }
   const [trackerStats, setTrackerStats] = useState<{
     totalUsers: number; newUsers7d: number; proUsers: number; activeUsers7d: number
     totalApps: number; newApps7d: number; byStatus: Record<string, number>
@@ -355,6 +390,7 @@ export default function AdminPage() {
       fetchRoasts()
       fetchConsultationLeads()
       fetchTrackerStats()
+      fetchJobs()
     } else {
       setError('Incorrect password')
     }
@@ -485,6 +521,7 @@ export default function AdminPage() {
             { key: 'roasts', label: `🔥 Roasts (${roasts.length})`, active: activeTab === 'roasts', color: '#ef4444', bg: 'rgba(239,68,68,0.15)' },
             { key: 'leads', label: `📋 Leads (${consultationLeads.length})`, active: activeTab === 'leads', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
             { key: 'tracker', label: `🎯 Tracker (${trackerStats?.totalUsers ?? '…'})`, active: activeTab === 'tracker', color: '#7B61FF', bg: 'rgba(123,97,255,0.15)' },
+            { key: 'jobs', label: `💼 Jobs (${jobsData?.counts.pending ?? '…'} pending)`, active: activeTab === 'jobs', color: '#00D2FF', bg: 'rgba(0,210,255,0.12)' },
           ].map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: tab.active ? tab.color : 'rgba(255,255,255,0.1)', background: tab.active ? tab.bg : 'transparent', color: tab.active ? tab.color : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               {tab.label}
