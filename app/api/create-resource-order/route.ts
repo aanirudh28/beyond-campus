@@ -8,7 +8,7 @@ export async function POST() {
       key_secret: process.env.RAZORPAY_KEY_SECRET!,
     })
     const order = await razorpay.orders.create({
-      amount: 199 * 100,
+      amount: 299 * 100,
       currency: 'INR',
       receipt: `resource_${Date.now()}`,
     })

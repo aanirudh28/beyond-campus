@@ -59,7 +59,7 @@ export default function UnlockPopup({
       const res = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: 199 }),
+        body: JSON.stringify({ amount: 299 }),
       })
       const { orderId, amount, key } = await res.json()
       const rzp = new (window as any).Razorpay({
@@ -171,18 +171,18 @@ export default function UnlockPopup({
           {/* Pricing cards */}
           <div style={{ padding:'0 32px 28px', display:'flex', flexDirection:'column', gap:12 }}>
 
-            {/* Card 1: Resource Pack ₹199 */}
+            {/* Card 1: Resource Pack ₹299 */}
             <div style={{ background:'linear-gradient(135deg,rgba(79,124,255,0.12),rgba(123,97,255,0.08))', border:'1.5px solid rgba(79,124,255,0.4)', borderRadius:16, padding:20, position:'relative' }}>
               <div style={{ position:'absolute', top:14, right:14, background:'rgba(79,124,255,0.2)', border:'1px solid rgba(79,124,255,0.4)', borderRadius:100, padding:'2px 10px', fontSize:10, fontWeight:700, color:'#93BBFF', letterSpacing:1 }}>BEST VALUE</div>
               <div style={{ display:'flex', alignItems:'center', gap:16, flexWrap:'wrap' }}>
                 <div style={{ flex:1, minWidth:160 }}>
                   <div style={{ fontSize:16, fontWeight:700, color:'white', marginBottom:6 }}>Resource Pack</div>
                   <div style={{ display:'flex', alignItems:'baseline', gap:8, marginBottom:10 }}>
-                    <span style={{ fontSize:22, fontWeight:800, color:'#4F7CFF' }}>₹199</span>
+                    <span style={{ fontSize:22, fontWeight:800, color:'#4F7CFF' }}>₹299</span>
                     <span style={{ fontSize:14, color:'rgba(255,255,255,0.3)', textDecoration:'line-through' }}>₹999</span>
                   </div>
                   <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
-                    {['All 50 cold email templates','All 20 LinkedIn DM scripts','Personalized Company Target List — built around your profile and domain','Resume guide + template','Off-campus playbook'].map(item => (
+                    {['All 50 cold email templates','All 20 LinkedIn DM scripts','Personalized Company Target List — built around your profile and domain','Resume guide + template','Off-campus playbook','Job Tracker Pro — unlimited AI + analytics'].map(item => (
                       <div key={item} style={{ fontSize:12, color:'rgba(255,255,255,0.65)', display:'flex', alignItems:'center', gap:6 }}>
                         <span style={{ color:'#4F7CFF', fontWeight:700, flexShrink:0 }}>✓</span> {item}
                       </div>
@@ -194,7 +194,7 @@ export default function UnlockPopup({
                   disabled={payLoading}
                   style={{ padding:'14px 20px', borderRadius:12, background:'linear-gradient(135deg,#4F7CFF,#7B61FF)', color:'white', fontWeight:700, fontSize:14, border:'none', cursor:payLoading?'wait':'pointer', fontFamily:"'DM Sans',sans-serif", boxShadow:'0 4px 16px rgba(79,124,255,0.3)', whiteSpace:'nowrap', flexShrink:0 }}
                 >
-                  {payLoading ? '...' : 'Unlock All →\n₹199'}
+                  {payLoading ? '...' : 'Unlock All →\n₹299'}
                 </button>
               </div>
             </div>

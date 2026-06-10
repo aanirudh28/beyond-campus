@@ -1040,7 +1040,7 @@ export default function ResumeGuidePage() {
               </div>
             </ChapterCard>
           ) : (
-            <LockedChapterCard num={5} title={CHAPTER_TITLES[4]} preview="These 8 mistakes are why strong candidates get rejected before anyone reads their resume." onUnlock={() => setShowPopup(true)} label="Unlock all 7 — ₹199 →" isPaid />
+            <LockedChapterCard num={5} title={CHAPTER_TITLES[4]} preview="These 8 mistakes are why strong candidates get rejected before anyone reads their resume." onUnlock={() => setShowPopup(true)} label="Unlock all 7 — ₹299 →" isPaid />
           )}
 
           {/* ══ CHAPTER 6 ══ */}
@@ -1086,7 +1086,7 @@ export default function ResumeGuidePage() {
               </div>
             </ChapterCard>
           ) : (
-            <LockedChapterCard num={6} title={CHAPTER_TITLES[5]} preview="What actually gets you shortlisted varies by domain. These tips are specific to each." onUnlock={() => setShowPopup(true)} label="Unlock all 7 — ₹199 →" isPaid />
+            <LockedChapterCard num={6} title={CHAPTER_TITLES[5]} preview="What actually gets you shortlisted varies by domain. These tips are specific to each." onUnlock={() => setShowPopup(true)} label="Unlock all 7 — ₹299 →" isPaid />
           )}
 
           {/* ══ CHAPTER 7 ══ */}
@@ -1134,7 +1134,7 @@ export default function ResumeGuidePage() {
               ))}
             </ChapterCard>
           ) : (
-            <LockedChapterCard num={7} title={CHAPTER_TITLES[6]} preview="Run through this before you send any resume. 4 categories, 20 checks." onUnlock={() => setShowPopup(true)} label="Unlock all 7 — ₹199 →" isPaid />
+            <LockedChapterCard num={7} title={CHAPTER_TITLES[6]} preview="Run through this before you send any resume. 4 categories, 20 checks." onUnlock={() => setShowPopup(true)} label="Unlock all 7 — ₹299 →" isPaid />
           )}
         </div>
 

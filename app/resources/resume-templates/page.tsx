@@ -626,7 +626,7 @@ export default function ResumeTemplatesPage() {
                   </a>
                 ) : (
                   <button onClick={() => { setPreviewIdx(null); setShowPopup(true) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', borderRadius: 10, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: '#fff', fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}>
-                    Unlock All — ₹199 →
+                    Unlock All — ₹299 →
                   </button>
                 )}
               </div>
@@ -686,7 +686,7 @@ export default function ResumeTemplatesPage() {
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
           <a href="/resources/resume-builder" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 100, background: 'rgba(79,124,255,0.12)', border: '1.5px solid rgba(79,124,255,0.35)', color: '#93BBFF', fontWeight: 700, fontSize: 14 }}>Try Free Builder →</a>
-          {!fullyUnlocked && <button onClick={() => setShowPopup(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 100, background: 'rgba(245,158,11,0.12)', border: '1.5px solid rgba(245,158,11,0.35)', color: '#fcd34d', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}>Unlock All — ₹199</button>}
+          {!fullyUnlocked && <button onClick={() => setShowPopup(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 100, background: 'rgba(245,158,11,0.12)', border: '1.5px solid rgba(245,158,11,0.35)', color: '#fcd34d', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}>Unlock All — ₹299</button>}
         </div>
       </section>
 
@@ -788,7 +788,7 @@ export default function ResumeTemplatesPage() {
                       {t.badge === 'FREE' ? (
                         <a href="/resources/resume-builder" className="action-btn action-btn-primary" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>Use Template →</a>
                       ) : locked ? (
-                        <button className="action-btn action-btn-lock" onClick={() => setShowPopup(true)}>🔒 Unlock — ₹199</button>
+                        <button className="action-btn action-btn-lock" onClick={() => setShowPopup(true)}>🔒 Unlock — ₹299</button>
                       ) : (
                         <button className="action-btn action-btn-primary" onClick={() => setPreviewIdx(idx)}>Use Template →</button>
                       )}

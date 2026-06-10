@@ -1,14 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import OAuthButtons from '@/app/components/tracker/OAuthButtons'
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const searchParams = useSearchParams()
+  const next = searchParams.get('next') || '/dashboard'
+  const [error, setError] = useState(searchParams.get('error') || '')
   const router = useRouter()
   const supabase = createClient()
 
@@ -17,13 +20,19 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
       setError(error.message)
       setLoading(false)
     } else {
-      router.push('/dashboard')
+      if (next.startsWith('/tracker') && data.user) {
+        await supabase.from('tracker_profiles').upsert(
+          { user_id: data.user.id, email: data.user.email, name: data.user.user_metadata?.name || null },
+          { onConflict: 'user_id', ignoreDuplicates: true }
+        )
+      }
+      router.push(next.startsWith('/') ? next : '/dashboard')
     }
   }
 
@@ -38,11 +47,21 @@ export default function LoginPage() {
             BEYOND CAMPUS
           </div>
           <h1 style={{ fontSize: 28, fontWeight: 800, color: 'white', margin: '16px 0 6px', letterSpacing: -0.5 }}>Welcome back 👋</h1>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, margin: 0 }}>Login to your student dashboard</p>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, margin: 0 }}>
+            {next.startsWith('/tracker') ? 'Login to your job tracker' : 'Login to your student dashboard'}
+          </p>
         </div>
 
         {/* Form */}
         <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 24, padding: 32 }}>
+          <OAuthButtons next={next} />
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+            <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>or</span>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+          </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
             <input
               type="email"
@@ -73,12 +92,19 @@ export default function LoginPage() {
           </button>
         </div>
 
-        <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.25)', fontSize: 13, marginTop: 24, lineHeight: 1.7 }}>
-          Don't have an account?<br />
-          Your account is created automatically when you book a session.
+        <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.25)', fontSize: 13, marginTop: 24 }}>
+          New here? <a href="/signup" style={{ color: '#93BBFF', textDecoration: 'none' }}>Create a free account →</a>
         </p>
 
       </div>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }

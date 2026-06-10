@@ -291,7 +291,7 @@ export default function Home() {
                 </a>
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '6px 0' }} />
                 <a href="/free" style={{ display: 'block', padding: '10px 12px', borderRadius: 10, textAlign: 'center', background: 'linear-gradient(135deg,rgba(79,124,255,0.15),rgba(123,97,255,0.1))', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
-                  Unlock Everything — ₹199 →
+                  Unlock Everything — ₹299 →
                 </a>
               </div>
               </div>

@@ -1433,7 +1433,7 @@ export default function ResumeBuilderPage() {
                 ))}
               </div>
               <button onClick={() => setShowPopup(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', borderRadius: 10, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', color: '#fff', fontWeight: 700, fontSize: 13, border: 'none', cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 2px 12px rgba(79,124,255,0.3)' }}>
-                Unlock All Templates — ₹199 →
+                Unlock All Templates — ₹299 →
               </button>
             </div>
           </div>

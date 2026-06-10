@@ -428,7 +428,7 @@ export default function ColdEmailPackPage() {
             <span>
               Showing 4 per category ·{' '}
               <button onClick={() => setShowPopup(true)} style={{ background: 'none', border: 'none', color: '#4F7CFF', cursor: 'pointer', fontWeight: 600, fontSize: 14, fontFamily: "'DM Sans',sans-serif", textDecoration: 'underline', padding: 0 }}>
-                Get all 50 for ₹199 →
+                Get all 50 for ₹299 →
               </button>
             </span>
           ) : (
@@ -481,7 +481,7 @@ export default function ColdEmailPackPage() {
                     {emailUnlocked ? (
                       <>
                         <span style={{ fontSize: 13, color: '#93BBFF', fontWeight: 600 }}>
-                          Showing {shown} of {items.length} · Unlock all 50 for ₹199
+                          Showing {shown} of {items.length} · Unlock all 50 for ₹299
                         </span>
                         <button className="unlock-banner-btn" onClick={() => setShowPopup(true)}>Unlock All →</button>
                       </>
@@ -551,7 +551,7 @@ export default function ColdEmailPackPage() {
                             <div className="lock-overlay" onClick={() => setShowPopup(true)}>
                               <span style={{ fontSize: 22 }}>🔒</span>
                               <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>
-                                {emailUnlocked ? 'Unlock all 50 for ₹199' : 'Enter email to unlock 2 more free'}
+                                {emailUnlocked ? 'Unlock all 50 for ₹299' : 'Enter email to unlock 2 more free'}
                               </span>
                               <button
                                 style={{ padding: '6px 18px', borderRadius: 100, background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.35)', color: '#93BBFF', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}

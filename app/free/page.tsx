@@ -48,7 +48,7 @@ export default function FreePage() {
       const res = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: 199 }),
+        body: JSON.stringify({ amount: 299 }),
       })
       const { orderId, amount, key } = await res.json()
       new window.Razorpay({
@@ -170,7 +170,7 @@ export default function FreePage() {
           {/* Badge */}
           <div style={{ marginBottom: 18 }}>
             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', padding: '5px 14px', borderRadius: 100, background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.4)', color: '#93BBFF' }}>
-              BEST VALUE — ₹199
+              BEST VALUE — ₹299
             </span>
           </div>
 
@@ -178,7 +178,7 @@ export default function FreePage() {
             Resource Pack — Unlock Everything
           </h2>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, marginBottom: 28, maxWidth: 600 }}>
-            Get all 5 resources for ₹199 — Cold Email Pack (50 templates), LinkedIn Scripts (20 DMs), Personalized Company Target List, Resume Template, and the Off-Campus Playbook.
+            Everything for ₹299 — Cold Email Pack (50 templates), LinkedIn Scripts (20 DMs), Personalized Company Target List, Resume Template, the Off-Campus Playbook, plus <strong style={{ color: 'white' }}>Job Tracker Pro</strong> (unlimited applications, unlimited AI outreach writing, full analytics).
           </p>
 
           {/* Feature bullets */}
@@ -188,6 +188,7 @@ export default function FreePage() {
               'All 20 LinkedIn DM scripts',
               'Personalized Company Target List — built for you',
               'Resume template + playbook',
+              'Job Tracker Pro — unlimited AI + analytics',
             ].map(bullet => (
               <div key={bullet} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.75)' }}>
                 <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(79,124,255,0.2)', border: '1px solid rgba(79,124,255,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#93BBFF', flexShrink: 0 }}>✓</span>
@@ -204,7 +205,7 @@ export default function FreePage() {
             </div>
           ) : (
             <button className="unlock-btn" onClick={handleUnlockPack} disabled={payLoading}>
-              {payLoading ? 'Processing...' : 'Unlock Everything — ₹199'}
+              {payLoading ? 'Processing...' : 'Unlock Everything — ₹299'}
             </button>
           )}
         </div>
