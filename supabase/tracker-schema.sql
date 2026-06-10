@@ -54,7 +54,22 @@ create table if not exists application_events (
 );
 create index if not exists idx_events_user_created on application_events(user_id, created_at);
 
--- Auto-log creation + status changes; clients never write events directly
+-- BEFORE trigger: stamp status_changed_at / applied_at / updated_at
+create or replace function stamp_application_fields() returns trigger
+language plpgsql as $$
+begin
+  if (tg_op = 'UPDATE' and new.status is distinct from old.status) then
+    new.status_changed_at = now();
+    if new.status = 'applied' and new.applied_at is null then
+      new.applied_at = current_date;
+    end if;
+  end if;
+  new.updated_at = now();
+  return new;
+end $$;
+
+-- AFTER trigger: log events once the row exists (an event row references the
+-- application via FK, so it cannot be written from a BEFORE trigger)
 create or replace function log_application_event() returns trigger
 language plpgsql security definer as $$
 begin
@@ -62,20 +77,20 @@ begin
     insert into application_events(application_id, user_id, event_type, to_status)
     values (new.id, new.user_id, 'created', new.status);
   elsif (tg_op = 'UPDATE' and new.status is distinct from old.status) then
-    new.status_changed_at = now();
-    if new.status = 'applied' and new.applied_at is null then
-      new.applied_at = current_date;
-    end if;
     insert into application_events(application_id, user_id, event_type, from_status, to_status)
     values (new.id, new.user_id, 'status_change', old.status, new.status);
   end if;
-  new.updated_at = now();
   return new;
 end $$;
 
+drop trigger if exists trg_stamp_application_fields on applications;
+create trigger trg_stamp_application_fields
+  before insert or update on applications
+  for each row execute function stamp_application_fields();
+
 drop trigger if exists trg_log_application_event on applications;
 create trigger trg_log_application_event
-  before insert or update on applications
+  after insert or update on applications
   for each row execute function log_application_event();
 
 -- ============ FREE-TIER CAP (server-enforced, tamper-proof) ============

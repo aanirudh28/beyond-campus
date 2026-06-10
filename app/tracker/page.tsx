@@ -60,7 +60,9 @@ export default function TrackerPage() {
   }, [])
 
   const handleAdd = async (newApp: NewApplication): Promise<string | null> => {
-    const { data, error } = await supabase.from('applications').insert(newApp).select().single()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return 'You are signed out. Refresh and log in again.'
+    const { data, error } = await supabase.from('applications').insert({ ...newApp, user_id: user.id }).select().single()
     if (error) {
       if (error.message.includes('FREE_CAP_REACHED')) {
         setQuickAdd(null)
