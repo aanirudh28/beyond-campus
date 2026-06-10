@@ -24,7 +24,7 @@ export default function QuickAddModal({
 }: {
   initialStatus: AppStatus
   onClose: () => void
-  onAdd: (app: NewApplication) => Promise<boolean>
+  onAdd: (app: NewApplication) => Promise<string | null>
   onAiCapHit: () => void
 }) {
   const [tab, setTab] = useState<'smart' | 'manual'>('smart')
@@ -86,7 +86,7 @@ export default function QuickAddModal({
     setSaving(true)
     setError('')
     const today = todayStr()
-    const ok = await onAdd({
+    const failure = await onAdd({
       company: company.trim(),
       role: role.trim(),
       location: location.trim() || null,
@@ -98,8 +98,11 @@ export default function QuickAddModal({
       follow_up_date: ['offer', 'rejected'].includes(status) ? null : addDays(today, followUpDays),
       salary_range: salaryRange.trim() || null,
     })
-    if (ok) onClose()
-    else setSaving(false)
+    if (!failure) onClose()
+    else {
+      setSaving(false)
+      if (failure !== 'FREE_CAP_REACHED') setError(failure)
+    }
   }
 
   const inputStyle: React.CSSProperties = {

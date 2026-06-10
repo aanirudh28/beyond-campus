@@ -59,18 +59,22 @@ export default function TrackerPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleAdd = async (newApp: NewApplication): Promise<boolean> => {
+  const handleAdd = async (newApp: NewApplication): Promise<string | null> => {
     const { data, error } = await supabase.from('applications').insert(newApp).select().single()
     if (error) {
       if (error.message.includes('FREE_CAP_REACHED')) {
         setQuickAdd(null)
         setUpgradeReason('app_cap')
         setShowUpgrade(true)
+        return 'FREE_CAP_REACHED'
       }
-      return false
+      if (error.message.includes('does not exist') || error.message.includes('schema cache')) {
+        return 'The tracker database is not set up yet. (Admin: run supabase/tracker-schema.sql in the Supabase SQL editor.)'
+      }
+      return `Could not save: ${error.message}`
     }
     setApplications(apps => [data, ...apps])
-    return true
+    return null
   }
 
   const handleUpdate = async (id: string, patch: Partial<Application>) => {
