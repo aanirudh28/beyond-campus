@@ -101,7 +101,7 @@ export default function QuickAddModal({
     if (!failure) onClose()
     else {
       setSaving(false)
-      if (failure !== 'FREE_CAP_REACHED') setError(failure)
+      setError(failure)
     }
   }
 

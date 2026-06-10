@@ -54,7 +54,6 @@ export const SOURCES: { key: AppSource; label: string }[] = [
 export const statusMeta = (s: AppStatus) => STATUSES.find(x => x.key === s)!
 export const sourceLabel = (s: AppSource) => SOURCES.find(x => x.key === s)?.label || 'Other'
 
-export const FREE_APP_CAP = 25
 export const FREE_AI_CAP = 5
 
 export function todayStr() {

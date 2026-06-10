@@ -93,24 +93,8 @@ create trigger trg_log_application_event
   after insert or update on applications
   for each row execute function log_application_event();
 
--- ============ FREE-TIER CAP (server-enforced, tamper-proof) ============
-create or replace function enforce_free_application_cap() returns trigger
-language plpgsql security definer as $$
-declare pro boolean; cnt int;
-begin
-  select is_pro into pro from tracker_profiles where user_id = new.user_id;
-  if coalesce(pro, false) = false then
-    select count(*) into cnt from applications where user_id = new.user_id;
-    if cnt >= 25 then
-      raise exception 'FREE_CAP_REACHED';
-    end if;
-  end if;
-  return new;
-end $$;
-
-drop trigger if exists trg_free_cap on applications;
-create trigger trg_free_cap before insert on applications
-  for each row execute function enforce_free_application_cap();
+-- Applications are unlimited for everyone — monetization is on AI features
+-- (metered via ai_generations) and analytics, which is where costs accrue.
 
 -- ============ AI GENERATIONS (history + monthly metering + insight cache) ============
 create table if not exists ai_generations (

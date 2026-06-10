@@ -15,8 +15,8 @@ declare global {
 }
 
 const PERKS = [
-  ['♾️', 'Unlimited applications', 'Track every single company, forever'],
   ['✨', 'Unlimited AI writing', 'Cold emails, follow-ups & DMs on tap'],
+  ['🧠', 'Full weekly AI insights', 'Know exactly what\'s working in your pipeline'],
   ['📊', 'Full analytics', 'Reply rates by source, funnel, best days'],
   ['📧', '50+ cold email templates', 'The complete Beyond Campus pack'],
   ['💼', 'LinkedIn DM scripts', 'Word-for-word outreach scripts'],
@@ -32,7 +32,7 @@ export default function ProUpgradeModal({
 }: {
   email: string
   name: string | null
-  reason?: 'app_cap' | 'ai_cap' | 'analytics' | null
+  reason?: 'ai_cap' | 'analytics' | null
   onClose: () => void
   onUpgraded: () => void
 }) {
@@ -40,8 +40,7 @@ export default function ProUpgradeModal({
   const [error, setError] = useState('')
 
   const headline =
-    reason === 'app_cap' ? "You've outgrown the free tier 🚀"
-    : reason === 'ai_cap' ? "You've used your 5 free AI generations"
+    reason === 'ai_cap' ? "You've used your 5 free AI generations"
     : reason === 'analytics' ? 'Unlock your full analytics'
     : 'Go Pro. Get hired faster.'
 

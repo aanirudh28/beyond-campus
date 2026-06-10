@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Application, AppStatus, TrackerProfile, todayStr, addDays, FREE_APP_CAP } from '@/app/components/tracker/types'
+import { Application, AppStatus, TrackerProfile, todayStr, addDays } from '@/app/components/tracker/types'
 import KanbanBoard from '@/app/components/tracker/KanbanBoard'
 import QuickAddModal, { NewApplication } from '@/app/components/tracker/QuickAddModal'
 import ApplicationDrawer from '@/app/components/tracker/ApplicationDrawer'
@@ -21,7 +21,7 @@ export default function TrackerPage() {
   const [applications, setApplications] = useState<Application[]>([])
   const [quickAdd, setQuickAdd] = useState<AppStatus | null>(null)
   const [drawer, setDrawer] = useState<{ app: Application; aiTab: boolean } | null>(null)
-  const [upgradeReason, setUpgradeReason] = useState<'app_cap' | 'ai_cap' | 'analytics' | null>(null)
+  const [upgradeReason, setUpgradeReason] = useState<'ai_cap' | 'analytics' | null>(null)
   const [showUpgrade, setShowUpgrade] = useState(false)
   const [showShare, setShowShare] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -64,12 +64,6 @@ export default function TrackerPage() {
     if (!user) return 'You are signed out. Refresh and log in again.'
     const { data, error } = await supabase.from('applications').insert({ ...newApp, user_id: user.id }).select().single()
     if (error) {
-      if (error.message.includes('FREE_CAP_REACHED')) {
-        setQuickAdd(null)
-        setUpgradeReason('app_cap')
-        setShowUpgrade(true)
-        return 'FREE_CAP_REACHED'
-      }
       if (error.message.includes('does not exist') || error.message.includes('schema cache')) {
         return 'The tracker database is not set up yet. (Admin: run supabase/tracker-schema.sql in the Supabase SQL editor.)'
       }
@@ -118,7 +112,7 @@ export default function TrackerPage() {
     await supabase.from('tracker_profiles').update(patch).eq('user_id', profile.user_id)
   }
 
-  const openUpgrade = (reason: 'app_cap' | 'ai_cap' | 'analytics' | null) => {
+  const openUpgrade = (reason: 'ai_cap' | 'analytics' | null) => {
     setUpgradeReason(reason)
     setShowUpgrade(true)
   }
@@ -208,7 +202,7 @@ export default function TrackerPage() {
               {profile?.name ? `Let's go, ${profile.name.split(' ')[0]} 💪` : "Let's get you hired 💪"}
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13.5, margin: '4px 0 0' }}>
-              {applications.length === 0 ? 'Add your first application below.' : `${applications.length} application${applications.length === 1 ? '' : 's'} in your pipeline${!profile?.is_pro ? ` · ${FREE_APP_CAP - applications.length} left on free` : ''}`}
+              {applications.length === 0 ? 'Add your first application below.' : `${applications.length} application${applications.length === 1 ? '' : 's'} in your pipeline`}
             </p>
           </div>
           <StreakWidget applications={applications} />

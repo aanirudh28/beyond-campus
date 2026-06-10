@@ -2,7 +2,6 @@ import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { createClient as createSSRClient } from '@/lib/supabase/server'
 
 export const FREE_AI_CAP = 5
-export const FREE_APP_CAP = 25
 
 export function serviceClient() {
   return createServiceClient(
