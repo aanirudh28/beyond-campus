@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { track } from '@/lib/analytics'
+
+const WHATSAPP_LINK = 'https://chat.whatsapp.com/HUe0nBmwKLWBIgnHaA6Pp0'
 
 interface Props {
   isOpen: boolean
@@ -15,8 +18,6 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
     phone: '',
     email: '',
     interestedIn: '',
-    college: '',
-    graduationYear: '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(false)
@@ -39,7 +40,7 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
   useEffect(() => {
     if (!isOpen) {
       const timer = setTimeout(() => {
-        setFormData({ name: '', phone: '', email: '', interestedIn: '', college: '', graduationYear: '' })
+        setFormData({ name: '', phone: '', email: '', interestedIn: '' })
         setErrors({})
         setIsLoading(false)
         setIsSubmitted(false)
@@ -67,11 +68,9 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
   const validate = () => {
     const e: Record<string, string> = {}
     if (!formData.name.trim()) e.name = 'Name is required'
-    if (!formData.phone.trim()) e.phone = 'Phone number is required'
+    if (!formData.phone.trim()) e.phone = 'WhatsApp number is required'
     else if (formData.phone.replace(/\D/g, '').length < 10) e.phone = 'Enter a valid 10-digit phone number'
-    if (!formData.email.trim()) e.email = 'Email is required'
-    else if (!formData.email.includes('@') || !formData.email.includes('.')) e.email = 'Enter a valid email address'
-    if (!formData.interestedIn) e.interestedIn = 'Please select an option'
+    if (formData.email.trim() && (!formData.email.includes('@') || !formData.email.includes('.'))) e.email = 'Enter a valid email address'
     return e
   }
 
@@ -87,18 +86,18 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
     const { error } = await supabase.from('consultation_leads').insert([{
       full_name: formData.name,
       phone: formData.phone,
-      email: formData.email,
-      interested_in: formData.interestedIn,
-      college: formData.college || null,
-      graduation_year: formData.graduationYear || null,
+      email: formData.email.trim() || '',
+      interested_in: formData.interestedIn || 'Not Sure Yet',
       source_page: 'homepage',
     }])
     setIsLoading(false)
     if (error) {
+      track('lead_submit_error', { message: error.message })
       setSubmitError('Something went wrong. Please try again or WhatsApp us directly.')
       console.error('Supabase insert error:', error)
       return
     }
+    track('lead_submit_success', { interested_in: formData.interestedIn || 'Not Sure Yet' })
     setIsSubmitted(true)
   }
 
@@ -112,7 +111,7 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
     fontSize: 14,
     color: '#111',
     outline: 'none',
-    fontFamily: "'DM Sans', 'Inter', sans-serif",
+    fontFamily: "var(--font-dm-sans), 'Inter', sans-serif",
     background: '#fff',
     minHeight: 48,
     boxSizing: 'border-box',
@@ -188,7 +187,7 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
           {isSubmitted ? (
             <div style={{ textAlign: 'center', padding: '24px 0' }}>
               <div style={{ fontSize: 52, marginBottom: 16 }}>🎉</div>
-              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#111', marginBottom: 12, fontFamily: "'DM Serif Display', serif", lineHeight: 1.2 }}>
+              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#111', marginBottom: 12, fontFamily: "var(--font-dm-serif), serif", lineHeight: 1.2 }}>
                 You're In!
               </h2>
               <p style={{ fontSize: 15, color: '#555', lineHeight: 1.75, marginBottom: 32 }}>
@@ -205,7 +204,7 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
                   fontSize: 15,
                   border: 'none',
                   cursor: 'pointer',
-                  fontFamily: "'DM Sans', 'Inter', sans-serif",
+                  fontFamily: "var(--font-dm-sans), 'Inter', sans-serif",
                 }}
               >
                 Back to Website
@@ -213,7 +212,7 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
             </div>
           ) : (
             <>
-              <h2 style={{ fontSize: 21, fontWeight: 800, color: '#111', marginBottom: 8, fontFamily: "'DM Serif Display', serif", lineHeight: 1.2, paddingRight: 32 }}>
+              <h2 style={{ fontSize: 21, fontWeight: 800, color: '#111', marginBottom: 8, fontFamily: "var(--font-dm-serif), serif", lineHeight: 1.2, paddingRight: 32 }}>
                 Book Your Free Career Consultation
               </h2>
               <p style={{ fontSize: 13, color: '#555', marginBottom: 8, lineHeight: 1.6 }}>
@@ -243,10 +242,10 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
                 {errors.name && <p style={{ fontSize: 12, color: '#ef4444', marginTop: 4 }}>{errors.name}</p>}
               </div>
 
-              {/* Phone */}
+              {/* WhatsApp number */}
               <div style={{ marginBottom: 14 }}>
                 <label style={labelStyle}>
-                  Phone Number <span style={{ color: '#ef4444' }}>*</span>
+                  WhatsApp Number <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="tel"
@@ -258,10 +257,10 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
                 {errors.phone && <p style={{ fontSize: 12, color: '#ef4444', marginTop: 4 }}>{errors.phone}</p>}
               </div>
 
-              {/* Email */}
+              {/* Email (optional) */}
               <div style={{ marginBottom: 14 }}>
                 <label style={labelStyle}>
-                  Email Address <span style={{ color: '#ef4444' }}>*</span>
+                  Email <span style={{ fontSize: 12, color: '#999', fontWeight: 400 }}>(Optional)</span>
                 </label>
                 <input
                   type="email"
@@ -273,54 +272,20 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
                 {errors.email && <p style={{ fontSize: 12, color: '#ef4444', marginTop: 4 }}>{errors.email}</p>}
               </div>
 
-              {/* Interested In */}
-              <div style={{ marginBottom: 14 }}>
+              {/* Interested In (optional) */}
+              <div style={{ marginBottom: 24 }}>
                 <label style={labelStyle}>
-                  Interested In <span style={{ color: '#ef4444' }}>*</span>
+                  Interested In <span style={{ fontSize: 12, color: '#999', fontWeight: 400 }}>(Optional)</span>
                 </label>
                 <select
                   value={formData.interestedIn}
                   onChange={e => setField('interestedIn', e.target.value)}
-                  style={{ ...inputStyle(!!errors.interestedIn), color: formData.interestedIn ? '#111' : '#999', appearance: 'auto' as never }}
+                  style={{ ...inputStyle(), color: formData.interestedIn ? '#111' : '#999', appearance: 'auto' as never }}
                 >
-                  <option value="">Select an option...</option>
+                  <option value="">Not sure yet — help me decide</option>
                   <option value="1:1 Strategy Session (₹549)">1:1 Strategy Session (₹549)</option>
                   <option value="Placement Cohort (₹2,500)">Placement Cohort (₹2,500)</option>
                   <option value="Internship Cohort (₹1,750)">Internship Cohort (₹1,750)</option>
-                  <option value="Not Sure Yet">Not Sure Yet</option>
-                </select>
-                {errors.interestedIn && <p style={{ fontSize: 12, color: '#ef4444', marginTop: 4 }}>{errors.interestedIn}</p>}
-              </div>
-
-              {/* College */}
-              <div style={{ marginBottom: 14 }}>
-                <label style={labelStyle}>
-                  Current College <span style={{ fontSize: 12, color: '#999', fontWeight: 400 }}>(Optional)</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Your college name"
-                  value={formData.college}
-                  onChange={e => setField('college', e.target.value)}
-                  style={inputStyle()}
-                />
-              </div>
-
-              {/* Graduation Year */}
-              <div style={{ marginBottom: 24 }}>
-                <label style={labelStyle}>
-                  Graduation Year <span style={{ fontSize: 12, color: '#999', fontWeight: 400 }}>(Optional)</span>
-                </label>
-                <select
-                  value={formData.graduationYear}
-                  onChange={e => setField('graduationYear', e.target.value)}
-                  style={{ ...inputStyle(), color: formData.graduationYear ? '#111' : '#999', appearance: 'auto' as never }}
-                >
-                  <option value="">Select year...</option>
-                  <option value="2025">2025</option>
-                  <option value="2026">2026</option>
-                  <option value="2027">2027</option>
-                  <option value="2028">2028</option>
                 </select>
               </div>
 
@@ -343,7 +308,7 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
                   fontSize: 15,
                   border: 'none',
                   cursor: isLoading ? 'not-allowed' : 'pointer',
-                  fontFamily: "'DM Sans', 'Inter', sans-serif",
+                  fontFamily: "var(--font-dm-sans), 'Inter', sans-serif",
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -359,6 +324,36 @@ export default function LeadCapturePopup({ isOpen, onClose, preselectedCohort }:
                   </>
                 ) : 'Schedule My Free Consultation'}
               </button>
+
+              {/* WhatsApp escape hatch — lower friction than any form */}
+              <a
+                href={WHATSAPP_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track('lead_whatsapp_click')}
+                style={{
+                  marginTop: 12,
+                  width: '100%',
+                  padding: '14px',
+                  borderRadius: 100,
+                  background: '#fff',
+                  border: '1.5px solid #25D366',
+                  color: '#128C4B',
+                  fontWeight: 700,
+                  fontSize: 14,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  textDecoration: 'none',
+                  boxSizing: 'border-box',
+                }}
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="#25D366" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                Or chat with us on WhatsApp instead
+              </a>
             </>
           )}
         </div>

@@ -1,12 +1,16 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import LeadCapturePopup from './components/LeadCapturePopup'
+import { track } from '@/lib/analytics'
 
 // Feature flag — flip to true when Mission Control / Phase 1B is ready to ship
 const SHOW_COMMUNITY = false
 
 export default function Home() {
+  const router = useRouter()
   const [scrollY, setScrollY] = useState(0)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [resourcesOpen, setResourcesOpen] = useState(false)
@@ -17,9 +21,55 @@ export default function Home() {
   // Popup state
   const [popupOpen, setPopupOpen] = useState(false)
   const [popupPreselect, setPopupPreselect] = useState<string | null>(null)
-  const openPopup = (cohort?: string) => {
+  const openPopup = (cohort?: string, source?: string) => {
+    track('lead_popup_open', { preselect: cohort || 'none', source: source || 'unknown' })
     setPopupPreselect(cohort || null)
     setPopupOpen(true)
+  }
+
+  // GA click helper — every CTA reports what and where
+  const cta = (name: string, location: string) => () => track('cta_click', { cta: name, location })
+
+  // Hero roast widget state
+  const roastInputRef = useRef<HTMLInputElement>(null)
+  const [roastFile, setRoastFile] = useState<File | null>(null)
+  const [roastEmail, setRoastEmail] = useState('')
+  const [roastDrag, setRoastDrag] = useState(false)
+  const [roastBusy, setRoastBusy] = useState(false)
+  const [roastError, setRoastError] = useState<string | null>(null)
+
+  const handleRoastFile = (f: File) => {
+    setRoastError(null)
+    if (f.type !== 'application/pdf') { setRoastError('Only PDF files accepted.'); return }
+    if (f.size > 5 * 1024 * 1024) { setRoastError('File too large. Max 5MB.'); return }
+    setRoastFile(f)
+    track('roast_file_selected', { location: 'hero' })
+  }
+
+  const submitRoast = async () => {
+    if (!roastFile || !roastEmail.trim() || roastBusy) return
+    setRoastError(null)
+    setRoastBusy(true)
+    track('roast_submit', { location: 'hero' })
+    try {
+      const fd = new FormData()
+      fd.append('file', roastFile)
+      fd.append('tone', 'savage')
+      fd.append('email', roastEmail.trim().toLowerCase())
+      const res = await fetch('/api/resume-roast', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (!res.ok) {
+        track('roast_error', { location: 'hero', message: data.error })
+        setRoastError(data.error || 'Something went wrong')
+        setRoastBusy(false)
+        return
+      }
+      track('roast_success', { location: 'hero' })
+      router.push(`/resources/resume-roast/results/${data.id}`)
+    } catch {
+      setRoastError('Network error. Please try again.')
+      setRoastBusy(false)
+    }
   }
 
   const FAQS = [
@@ -48,11 +98,29 @@ export default function Home() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Scroll depth — fires once per threshold per pageview
+  useEffect(() => {
+    const fired = new Set<number>()
+    const onScroll = () => {
+      const doc = document.documentElement
+      const depth = ((doc.scrollTop + window.innerHeight) / doc.scrollHeight) * 100
+      for (const mark of [25, 50, 75, 100]) {
+        if (depth >= mark && !fired.has(mark)) {
+          fired.add(mark)
+          track('scroll_depth', { percent: mark })
+        }
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   // Exit intent — desktop only, once per session: catch leavers with the free consultation
   useEffect(() => {
     const onMouseOut = (e: MouseEvent) => {
       if (e.clientY <= 8 && !e.relatedTarget && !sessionStorage.getItem('bc_exit_shown')) {
         sessionStorage.setItem('bc_exit_shown', '1')
+        track('exit_intent_popup')
         setPopupPreselect(null)
         setPopupOpen(true)
       }
@@ -96,9 +164,8 @@ export default function Home() {
   )
 
   return (
-    <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: "'DM Sans', 'Inter', sans-serif", overflowX: 'hidden' }}>
+    <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: "var(--font-dm-sans), 'Inter', sans-serif", overflowX: 'hidden' }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
           --blue: #4F7CFF;
@@ -117,9 +184,18 @@ export default function Home() {
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes border-glow { 0%,100%{border-color:rgba(79,124,255,0.3)} 50%{border-color:rgba(79,124,255,0.8)} }
         @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:0.6} 50%{transform:scale(1.55);opacity:1} }
+        @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        .roast-widget { width:100%; max-width:560px; background:rgba(17,24,39,0.85); border:1px solid rgba(239,68,68,0.25); border-radius:24px; padding:22px; backdrop-filter:blur(8px); box-shadow:0 24px 80px rgba(0,0,0,0.4); text-align:left; }
+        .roast-drop { border:2px dashed rgba(239,68,68,0.35); border-radius:16px; padding:26px 20px; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:6px; }
+        .roast-drop:hover, .roast-drop.drag-over { border-color:#ef4444; background:rgba(239,68,68,0.06); }
+        .roast-input { width:100%; padding:13px 16px; border-radius:12px; background:#0B0B0F; border:1.5px solid rgba(255,255,255,0.1); color:white; font-size:14px; outline:none; font-family:inherit; transition:border-color 0.2s; }
+        .roast-input:focus { border-color:rgba(239,68,68,0.45); }
+        .roast-submit { width:100%; padding:15px; border-radius:100px; background:linear-gradient(135deg,#ef4444,#dc2626); border:none; color:white; font-size:16px; font-weight:800; cursor:pointer; font-family:inherit; transition:opacity 0.2s; display:flex; align-items:center; justify-content:center; gap:9px; }
+        .roast-submit:disabled { opacity:0.45; cursor:not-allowed; }
+        .roast-submit:not(:disabled):hover { opacity:0.9; }
         .pulse-dot { width:7px; height:7px; border-radius:50%; background:#4F7CFF; flex-shrink:0; display:inline-block; animation:pulse-dot 2s ease-in-out infinite; }
 
-        .hero-headline { font-family: 'DM Serif Display', serif; font-size: clamp(48px, 7vw, 88px); line-height: 1.0; letter-spacing: -2px; font-weight: 400; }
+        .hero-headline { font-family: var(--font-dm-serif), serif; font-size: clamp(48px, 7vw, 88px); line-height: 1.0; letter-spacing: -2px; font-weight: 400; }
         .gradient-text { color: #4F7CFF; }
         .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: 100px; background: linear-gradient(135deg, #4F7CFF, #7B61FF); color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 30px rgba(79,124,255,0.4); position: relative; overflow: hidden; }
         .btn-primary::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#7B61FF,#4F7CFF); opacity:0; transition:opacity 0.3s; }
@@ -131,7 +207,7 @@ export default function Home() {
         .btn-roast { display: inline-flex; align-items: center; gap: 10px; padding: 18px 36px; border-radius: 100px; background: linear-gradient(135deg, #4F7CFF, #7B61FF); color: white; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 36px rgba(79,124,255,0.45); position: relative; }
         .btn-roast:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 56px rgba(79,124,255,0.65); }
         .section-label { font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; display: block; }
-        .section-title { font-family: 'DM Serif Display', serif; font-size: clamp(32px, 4vw, 52px); line-height: 1.1; letter-spacing: -1px; margin-bottom: 20px; }
+        .section-title { font-family: var(--font-dm-serif), serif; font-size: clamp(32px, 4vw, 52px); line-height: 1.1; letter-spacing: -1px; margin-bottom: 20px; }
         .grid-bg { background-image: linear-gradient(rgba(79,124,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,124,255,0.06) 1px, transparent 1px); background-size: 80px 80px; }
         .noise-overlay { position:fixed; inset:0; pointer-events:none; z-index:999; opacity:0.025; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
         .ticker-wrap { overflow: hidden; }
@@ -148,7 +224,7 @@ export default function Home() {
         .product-card:hover::before { opacity:1; }
         .proof-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 28px; transition: all 0.3s; }
         .proof-card:hover { border-color: rgba(79,124,255,0.3); transform: translateY(-4px); }
-        .stat-num { font-family: 'DM Serif Display', serif; font-size: clamp(48px, 6vw, 72px); line-height: 1; letter-spacing: -2px; }
+        .stat-num { font-family: var(--font-dm-serif), serif; font-size: clamp(48px, 6vw, 72px); line-height: 1; letter-spacing: -2px; }
         .sticky-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: all 0.3s; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; }
         .sticky-nav.scrolled { background: rgba(11,11,15,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 14px 40px; }
         .orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
@@ -204,7 +280,7 @@ export default function Home() {
 
       {/* NAV — one primary action; everything else is quiet */}
       <nav className={`sticky-nav${scrollY > 40 ? ' scrolled' : ''}`}>
-        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, letterSpacing: -0.5 }}>
+        <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 22, letterSpacing: -0.5 }}>
           Beyond<span style={{ color: 'var(--blue)' }}>Campus</span>
         </div>
         <div className="nav-links">
@@ -219,7 +295,7 @@ export default function Home() {
               resourcesCloseTimer.current = setTimeout(() => setResourcesOpen(false), 120)
             }}
           >
-            <a href="/free" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: resourcesOpen ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontFamily: "'DM Sans','Inter',sans-serif", transition: 'color 0.2s', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
+            <a href="/free" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: resourcesOpen ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontFamily: "var(--font-dm-sans),'Inter',sans-serif", transition: 'color 0.2s', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
               Free Tools
               <span style={{ fontSize: 10, opacity: 0.7, display: 'inline-block', transform: resourcesOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▾</span>
             </a>
@@ -261,13 +337,13 @@ export default function Home() {
           <a href="/dashboard" className="nav-hide-mobile" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.2s' }}
             onMouseEnter={e => (e.currentTarget.style.color = 'white')}
             onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}>Dashboard</a>
-          <button onClick={() => openPopup('Strategy Session')} className="nav-hide-mobile" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: '#4F7CFF', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s', letterSpacing: 0.1, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 7 }}
+          <button onClick={() => openPopup('Strategy Session', 'nav')} className="nav-hide-mobile" style={{ padding: '10px 4px', fontSize: 14, fontWeight: 600, color: '#4F7CFF', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s', letterSpacing: 0.1, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 7 }}
             onMouseEnter={e => (e.currentTarget.style.color = '#93BBFF')}
             onMouseLeave={e => (e.currentTarget.style.color = '#4F7CFF')}>
             <span className="pulse-dot" />
             Lost? Let&apos;s talk →
           </button>
-          <a href="/resources/resume-roast" className="btn-primary" style={{ padding: '10px 22px', fontSize: 14, fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <a href="/resources/resume-roast" className="btn-primary" style={{ padding: '10px 22px', fontSize: 14, fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }} onClick={cta('roast', 'nav')}>
             <span>🔥 Free Resume Roast</span>
           </a>
         </div>
@@ -275,10 +351,10 @@ export default function Home() {
 
       {/* Mobile sticky bottom CTA — free hook, zero-risk */}
       <div className="mobile-cta-bar">
-        <a href="/resources/resume-roast" style={{ flex: 1, maxWidth: 280, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px 20px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 14, textDecoration: 'none', boxShadow: '0 0 24px rgba(79,124,255,0.4)' }}>
+        <a href="/resources/resume-roast" style={{ flex: 1, maxWidth: 280, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px 20px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 14, textDecoration: 'none', boxShadow: '0 0 24px rgba(79,124,255,0.4)' }} onClick={cta('roast', 'mobile_bar')}>
           🔥 Free AI Resume Roast
         </a>
-        <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', fontFamily: 'inherit', padding: '8px 4px', whiteSpace: 'nowrap' }}>
+        <button onClick={() => openPopup('Strategy Session', 'mobile_bar')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', fontFamily: 'inherit', padding: '8px 4px', whiteSpace: 'nowrap' }}>
           or talk to us →
         </button>
       </div>
@@ -306,22 +382,81 @@ export default function Home() {
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, marginBottom: 28 }}>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <a href="/resources/resume-roast" className="btn-roast" style={{ fontFamily: 'inherit', textDecoration: 'none' }}>
-                🔥 Roast My Resume — Free
-              </a>
-              <a href="#programs" className="btn-secondary" style={{ fontSize: 16, padding: '17px 36px', fontFamily: 'inherit', textDecoration: 'none' }}>
+            {/* Embedded roast — zero clicks between impulse and action */}
+            <div className="roast-widget">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: 2, color: '#f87171' }}>🔥 FREE AI RESUME ROAST</span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontWeight: 600 }}>takes ~30 seconds</span>
+              </div>
+              <input
+                ref={roastInputRef}
+                type="file"
+                accept=".pdf,application/pdf"
+                style={{ display: 'none' }}
+                onChange={e => { const f = e.target.files?.[0]; if (f) handleRoastFile(f) }}
+              />
+              <div
+                className={`roast-drop${roastDrag ? ' drag-over' : ''}`}
+                onClick={() => roastInputRef.current?.click()}
+                onDrop={e => { e.preventDefault(); setRoastDrag(false); const f = e.dataTransfer.files[0]; if (f) handleRoastFile(f) }}
+                onDragOver={e => { e.preventDefault(); setRoastDrag(true) }}
+                onDragLeave={() => setRoastDrag(false)}
+              >
+                {roastFile ? (
+                  <>
+                    <div style={{ fontSize: 28 }}>✅</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: 'white', wordBreak: 'break-all' }}>{roastFile.name}</div>
+                    <span style={{ fontSize: 12, color: '#f87171', fontWeight: 600, textDecoration: 'underline' }}>Change file</span>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontSize: 32 }}>🔥</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>Drop your resume PDF here</div>
+                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>or click to browse · find out why recruiters ignore it</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>PDF only · Max 5MB · no card, no commitment</div>
+                  </>
+                )}
+              </div>
+              {roastFile && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+                  <input
+                    className="roast-input"
+                    type="email"
+                    placeholder="you@college.edu — results land here too"
+                    value={roastEmail}
+                    onChange={e => setRoastEmail(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') submitRoast() }}
+                  />
+                  <button className="roast-submit" disabled={!roastEmail.trim() || roastBusy} onClick={submitRoast}>
+                    {roastBusy ? (
+                      <>
+                        <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.35)', borderTopColor: 'white', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite', flexShrink: 0 }} />
+                        Roasting... 20–30 seconds
+                      </>
+                    ) : 'Roast My Resume 🔥'}
+                  </button>
+                </div>
+              )}
+              {roastError && (
+                <div style={{ marginTop: 10, padding: '10px 14px', borderRadius: 10, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', fontSize: 13, fontWeight: 600 }}>
+                  ⚠️ {roastError}
+                </div>
+              )}
+              <div style={{ textAlign: 'center', marginTop: 12, fontSize: 12, color: 'rgba(255,255,255,0.3)', fontWeight: 500 }}>
+                3,200+ resumes roasted · Average score: 51/100
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <a href="#programs" className="btn-secondary" style={{ fontSize: 15, padding: '13px 30px', fontFamily: 'inherit', textDecoration: 'none' }} onClick={cta('cohorts_anchor', 'hero')}>
                 See the cohorts ↓
               </a>
+              <button onClick={() => openPopup('Strategy Session', 'hero')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.78)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.78)')}>
+                Lost? Free 15-min call →
+              </button>
             </div>
-            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', letterSpacing: 0.2 }}>
-              Brutal AI feedback on why your resume gets ignored — in under a minute. No card, no commitment.
-            </span>
-            <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.78)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.78)')}>
-              No clue where to start? Free 15-min call → we&apos;ll tell you exactly what to fix
-            </button>
           </div>
 
           {/* Social proof row */}
@@ -394,7 +529,7 @@ export default function Home() {
           <p style={{ fontSize: 17, fontWeight: 600, color: '#93BBFF', lineHeight: 1.6 }}>This isn&apos;t a talent problem. It&apos;s a strategy problem. That&apos;s exactly what we fix.</p>
         </div>
         <div style={{ textAlign: 'center', marginTop: 28 }}>
-          <a href="/resources/resume-roast" style={{ fontSize: 14, fontWeight: 700, color: '#93BBFF', textDecoration: 'none' }}>
+          <a href="/resources/resume-roast" style={{ fontSize: 14, fontWeight: 700, color: '#93BBFF', textDecoration: 'none' }} onClick={cta('roast', 'pain_section')}>
             Want to know what&apos;s broken in <em>your</em> resume? Get the free roast →
           </a>
         </div>
@@ -415,7 +550,7 @@ export default function Home() {
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f87171' }} />
               TODAY
             </div>
-            <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, fontWeight: 400, color: 'rgba(255,255,255,0.62)', marginBottom: 26, lineHeight: 1.25 }}>Where most students get stuck</h3>
+            <h3 style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 24, fontWeight: 400, color: 'rgba(255,255,255,0.62)', marginBottom: 26, lineHeight: 1.25 }}>Where most students get stuck</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
                 "50 applications. 1 reply (if you're lucky).",
@@ -450,7 +585,7 @@ export default function Home() {
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#93BBFF', animation: 'pulse-dot 2s ease-in-out infinite' }} />
               IN 2 WEEKS
             </div>
-            <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, fontWeight: 400, color: 'white', marginBottom: 26, lineHeight: 1.25 }}>Where the cohort gets you</h3>
+            <h3 style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 24, fontWeight: 400, color: 'white', marginBottom: 26, lineHeight: 1.25 }}>Where the cohort gets you</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
                 { bold: '25+ replies', rest: ' on your first batch of cold emails.' },
@@ -567,7 +702,7 @@ export default function Home() {
                 href: '/free',
               },
             ].map(tool => (
-              <a key={tool.title} href={tool.href} className="tool-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <a key={tool.title} href={tool.href} className="tool-card" style={{ textDecoration: 'none', color: 'inherit' }} onClick={cta(tool.title, 'free_tools')}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
                   <span style={{ fontSize: 34, lineHeight: 1 }}>{tool.icon}</span>
                   <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: '4px 10px', borderRadius: 100, color: tool.badgeColor, background: `${tool.badgeColor}1a`, border: `1px solid ${tool.badgeColor}40` }}>{tool.badge}</span>
@@ -653,8 +788,8 @@ export default function Home() {
               <div style={{ position: 'absolute', top: -100, left: -60, width: 260, height: 260, background: 'radial-gradient(circle, rgba(79,70,229,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
               <div style={{ position: 'absolute', bottom: -80, right: -80, width: 220, height: 220, background: 'radial-gradient(circle, rgba(123,97,255,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
               <div style={{ position: 'absolute', top: 16, right: 24, fontFamily: 'Georgia,serif', fontSize: 140, lineHeight: 1, color: 'rgba(79,70,229,0.07)', userSelect: 'none', pointerEvents: 'none' }}>&ldquo;</div>
-              <img src="/founders/anirudh.png" alt="Anirudh Agarwal" width={84} height={84} style={{ width: 84, height: 84, borderRadius: '50%', objectFit: 'cover', marginBottom: 24, boxShadow: '0 0 0 5px rgba(79,70,229,0.18), 0 0 40px rgba(79,70,229,0.28)', display: 'block' }} />
-              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, fontWeight: 400, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>Anirudh Agarwal</div>
+              <Image src="/founders/anirudh.png" alt="Anirudh Agarwal" width={84} height={84} quality={80} style={{ width: 84, height: 84, borderRadius: '50%', objectFit: 'cover', marginBottom: 24, boxShadow: '0 0 0 5px rgba(79,70,229,0.18), 0 0 40px rgba(79,70,229,0.28)', display: 'block' }} />
+              <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 26, fontWeight: 400, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>Anirudh Agarwal</div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', background: 'rgba(79,70,229,0.18)', border: '1px solid rgba(79,70,229,0.35)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#a5b4fc', marginBottom: 6, letterSpacing: '0.3px' }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#a5b4fc', display: 'inline-block' }} />
                 Associate Consultant @ Aon
@@ -682,8 +817,8 @@ export default function Home() {
               <div style={{ position: 'absolute', top: -100, left: -60, width: 260, height: 260, background: 'radial-gradient(circle, rgba(6,182,212,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
               <div style={{ position: 'absolute', bottom: -80, right: -80, width: 220, height: 220, background: 'radial-gradient(circle, rgba(8,145,178,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
               <div style={{ position: 'absolute', top: 16, right: 24, fontFamily: 'Georgia,serif', fontSize: 140, lineHeight: 1, color: 'rgba(6,182,212,0.07)', userSelect: 'none', pointerEvents: 'none' }}>&ldquo;</div>
-              <img src="/founders/sanya.png" alt="Sanya Srivastava" width={84} height={84} style={{ width: 84, height: 84, borderRadius: '50%', objectFit: 'cover', marginBottom: 24, boxShadow: '0 0 0 5px rgba(6,182,212,0.15), 0 0 40px rgba(6,182,212,0.22)', display: 'block' }} />
-              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, fontWeight: 400, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>Sanya Srivastava</div>
+              <Image src="/founders/sanya.png" alt="Sanya Srivastava" width={84} height={84} quality={80} style={{ width: 84, height: 84, borderRadius: '50%', objectFit: 'cover', marginBottom: 24, boxShadow: '0 0 0 5px rgba(6,182,212,0.15), 0 0 40px rgba(6,182,212,0.22)', display: 'block' }} />
+              <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 26, fontWeight: 400, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>Sanya Srivastava</div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#67e8f9', marginBottom: 6, letterSpacing: '0.3px' }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#67e8f9', display: 'inline-block' }} />
                 FP&amp;A @ Palo Alto Networks
@@ -715,7 +850,7 @@ export default function Home() {
             </div>
             <div style={{ flex: 1, height: 1, background: 'linear-gradient(270deg, transparent, rgba(255,255,255,0.1))' }} />
           </div>
-          <p style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(20px, 3vw, 28px)', color: 'rgba(255,255,255,0.82)', lineHeight: 1.55, fontStyle: 'italic', maxWidth: 600, margin: '0 auto' }}>
+          <p style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 'clamp(20px, 3vw, 28px)', color: 'rgba(255,255,255,0.82)', lineHeight: 1.55, fontStyle: 'italic', maxWidth: 600, margin: '0 auto' }}>
             &ldquo;We built this because the system wasn&apos;t built for us.<br />Now it&apos;s built for you.&rdquo;
           </p>
         </div>
@@ -743,7 +878,7 @@ export default function Home() {
           {/* Internship Cohort — lighter */}
           <div className="product-card" style={{ background: 'rgba(245,158,11,0.03)', border: '1px solid rgba(245,158,11,0.2)' }}>
             <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#fbbf24', marginBottom: 24, letterSpacing: 1 }}>INTERNSHIP COHORT</div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Internship Cohort</div>
+            <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Internship Cohort</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>A 4-week live program to land your first off-campus internship in consulting, finance, or startups.</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '20px 0' }}>
               <span style={{ fontSize: 42, fontWeight: 800, color: '#fbbf24' }}>₹1,750</span>
@@ -764,6 +899,7 @@ export default function Home() {
             </div>
             <a
               href="/summer"
+              onClick={cta('internship_cohort', 'programs')}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'transparent', color: '#fbbf24', fontWeight: 700, fontSize: 15, border: '1.5px solid rgba(245,158,11,0.45)', transition: 'all 0.3s', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.1)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.7)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.45)'; }}>
@@ -775,7 +911,7 @@ export default function Home() {
           <div className="product-card" style={{ background: 'linear-gradient(135deg, rgba(123,97,255,0.08), rgba(79,124,255,0.05))', border: '1px solid rgba(123,97,255,0.3)', position: 'relative' }}>
             <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '6px 20px', background: '#4F7CFF', borderRadius: '0 0 16px 16px', fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: 'nowrap', color: 'white' }}>MOST POPULAR</div>
             <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(123,97,255,0.15)', border: '1px solid rgba(123,97,255,0.3)', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#C4B5FD', marginBottom: 24, letterSpacing: 1, marginTop: 20 }}>PLACEMENT COHORT</div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Placement Cohort</div>
+            <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 30, marginBottom: 6, lineHeight: 1.1 }}>Placement Cohort</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>An extended program with weekly accountability, live sessions, and mentor support until you&apos;re placed.</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '20px 0' }}>
               <span style={{ fontSize: 42, fontWeight: 800, color: '#7B61FF' }}>₹2,500</span>
@@ -797,6 +933,7 @@ export default function Home() {
             </div>
             <a
               href="/cohort"
+              onClick={cta('placement_cohort', 'programs')}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 40px rgba(123,97,255,0.4)', transition: 'all 0.3s', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
               Explore Placement Cohort →
             </a>
@@ -811,7 +948,7 @@ export default function Home() {
           </p>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.38)' }}>
             Want to talk before committing?{' '}
-            <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3, padding: 0, transition: 'color 0.2s' }}
+            <button onClick={() => openPopup('Strategy Session', 'programs')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3, padding: 0, transition: 'color 0.2s' }}
               onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.9)')}
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}>
               Book a 1:1 strategy call — ₹549
@@ -837,16 +974,16 @@ export default function Home() {
               <tr>
                 <th className="ct-corner"></th>
                 <th className="ct-head ct-head-other">
-                  <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.65)', marginBottom: 6 }}>Watching YouTube</div>
+                  <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.65)', marginBottom: 6 }}>Watching YouTube</div>
                   <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>Self-study path</div>
                 </th>
                 <th className="ct-head ct-head-bc">
                   <div className="ct-bc-badge">★ RECOMMENDED</div>
-                  <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, fontWeight: 400, color: 'white', marginBottom: 6 }}>Beyond Campus</div>
+                  <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 20, fontWeight: 400, color: 'white', marginBottom: 6 }}>Beyond Campus</div>
                   <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: '#93BBFF' }}>Most students start here</div>
                 </th>
                 <th className="ct-head ct-head-other">
-                  <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.65)', marginBottom: 6 }}>Pre-recorded courses</div>
+                  <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.65)', marginBottom: 6 }}>Pre-recorded courses</div>
                   <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>Video modules</div>
                 </th>
               </tr>
@@ -903,11 +1040,11 @@ export default function Home() {
         </p>
 
         <div style={{ textAlign: 'center', marginTop: 36, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href="/cohort" className="btn-primary" style={{ fontFamily: 'inherit', fontSize: 15, padding: '14px 32px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <a href="/cohort" className="btn-primary" style={{ fontFamily: 'inherit', fontSize: 15, padding: '14px 32px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }} onClick={cta('placement_cohort', 'compare')}>
             <span>Explore Placement Cohort</span>
             <span style={{ position: 'relative', zIndex: 1 }}>→</span>
           </a>
-          <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 32px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 15, border: '1.5px solid rgba(245,158,11,0.4)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: 'inherit' }}
+          <a href="/summer" onClick={cta('internship_cohort', 'compare')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 32px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 15, border: '1.5px solid rgba(245,158,11,0.4)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: 'inherit' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.65)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.4)'; }}>
             Explore Internship Cohort →
@@ -945,7 +1082,7 @@ export default function Home() {
       <section style={{ padding: '80px 24px 100px', maxWidth: 800, margin: '0 auto' }}>
         <div style={{ background: 'linear-gradient(135deg, rgba(79,124,255,0.1), rgba(123,97,255,0.08))', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 28, padding: '56px 48px', textAlign: 'center', position: 'relative', overflow: 'hidden', animation: 'border-glow 4s ease-in-out infinite' }}>
           <div style={{ position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)', width: 300, height: 200, background: 'radial-gradient(circle, rgba(79,124,255,0.2), transparent)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 16, lineHeight: 1.15 }}>
+          <h2 style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 'clamp(28px, 4vw, 44px)', marginBottom: 16, lineHeight: 1.15 }}>
             Your next offer is one email<br />away from being sent.
           </h2>
           <p style={{ fontSize: 17, lineHeight: 1.65, maxWidth: 560, margin: '0 auto 36px', color: 'rgba(255,255,255,0.78)' }}>
@@ -955,15 +1092,15 @@ export default function Home() {
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <a href="/cohort" className="btn-primary" style={{ fontSize: 17, padding: '18px 40px', fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <a href="/cohort" className="btn-primary" style={{ fontSize: 17, padding: '18px 40px', fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }} onClick={cta('placement_cohort', 'final_cta')}>
                 <span>Explore Placement Cohort</span>
                 <span style={{ position: 'relative', zIndex: 1 }}>→</span>
               </a>
-              <a href="/resources/resume-roast" className="btn-secondary" style={{ fontSize: 17, padding: '17px 40px', fontFamily: 'inherit', textDecoration: 'none' }}>
+              <a href="/resources/resume-roast" className="btn-secondary" style={{ fontSize: 17, padding: '17px 40px', fontFamily: 'inherit', textDecoration: 'none' }} onClick={cta('roast', 'final_cta')}>
                 Not ready? Get the free roast 🔥
               </a>
             </div>
-            <button onClick={() => openPopup('Strategy Session')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.38)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
+            <button onClick={() => openPopup('Strategy Session', 'final_cta')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.38)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
               onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.38)')}>
               Not sure which fits? Book a 1:1 strategy call (₹549) →
@@ -977,16 +1114,16 @@ export default function Home() {
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '48px 24px 32px', maxWidth: 1000, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24, marginBottom: 40 }}>
           <div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, marginBottom: 6 }}>Beyond<span style={{ color: 'var(--blue)' }}>Campus</span></div>
+            <div style={{ fontFamily: "var(--font-dm-serif), serif", fontSize: 24, marginBottom: 6 }}>Beyond<span style={{ color: 'var(--blue)' }}>Campus</span></div>
             <div style={{ fontSize: 14, color: 'var(--muted)' }}>Breaking campus barriers since 2023</div>
           </div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 14, border: '1.5px solid rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: 'inherit' }}
+            <a href="/summer" onClick={cta('internship_cohort', 'footer')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 14, border: '1.5px solid rgba(245,158,11,0.35)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: 'inherit' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.6)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.35)'; }}>
               Internship Cohort →
             </a>
-            <a href="/cohort" className="btn-primary" style={{ padding: '12px 24px', fontSize: 14, fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <a href="/cohort" className="btn-primary" style={{ padding: '12px 24px', fontSize: 14, fontFamily: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }} onClick={cta('placement_cohort', 'footer')}>
               <span>Placement Cohort</span>
               <span style={{ position: 'relative', zIndex: 1 }}>→</span>
             </a>
