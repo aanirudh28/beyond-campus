@@ -138,6 +138,13 @@ export default function TrackerPage() {
         ::-webkit-scrollbar { height: 8px; width: 8px; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 100px; }
         ::-webkit-scrollbar-track { background: transparent; }
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width: 640px) {
+          .hide-mobile { display: none !important; }
+          .form-grid-2 { grid-template-columns: 1fr; }
+          /* inputs under 16px trigger iOS Safari auto-zoom on focus */
+          input, select, textarea { font-size: 16px !important; }
+        }
       `}</style>
 
       {/* Top bar */}
@@ -145,7 +152,7 @@ export default function TrackerPage() {
         <div style={{ maxWidth: 1240, margin: '0 auto', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
           <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ padding: '6px 14px', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', borderRadius: 100, fontSize: 11, fontWeight: 800, color: 'white', letterSpacing: 1 }}>BEYOND CAMPUS</span>
-            <span style={{ color: 'white', fontWeight: 800, fontSize: 15 }}>Job Tracker</span>
+            <span className="hide-mobile" style={{ color: 'white', fontWeight: 800, fontSize: 15 }}>Job Tracker</span>
           </Link>
           {profile?.is_pro ? (
             <span style={{ fontSize: 10.5, fontWeight: 800, color: '#6ee7b7', background: 'rgba(16,185,129,0.12)', padding: '4px 10px', borderRadius: 100, letterSpacing: 0.5 }}>PRO</span>
@@ -155,9 +162,9 @@ export default function TrackerPage() {
             </button>
           )}
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
-            <Link href="/tracker/analytics" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>📊 Analytics</Link>
+            <Link href="/tracker/analytics" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>📊<span className="hide-mobile"> Analytics</span></Link>
             <button onClick={() => setShowShare(true)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: 'rgba(255,255,255,0.6)', fontSize: 12.5, fontWeight: 600, padding: '7px 12px', cursor: 'pointer' }}>
-              Share 📤
+              <span className="hide-mobile">Share </span>📤
             </button>
             <button onClick={() => setShowSettings(v => !v)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: 'rgba(255,255,255,0.6)', fontSize: 13, padding: '7px 11px', cursor: 'pointer' }}>
               ⚙️

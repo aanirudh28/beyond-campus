@@ -124,11 +124,11 @@ export default function ApplicationDrawer({
 
         {tab === 'details' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 11 }}>
+            <div className="form-grid-2">
               <div><label style={labelStyle}>Company</label><input value={form.company} onChange={e => set('company', e.target.value)} style={inputStyle} /></div>
               <div><label style={labelStyle}>Role</label><input value={form.role} onChange={e => set('role', e.target.value)} style={inputStyle} /></div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 11 }}>
+            <div className="form-grid-2">
               <div>
                 <label style={labelStyle}>Stage</label>
                 <select value={form.status} onChange={e => set('status', e.target.value)} style={{ ...inputStyle, appearance: 'none' }}>
@@ -142,7 +142,7 @@ export default function ApplicationDrawer({
                 </select>
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 11 }}>
+            <div className="form-grid-2">
               <div><label style={labelStyle}>Location</label><input value={form.location} onChange={e => set('location', e.target.value)} style={inputStyle} /></div>
               <div><label style={labelStyle}>Salary range</label><input value={form.salary_range} onChange={e => set('salary_range', e.target.value)} placeholder="e.g. 6-8 LPA" style={inputStyle} /></div>
             </div>
@@ -151,7 +151,7 @@ export default function ApplicationDrawer({
               <label style={labelStyle}>Next follow-up</label>
               <input type="date" value={form.follow_up_date} onChange={e => set('follow_up_date', e.target.value)} style={{ ...inputStyle, colorScheme: 'dark' }} />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 11 }}>
+            <div className="form-grid-2">
               <div><label style={labelStyle}>Contact name</label><input value={form.contact_name} onChange={e => set('contact_name', e.target.value)} placeholder="HR / hiring manager" style={inputStyle} /></div>
               <div><label style={labelStyle}>Contact email</label><input value={form.contact_email} onChange={e => set('contact_email', e.target.value)} style={inputStyle} /></div>
             </div>

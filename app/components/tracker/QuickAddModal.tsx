@@ -165,7 +165,7 @@ export default function QuickAddModal({
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="form-grid-2">
               <div>
                 <label style={labelStyle}>Company *</label>
                 <input value={company} onChange={e => setCompany(e.target.value)} placeholder="e.g. Zomato" style={inputStyle} />
@@ -175,7 +175,7 @@ export default function QuickAddModal({
                 <input value={role} onChange={e => setRole(e.target.value)} placeholder="e.g. BD Associate" style={inputStyle} />
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="form-grid-2">
               <div>
                 <label style={labelStyle}>Location</label>
                 <input value={location} onChange={e => setLocation(e.target.value)} placeholder="e.g. Gurgaon / Remote" style={inputStyle} />
@@ -189,7 +189,7 @@ export default function QuickAddModal({
               <label style={labelStyle}>Job link</label>
               <input value={jobUrl} onChange={e => setJobUrl(e.target.value)} placeholder="https://..." style={inputStyle} />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="form-grid-2">
               <div>
                 <label style={labelStyle}>Source</label>
                 <select value={source} onChange={e => setSource(e.target.value as AppSource)} style={{ ...inputStyle, appearance: 'none' }}>

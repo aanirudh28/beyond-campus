@@ -1,6 +1,12 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
+
 export default function WhatsAppButton() {
+  const pathname = usePathname()
+  // the tracker has its own floating + button in the same corner
+  if (pathname?.startsWith('/tracker')) return null
+
   return (
     <a
       href="https://chat.whatsapp.com/HUe0nBmwKLWBIgnHaA6Pp0"

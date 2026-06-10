@@ -129,7 +129,28 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads'>('bookings')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads' | 'tracker'>('bookings')
+  const [trackerStats, setTrackerStats] = useState<{
+    totalUsers: number; newUsers7d: number; proUsers: number; activeUsers7d: number
+    totalApps: number; newApps7d: number; byStatus: Record<string, number>
+    aiThisMonth: number; nurtureSent: number; nurtureSent7d: number; optouts: number
+    recentUsers: { email: string; name: string | null; is_pro: boolean; created_at: string }[]
+  } | null>(null)
+  const [trackerLoading, setTrackerLoading] = useState(false)
+
+  const fetchTrackerStats = async () => {
+    setTrackerLoading(true)
+    try {
+      const res = await fetch('/api/admin/tracker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: ADMIN_PASSWORD }),
+      })
+      const json = await res.json()
+      if (json.totalUsers !== undefined) setTrackerStats(json)
+    } catch {}
+    setTrackerLoading(false)
+  }
   const [roasts, setRoasts] = useState<RoastResult[]>([])
   const [roastsLoading, setRoastsLoading] = useState(false)
   const [summerRegs, setSummerRegs] = useState<SummerReg[]>([])
@@ -333,6 +354,7 @@ export default function AdminPage() {
       fetchManualAccess()
       fetchRoasts()
       fetchConsultationLeads()
+      fetchTrackerStats()
     } else {
       setError('Incorrect password')
     }
@@ -462,12 +484,92 @@ export default function AdminPage() {
             { key: 'manual-access', label: `🔓 Manual Access (${manualAccessList.length})`, active: activeTab === 'manual-access', color: '#a78bfa', bg: 'rgba(167,139,250,0.15)' },
             { key: 'roasts', label: `🔥 Roasts (${roasts.length})`, active: activeTab === 'roasts', color: '#ef4444', bg: 'rgba(239,68,68,0.15)' },
             { key: 'leads', label: `📋 Leads (${consultationLeads.length})`, active: activeTab === 'leads', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
+            { key: 'tracker', label: `🎯 Tracker (${trackerStats?.totalUsers ?? '…'})`, active: activeTab === 'tracker', color: '#7B61FF', bg: 'rgba(123,97,255,0.15)' },
           ].map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: tab.active ? tab.color : 'rgba(255,255,255,0.1)', background: tab.active ? tab.bg : 'transparent', color: tab.active ? tab.color : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               {tab.label}
             </button>
           ))}
         </div>
+
+        {/* Tracker Tab */}
+        {activeTab === 'tracker' && (
+          <div>
+            {trackerLoading && !trackerStats ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Loading tracker stats...</p>
+            ) : !trackerStats ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Could not load tracker stats. Has the tracker SQL been run?</p>
+            ) : (
+              <>
+                {/* Headline stats */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14, marginBottom: 24 }}>
+                  {[
+                    [String(trackerStats.totalUsers), 'Signups', `+${trackerStats.newUsers7d} this week`, '#7B61FF'],
+                    [String(trackerStats.activeUsers7d), 'Active (7d)', 'touched their board', '#4F7CFF'],
+                    [String(trackerStats.proUsers), 'Pro users', trackerStats.totalUsers ? `${Math.round((trackerStats.proUsers / trackerStats.totalUsers) * 100)}% conversion` : '—', '#10b981'],
+                    [String(trackerStats.totalApps), 'Applications', `+${trackerStats.newApps7d} this week`, '#00D2FF'],
+                    [String(trackerStats.aiThisMonth), 'AI generations', 'this month', '#f59e0b'],
+                    [String(trackerStats.nurtureSent), 'Nurture emails', `+${trackerStats.nurtureSent7d} this week · ${trackerStats.optouts} opted out`, '#ef4444'],
+                  ].map(([num, label, sub, color]) => (
+                    <div key={label} style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '18px 20px' }}>
+                      <div style={{ fontSize: 26, fontWeight: 800, color: color as string }}>{num}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'white', marginTop: 4 }}>{label}</div>
+                      <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{sub}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pipeline breakdown */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginBottom: 24 }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 14 }}>All applications by stage</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {Object.entries(trackerStats.byStatus).map(([status, n]) => {
+                      const max = Math.max(1, ...Object.values(trackerStats.byStatus))
+                      const colors: Record<string, string> = { saved: '#93BBFF', applied: '#4F7CFF', replied: '#00D2FF', interview: '#f59e0b', offer: '#10b981', rejected: '#ef4444' }
+                      return (
+                        <div key={status} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <span style={{ width: 80, fontSize: 12.5, color: 'rgba(255,255,255,0.6)', fontWeight: 600, textTransform: 'capitalize' }}>{status}</span>
+                          <div style={{ flex: 1, height: 16, background: 'rgba(255,255,255,0.04)', borderRadius: 6, overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: `${(n / max) * 100}%`, background: colors[status], borderRadius: 6, minWidth: n > 0 ? 5 : 0 }} />
+                          </div>
+                          <span style={{ width: 40, fontSize: 13, fontWeight: 800, color: 'white', textAlign: 'right' }}>{n}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Recent signups */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, overflowX: 'auto' }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 14 }}>Latest signups</div>
+                  <table>
+                    <thead>
+                      <tr>
+                        {['Name', 'Email', 'Plan', 'Joined'].map(h => (
+                          <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {trackerStats.recentUsers.map(u => (
+                        <tr key={u.email}>
+                          <td style={{ padding: '10px 12px', fontSize: 13.5, color: 'white', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{u.name || '—'}</td>
+                          <td style={{ padding: '10px 12px', fontSize: 13, color: 'rgba(255,255,255,0.55)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{u.email}</td>
+                          <td style={{ padding: '10px 12px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                            <span style={{ fontSize: 10.5, fontWeight: 800, padding: '3px 9px', borderRadius: 100, background: u.is_pro ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.06)', color: u.is_pro ? '#6ee7b7' : 'rgba(255,255,255,0.45)' }}>
+                              {u.is_pro ? 'PRO' : 'FREE'}
+                            </span>
+                          </td>
+                          <td style={{ padding: '10px 12px', fontSize: 12.5, color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{formatDate(u.created_at)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </div>
+        )}
 
         {/* Students Tab */}
         {activeTab === 'students' && (
