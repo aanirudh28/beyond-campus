@@ -97,7 +97,7 @@ export default function BookPage() {
       time_slot: selectedTime,
       mentor: selectedMentor?.name,
       payment_id: paymentId,
-      amount: 299,
+      amount: 549,
       type: 'mentorship',
     })
     if (error) console.error('Booking save error:', error)
@@ -111,7 +111,7 @@ export default function BookPage() {
     await fetch('/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, date: selectedDate, timeSlot: selectedTime, mentor: selectedMentor?.name, type: 'mentorship', amount: 299 }),
+      body: JSON.stringify({ name, email, date: selectedDate, timeSlot: selectedTime, mentor: selectedMentor?.name, type: 'mentorship', amount: 549 }),
     })
   }
 
@@ -129,7 +129,7 @@ export default function BookPage() {
       const res = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: 299 }),
+        body: JSON.stringify({ product: 'strategy_session' }),
       })
       const { orderId, amount, key } = await res.json()
 
@@ -207,7 +207,10 @@ export default function BookPage() {
             Book a Session
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 15, lineHeight: 1.7 }}>
-            One hour. Real strategy. Built around you. — ₹299
+            One hour. Real strategy. Built around you. — ₹549
+          </p>
+          <p style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 14, padding: '8px 18px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 100, color: '#6ee7b7', fontSize: 13, fontWeight: 600 }}>
+            ✓ Fully credited toward any cohort if you join within 30 days — the call costs you nothing
           </p>
         </div>
 
@@ -406,7 +409,7 @@ export default function BookPage() {
                       Time: <strong style={{ color: 'rgba(255,255,255,0.8)' }}>{selectedTime}</strong>
                     </span>
                   </div>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>₹299</span>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>₹549</span>
                 </div>
 
                 <button
@@ -424,7 +427,7 @@ export default function BookPage() {
                     letterSpacing: '0.2px',
                   }}
                 >
-                  {isLoading ? 'Processing…' : 'Pay & Book — ₹299'}
+                  {isLoading ? 'Processing…' : 'Pay & Book — ₹549'}
                 </button>
               </>
             )}

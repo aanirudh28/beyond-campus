@@ -64,7 +64,7 @@ export default function CohortPage() {
       const res = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: 2500 }),
+        body: JSON.stringify({ product: 'placement_cohort' }),
       })
       const { orderId, amount, key } = await res.json()
       new window.Razorpay({
@@ -251,6 +251,10 @@ export default function CohortPage() {
                 : 'Enroll Now — ₹2,500 →'}
             </button>
             <div style={{ textAlign: 'center', marginTop: 10, fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>🔒 Secure checkout via Razorpay</div>
+            <div style={{ textAlign: 'center', marginTop: 12, padding: '9px 14px', background: 'rgba(16,185,129,0.07)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 12, fontSize: 12, color: '#6ee7b7', lineHeight: 1.6 }}>
+              Took the ₹549 strategy call in the last 30 days? It&apos;s fully credited — reply to your booking
+              confirmation email and we&apos;ll send your discounted enrollment link.
+            </div>
           </div>
         </div>
 

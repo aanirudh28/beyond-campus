@@ -48,7 +48,7 @@ export default function FreePage() {
       const res = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: 299 }),
+        body: JSON.stringify({ product: 'resource_pack' }),
       })
       const { orderId, amount, key } = await res.json()
       new window.Razorpay({

@@ -67,7 +67,7 @@ export default function InternshipPage() {
       const res = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: 999 }),
+        body: JSON.stringify({ product: 'internship_program' }),
       })
       const { orderId, amount } = await res.json()
 

@@ -77,7 +77,7 @@ export default function SummerPage() {
       const res = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: 1750 }),
+        body: JSON.stringify({ product: 'internship_cohort' }),
       })
       const { orderId, amount, key } = await res.json()
       new window.Razorpay({
@@ -395,6 +395,10 @@ export default function SummerPage() {
             {isEnrolling ? 'Opening...' : 'Enroll Now →'}
           </button>
           <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12 }}>🔒 Secure checkout via Razorpay · One-time payment</p>
+          <div style={{ marginTop: 12, padding: '9px 14px', background: 'rgba(16,185,129,0.07)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 12, fontSize: 12, color: '#6ee7b7', lineHeight: 1.6 }}>
+            Took the ₹549 strategy call in the last 30 days? It&apos;s fully credited — reply to your booking
+            confirmation email and we&apos;ll send your discounted enrollment link.
+          </div>
         </div>
         <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.35)', lineHeight: 1.8 }}>Less than the cost of one coaching class.<br />More impactful than a semester of applications.</p>
       </section>

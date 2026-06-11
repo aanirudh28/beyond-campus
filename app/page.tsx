@@ -239,9 +239,9 @@ export default function Home() {
     { q: "I'm from a tier-2 or tier-3 college. Will this actually work for me?", a: "Most of our students are from tier-2 and tier-3 colleges. Off-campus hiring is about strategy, not your college name. The tactics we teach are built specifically for students who don't get recruiters walking onto campus." },
     { q: 'What kind of roles do your students get placed in?', a: "Consulting and finance are the most common. We also see a lot of placements in Founder's Office roles at startups, and in marketing, operations, and BD at fast-growing companies." },
     { q: 'How long will it take to see results?', a: 'Most students get their first meaningful signal — a reply, a LinkedIn intro, or an interview call — within two weeks. By week four, most have at least one active conversation going.' },
-    { q: 'How much does it cost?', a: 'The 1:1 strategy session is ₹549. The Placement Cohort is ₹2,500. Both come with personalized guidance — the session is a single focused call, the cohort is an extended program with weekly accountability.' },
+    { q: 'How much does it cost?', a: 'The 1:1 strategy session is ₹549, the Internship Cohort is ₹1,750, and the Placement Cohort is ₹2,500 — all one-time payments. And if you take the strategy session first, the full ₹549 is credited toward any cohort you join within 30 days, so trying us costs you nothing extra.' },
     { q: 'How is this different from watching YouTube videos or buying a course?', a: "Personalization and accountability. We review your resume, build your specific target list, and stay with you until something moves. No generic content." },
-    { q: 'What if I\'ve been scammed by a placement program before?', a: "That's a fair concern — there are a lot of programs that over-promise. We keep all our free resources fully open so you can see exactly how we think before spending anything. If you want a low-commitment way to test us, start with the ₹549 strategy session — one focused call, then you decide." },
+    { q: 'What if I\'ve been scammed by a placement program before?', a: "That's a fair concern — there are a lot of programs that over-promise. We keep all our free resources fully open so you can see exactly how we think before spending anything, and you can always book a free 15-minute call first. If you want a deeper test, the ₹549 strategy session is fully credited toward a cohort if you join within 30 days — so testing us costs nothing extra." },
     { q: 'Is my payment secure?', a: "Yes — payments go through Razorpay. We never store card details." },
   ]
 
@@ -1052,7 +1052,7 @@ export default function Home() {
           <div data-reveal className="ladder">
             <span>Start with the free tools</span>
             <span style={{ color: 'rgba(255,255,255,0.3)' }}>→</span>
-            <span>Test us with a ₹549 strategy call</span>
+            <span>Talk to us — free 15-min call</span>
             <span style={{ color: 'rgba(255,255,255,0.3)' }}>→</span>
             <span style={{ color: '#93BBFF' }}>Join a cohort when you&apos;re ready</span>
           </div>
@@ -1131,14 +1131,18 @@ export default function Home() {
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
             Batches stay small on purpose — every resume gets a weekly human review. When a batch fills, the next one opens.
           </p>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.38)' }}>
-            Want to talk before committing?{' '}
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7 }}>
+            Not sure which fits?{' '}
             <button onClick={() => openPopup('Strategy Session', 'programs')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3, padding: 0, transition: 'color 0.2s' }}
               onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.9)')}
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}>
-              Book a 1:1 strategy call — ₹549
+              talk to us free
             </button>
-            {' '}and we&apos;ll tell you which fits.
+            {' '}and we&apos;ll tell you. Want a full personalized strategy first?{' '}
+            <a href="/book" onClick={cta('strategy_session', 'programs')} style={{ color: '#93BBFF', textDecoration: 'underline', textUnderlineOffset: 3, fontWeight: 600 }}>
+              Book a 1:1 strategy call — ₹549
+            </a>
+            {' '}<span style={{ color: '#6ee7b7' }}>(fully credited toward your cohort if you join within 30 days)</span>.
           </p>
         </div>
 
@@ -1285,7 +1289,7 @@ export default function Home() {
             <button onClick={() => openPopup('Strategy Session', 'final_cta')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.38)', fontFamily: 'inherit', transition: 'color 0.2s', padding: 0 }}
               onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.38)')}>
-              Not sure which fits? Book a 1:1 strategy call (₹549) →
+              Not sure which fits? Talk to us — free 15-min call →
             </button>
           </div>
           <TrustStrip />
