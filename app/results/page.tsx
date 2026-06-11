@@ -107,7 +107,7 @@ export default function ResultsPage() {
                 </div>
               )}
 
-              <p className="rw-quote" style={{ margin: '16px 0 18px' }}>&ldquo;{r.quote}&rdquo;</p>
+              {r.quote && <p className="rw-quote" style={{ margin: '16px 0 18px' }}>&ldquo;{r.quote}&rdquo;</p>}
 
               {r.linkedin && (
                 <a href={r.linkedin} target="_blank" rel="noopener noreferrer"

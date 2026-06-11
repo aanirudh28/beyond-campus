@@ -12,7 +12,7 @@ export interface StudentResult {
   logoH?: number         // render height for the logo, px
   role: string
   location?: string
-  quote: string
+  quote?: string   // only ever the student's own/approved words
   linkedin?: string
   domain: 'consulting' | 'finance' | 'marketing' | 'bd' | 'operations' | 'other'
 }
@@ -39,5 +39,17 @@ export const RESULTS: StudentResult[] = [
     location: 'Gurgaon',
     quote: 'Anirudh and Sanya were super supportive in the entire process. They were prompt to respond. Thankful to them for being there during the entire journey.',
     domain: 'consulting',
+  },
+  {
+    slug: 'karnveer',
+    name: 'Karnveer Bhalla',
+    photo: '/results/karnveer.webp',
+    college: 'Christ University',
+    company: 'Client Associates',
+    role: 'Junior Banker',
+    location: 'Gurgaon',
+    // quote pending Karnveer's approval — founder has the draft
+    linkedin: 'https://www.linkedin.com/in/karnveer-bhalla/',
+    domain: 'finance',
   },
 ]
