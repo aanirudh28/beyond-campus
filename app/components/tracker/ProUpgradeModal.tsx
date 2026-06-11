@@ -16,7 +16,8 @@ declare global {
 }
 
 const PERKS: [IconName, string, string][] = [
-  ['sparkles', 'Unlimited AI writing', 'Cold emails, follow-ups & DMs on tap'],
+  ['sparkles', 'AI Smart Paste', 'Drop in any JD — details filled in instantly'],
+  ['send', 'Unlimited AI writing', 'Cold emails, follow-ups & DMs on tap'],
   ['brain', 'Full weekly AI insights', 'Know exactly what\'s working in your pipeline'],
   ['chart', 'Full analytics', 'Reply rates by source, funnel, best days'],
   ['mail', '50+ cold email templates', 'The complete Beyond Campus pack'],
@@ -33,7 +34,7 @@ export default function ProUpgradeModal({
 }: {
   email: string
   name: string | null
-  reason?: 'ai_cap' | 'analytics' | null
+  reason?: 'ai_cap' | 'analytics' | 'extract' | null
   onClose: () => void
   onUpgraded: () => void
 }) {
@@ -43,6 +44,7 @@ export default function ProUpgradeModal({
   const headline =
     reason === 'ai_cap' ? "You've used your 5 free AI generations"
     : reason === 'analytics' ? 'Unlock your full analytics'
+    : reason === 'extract' ? 'AI Smart Paste is a Pro feature'
     : 'Go Pro. Get hired faster.'
 
   const loadRazorpay = () => new Promise((resolve) => {

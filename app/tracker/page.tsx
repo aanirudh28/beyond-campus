@@ -22,7 +22,7 @@ export default function TrackerPage() {
   const [applications, setApplications] = useState<Application[]>([])
   const [quickAdd, setQuickAdd] = useState<AppStatus | null>(null)
   const [drawer, setDrawer] = useState<{ app: Application; aiTab: boolean } | null>(null)
-  const [upgradeReason, setUpgradeReason] = useState<'ai_cap' | 'analytics' | null>(null)
+  const [upgradeReason, setUpgradeReason] = useState<'ai_cap' | 'analytics' | 'extract' | null>(null)
   const [showUpgrade, setShowUpgrade] = useState(false)
   const [showShare, setShowShare] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -136,7 +136,7 @@ export default function TrackerPage() {
     await supabase.from('tracker_profiles').update(patch).eq('user_id', profile.user_id)
   }
 
-  const openUpgrade = (reason: 'ai_cap' | 'analytics' | null) => {
+  const openUpgrade = (reason: 'ai_cap' | 'analytics' | 'extract' | null) => {
     setUpgradeReason(reason)
     setShowUpgrade(true)
   }
@@ -399,9 +399,10 @@ export default function TrackerPage() {
       {quickAdd && (
         <QuickAddModal
           initialStatus={quickAdd}
+          isPro={!!profile?.is_pro}
           onClose={() => setQuickAdd(null)}
           onAdd={handleAdd}
-          onAiCapHit={() => { setQuickAdd(null); openUpgrade('ai_cap') }}
+          onProRequired={() => { setQuickAdd(null); openUpgrade('extract') }}
         />
       )}
 

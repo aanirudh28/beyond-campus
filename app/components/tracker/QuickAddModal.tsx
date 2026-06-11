@@ -19,16 +19,18 @@ export interface NewApplication {
 
 export default function QuickAddModal({
   initialStatus,
+  isPro,
   onClose,
   onAdd,
-  onAiCapHit,
+  onProRequired,
 }: {
   initialStatus: AppStatus
+  isPro: boolean
   onClose: () => void
   onAdd: (app: NewApplication) => Promise<string | null>
-  onAiCapHit: () => void
+  onProRequired: () => void
 }) {
-  const [tab, setTab] = useState<'smart' | 'manual'>('smart')
+  const [tab, setTab] = useState<'smart' | 'manual'>(isPro ? 'smart' : 'manual')
   const [pasted, setPasted] = useState('')
   const [extracting, setExtracting] = useState(false)
   const [extractError, setExtractError] = useState('')
@@ -47,24 +49,23 @@ export default function QuickAddModal({
 
   const handleExtract = async () => {
     const input = pasted.trim()
-    if (!input) { setExtractError('Paste a job link or the job description first.'); return }
+    if (!input) { setExtractError('Paste the job description first.'); return }
+    if (/^https?:\/\/\S+$/.test(input)) {
+      setExtractError("Links aren't supported — most job sites block bots. Open the posting, copy the full description text, and paste that here instead.")
+      return
+    }
     setExtracting(true)
     setExtractError('')
 
-    const isUrl = /^https?:\/\/\S+$/.test(input)
     const res = await fetch('/api/tracker/extract', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(isUrl ? { url: input } : { text: input }),
+      body: JSON.stringify({ text: input }),
     })
     const data = await res.json()
     setExtracting(false)
 
-    if (data.error === 'AI_CAP_REACHED') { onAiCapHit(); return }
-    if (data.needsText) {
-      setExtractError("Couldn't read that link (the site blocks bots). Paste the job description text instead — works every time.")
-      return
-    }
+    if (data.error === 'PRO_REQUIRED') { onProRequired(); return }
     if (!res.ok || !data.company) {
       setExtractError("Couldn't extract details from that. Try pasting more of the job description, or fill it in manually.")
       return
@@ -73,9 +74,7 @@ export default function QuickAddModal({
     setCompany(data.company || '')
     setRole(data.role || '')
     setLocation(data.location || '')
-    if (isUrl) setJobUrl(input)
-    else setJdText(input.slice(0, 5000))
-    if (data.jd_summary && !isUrl) setJdText(input.slice(0, 5000))
+    setJdText(input.slice(0, 5000))
     if (data.source && SOURCES.some(s => s.key === data.source)) setSource(data.source)
     if (data.salary_range) setSalaryRange(data.salary_range)
     if (data.follow_up_days) setFollowUpDays(Math.min(10, Math.max(2, data.follow_up_days)))
@@ -159,19 +158,44 @@ export default function QuickAddModal({
               }}
             >
               <Icon name={icon} size={13} /> {label}
+              {key === 'smart' && !isPro && (
+                <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: 1, padding: '2px 7px', borderRadius: 100, background: 'rgba(123,97,255,0.25)', border: '1px solid rgba(123,97,255,0.45)', color: '#c4b5fd' }}>PRO</span>
+              )}
             </button>
           ))}
         </div>
 
-        {tab === 'smart' ? (
+        {tab === 'smart' && !isPro ? (
+          <div style={{ textAlign: 'center', padding: '30px 22px', background: 'rgba(123,97,255,0.05)', border: '1px dashed rgba(123,97,255,0.35)', borderRadius: 16 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, borderRadius: 14, background: 'rgba(123,97,255,0.15)', color: '#c4b5fd', marginBottom: 14 }}>
+              <Icon name="sparkles" size={20} />
+            </span>
+            <div style={{ color: 'white', fontSize: 16, fontWeight: 800, marginBottom: 8 }}>AI Smart Paste is a Pro feature</div>
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13.5, lineHeight: 1.65, margin: '0 0 18px' }}>
+              Paste any job description and AI fills in the company, role, location, salary and the right
+              follow-up date for you — unlimited, in seconds.
+            </p>
+            <button
+              onClick={onProRequired}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 26px', borderRadius: 12, background: GRAD, color: 'white', fontWeight: 800, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(79,124,255,0.35)' }}
+            >
+              <Icon name="zap" size={14} /> Unlock with Pro — ₹299
+            </button>
+            <div>
+              <button onClick={() => setTab('manual')} style={{ marginTop: 12, background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+                Add manually instead
+              </button>
+            </div>
+          </div>
+        ) : tab === 'smart' ? (
           <div>
             <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13.5, lineHeight: 1.6, margin: '0 0 12px' }}>
-              Paste a job link or the whole job description. AI fills in the company, role, and even suggests when to follow up.
+              Paste the whole job description. AI fills in the company, role, salary, and even suggests when to follow up.
             </p>
             <textarea
               value={pasted}
               onChange={e => setPasted(e.target.value)}
-              placeholder="https://linkedin.com/jobs/... or paste the full JD text"
+              placeholder="Paste the full job description text here (links don't work — sites block bots)"
               rows={6}
               autoFocus
               style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }}

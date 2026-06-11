@@ -34,7 +34,7 @@ const FEATURES = [
   {
     emoji: '✨',
     title: 'AI writes your outreach',
-    desc: 'Paste a job link and AI fills in the details. Then it writes the cold email, the follow-up, and the LinkedIn DM — tailored to that company, in your voice, zero cringe.',
+    desc: 'Paste a job description and AI fills in the details. Then it writes the cold email, the follow-up, and the LinkedIn DM — tailored to that company, in your voice, zero cringe.',
   },
   {
     emoji: '⏰',
@@ -66,7 +66,7 @@ const FEATURES = [
 const FAQS = [
   {
     q: 'Is it really free?',
-    a: 'Yes. Unlimited applications, the board, reminders, streaks and basic analytics are free forever. AI writing is free for 5 generations a month; unlimited AI plus full analytics comes with the ₹299 one-time Resource Pack (which also includes 50 cold email templates, LinkedIn scripts and our resume guide).',
+    a: 'Yes. Unlimited applications, the board, reminders, streaks and basic analytics are free forever. AI writing is free for 5 generations a month; AI smart-paste extraction, unlimited AI and full analytics come with the ₹299 one-time Resource Pack (which also includes 50 cold email templates, LinkedIn scripts and our resume guide).',
   },
   {
     q: 'How is this better than my Excel sheet / Notes app?',
