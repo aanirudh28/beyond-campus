@@ -77,6 +77,18 @@ export const RESULTS: StudentResult[] = [
     location: 'Delhi NCR',
     quote: "Giving so much advice and being kind and helpful to someone you don't even know at all is something I would have never expected outta that crazy app LinkedIn. But it has made me believe a lot in people, and how far they can lead someone with just their words. Thank you so much!",
     badge: '2 OFFERS',
+    linkedin: 'https://www.linkedin.com/in/adya-pandey-662223300/',
     domain: 'other',
+  },
+  {
+    slug: 'aagman',
+    name: 'Aagman',
+    photo: '/results/aagman.webp',
+    company: 'Blinkit',
+    companyLogo: '/logos/blinkit.svg',
+    logoH: 24,
+    role: 'Category Team',
+    quote: 'Again, thank you so much! I tailored my message just the way Anirudh told me and reached out to alumni for internal referrals.',
+    domain: 'operations',
   },
 ]
