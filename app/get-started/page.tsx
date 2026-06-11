@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { NoiseOverlay } from '@/app/components/SiteChrome'
 
 const Q1_OPTIONS = [
   { icon: '🎓', label: 'Still in college — placements haven\'t started yet' },
@@ -80,9 +81,10 @@ export default function GetStarted() {
   const step = q1 === null ? 1 : q2 === null ? 2 : 3
 
   return (
-    <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: "'DM Sans', 'Inter', sans-serif", minHeight: '100vh', overflowX: 'hidden' }}>
+    <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: 'var(--sans)', minHeight: '100vh', overflowX: 'hidden' }}>
+      <NoiseOverlay />
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap');
+        
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         a { text-decoration: none; color: inherit; }
         @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
@@ -154,15 +156,15 @@ export default function GetStarted() {
         .proof-card:hover { transform: translateX(4px); }
         .faq-item { background: #111827; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; overflow: hidden; transition: border-color 0.3s; }
         .faq-item.open { border-color: rgba(79,124,255,0.35); }
-        .faq-btn { width: 100%; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; cursor: pointer; text-align: left; gap: 16px; color: white; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; line-height: 1.5; }
+        .faq-btn { width: 100%; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; cursor: pointer; text-align: left; gap: 16px; color: white; font-family: var(--sans); font-size: 15px; font-weight: 600; line-height: 1.5; }
         .faq-plus { font-size: 20px; color: #4F7CFF; flex-shrink: 0; transition: transform 0.3s; display: inline-block; line-height: 1; }
         .faq-plus.open { transform: rotate(45deg); }
         .faq-body { overflow: hidden; transition: max-height 0.35s ease; }
         .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: all 0.3s; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; }
         .nav.scrolled { background: rgba(11,11,15,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 14px 40px; }
-        .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; border-radius: 100px; background: linear-gradient(135deg, #4F7CFF, #7B61FF); color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 28px rgba(79,124,255,0.35); font-family: 'DM Sans', sans-serif; }
+        .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; border-radius: 100px; background: linear-gradient(135deg, #4F7CFF, #7B61FF); color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 0 28px rgba(79,124,255,0.35); font-family: var(--sans); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 48px rgba(79,124,255,0.55); }
-        .btn-outlined { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 100px; background: transparent; color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s; border: 1.5px solid rgba(255,255,255,0.2); font-family: 'DM Sans', sans-serif; }
+        .btn-outlined { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 100px; background: transparent; color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s; border: 1.5px solid rgba(255,255,255,0.2); font-family: var(--sans); }
         .btn-outlined:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
         .rec-box { background: linear-gradient(135deg, rgba(79,124,255,0.1), rgba(123,97,255,0.07)); border: 1.5px solid rgba(79,124,255,0.35); border-radius: 24px; padding: 36px; margin-bottom: 32px; animation: fadeUp 0.6s ease both; }
         .progress-bar { display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 48px; }
@@ -180,7 +182,7 @@ export default function GetStarted() {
 
       {/* NAV */}
       <nav className={`nav${scrollY > 40 ? ' scrolled' : ''}`}>
-        <a href="/" style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, letterSpacing: -0.5, textDecoration: 'none', color: 'white' }}>
+        <a href="/" style={{ fontFamily: 'var(--serif)', fontSize: 20, letterSpacing: -0.5, textDecoration: 'none', color: 'white' }}>
           Beyond<span style={{ color: '#4F7CFF' }}>Campus</span>
         </a>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -201,7 +203,7 @@ export default function GetStarted() {
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4F7CFF', display: 'inline-block', animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
               Takes 30 seconds
             </div>
-            <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(36px, 6vw, 60px)', lineHeight: 1.1, letterSpacing: -1.5, marginBottom: 18 }}>
+            <h1 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(36px, 6vw, 60px)', lineHeight: 1.1, letterSpacing: -1.5, marginBottom: 18 }}>
               Let's Figure Out<br />
               <span className="gradient-text">Your Next Move</span>
             </h1>
@@ -280,7 +282,7 @@ export default function GetStarted() {
         <section ref={recRef} style={{ padding: '80px 24px', maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48, animation: 'fadeUp 0.6s ease both' }}>
             <span className="section-label">Your Recommendation</span>
-            <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: 1.15, letterSpacing: -1, marginBottom: 0 }}>
+            <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: 1.15, letterSpacing: -1, marginBottom: 0 }}>
               Here's where to start
             </h2>
           </div>
@@ -291,7 +293,7 @@ export default function GetStarted() {
               <div style={{ width: 48, height: 48, borderRadius: 14, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>✨</div>
               <div>
                 <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#93BBFF', marginBottom: 8 }}>Based on your answers, we recommend:</div>
-                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, fontWeight: 400, marginBottom: 12, lineHeight: 1.2 }}>{rec.product}</div>
+                <div style={{ fontFamily: 'var(--serif)', fontSize: 26, fontWeight: 400, marginBottom: 12, lineHeight: 1.2 }}>{rec.product}</div>
                 <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.75 }}>{rec.reason}</div>
               </div>
             </div>
@@ -306,7 +308,7 @@ export default function GetStarted() {
               )}
               <div style={{ marginTop: rec.highlight === 'session' ? 20 : 0 }}>
                 <div style={{ display: 'inline-flex', padding: '5px 14px', background: 'rgba(79,124,255,0.12)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, color: '#93BBFF', marginBottom: 20, letterSpacing: 1, textTransform: 'uppercase' }}>Best for urgent situations</div>
-                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, lineHeight: 1.2, marginBottom: 20 }}>1:1 Mentorship<br />Session</div>
+                <div style={{ fontFamily: 'var(--serif)', fontSize: 26, lineHeight: 1.2, marginBottom: 20 }}>1:1 Mentorship<br />Session</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
                   <span style={{ fontSize: 40, fontWeight: 800, color: '#4F7CFF' }}>₹299</span>
                   <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through' }}>₹999</span>
@@ -341,7 +343,7 @@ export default function GetStarted() {
               </div>
               <div style={{ marginTop: 28 }}>
                 <div style={{ display: 'inline-flex', padding: '5px 14px', background: 'rgba(123,97,255,0.12)', border: '1px solid rgba(123,97,255,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, color: '#C4B5FD', marginBottom: 20, letterSpacing: 1, textTransform: 'uppercase' }}>Cohort Program</div>
-                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, lineHeight: 1.2, marginBottom: 20 }}>8-Week Placement<br />Accelerator</div>
+                <div style={{ fontFamily: 'var(--serif)', fontSize: 26, lineHeight: 1.2, marginBottom: 20 }}>8-Week Placement<br />Accelerator</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
                   <span style={{ fontSize: 40, fontWeight: 800, color: '#7B61FF' }}>₹999</span>
                   <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through' }}>₹4,999</span>
@@ -363,7 +365,7 @@ export default function GetStarted() {
                     </div>
                   ))}
                 </div>
-                <a href="/cohort" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '15px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(123,97,255,0.35)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: "'DM Sans', sans-serif" }}>
+                <a href="/cohort" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '15px 32px', borderRadius: 100, background: 'linear-gradient(135deg, #7B61FF, #4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(123,97,255,0.35)', transition: 'all 0.3s', textDecoration: 'none', fontFamily: 'var(--sans)' }}>
                   Join the Cohort →
                 </a>
               </div>
@@ -377,7 +379,7 @@ export default function GetStarted() {
         <div style={{ maxWidth: 720, margin: '0 auto', background: '#111827', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 24, padding: '40px 40px', display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
           <div style={{ fontSize: 40, flexShrink: 0 }}>💬</div>
           <div style={{ flex: 1, minWidth: 220 }}>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, marginBottom: 8, lineHeight: 1.3 }}>Still not sure? Talk to us first.</div>
+            <div style={{ fontFamily: 'var(--serif)', fontSize: 22, marginBottom: 8, lineHeight: 1.3 }}>Still not sure? Talk to us first.</div>
             <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>Book a free 10-minute clarity call. No pitch, no pressure — just an honest conversation about what makes sense for your situation.</div>
           </div>
           <a href="https://chat.whatsapp.com/HUe0nBmwKLWBIgnHaA6Pp0" target="_blank" rel="noopener noreferrer" className="btn-outlined" style={{ flexShrink: 0, whiteSpace: 'nowrap' }}>
@@ -408,7 +410,7 @@ export default function GetStarted() {
       <section style={{ padding: '0 24px 100px', maxWidth: 720, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <span className="section-label">FAQ</span>
-          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(26px, 3.5vw, 38px)', lineHeight: 1.15, letterSpacing: -0.5 }}>Quick answers</h2>
+          <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(26px, 3.5vw, 38px)', lineHeight: 1.15, letterSpacing: -0.5 }}>Quick answers</h2>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {FAQS.map((faq, i) => (

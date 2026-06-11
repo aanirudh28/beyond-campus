@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import LeadCapturePopup from '@/app/components/LeadCapturePopup'
+import { NoiseOverlay } from '@/app/components/SiteChrome'
 
 declare global {
   interface Window { Razorpay: any }
@@ -89,11 +90,11 @@ export default function CohortPage() {
 
   if (enrolled) {
     return (
-      <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: "'DM Sans','Inter',sans-serif", minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: 'var(--sans)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
         <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}`}</style>
         <div style={{ maxWidth: 460, textAlign: 'center', animation: 'fadeUp 0.6s ease both' }}>
           <div style={{ fontSize: 64, marginBottom: 20 }}>🎉</div>
-          <h1 style={{ fontFamily: "'DM Serif Display',serif", fontSize: 'clamp(28px,5vw,40px)', lineHeight: 1.1, marginBottom: 14 }}>You're enrolled!</h1>
+          <h1 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(28px,5vw,40px)', lineHeight: 1.1, marginBottom: 14 }}>You're enrolled!</h1>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, marginBottom: 28 }}>
             Welcome to the Placement Cohort. Our team will reach out on WhatsApp within 2 hours with your onboarding details and community access.
           </p>
@@ -111,27 +112,24 @@ export default function CohortPage() {
   }
 
   return (
-    <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: "'DM Sans','Inter',sans-serif", minHeight: '100vh', overflowX: 'hidden' }}>
+    <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: 'var(--sans)', minHeight: '100vh', overflowX: 'hidden' }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=DM+Serif+Display&display=swap');
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-        a{text-decoration:none;color:inherit}
         @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
         @keyframes shimmer{0%{background-position:-400% center}100%{background-position:400% center}}
         @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5)}70%{box-shadow:0 0 0 6px rgba(34,197,94,0)}}
         @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
         @keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
         .grad{background:linear-gradient(135deg,#4F7CFF,#7B61FF,#00D2FF);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 5s linear infinite}
-        .btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:16px 36px;border-radius:100px;background:linear-gradient(135deg,#4F7CFF,#7B61FF);color:white;font-weight:800;font-size:16px;cursor:pointer;border:none;font-family:"DM Sans",sans-serif;box-shadow:0 0 40px rgba(79,124,255,0.4);transition:all 0.25s}
+        .btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:16px 36px;border-radius:100px;background:linear-gradient(135deg,#4F7CFF,#7B61FF);color:white;font-weight:800;font-size:16px;cursor:pointer;border:none;font-family:var(--sans);box-shadow:0 0 40px rgba(79,124,255,0.4);transition:all 0.25s}
         .btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 56px rgba(79,124,255,0.55)}
         .btn-primary:disabled{opacity:0.6;cursor:not-allowed;transform:none}
-        .btn-outline{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:15px 32px;border-radius:100px;background:transparent;color:rgba(255,255,255,0.8);font-weight:600;font-size:15px;cursor:pointer;border:1.5px solid rgba(255,255,255,0.18);font-family:"DM Sans",sans-serif;transition:all 0.25s;text-decoration:none}
+        .btn-outline{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:15px 32px;border-radius:100px;background:transparent;color:rgba(255,255,255,0.8);font-weight:600;font-size:15px;cursor:pointer;border:1.5px solid rgba(255,255,255,0.18);font-family:var(--sans);transition:all 0.25s;text-decoration:none}
         .btn-outline:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.35);transform:translateY(-1px)}
         .inc-card{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;transition:all 0.3s}
         .inc-card:hover{border-color:rgba(79,124,255,0.35);transform:translateY(-3px)}
         .faq-item{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:14px;overflow:hidden;transition:border-color 0.3s}
         .faq-item.open{border-color:rgba(79,124,255,0.3)}
-        .faq-btn{width:100%;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;background:transparent;border:none;cursor:pointer;text-align:left;gap:14px;color:white;font-family:"DM Sans",sans-serif;font-size:14px;font-weight:600;line-height:1.5}
+        .faq-btn{width:100%;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;background:transparent;border:none;cursor:pointer;text-align:left;gap:14px;color:white;font-family:var(--sans);font-size:14px;font-weight:600;line-height:1.5}
         .faq-plus{font-size:20px;color:#4F7CFF;flex-shrink:0;transition:transform 0.3s}
         .faq-plus.open{transform:rotate(45deg)}
         .faq-body{overflow:hidden;transition:max-height 0.3s ease}
@@ -140,9 +138,11 @@ export default function CohortPage() {
         @media(max-width:768px){.cta-row{flex-direction:column!important}}
       `}</style>
 
+      <NoiseOverlay />
+
       {/* NAV */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, padding: scrollY > 40 ? '13px 32px' : '18px 32px', background: scrollY > 40 ? 'rgba(11,11,15,0.92)' : 'transparent', backdropFilter: scrollY > 40 ? 'blur(20px)' : 'none', borderBottom: scrollY > 40 ? '1px solid rgba(255,255,255,0.06)' : 'none', transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <a href="/" style={{ fontFamily: "'DM Serif Display',serif", fontSize: 20, letterSpacing: -0.5, color: 'white' }}>
+        <a href="/" style={{ fontFamily: 'var(--serif)', fontSize: 20, letterSpacing: -0.5, color: 'white' }}>
           Beyond<span style={{ color: '#4F7CFF' }}>Campus</span>
         </a>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -162,7 +162,7 @@ export default function CohortPage() {
             Enrollment Open · Placement Cohort
           </div>
 
-          <h1 style={{ fontFamily: "'DM Serif Display',serif", fontSize: 'clamp(38px,6vw,66px)', lineHeight: 1.05, letterSpacing: -2, marginBottom: 20 }}>
+          <h1 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(38px,6vw,66px)', lineHeight: 1.05, letterSpacing: -2, marginBottom: 20 }}>
             Get Placed in 8 Weeks.<br />
             <span className="grad">No Campus Required.</span>
           </h1>
@@ -197,7 +197,7 @@ export default function CohortPage() {
         <div style={{ maxWidth: 1040, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#4F7CFF', display: 'block', marginBottom: 10 }}>WHAT'S INCLUDED</span>
-            <h2 style={{ fontFamily: "'DM Serif Display',serif", fontSize: 'clamp(24px,4vw,38px)', lineHeight: 1.15 }}>Everything you need to get placed</h2>
+            <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(24px,4vw,38px)', lineHeight: 1.15 }}>Everything you need to get placed</h2>
           </div>
           <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 12 }}>
             {INCLUSIONS.map((inc, i) => (
@@ -220,7 +220,7 @@ export default function CohortPage() {
       <section style={{ padding: '72px 24px', maxWidth: 560, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#4F7CFF', display: 'block', marginBottom: 10 }}>PRICING</span>
-          <h2 style={{ fontFamily: "'DM Serif Display',serif", fontSize: 'clamp(24px,4vw,38px)', lineHeight: 1.15 }}>One payment. Lifetime access.</h2>
+          <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(24px,4vw,38px)', lineHeight: 1.15 }}>One payment. Lifetime access.</h2>
         </div>
 
         <div style={{ background: '#111827', border: '1.5px solid rgba(79,124,255,0.38)', borderRadius: 26, padding: '36px 32px', position: 'relative', boxShadow: '0 0 0 1px rgba(79,124,255,0.1),0 20px 72px rgba(79,124,255,0.16)' }}>
@@ -271,7 +271,7 @@ export default function CohortPage() {
         <div style={{ maxWidth: 640, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#4F7CFF', display: 'block', marginBottom: 10 }}>FAQ</span>
-            <h2 style={{ fontFamily: "'DM Serif Display',serif", fontSize: 'clamp(22px,3.5vw,34px)', lineHeight: 1.2 }}>Common questions</h2>
+            <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(22px,3.5vw,34px)', lineHeight: 1.2 }}>Common questions</h2>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {FAQS.map((faq, i) => (
@@ -292,7 +292,7 @@ export default function CohortPage() {
       {/* FINAL CTA */}
       <section style={{ padding: '88px 24px', textAlign: 'center' }}>
         <div style={{ maxWidth: 520, margin: '0 auto' }}>
-          <h2 style={{ fontFamily: "'DM Serif Display',serif", fontSize: 'clamp(28px,5vw,46px)', lineHeight: 1.1, letterSpacing: -1.5, marginBottom: 16 }}>
+          <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(28px,5vw,46px)', lineHeight: 1.1, letterSpacing: -1.5, marginBottom: 16 }}>
             Your next offer is one<br />
             <span className="grad">strategy away.</span>
           </h2>
@@ -312,7 +312,7 @@ export default function CohortPage() {
 
       {/* FOOTER */}
       <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '24px', textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.18)' }}>
-        © 2025 Beyond Campus · <a href="/" style={{ color: 'rgba(255,255,255,0.28)' }}>beyond-campus.in</a>
+        © {new Date().getFullYear()} Beyond Campus · <a href="/" style={{ color: 'rgba(255,255,255,0.28)' }}>beyond-campus.in</a>
       </div>
 
       {/* MOBILE STICKY */}

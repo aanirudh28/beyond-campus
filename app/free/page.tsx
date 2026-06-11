@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-
+import { NoiseOverlay } from '@/app/components/SiteChrome'
 
 export default function FreePage() {
   const [payLoading, setPayLoading] = useState(false)
@@ -75,9 +75,10 @@ export default function FreePage() {
   }
 
   return (
-    <main style={{ background: '#0B0B0F', color: '#fff', minHeight: '100vh', fontFamily: "'DM Sans','Inter',sans-serif" }}>
+    <main style={{ background: '#0B0B0F', color: '#fff', minHeight: '100vh', fontFamily: 'var(--sans)' }}>
+      <NoiseOverlay />
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap');
+        
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none;color:inherit}
 
@@ -120,7 +121,7 @@ export default function FreePage() {
           padding:15px 32px;border-radius:12px;
           background:linear-gradient(135deg,#4F7CFF,#7B61FF);
           color:#fff;font-weight:700;font-size:15px;
-          font-family:"DM Sans",sans-serif;border:none;cursor:pointer;
+          font-family:var(--sans);border:none;cursor:pointer;
           transition:opacity 0.2s,box-shadow 0.2s;
           box-shadow:0 4px 24px rgba(79,124,255,0.35);
         }
@@ -132,7 +133,7 @@ export default function FreePage() {
           padding:13px 24px;border-radius:12px;
           background:linear-gradient(135deg,#4F7CFF,#7B61FF);
           color:#fff;font-weight:700;font-size:14px;
-          font-family:"DM Sans",sans-serif;border:none;cursor:pointer;
+          font-family:var(--sans);border:none;cursor:pointer;
           transition:opacity 0.2s,box-shadow 0.2s;
           box-shadow:0 4px 16px rgba(79,124,255,0.3);
         }
@@ -155,7 +156,7 @@ export default function FreePage() {
 
       {/* TOP BAR */}
       <div style={{ position: 'sticky', top: 0, zIndex: 100, background: 'rgba(11,11,15,0.95)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '0 24px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <a href="/" style={{ fontFamily: "'DM Serif Display',serif", fontSize: 18, letterSpacing: -0.5 }}>
+        <a href="/" style={{ fontFamily: 'var(--serif)', fontSize: 18, letterSpacing: -0.5 }}>
           Beyond<span style={{ color: '#4F7CFF' }}>Campus</span>
         </a>
         <a href="/" style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', gap: 6 }}>

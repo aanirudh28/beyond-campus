@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { NoiseOverlay } from '@/app/components/SiteChrome'
 
 function useFadeUp(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null)
@@ -71,9 +72,10 @@ export default function ProgramPage() {
   }, [])
 
   return (
-    <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: "'DM Sans','Inter',sans-serif", minHeight: '100vh', overflowX: 'hidden' }}>
+    <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: 'var(--sans)', minHeight: '100vh', overflowX: 'hidden' }}>
+      <NoiseOverlay />
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap');
+        
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none;color:inherit}
         @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
@@ -83,15 +85,15 @@ export default function ProgramPage() {
         @keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
         .gradient-text{background:linear-gradient(135deg,#4F7CFF,#7B61FF,#00D2FF);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 5s linear infinite}
         .section-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#4F7CFF;margin-bottom:14px;display:block}
-        .section-title{font-family:"DM Serif Display",serif;font-size:clamp(28px,4vw,48px);line-height:1.1;letter-spacing:-1px}
+        .section-title{font-family:var(--serif);font-size:clamp(28px,4vw,48px);line-height:1.1;letter-spacing:-1px}
         .nav{position:fixed;top:0;left:0;right:0;z-index:100;transition:all 0.3s;padding:20px 40px;display:flex;align-items:center;justify-content:space-between}
         .nav.scrolled{background:rgba(11,11,15,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 40px}
-        .btn-orange{display:inline-flex;align-items:center;gap:8px;padding:15px 32px;border-radius:100px;background:linear-gradient(135deg,#FF6B35,#FF4500);color:white;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.3s;border:none;box-shadow:0 0 32px rgba(255,107,53,0.35);font-family:"DM Sans",sans-serif;text-decoration:none}
+        .btn-orange{display:inline-flex;align-items:center;gap:8px;padding:15px 32px;border-radius:100px;background:linear-gradient(135deg,#FF6B35,#FF4500);color:white;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.3s;border:none;box-shadow:0 0 32px rgba(255,107,53,0.35);font-family:var(--sans);text-decoration:none}
         .btn-orange:hover{transform:translateY(-2px);box-shadow:0 0 52px rgba(255,107,53,0.55)}
         .btn-orange.large{padding:18px 44px;font-size:17px}
-        .btn-blue{display:inline-flex;align-items:center;gap:8px;padding:15px 32px;border-radius:100px;background:linear-gradient(135deg,#4F7CFF,#7B61FF);color:white;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.3s;border:none;box-shadow:0 0 28px rgba(79,124,255,0.35);font-family:"DM Sans",sans-serif;text-decoration:none}
+        .btn-blue{display:inline-flex;align-items:center;gap:8px;padding:15px 32px;border-radius:100px;background:linear-gradient(135deg,#4F7CFF,#7B61FF);color:white;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.3s;border:none;box-shadow:0 0 28px rgba(79,124,255,0.35);font-family:var(--sans);text-decoration:none}
         .btn-blue:hover{transform:translateY(-2px);box-shadow:0 0 48px rgba(79,124,255,0.55)}
-        .btn-outlined{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:100px;background:transparent;color:white;font-weight:600;font-size:15px;cursor:pointer;transition:all 0.3s;border:1.5px solid rgba(255,255,255,0.2);font-family:"DM Sans",sans-serif;text-decoration:none}
+        .btn-outlined{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:100px;background:transparent;color:white;font-weight:600;font-size:15px;cursor:pointer;transition:all 0.3s;border:1.5px solid rgba(255,255,255,0.2);font-family:var(--sans);text-decoration:none}
         .btn-outlined:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.4);transform:translateY(-2px)}
         .inclusion-card{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:24px;transition:all 0.3s;cursor:default}
         .inclusion-card:hover{border-color:rgba(79,124,255,0.45);transform:translateY(-4px);box-shadow:0 12px 40px rgba(79,124,255,0.15)}
@@ -101,7 +103,7 @@ export default function ProgramPage() {
         .check-item{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:rgba(255,255,255,0.75);line-height:1.6}
         .faq-item{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:16px;overflow:hidden;transition:border-color 0.3s}
         .faq-item.open{border-color:rgba(79,124,255,0.35)}
-        .faq-btn{width:100%;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;background:transparent;border:none;cursor:pointer;text-align:left;gap:16px;color:white;font-family:"DM Sans",sans-serif;font-size:15px;font-weight:600;line-height:1.5}
+        .faq-btn{width:100%;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;background:transparent;border:none;cursor:pointer;text-align:left;gap:16px;color:white;font-family:var(--sans);font-size:15px;font-weight:600;line-height:1.5}
         .faq-plus{font-size:20px;color:#4F7CFF;flex-shrink:0;transition:transform 0.3s;display:inline-block;line-height:1}
         .faq-plus.open{transform:rotate(45deg)}
         .faq-body{overflow:hidden;transition:max-height 0.35s ease}
@@ -132,7 +134,7 @@ export default function ProgramPage() {
 
       {/* NAV */}
       <nav className={`nav${scrollY > 40 ? ' scrolled' : ''}`}>
-        <a href="/" style={{ fontFamily: "'DM Serif Display',serif", fontSize: 20, letterSpacing: -0.5, color: 'white' }}>
+        <a href="/" style={{ fontFamily: 'var(--serif)', fontSize: 20, letterSpacing: -0.5, color: 'white' }}>
           Beyond<span style={{ color: '#4F7CFF' }}>Campus</span>
         </a>
         <div style={{ display: 'flex', gap: 12 }}>
@@ -359,7 +361,7 @@ export default function ProgramPage() {
             {/* Session card */}
             <div className="product-card">
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16 }}>For students who want to start small</div>
-              <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 26, lineHeight: 1.2, marginBottom: 20 }}>1:1 Mentorship<br />Session</div>
+              <div style={{ fontFamily: 'var(--serif)', fontSize: 26, lineHeight: 1.2, marginBottom: 20 }}>1:1 Mentorship<br />Session</div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
                 <span style={{ fontSize: 40, fontWeight: 800, color: '#4F7CFF' }}>₹299</span>
                 <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through' }}>₹999</span>
@@ -378,7 +380,7 @@ export default function ProgramPage() {
               <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', padding: '5px 20px', background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', borderRadius: '0 0 12px 12px', fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Recommended</div>
               <div style={{ marginTop: 24 }}>
                 <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 16 }}>For students who want the complete system</div>
-                <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 26, lineHeight: 1.2, marginBottom: 20 }}>8-Week Placement<br />Accelerator</div>
+                <div style={{ fontFamily: 'var(--serif)', fontSize: 26, lineHeight: 1.2, marginBottom: 20 }}>8-Week Placement<br />Accelerator</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
                   <span style={{ fontSize: 40, fontWeight: 800, color: '#7B61FF' }}>₹2,500</span>
                   <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through' }}>₹6,000</span>
@@ -389,7 +391,7 @@ export default function ProgramPage() {
                     <div key={i} className="check-item"><span style={{ color: '#7B61FF', fontSize: 15, flexShrink: 0 }}>✓</span>{f}</div>
                   ))}
                 </div>
-                <a href="/cohort" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '15px 32px', borderRadius: 100, background: 'linear-gradient(135deg,#7B61FF,#4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(123,97,255,0.35)', transition: 'all 0.3s', fontFamily: "'DM Sans',sans-serif" }}>Join the Cohort →</a>
+                <a href="/cohort" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '15px 32px', borderRadius: 100, background: 'linear-gradient(135deg,#7B61FF,#4F7CFF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 36px rgba(123,97,255,0.35)', transition: 'all 0.3s', fontFamily: 'var(--sans)' }}>Join the Cohort →</a>
               </div>
             </div>
           </div>
@@ -426,7 +428,7 @@ export default function ProgramPage() {
       <section style={{ padding: '100px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle,rgba(79,124,255,0.1),transparent)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', pointerEvents: 'none' }} />
         <Section style={{ maxWidth: 640, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <h2 style={{ fontFamily: "'DM Serif Display',serif", fontSize: 'clamp(30px,4.5vw,52px)', lineHeight: 1.1, letterSpacing: -1, marginBottom: 20 }}>
+          <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(30px,4.5vw,52px)', lineHeight: 1.1, letterSpacing: -1, marginBottom: 20 }}>
             You've read everything.<br />
             <span className="gradient-text">Now make the move.</span>
           </h2>

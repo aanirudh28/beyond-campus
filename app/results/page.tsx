@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { RESULTS } from '@/lib/results'
+import { PageShell, SiteNav, HeroGlow } from '../components/SiteChrome'
 
 const STATS = [
   { num: String(RESULTS.length), label: 'students placed' },
@@ -12,25 +11,9 @@ const STATS = [
 ]
 
 export default function ResultsPage() {
-  // shared reveal observer, same pattern as the homepage
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); observer.unobserve(e.target) } }),
-      { threshold: 0.12 }
-    )
-    document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el))
-    return () => observer.disconnect()
-  }, [])
-
   return (
-    <main style={{ minHeight: '100vh', background: '#0B0B0F', color: '#fff', fontFamily: "var(--font-dm-sans), 'Inter', sans-serif", overflowX: 'hidden' }}>
+    <PageShell>
       <style>{`
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        a { text-decoration: none; color: inherit; }
-        ::selection { background: rgba(79,124,255,0.4); }
-        [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.7s cubic-bezier(0.2,0.6,0.2,1), transform 0.7s cubic-bezier(0.2,0.6,0.2,1); }
-        [data-reveal].in { opacity: 1; transform: translateY(0); }
-
         .rw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 20px; }
         .rw-card { background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015)); border: 1px solid rgba(255,255,255,0.09); border-radius: 24px; padding: 30px 28px; display: flex; flex-direction: column; position: relative; overflow: hidden; transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s; }
         .rw-card:hover { border-color: rgba(79,124,255,0.4); transform: translateY(-5px); box-shadow: 0 24px 64px rgba(79,124,255,0.13); }
@@ -38,39 +21,30 @@ export default function ResultsPage() {
         .rw-placed { display: inline-flex; align-items: center; gap: 6px; padding: 5px 13px; border-radius: 100px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #4ade80; font-size: 10.5px; font-weight: 800; letter-spacing: 1.5px; }
         .rw-logo { filter: brightness(0) invert(1); opacity: 0.92; display: inline-flex; align-items: center; }
         .rw-quote { font-size: 14.5px; color: rgba(255,255,255,0.68); line-height: 1.8; font-style: italic; }
-        .mono-label { font-family: var(--font-geist-mono), monospace; font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.38); }
       `}</style>
 
-      {/* nav */}
-      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(11,11,15,0.85)', backdropFilter: 'blur(20px)', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: 1080, margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ fontFamily: "var(--font-dm-serif), 'DM Serif Display', serif", fontSize: 21, letterSpacing: -0.5 }}>
-            Beyond<span style={{ color: '#4F7CFF' }}>Campus</span>
-          </Link>
-          <a href="/cohort" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 22px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 13.5, boxShadow: '0 0 24px rgba(79,124,255,0.35)' }}>
-            Join them →
-          </a>
-        </div>
-      </div>
+      <SiteNav cta={{ label: 'Join them →', href: '/cohort' }} links={[{ label: 'Cohorts', href: '/cohort' }, { label: 'Free roast', href: '/resources/resume-roast' }]} />
 
       {/* header */}
-      <section style={{ maxWidth: 1080, margin: '0 auto', padding: '90px 24px 50px', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: -80, left: '50%', transform: 'translateX(-50%)', width: 700, height: 380, background: 'radial-gradient(ellipse at center, rgba(79,124,255,0.12), transparent 65%)', pointerEvents: 'none' }} />
-        <span className="mono-label" data-reveal style={{ display: 'block', marginBottom: 18, color: '#4F7CFF' }}>The results wall</span>
-        <h1 data-reveal style={{ fontFamily: "var(--font-dm-serif), 'DM Serif Display', serif", fontSize: 'clamp(38px, 5.5vw, 64px)', lineHeight: 1.05, letterSpacing: -1.5, fontWeight: 400, marginBottom: 18, maxWidth: 720 }}>
-          Students who made it.<br /><em style={{ fontStyle: 'italic', color: '#93BBFF' }}>Receipts attached.</em>
-        </h1>
-        <p data-reveal style={{ fontSize: 16.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, maxWidth: 540, marginBottom: 40 }}>
-          Real students, real companies, real offers — every one of them landed off-campus,
-          without a placement cell making introductions.
-        </p>
-        <div data-reveal style={{ display: 'flex', gap: 40, flexWrap: 'wrap' }}>
-          {STATS.map(s => (
-            <div key={s.label}>
-              <div style={{ fontFamily: "var(--font-dm-serif), 'DM Serif Display', serif", fontSize: 38, color: '#4F7CFF', lineHeight: 1 }}>{s.num}</div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', fontWeight: 600, marginTop: 6 }}>{s.label}</div>
-            </div>
-          ))}
+      <section style={{ maxWidth: 1080, margin: '0 auto', padding: '120px 24px 50px', position: 'relative', overflow: 'hidden' }}>
+        <HeroGlow />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <span className="mono-label" data-reveal style={{ display: 'block', marginBottom: 18, color: '#4F7CFF' }}>The results wall</span>
+          <h1 data-reveal style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(38px, 5.5vw, 64px)', lineHeight: 1.05, letterSpacing: -1.5, fontWeight: 400, marginBottom: 18, maxWidth: 720 }}>
+            Students who made it.<br /><em style={{ fontStyle: 'italic', color: '#93BBFF' }}>Receipts attached.</em>
+          </h1>
+          <p data-reveal style={{ fontSize: 16.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, maxWidth: 540, marginBottom: 40 }}>
+            Real students, real companies, real offers — every one of them landed off-campus,
+            without a placement cell making introductions.
+          </p>
+          <div data-reveal style={{ display: 'flex', gap: 40, flexWrap: 'wrap' }}>
+            {STATS.map(s => (
+              <div key={s.label}>
+                <div style={{ fontFamily: 'var(--serif)', fontSize: 38, color: '#4F7CFF', lineHeight: 1 }}>{s.num}</div>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', fontWeight: 600, marginTop: 6 }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -85,7 +59,7 @@ export default function ResultsPage() {
                 <span className="rw-placed">✓ {r.badge || `PLACED${r.daysToOffer ? ` IN ${r.daysToOffer} DAYS` : ''}`}</span>
               </div>
 
-              <div style={{ fontFamily: "var(--font-dm-serif), 'DM Serif Display', serif", fontSize: 25, marginBottom: 4 }}>{r.name}</div>
+              <div style={{ fontFamily: 'var(--serif)', fontSize: 25, marginBottom: 4 }}>{r.name}</div>
               {r.college && <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 2 }}>{r.college}</div>}
 
               <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(79,124,255,0.35), transparent)', margin: '16px 0' }} />
@@ -102,7 +76,7 @@ export default function ResultsPage() {
                 <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>{r.role}</span>
               </div>
               {r.location && (
-                <div style={{ fontFamily: 'var(--font-geist-mono), monospace', fontSize: 11, letterSpacing: 1.5, color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: 1.5, color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>
                   {r.location.toUpperCase()}
                 </div>
               )}
@@ -122,7 +96,7 @@ export default function ResultsPage() {
           {/* you're next card */}
           <a href="/cohort" className="rw-card" data-reveal style={{ transitionDelay: '0.16s', border: '1px dashed rgba(79,124,255,0.35)', background: 'rgba(79,124,255,0.04)', alignItems: 'center', justifyContent: 'center', textAlign: 'center', minHeight: 280 }}>
             <div style={{ width: 76, height: 76, borderRadius: '50%', border: '2px dashed rgba(79,124,255,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, color: '#4F7CFF', marginBottom: 18 }}>+</div>
-            <div style={{ fontFamily: "var(--font-dm-serif), 'DM Serif Display', serif", fontSize: 24, marginBottom: 8 }}>You&apos;re next.</div>
+            <div style={{ fontFamily: 'var(--serif)', fontSize: 24, marginBottom: 8 }}>You&apos;re next.</div>
             <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, maxWidth: 240, marginBottom: 16 }}>
               Every student on this wall started with zero replies. The system is the difference.
             </p>
@@ -133,19 +107,19 @@ export default function ResultsPage() {
 
       {/* footer cta */}
       <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '60px 24px 80px', textAlign: 'center' }}>
-        <p style={{ fontFamily: "var(--font-dm-serif), 'DM Serif Display', serif", fontSize: 'clamp(22px, 3vw, 30px)', lineHeight: 1.4, maxWidth: 560, margin: '0 auto 28px', color: 'rgba(255,255,255,0.85)' }}>
+        <p style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(22px, 3vw, 30px)', lineHeight: 1.4, maxWidth: 560, margin: '0 auto 28px', color: 'rgba(255,255,255,0.85)' }}>
           Your name belongs up there.<br />
           <em style={{ color: '#93BBFF' }}>Start this week.</em>
         </p>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href="/cohort" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '15px 34px', borderRadius: 100, background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white', fontWeight: 700, fontSize: 15, boxShadow: '0 0 30px rgba(79,124,255,0.35)' }}>
-            Explore Placement Cohort →
+          <a href="/cohort" className="btn-primary" style={{ padding: '15px 34px', fontSize: 15 }}>
+            <span>Explore Placement Cohort →</span>
           </a>
-          <a href="/resources/resume-roast" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 34px', borderRadius: 100, border: '1.5px solid rgba(255,255,255,0.2)', color: 'white', fontWeight: 600, fontSize: 15 }}>
+          <a href="/resources/resume-roast" className="btn-secondary" style={{ padding: '14px 34px', fontSize: 15 }}>
             Not ready? Get the free roast 🔥
           </a>
         </div>
       </section>
-    </main>
+    </PageShell>
   )
 }
