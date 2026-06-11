@@ -9,6 +9,41 @@ import { track } from '@/lib/analytics'
 // Feature flag — flip to true when Mission Control / Phase 1B is ready to ship
 const SHOW_COMMUNITY = false
 
+const COMPANY_LOGOS = [
+  { name: 'BCG',           src: '/logos/bcg.svg',          h: 22 },
+  { name: 'Bain & Company',src: '/logos/bain.svg',         h: 14 },
+  { name: 'Deloitte',      src: '/logos/Deloitte.png',     h: 22 },
+  { name: 'EY',            src: '/logos/EY.png',           h: 22 },
+  { name: 'Citi',          src: '/logos/citi.svg',         h: 18 },
+  { name: 'Aon',           src: '/logos/aon.svg',          h: 16 },
+  { name: 'Razorpay',      src: '/logos/razorpay.svg',     h: 16 },
+  { name: 'Zomato',        src: '/logos/zomato.svg',       h: 14 },
+  { name: 'Blinkit',       src: '/logos/blinkit.svg',      h: 22 },
+  { name: 'Urban Company', src: '/logos/urbancompany.png', h: 22 },
+]
+
+const TRUST_ITEMS = ['Personalized Mentorship', 'Weekly Accountability', 'Resume & LinkedIn Reviews', 'Internship & Placement Support']
+
+const TrustStrip = () => (
+  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 28px', justifyContent: 'center', marginTop: 20 }}>
+    {TRUST_ITEMS.map((item, i) => (
+      <span key={item} style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', display: 'flex', alignItems: 'center', gap: 8 }}>
+        {i > 0 && <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span>}
+        {item}
+      </span>
+    ))}
+  </div>
+)
+
+// Editorial section header — ledger number + rule + mono label
+const Ledger = ({ no, label }: { no: string; label: string }) => (
+  <div data-reveal style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 40 }}>
+    <span style={{ fontFamily: 'var(--font-geist-mono), monospace', fontSize: 13, fontWeight: 500, color: '#4F7CFF', letterSpacing: 1 }}>{no}</span>
+    <span style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(79,124,255,0.4), rgba(255,255,255,0.06))' }} />
+    <span style={{ fontFamily: 'var(--font-geist-mono), monospace', fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.38)', letterSpacing: 3, textTransform: 'uppercase' }}>{label}</span>
+  </div>
+)
+
 export default function Home() {
   const router = useRouter()
   const [scrollY, setScrollY] = useState(0)
@@ -136,41 +171,6 @@ export default function Home() {
     document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el))
     return () => observer.disconnect()
   }, [])
-
-  const COMPANY_LOGOS = [
-    { name: 'BCG',           src: '/logos/bcg.svg',          h: 22 },
-    { name: 'Bain & Company',src: '/logos/bain.svg',         h: 14 },
-    { name: 'Deloitte',      src: '/logos/Deloitte.png',     h: 22 },
-    { name: 'EY',            src: '/logos/EY.png',           h: 22 },
-    { name: 'Citi',          src: '/logos/citi.svg',         h: 18 },
-    { name: 'Aon',           src: '/logos/aon.svg',          h: 16 },
-    { name: 'Razorpay',      src: '/logos/razorpay.svg',     h: 16 },
-    { name: 'Zomato',        src: '/logos/zomato.svg',       h: 14 },
-    { name: 'Blinkit',       src: '/logos/blinkit.svg',      h: 22 },
-    { name: 'Urban Company', src: '/logos/urbancompany.png', h: 22 },
-  ]
-
-  const trustItems = ['Personalized Mentorship', 'Weekly Accountability', 'Resume & LinkedIn Reviews', 'Internship & Placement Support']
-
-  const TrustStrip = () => (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 28px', justifyContent: 'center', marginTop: 20 }}>
-      {trustItems.map((item, i) => (
-        <span key={item} style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', display: 'flex', alignItems: 'center', gap: 8 }}>
-          {i > 0 && <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span>}
-          {item}
-        </span>
-      ))}
-    </div>
-  )
-
-  // Editorial section header — ledger number + rule + mono label
-  const Ledger = ({ no, label }: { no: string; label: string }) => (
-    <div data-reveal style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 40 }}>
-      <span style={{ fontFamily: 'var(--font-geist-mono), monospace', fontSize: 13, fontWeight: 500, color: '#4F7CFF', letterSpacing: 1 }}>{no}</span>
-      <span style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(79,124,255,0.4), rgba(255,255,255,0.06))' }} />
-      <span style={{ fontFamily: 'var(--font-geist-mono), monospace', fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.38)', letterSpacing: 3, textTransform: 'uppercase' }}>{label}</span>
-    </div>
-  )
 
   return (
     <main style={{ background: '#0B0B0F', color: '#fff', fontFamily: "var(--font-dm-sans), 'Inter', sans-serif", overflowX: 'hidden' }}>
