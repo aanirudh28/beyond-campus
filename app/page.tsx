@@ -44,6 +44,135 @@ const Ledger = ({ no, label }: { no: string; label: string }) => (
   </div>
 )
 
+// Scroll spine — a gradient line that weaves down the page and draws itself in
+// as you scroll, with a glowing dot riding the tip. Sits behind all content.
+const ScrollSpine = () => {
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const pathRef = useRef<SVGPathElement>(null)
+  const glowRef = useRef<SVGPathElement>(null)
+  const dotRef = useRef<HTMLDivElement>(null)
+  const [geom, setGeom] = useState<{ d: string; w: number; h: number } | null>(null)
+
+  // Build the winding path from the container's real pixel size (re-runs on resize)
+  useEffect(() => {
+    const wrap = wrapRef.current
+    if (!wrap) return
+    const measure = () => {
+      const w = wrap.clientWidth
+      const h = wrap.clientHeight
+      if (!w || !h) return
+      const segs = Math.max(6, Math.round(h / 950))
+      const step = h / segs
+      const reach = Math.min(w * 0.33, 430)
+      const cx = w / 2
+      let x = cx
+      let d = `M ${x.toFixed(1)} 0`
+      for (let i = 1; i <= segs; i++) {
+        const nx = i === segs ? cx : cx + (i % 2 ? reach : -reach)
+        const y0 = (i - 1) * step
+        const y1 = i * step
+        d += ` C ${x.toFixed(1)} ${(y0 + step * 0.55).toFixed(1)} ${nx.toFixed(1)} ${(y1 - step * 0.55).toFixed(1)} ${nx.toFixed(1)} ${y1.toFixed(1)}`
+        x = nx
+      }
+      setGeom({ d, w, h })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(wrap)
+    return () => ro.disconnect()
+  }, [])
+
+  // Drive the line + dot from scroll position — direct style writes, rAF-throttled
+  useEffect(() => {
+    const wrap = wrapRef.current
+    const path = pathRef.current
+    if (!wrap || !path || !geom) return
+    const glow = glowRef.current
+    const total = path.getTotalLength()
+    path.style.strokeDasharray = `${total}`
+    path.style.visibility = 'visible'
+    if (glow) { glow.style.strokeDasharray = `${total}`; glow.style.visibility = 'visible' }
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const rect = wrap.getBoundingClientRect()
+      const progress = Math.min(1, Math.max(0, (window.innerHeight * 0.72 - rect.top) / rect.height))
+      const offset = total * (1 - progress)
+      path.style.strokeDashoffset = `${offset}`
+      if (glow) glow.style.strokeDashoffset = `${offset}`
+      const dot = dotRef.current
+      if (dot) {
+        const pt = path.getPointAtLength(total * progress)
+        dot.style.transform = `translate(${pt.x - 8}px, ${pt.y - 8}px)`
+        dot.style.opacity = progress > 0.004 && progress < 0.996 ? '1' : '0'
+      }
+    }
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [geom])
+
+  return (
+    <div ref={wrapRef} className="spine-wrap" aria-hidden="true">
+      {geom && (
+        <>
+          <svg width={geom.w} height={geom.h} viewBox={`0 0 ${geom.w} ${geom.h}`} style={{ position: 'absolute', inset: 0, display: 'block', overflow: 'visible' }}>
+            <defs>
+              <linearGradient id="spineGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2={geom.h}>
+                <stop offset="0%" stopColor="#4F7CFF" />
+                <stop offset="40%" stopColor="#7B61FF" />
+                <stop offset="70%" stopColor="#4F7CFF" />
+                <stop offset="100%" stopColor="#93BBFF" />
+              </linearGradient>
+            </defs>
+            <path d={geom.d} stroke="rgba(255,255,255,0.045)" strokeWidth="1.5" fill="none" />
+            <path ref={glowRef} d={geom.d} stroke="url(#spineGrad)" strokeWidth="7" fill="none" opacity="0.18" style={{ filter: 'blur(5px)', visibility: 'hidden' }} />
+            <path ref={pathRef} d={geom.d} stroke="url(#spineGrad)" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.85" style={{ visibility: 'hidden' }} />
+          </svg>
+          <div ref={dotRef} className="spine-dot" />
+        </>
+      )}
+    </div>
+  )
+}
+
+// Count-up stat — animates from 0 when scrolled into view
+const Stat = ({ value, suffix, label, delay }: { value: number; suffix: string; label: string; delay: number }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const numRef = useRef<HTMLSpanElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    const num = numRef.current
+    if (!el || !num) return
+    const obs = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting) return
+      obs.disconnect()
+      const start = performance.now()
+      const dur = 1400
+      const tick = (t: number) => {
+        const p = Math.min(1, (t - start) / dur)
+        num.textContent = `${Math.round(value * (1 - Math.pow(1 - p, 3)))}`
+        if (p < 1) requestAnimationFrame(tick)
+      }
+      requestAnimationFrame(tick)
+    }, { threshold: 0.4 })
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [value])
+  return (
+    <div ref={ref} data-reveal style={{ transitionDelay: `${delay}s` }}>
+      <div className="stat-num" style={{ color: '#4F7CFF', marginBottom: 8 }}><span ref={numRef}>0</span>{suffix}</div>
+      <div style={{ fontSize: 15, fontWeight: 600 }}>{label}</div>
+    </div>
+  )
+}
+
 export default function Home() {
   const router = useRouter()
   const [scrollY, setScrollY] = useState(0)
@@ -280,6 +409,30 @@ export default function Home() {
 
         .noise-overlay { position:fixed; inset:0; pointer-events:none; z-index:999; opacity:0.025; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
+        /* Scroll spine — the line that follows your scroll */
+        .spine-wrap { position:absolute; inset:0; z-index:0; pointer-events:none; }
+        .spine-dot { position:absolute; top:0; left:0; width:16px; height:16px; border-radius:50%; opacity:0; background:radial-gradient(circle, #fff 0%, #93BBFF 35%, rgba(79,124,255,0) 70%); box-shadow:0 0 14px 3px rgba(124,156,255,0.8), 0 0 44px 14px rgba(79,124,255,0.3); transition:opacity 0.3s; will-change:transform; }
+        @media(max-width:860px) { .spine-wrap { display:none; } }
+
+        /* Hero aurora — slow drifting glow blobs */
+        @keyframes aurora-drift { from { transform:translate3d(0,0,0) scale(1); } to { transform:translate3d(70px,50px,0) scale(1.18); } }
+        .aurora { position:absolute; border-radius:50%; filter:blur(70px); pointer-events:none; }
+        .aurora-a { width:480px; height:480px; top:-8%; left:4%; background:radial-gradient(circle, rgba(79,124,255,0.16), transparent 65%); animation:aurora-drift 16s ease-in-out infinite alternate; }
+        .aurora-b { width:430px; height:430px; bottom:-6%; right:3%; background:radial-gradient(circle, rgba(123,97,255,0.14), transparent 65%); animation:aurora-drift 21s ease-in-out -7s infinite alternate-reverse; }
+
+        /* Free-tools bento grid */
+        .bento { display:grid; grid-template-columns:repeat(6, 1fr); gap:16px; }
+        .bento .b3 { grid-column:span 3; }
+        .bento .b2 { grid-column:span 2; }
+        .bento-kicker { font-family:var(--mono); font-size:10px; font-weight:500; letter-spacing:2.5px; display:block; margin-bottom:16px; }
+        @media(max-width:980px) { .bento .b3 { grid-column:span 6; } .bento .b2 { grid-column:span 3; } }
+        @media(max-width:640px) { .bento .b2 { grid-column:span 6; } }
+
+        @media (prefers-reduced-motion: reduce) {
+          .spine-wrap { display:none; }
+          .aurora-a, .aurora-b, .ticker { animation:none; }
+        }
+
         .mobile-cta-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: rgba(11,11,15,0.96); backdrop-filter: blur(16px); border-top: 1px solid rgba(255,255,255,0.08); padding: 10px 16px; align-items: center; justify-content: center; gap: 12px; }
         @media(max-width:768px) {
           .sticky-nav { padding: 16px 20px; }
@@ -328,6 +481,7 @@ export default function Home() {
                 {[
                   { href: '/resources/resume-roast', label: '🔥 Resume Roast', badge: 'FREE AI', badgeStyle: { background: '#ef4444', color: 'white' } },
                   { href: '/job-tracker', label: '🎯 Job Tracker', badge: 'NEW', badgeStyle: { background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white' } },
+                  { href: '/resources/excel-interview-prep', label: '📊 Excel Interview Prep', badge: 'NEW', badgeStyle: { background: 'linear-gradient(135deg, #10b981, #06b6d4)', color: 'white' } },
                   { href: '/resources/resume-builder', label: '📄 Resume Builder', badge: 'free', badgeStyle: { color: '#6ee7b7' } },
                   { href: '/resources/career-toolkit', label: '🛠️ Career Toolkit', badge: '15 roles', badgeStyle: { color: '#6ee7b7' } },
                   { href: '/resources/cold-email-pack', label: '✉️ Cold Email Pack', badge: '50 templates', badgeStyle: { color: '#93BBFF' } },
@@ -384,8 +538,10 @@ export default function Home() {
 
       {/* ───────────────────────── HERO ───────────────────────── */}
       <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '150px 24px 90px', position: 'relative', overflow: 'hidden' }}>
-        {/* single editorial glow, not an orb field */}
+        {/* editorial glow + slow drifting aurora */}
         <div style={{ position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)', width: '90vw', maxWidth: 1100, height: 500, background: 'radial-gradient(ellipse at center, rgba(79,124,255,0.13), transparent 65%)', pointerEvents: 'none' }} />
+        <div className="aurora aurora-a" />
+        <div className="aurora aurora-b" />
         <div className="watermark">OFF·CAMPUS</div>
 
         <div style={{ maxWidth: 960, textAlign: 'center', position: 'relative', zIndex: 2 }}>
@@ -395,9 +551,8 @@ export default function Home() {
           </div>
 
           <h1 className="hero-headline" data-reveal style={{ transitionDelay: '0.08s', marginBottom: 30 }}>
-            The best companies<br />
-            never visited your campus.<br />
-            <span className="hero-em">Walk in anyway.</span>
+            Break into <span className="hero-em">top jobs</span><br />
+            without campus placements.
           </h1>
 
           <p data-reveal style={{ transitionDelay: '0.16s', fontSize: 19, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 580, margin: '0 auto 44px', fontWeight: 400 }}>
@@ -498,6 +653,11 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Everything below shares one canvas so the scroll spine can weave through it */}
+      <div style={{ position: 'relative' }}>
+      <ScrollSpine />
+      <div style={{ position: 'relative', zIndex: 1 }}>
 
       {/* ── RECEIPTS TICKER ── */}
       <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '13px 0', background: 'rgba(79,124,255,0.04)', overflow: 'hidden' }}>
@@ -628,41 +788,79 @@ export default function Home() {
             Don&apos;t trust us yet? <em>Smart.</em><br />Start with the free stuff.
           </h2>
           <p data-reveal style={{ color: 'var(--muted)', fontSize: 16, maxWidth: 560, lineHeight: 1.7, marginBottom: 48 }}>
-            Everything below is genuinely free. Use it, see how we think, and only then decide
+            Seven free tools covering every stage of the hunt — fix the resume, practice the interview,
+            run the outreach, track every application. Use them, see how we think, then decide
             if you want us in your corner.
           </p>
 
-          <style>{`
-            .tools-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-            @media(max-width: 860px) { .tools-row { grid-template-columns: 1fr; gap: 14px; } }
-          `}</style>
-
-          <div className="tools-row">
-            {[
-              {
-                index: '01', icon: '🔥', title: 'AI Resume Roast', badge: 'MOST POPULAR', badgeColor: '#ef4444',
-                desc: 'Upload your resume. Our AI tells you exactly why recruiters ignore it — brutally, line by line. Takes under a minute.',
-                cta: 'Roast my resume →', href: '/resources/resume-roast',
-              },
-              {
-                index: '02', icon: '🎯', title: 'Job Tracker', badge: 'NEW', badgeColor: '#4F7CFF',
-                desc: 'Stop tracking 50 applications in your head. Kanban board, follow-up reminders, a curated feed of fresher openings, and an AI outreach writer.',
-                cta: 'Track my applications →', href: '/job-tracker',
-              },
-              {
-                index: '03', icon: '🛠️', title: 'Templates & Toolkits', badge: 'OPEN ACCESS', badgeColor: '#10b981',
-                desc: '50 cold email templates, 20 LinkedIn scripts, resume guides and toolkits for 15 roles — the same materials our cohort students use.',
-                cta: 'Browse free resources →', href: '/free',
-              },
-            ].map((tool, i) => (
-              <a key={tool.title} href={tool.href} className="tool-card" data-reveal data-index={tool.index} style={{ transitionDelay: `${i * 0.1}s`, color: 'inherit' }} onClick={cta(tool.title, 'free_tools')}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-                  <span style={{ fontSize: 34, lineHeight: 1 }}>{tool.icon}</span>
-                  <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: '4px 10px', borderRadius: 100, color: tool.badgeColor, background: `${tool.badgeColor}1a`, border: `1px solid ${tool.badgeColor}40` }}>{tool.badge}</span>
+          <div className="bento">
+            {/* Featured — Resume Roast with live score gauge */}
+            <a href="/resources/resume-roast" className="tool-card b3" data-reveal data-index="01" style={{ color: 'inherit', borderColor: 'rgba(239,68,68,0.22)' }} onClick={cta('AI Resume Roast', 'free_tools')}>
+              <span className="bento-kicker" style={{ color: '#f87171' }}>STEP 01 — FIX THE RESUME</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+                <span style={{ fontSize: 34, lineHeight: 1 }}>🔥</span>
+                <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: '4px 10px', borderRadius: 100, color: '#ef4444', background: '#ef44441a', border: '1px solid #ef444440' }}>MOST POPULAR</span>
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: 'white', marginBottom: 12 }}>AI Resume Roast</div>
+              <p style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, marginBottom: 22 }}>
+                Upload your PDF. Our AI tells you exactly why recruiters ignore it — brutally, line by line. Free, takes ~30 seconds.
+              </p>
+              <div style={{ marginTop: 'auto', marginBottom: 20 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--mono)', fontSize: 10.5, letterSpacing: 1.5, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>
+                  <span>AVG STUDENT SCORE</span>
+                  <span style={{ color: '#f87171', fontWeight: 700 }}>51 / 100</span>
                 </div>
-                <div style={{ fontSize: 21, fontWeight: 800, color: 'white', marginBottom: 12 }}>{tool.title}</div>
-                <p style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, marginBottom: 24 }}>{tool.desc}</p>
-                <span className="tool-cta">{tool.cta}</span>
+                <div style={{ height: 6, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                  <div style={{ width: '51%', height: '100%', borderRadius: 100, background: 'linear-gradient(90deg, #ef4444, #fbbf24)' }} />
+                </div>
+              </div>
+              <span className="tool-cta" style={{ marginTop: 0 }}>Roast my resume →</span>
+            </a>
+
+            {/* Featured — Job Tracker with mini kanban */}
+            <a href="/job-tracker" className="tool-card b3" data-reveal data-index="02" style={{ transitionDelay: '0.08s', color: 'inherit', borderColor: 'rgba(79,124,255,0.25)' }} onClick={cta('Job Tracker', 'free_tools')}>
+              <span className="bento-kicker" style={{ color: '#93BBFF' }}>STEP 02 — TRACK EVERY SHOT</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+                <span style={{ fontSize: 34, lineHeight: 1 }}>🎯</span>
+                <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: '4px 10px', borderRadius: 100, color: '#4F7CFF', background: '#4F7CFF1a', border: '1px solid #4F7CFF40' }}>NEW</span>
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: 'white', marginBottom: 12 }}>Job Tracker</div>
+              <p style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, marginBottom: 22 }}>
+                Kanban for your applications, follow-up nudges, a curated feed of fresher openings, and an AI outreach writer.
+              </p>
+              <div style={{ display: 'flex', gap: 8, marginTop: 'auto', marginBottom: 20 }}>
+                {[
+                  { l: 'APPLIED', n: 3, c: 'rgba(255,255,255,0.35)', hot: false },
+                  { l: 'INTERVIEW', n: 2, c: '#93BBFF', hot: false },
+                  { l: 'OFFER', n: 1, c: '#4ade80', hot: true },
+                ].map(col => (
+                  <div key={col.l} style={{ flex: 1, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '9px 9px 5px' }}>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 8.5, letterSpacing: 1.2, color: col.c, marginBottom: 8 }}>{col.l}</div>
+                    {[...Array(col.n)].map((_, i) => (
+                      <div key={i} style={{ height: 7, borderRadius: 3, background: col.hot ? 'linear-gradient(90deg, #4ade80, #22d3ee)' : 'rgba(255,255,255,0.12)', marginBottom: 5 }} />
+                    ))}
+                  </div>
+                ))}
+              </div>
+              <span className="tool-cta" style={{ marginTop: 0 }}>Track my applications →</span>
+            </a>
+
+            {/* The rest of the arsenal */}
+            {[
+              { span: 'b2', index: '03', icon: '📊', title: 'Excel Interview Prep', badge: 'NEW', badgeColor: '#10b981', desc: 'Drill the exact Excel tests analyst and finance roles screen with.', href: '/resources/excel-interview-prep', cta: 'Start practicing →' },
+              { span: 'b2', index: '04', icon: '📄', title: 'Resume Builder', badge: 'FREE', badgeColor: '#6ee7b7', desc: 'ATS-safe templates that survive the recruiter’s 6-second scan.', href: '/resources/resume-builder', cta: 'Build mine →' },
+              { span: 'b2', index: '05', icon: '✉️', title: 'Cold Email Pack', badge: '50 TEMPLATES', badgeColor: '#93BBFF', desc: 'The exact emails our students used to get real replies from hiring managers.', href: '/resources/cold-email-pack', cta: 'Steal the templates →' },
+              { span: 'b3', index: '06', icon: '💬', title: 'LinkedIn Scripts', badge: '20 SCRIPTS', badgeColor: '#7dd3fc', desc: 'Word-for-word DMs that turn strangers into referrals — without sounding desperate.', href: '/resources/linkedin-scripts', cta: 'Get the scripts →' },
+              { span: 'b3', index: '07', icon: '🛠️', title: 'Career Toolkit', badge: '15 ROLES', badgeColor: '#fbbf24', desc: 'Role-by-role guides for consulting, finance, marketing, BD, ops and Founder’s Office.', href: '/resources/career-toolkit', cta: 'Browse toolkits →' },
+            ].map((tool, i) => (
+              <a key={tool.title} href={tool.href} className={`tool-card ${tool.span}`} data-reveal data-index={tool.index} style={{ transitionDelay: `${0.16 + i * 0.06}s`, color: 'inherit', padding: '28px 26px' }} onClick={cta(tool.title, 'free_tools')}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                  <span style={{ fontSize: 28, lineHeight: 1 }}>{tool.icon}</span>
+                  <span style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: 1.5, padding: '4px 10px', borderRadius: 100, color: tool.badgeColor, background: `${tool.badgeColor}1a`, border: `1px solid ${tool.badgeColor}40` }}>{tool.badge}</span>
+                </div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 9 }}>{tool.title}</div>
+                <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: 20 }}>{tool.desc}</p>
+                <span className="tool-cta" style={{ fontSize: 13 }}>{tool.cta}</span>
               </a>
             ))}
           </div>
@@ -677,16 +875,9 @@ export default function Home() {
       {/* ── STATS BAND ── */}
       <section style={{ padding: '80px 24px', background: 'linear-gradient(135deg, rgba(79,124,255,0.06), rgba(123,97,255,0.04))', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 40, textAlign: 'center' }}>
-          {[
-            { num: '12 Days', label: 'Fastest placement so far' },
-            { num: '300+', label: 'Students helped across 50+ colleges' },
-            { num: '100%', label: 'Live sessions, never recorded' },
-          ].map((s, i) => (
-            <div key={i} data-reveal style={{ transitionDelay: `${i * 0.1}s` }}>
-              <div className="stat-num" style={{ color: '#4F7CFF', marginBottom: 8 }}>{s.num}</div>
-              <div style={{ fontSize: 15, fontWeight: 600 }}>{s.label}</div>
-            </div>
-          ))}
+          <Stat value={12} suffix=" Days" label="Fastest placement so far" delay={0} />
+          <Stat value={300} suffix="+" label="Students helped across 50+ colleges" delay={0.1} />
+          <Stat value={100} suffix="%" label="Live sessions, never recorded" delay={0.2} />
         </div>
       </section>
 
@@ -1047,6 +1238,9 @@ export default function Home() {
           <TrustStrip />
         </div>
       </section>
+
+      </div>
+      </div>
 
       {/* ── FOOTER ── */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '48px 24px 32px', maxWidth: 1000, margin: '0 auto' }}>
