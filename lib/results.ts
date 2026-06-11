@@ -14,6 +14,7 @@ export interface StudentResult {
   location?: string
   quote?: string   // only ever the student's own/approved words
   daysToOffer?: number
+  badge?: string   // overrides the default 'PLACED' badge text, e.g. '2 OFFERS'
   linkedin?: string
   domain: 'consulting' | 'finance' | 'marketing' | 'bd' | 'operations' | 'other'
 }
@@ -65,5 +66,17 @@ export const RESULTS: StudentResult[] = [
     quote: "Anirudh and Sanya both were very helpful, and I couldn't have asked for better support. From day 1, I got immense help — from my resume till the interview.",
     linkedin: 'https://www.linkedin.com/in/susmita-b-022439277/',
     domain: 'finance',
+  },
+  {
+    slug: 'adya',
+    name: 'Adya Pandey',
+    photo: '/results/adya.webp',
+    college: 'LSR, Delhi',
+    company: 'EY & Times of India',
+    role: "Founder's Office",
+    location: 'Delhi NCR',
+    quote: "Giving so much advice and being kind and helpful to someone you don't even know at all is something I would have never expected outta that crazy app LinkedIn. But it has made me believe a lot in people, and how far they can lead someone with just their words. Thank you so much!",
+    badge: '2 OFFERS',
+    domain: 'other',
   },
 ]
