@@ -82,7 +82,7 @@ export default function ResultsPage() {
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
                 <Image src={r.photo} alt={r.name} width={76} height={76} quality={85}
                   style={{ width: 76, height: 76, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 0 0 3px rgba(79,124,255,0.25), 0 8px 28px rgba(0,0,0,0.4)' }} />
-                <span className="rw-placed">✓ PLACED</span>
+                <span className="rw-placed">✓ PLACED{r.daysToOffer ? ` IN ${r.daysToOffer} DAYS` : ''}</span>
               </div>
 
               <div style={{ fontFamily: "var(--font-dm-serif), 'DM Serif Display', serif", fontSize: 25, marginBottom: 4 }}>{r.name}</div>

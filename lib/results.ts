@@ -13,6 +13,7 @@ export interface StudentResult {
   role: string
   location?: string
   quote?: string   // only ever the student's own/approved words
+  daysToOffer?: number
   linkedin?: string
   domain: 'consulting' | 'finance' | 'marketing' | 'bd' | 'operations' | 'other'
 }
@@ -48,7 +49,8 @@ export const RESULTS: StudentResult[] = [
     company: 'Client Associates',
     role: 'Junior Banker',
     location: 'Gurgaon',
-    // quote pending Karnveer's approval — founder has the draft
+    quote: 'Thanks. All because of your help.',
+    daysToOffer: 12,
     linkedin: 'https://www.linkedin.com/in/karnveer-bhalla/',
     domain: 'finance',
   },
