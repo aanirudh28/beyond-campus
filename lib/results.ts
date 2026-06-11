@@ -54,4 +54,16 @@ export const RESULTS: StudentResult[] = [
     linkedin: 'https://www.linkedin.com/in/karnveer-bhalla/',
     domain: 'finance',
   },
+  {
+    slug: 'susmita',
+    name: 'Susmita B',
+    photo: '/results/susmita.webp',
+    college: 'St. Aloysius University',
+    company: 'Gain.pro',
+    role: 'Analyst — PE Intelligence',
+    location: 'Bangalore',
+    quote: "Anirudh and Sanya both were very helpful, and I couldn't have asked for better support. From day 1, I got immense help — from my resume till the interview.",
+    linkedin: 'https://www.linkedin.com/in/susmita-b-022439277/',
+    domain: 'finance',
+  },
 ]
