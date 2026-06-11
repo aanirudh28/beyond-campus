@@ -358,10 +358,18 @@ export default function Home() {
         .ticker { display: flex; width: max-content; animation: ticker 32s linear infinite; }
         .ticker-item { white-space: nowrap; padding: 0 40px; font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 12px; font-family: var(--mono); }
 
-        .math-row { display:grid; grid-template-columns: minmax(150px, 280px) 1fr; gap: 28px; align-items: baseline; padding: 30px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
-        .math-num { font-family: var(--serif); font-size: clamp(44px, 6vw, 76px); line-height: 0.95; letter-spacing: -2px; color: white; }
-        .math-num small { font-size: 0.45em; color: rgba(255,255,255,0.4); letter-spacing: 0; }
-        @media(max-width: 560px) { .math-row { grid-template-columns: 1fr; gap: 8px; padding: 24px 0; } }
+        .odds-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        @media(max-width: 880px) { .odds-grid { grid-template-columns: 1fr; } }
+        .odds-card { background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012)); border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 30px 28px; display: flex; flex-direction: column; transition: border-color 0.3s, transform 0.3s; }
+        .odds-card:hover { border-color: rgba(239,68,68,0.3); transform: translateY(-4px); }
+        .odds-num { font-family: var(--serif); font-size: clamp(46px, 5vw, 62px); line-height: 1; letter-spacing: -2px; color: white; margin-bottom: 4px; }
+        .odds-num small { font-size: 0.42em; color: rgba(255,255,255,0.4); letter-spacing: 0; }
+        .dot-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 7px; margin: 20px 0 18px; }
+        .dot-grid span { width: 100%; aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,0.1); }
+        .dot-grid span.hit { background: #4F7CFF; box-shadow: 0 0 12px rgba(79,124,255,0.9); animation: pulse-dot 2s ease-in-out infinite; }
+        .silence-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; }
+        .silence-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.1); }
+        .silence-tag { font-family: var(--mono); font-size: 9px; letter-spacing: 1.2px; color: #f87171; white-space: nowrap; flex-shrink: 0; }
 
         .panel { border-radius: 24px; padding: 36px 32px; position: relative; }
         .panel-today { background: linear-gradient(180deg, rgba(239,68,68,0.07), rgba(239,68,68,0.015)); border: 1px solid rgba(239,68,68,0.18); }
@@ -400,12 +408,11 @@ export default function Home() {
         .nav-links { display: flex; align-items: center; gap: 22px; }
         @media(max-width:900px) { .nav-links .nav-hide-mobile { display: none; } }
 
-        .logo-card { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 14px; background: #fff; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); transition: transform 0.25s ease, box-shadow 0.25s ease; flex-shrink: 0; }
-        .logo-card img { display: block; width: auto; max-width: 110px; object-fit: contain; filter: grayscale(1) opacity(0.6); transition: filter 0.25s ease; }
-        .logo-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(79,124,255,0.22); }
-        .logo-card:hover img { filter: grayscale(0) opacity(1); }
-        .logo-strip { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-        @media(max-width: 540px) { .logo-card { height: 32px; padding: 0 10px; } .logo-card img { max-width: 88px; } }
+        .logo-strip { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px 44px; max-width: 880px; margin: 0 auto; }
+        .logo-item { display: inline-flex; align-items: center; flex-shrink: 0; filter: brightness(0) invert(1); opacity: 0.5; transition: opacity 0.25s ease, transform 0.25s ease; }
+        .logo-item img { display: block; width: auto; max-width: 130px; object-fit: contain; }
+        .logo-item:hover { opacity: 1; transform: translateY(-2px); }
+        @media(max-width: 540px) { .logo-strip { gap: 14px 26px; } .logo-item img { max-width: 96px; transform: scale(0.85); } }
 
         .noise-overlay { position:fixed; inset:0; pointer-events:none; z-index:999; opacity:0.025; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
@@ -644,9 +651,9 @@ export default function Home() {
             <span className="mono-label">Shortlisted across top employers</span>
             <div className="logo-strip">
               {COMPANY_LOGOS.map(c => (
-                <span key={c.name} className="logo-card" title={c.name}>
+                <span key={c.name} className="logo-item" title={c.name}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={c.src} alt={c.name} style={{ height: c.h }} />
+                  <img src={c.src} alt={c.name} style={{ height: Math.round(c.h * 1.35) }} />
                 </span>
               ))}
             </div>
@@ -674,35 +681,81 @@ export default function Home() {
       </div>
 
       {/* ───────────────── Nº 01 — THE MATH ───────────────── */}
-      <section style={{ padding: '110px 24px', maxWidth: 860, margin: '0 auto' }}>
+      <section style={{ padding: '110px 24px', maxWidth: 1000, margin: '0 auto' }}>
         <Ledger no="Nº 01" label="The math nobody shows you" />
         <h2 className="section-title" data-reveal style={{ marginBottom: 12 }}>
           You&apos;re not failing.<br />You&apos;re playing a game <em>designed for someone else.</em>
         </h2>
-        <p data-reveal style={{ fontSize: 16, color: 'var(--muted)', lineHeight: 1.7, maxWidth: 560, marginBottom: 28 }}>
+        <p data-reveal style={{ fontSize: 16, color: 'var(--muted)', lineHeight: 1.7, maxWidth: 560, marginBottom: 44 }}>
           Campus placement reaches a fraction of students at a fraction of colleges. For everyone else, the numbers look like this:
         </p>
 
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-          {[
-            { num: <>50<small> : 1</small></>, label: 'Applications sent for every reply received — the off-campus default when you apply like everyone else.' },
-            { num: <>0</>, label: 'Recruiters who will ever tell you why your resume got ignored. Silence is the only feedback.' },
-            { num: <>6<small> months</small></>, label: 'Average time spent guessing — rewriting the resume, watching videos, applying into the void.' },
-          ].map((row, i) => (
-            <div key={i} className="math-row" data-reveal style={{ transitionDelay: `${i * 0.1}s` }}>
-              <div className="math-num">{row.num}</div>
-              <p style={{ fontSize: 15.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}>{row.label}</p>
+        <div className="odds-grid">
+          {/* 50:1 — the dot wall */}
+          <div className="odds-card" data-reveal>
+            <span className="mono-label" style={{ color: '#f87171', marginBottom: 16 }}>The reply rate</span>
+            <div className="odds-num">50<small> : 1</small></div>
+            <div style={{ fontSize: 13.5, fontWeight: 700, color: 'rgba(255,255,255,0.75)' }}>applications per reply</div>
+            <div className="dot-grid" aria-hidden="true">
+              {[...Array(50)].map((_, i) => <span key={i} className={i === 49 ? 'hit' : undefined} />)}
             </div>
-          ))}
+            <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginTop: 'auto' }}>
+              The off-campus default when you apply like everyone else. One blue dot. That&apos;s the game.
+            </p>
+          </div>
+
+          {/* 0 — the silence */}
+          <div className="odds-card" data-reveal style={{ transitionDelay: '0.1s' }}>
+            <span className="mono-label" style={{ color: '#f87171', marginBottom: 16 }}>The feedback</span>
+            <div className="odds-num">0</div>
+            <div style={{ fontSize: 13.5, fontWeight: 700, color: 'rgba(255,255,255,0.75)' }}>recruiters who tell you why</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 7, margin: '20px 0 18px' }} aria-hidden="true">
+              {[
+                ['Application #12', '58%'],
+                ['Application #27', '42%'],
+                ['Application #41', '66%'],
+              ].map(([label, w]) => (
+                <div key={label} className="silence-row">
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 9.5, color: 'rgba(255,255,255,0.35)', whiteSpace: 'nowrap' }}>{label}</span>
+                  <span className="silence-bar" style={{ width: w }} />
+                  <span className="silence-tag">✕ NO REPLY</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginTop: 'auto' }}>
+              Your resume gets ignored and nobody tells you why. Silence is the only feedback.
+            </p>
+          </div>
+
+          {/* 6 months — the timeline */}
+          <div className="odds-card" data-reveal style={{ transitionDelay: '0.2s' }}>
+            <span className="mono-label" style={{ color: '#f87171', marginBottom: 16 }}>The cost</span>
+            <div className="odds-num">6<small> months</small></div>
+            <div style={{ fontSize: 13.5, fontWeight: 700, color: 'rgba(255,255,255,0.75)' }}>spent guessing</div>
+            <div style={{ margin: '20px 0 18px' }} aria-hidden="true">
+              <div style={{ display: 'flex', gap: 5, marginBottom: 7 }}>
+                {[0.6, 0.5, 0.42, 0.34, 0.26, 0.18].map((op, i) => (
+                  <span key={i} style={{ flex: 1, height: 9, borderRadius: 5, background: `rgba(239,68,68,${op})` }} />
+                ))}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: 1, color: 'rgba(255,255,255,0.3)' }}>
+                <span>MONTH 1</span><span>MONTH 6</span>
+              </div>
+            </div>
+            <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginTop: 'auto' }}>
+              Rewriting the resume, watching videos, applying into the void — with nothing moving.
+            </p>
+          </div>
         </div>
 
-        <div data-reveal style={{ marginTop: 40, padding: '26px 32px', background: 'linear-gradient(135deg, rgba(79,124,255,0.08), rgba(123,97,255,0.05))', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 20 }}>
-          <p style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(18px, 2.4vw, 23px)', color: '#cdd9ff', lineHeight: 1.55 }}>
+        <div data-reveal style={{ marginTop: 48, display: 'flex', gap: 24, alignItems: 'stretch', maxWidth: 760, marginLeft: 'auto', marginRight: 'auto' }}>
+          <span style={{ width: 3, borderRadius: 2, background: 'linear-gradient(180deg, #4F7CFF, #7B61FF)', flexShrink: 0 }} />
+          <p style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(19px, 2.6vw, 25px)', color: '#cdd9ff', lineHeight: 1.55 }}>
             This isn&apos;t a talent problem. It&apos;s a <em style={{ color: 'white' }}>distribution</em> problem —
-            your work never reaches a human who can say yes. That&apos;s the part we fix.
+            your work never reaches a human who can say yes. <span style={{ color: 'white' }}>That&apos;s the part we fix.</span>
           </p>
         </div>
-        <div data-reveal style={{ textAlign: 'center', marginTop: 26 }}>
+        <div data-reveal style={{ textAlign: 'center', marginTop: 30 }}>
           <a href="/resources/resume-roast" style={{ fontSize: 14, fontWeight: 700, color: '#93BBFF' }} onClick={cta('roast', 'pain_section')}>
             Start with the part you control — get the free resume roast →
           </a>
