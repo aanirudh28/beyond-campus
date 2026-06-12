@@ -1,102 +1,55 @@
 import { MetadataRoute } from 'next'
+import { JOB_DOMAINS, getPublishedJobs } from '@/lib/jobsPublic'
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    {
-      url: 'https://www.beyond-campus.in',
-      lastModified: new Date(),
+export const revalidate = 3600 // refresh hourly so newly published jobs appear without a redeploy
+
+const BASE = 'https://www.beyond-campus.in'
+
+// path, changeFrequency, priority — no fake lastModified churn: only pages
+// whose real update time we know (jobs) report one.
+const STATIC_ROUTES: [string, 'daily' | 'weekly' | 'monthly', number][] = [
+  ['', 'weekly', 1.0],
+  ['/jobs', 'daily', 0.9],
+  ['/summer', 'weekly', 0.9],
+  ['/book', 'weekly', 0.9],
+  ['/cohort', 'weekly', 0.9],
+  ['/job-tracker', 'weekly', 0.9],
+  ['/resources/resume-roast', 'weekly', 0.9],
+  ['/program', 'weekly', 0.8],
+  ['/free', 'weekly', 0.8],
+  ['/results', 'weekly', 0.8],
+  ['/resources/career-toolkit', 'monthly', 0.8],
+  ['/resources/consulting', 'monthly', 0.8],
+  ['/resources/cold-email-pack', 'monthly', 0.7],
+  ['/resources/linkedin-scripts', 'monthly', 0.7],
+  ['/resources/resume-builder', 'monthly', 0.7],
+  ['/resources/resume-guide', 'monthly', 0.7],
+  ['/resources/resume-templates', 'monthly', 0.7],
+  ['/resources/excel-interview-prep', 'monthly', 0.7],
+  ['/community', 'weekly', 0.6],
+  ['/get-started', 'monthly', 0.6],
+]
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const entries: MetadataRoute.Sitemap = STATIC_ROUTES.map(([path, changeFrequency, priority]) => ({
+    url: `${BASE}${path}`,
+    changeFrequency,
+    priority,
+  }))
+
+  for (const d of JOB_DOMAINS) {
+    entries.push({ url: `${BASE}/jobs/${d.slug}`, changeFrequency: 'daily', priority: 0.8 })
+  }
+
+  const jobs = await getPublishedJobs(undefined, 500)
+  for (const job of jobs) {
+    entries.push({
+      url: `${BASE}/jobs/view/${job.id}`,
+      lastModified: job.published_at ? new Date(job.published_at) : undefined,
       changeFrequency: 'weekly',
-      priority: 1.0,
-    },
-    {
-      url: 'https://www.beyond-campus.in/summer',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: 'https://www.beyond-campus.in/book',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: 'https://www.beyond-campus.in/program',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://www.beyond-campus.in/free',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://www.beyond-campus.in/job-tracker',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: 'https://www.beyond-campus.in/resources/resume-roast',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: 'https://www.beyond-campus.in/resources/career-toolkit',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://www.beyond-campus.in/resources/cold-email-pack',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: 'https://www.beyond-campus.in/resources/linkedin-scripts',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: 'https://www.beyond-campus.in/resources/resume-builder',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: 'https://www.beyond-campus.in/resources/resume-guide',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: 'https://www.beyond-campus.in/resources/resume-templates',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: 'https://www.beyond-campus.in/resources/consulting',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://www.beyond-campus.in/community',
-      lastModified: new Date(),
-      changeFrequency: 'daily',
       priority: 0.6,
-    },
-    {
-      url: 'https://www.beyond-campus.in/get-started',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-  ]
+    })
+  }
+
+  return entries
 }

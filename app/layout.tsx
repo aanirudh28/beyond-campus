@@ -56,9 +56,25 @@ export const metadata: Metadata = {
       follow: true,
     },
   },
-  alternates: {
-    canonical: 'https://www.beyond-campus.in',
-  },
+};
+
+// Sitewide structured data: tells Google who we are and enables sitelinks.
+const orgJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Beyond Campus',
+  url: 'https://www.beyond-campus.in',
+  logo: 'https://www.beyond-campus.in/icon.svg',
+  description:
+    "Career platform helping non-tech students from tier-2 and tier-3 Indian colleges land consulting, finance, marketing, and startup roles off-campus.",
+  founder: { '@type': 'Person', name: 'Anirudh Agarwal' },
+};
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Beyond Campus',
+  url: 'https://www.beyond-campus.in',
 };
 
 export default function RootLayout({
@@ -72,6 +88,14 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${dmSans.variable} ${dmSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-KPET6Y3JGQ"
           strategy="afterInteractive"
