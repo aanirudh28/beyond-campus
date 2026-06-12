@@ -35,9 +35,19 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Already signed in: auth pages should bounce to the destination, not show
+  // the form again. Skip when showing an error (e.g. a failed OAuth attempt).
+  if (user && (pathname === '/login' || pathname === '/signup') && !request.nextUrl.searchParams.get('error')) {
+    const next = request.nextUrl.searchParams.get('next')
+    const url = request.nextUrl.clone()
+    url.pathname = next && next.startsWith('/') ? next : '/tracker'
+    url.search = ''
+    return NextResponse.redirect(url)
+  }
+
   return supabaseResponse
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/tracker/:path*'],
+  matcher: ['/dashboard/:path*', '/tracker/:path*', '/login', '/signup'],
 }
