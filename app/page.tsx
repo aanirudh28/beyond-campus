@@ -464,7 +464,7 @@ export default function Home() {
           <span style={{ fontFamily: 'var(--serif)', fontSize: 22, letterSpacing: -0.5 }}>
             Beyond<span style={{ color: 'var(--blue)' }}>Campus</span>
           </span>
-          <span className="nav-hide-mobile" style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.3)' }}>EST. 2023</span>
+          <span className="nav-hide-mobile" style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.3)' }}>EST. 2026</span>
         </div>
         <div className="nav-links">
           <div
@@ -1305,7 +1305,7 @@ export default function Home() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24, marginBottom: 40 }}>
           <div>
             <div style={{ fontFamily: 'var(--serif)', fontSize: 24, marginBottom: 6 }}>Beyond<span style={{ color: 'var(--blue)' }}>Campus</span></div>
-            <div style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)', letterSpacing: 0.5 }}>Breaking campus barriers since 2023</div>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)', letterSpacing: 0.5 }}>Breaking campus barriers since 2026</div>
           </div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <a href="/summer" onClick={cta('internship_cohort', 'footer')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 100, background: 'rgba(245,158,11,0.06)', color: '#fbbf24', fontWeight: 600, fontSize: 14, border: '1.5px solid rgba(245,158,11,0.35)', transition: 'all 0.3s', fontFamily: 'inherit' }}

@@ -172,7 +172,7 @@ export function SiteFooter({
         }}
       >
         <span>© {new Date().getFullYear()} Beyond Campus · beyond-campus.in</span>
-        <span style={{ fontFamily: 'var(--mono)', letterSpacing: 2 }}>EST. 2023</span>
+        <span style={{ fontFamily: 'var(--mono)', letterSpacing: 2 }}>EST. 2026</span>
       </div>
     </footer>
   )
