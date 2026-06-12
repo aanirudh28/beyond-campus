@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { NoiseOverlay } from '@/app/components/SiteChrome'
 
 export default function FreePage() {
@@ -506,17 +507,36 @@ export default function FreePage() {
             </p>
           </div>
 
-          {/* Card 6: Off-Campus Playbook — Coming Soon */}
-          <div className="resource-card dim">
-            <div style={{ marginBottom: 18 }}>
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)' }}>
-                Coming Soon
+          {/* Card 6: Off-Campus Playbook + Career Guides */}
+          <div className="resource-card">
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.3)', color: '#c4b5fd' }}>
+                100% Free
               </span>
+              <Link href="/guides" className="view-link">Browse Guides →</Link>
             </div>
 
             <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.4, marginBottom: 8 }}>Off-Campus Playbook</h3>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.75 }}>
-              The full strategy guide — how to find companies, how to research them, when to email vs DM, how to handle follow-ups, and how to convert a reply into an offer.
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, marginBottom: 16 }}>
+              The full strategy guide: how to find companies, where openings actually show up, when to email vs DM, how to handle follow-ups, and how to convert a reply into an offer.
+            </p>
+
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+              {[
+                { label: '4 Deep Guides', color: '#c4b5fd', bg: 'rgba(167,139,250,0.1)', border: 'rgba(167,139,250,0.25)' },
+                { label: 'No Sign-Up', color: '#6ee7b7', bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.25)' },
+              ].map(s => (
+                <span key={s.label} style={{ padding: '5px 14px', borderRadius: 100, background: s.bg, border: `1px solid ${s.border}`, color: s.color, fontSize: 12, fontWeight: 700 }}>
+                  {s.label}
+                </span>
+              ))}
+            </div>
+
+            <Link href="/guides/how-to-get-an-off-campus-internship-in-india" className="view-link" style={{ fontSize: 15 }}>
+              Read the Playbook →
+            </Link>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 10, fontWeight: 500 }}>
+              Plus: cold email method &bull; consulting without an IIM &bull; Founder&apos;s Office roles
             </p>
           </div>
 
