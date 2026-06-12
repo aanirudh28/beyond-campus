@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
 import { useParams } from 'next/navigation'
 
 type Section = {
@@ -502,6 +503,13 @@ export default function RoastResultsPage() {
               <a href="/resources/resume-builder" style={{ display: 'inline-flex', alignItems: 'center', padding: '11px 22px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.04)', color: 'white', fontWeight: 700, fontSize: 14 }}>
                 Open Resume Builder →
               </a>
+            </div>
+            <div style={{ flex: 1, background: '#111827', border: '1px solid rgba(167,139,250,0.25)', borderRadius: 20, padding: 28 }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: 'white', marginBottom: 8 }}>Resume fixed? Now get replies.</div>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 20 }}>The free cold email guide: templates, subject lines, and how to find any HR&apos;s email.</p>
+              <Link href="/guides/cold-email-to-hr-for-internship" style={{ display: 'inline-flex', alignItems: 'center', padding: '11px 22px', borderRadius: 10, border: '1px solid rgba(167,139,250,0.3)', background: 'rgba(167,139,250,0.08)', color: '#c4b5fd', fontWeight: 700, fontSize: 14 }}>
+                Read the Guide →
+              </Link>
             </div>
           </div>
         </div>

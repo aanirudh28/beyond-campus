@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 const CASEBOOKS = [
   {
@@ -285,6 +286,12 @@ export default function ConsultingResourcesPage() {
               Book a 1:1 Session — ₹299
             </a>
           </div>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', marginTop: 22 }}>
+            Not sure where you fit?{' '}
+            <Link href="/guides/consulting-internship-without-an-iim" style={{ color: '#93BBFF' }}>
+              Read the free guide: breaking into consulting without an IIM tag →
+            </Link>
+          </p>
         </div>
 
       </div>

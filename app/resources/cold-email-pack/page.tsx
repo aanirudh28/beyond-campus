@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import UnlockPopup from '../../components/UnlockPopup'
 
 type Template = {
@@ -581,6 +582,18 @@ export default function ColdEmailPackPage() {
           <a href="/resources/linkedin-scripts" style={{ padding: '12px 22px', borderRadius: 12, background: 'rgba(14,165,233,0.12)', border: '1px solid rgba(14,165,233,0.3)', color: '#7dd3fc', fontWeight: 700, fontSize: 14, textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
             View Scripts →
           </a>
+        </div>
+
+        {/* Cold email guide crosslink */}
+        <div style={{ marginTop: 20, padding: 24, background: 'linear-gradient(135deg,rgba(167,139,250,0.08),rgba(123,97,255,0.05))', border: '1px solid rgba(167,139,250,0.2)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#c4b5fd', textTransform: 'uppercase', marginBottom: 8 }}>Free Guide</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'white', marginBottom: 4 }}>The Full Cold Email Method</div>
+            <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}>Subject lines, timing, follow-ups, and how to find any HR&apos;s email with Apollo.io.</div>
+          </div>
+          <Link href="/guides/cold-email-to-hr-for-internship" style={{ padding: '12px 22px', borderRadius: 12, background: 'rgba(167,139,250,0.12)', border: '1px solid rgba(167,139,250,0.3)', color: '#c4b5fd', fontWeight: 700, fontSize: 14, textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
+            Read the Guide →
+          </Link>
         </div>
       </div>
 

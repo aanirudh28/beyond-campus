@@ -221,6 +221,12 @@ export default function JobTrackerLanding() {
         >
           Start tracking free →
         </Link>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13.5, marginTop: 18 }}>
+          New to the off-campus hunt?{' '}
+          <Link href="/guides/how-to-get-an-off-campus-internship-in-india" style={{ color: '#93BBFF', textDecoration: 'none' }}>
+            Read the free playbook first →
+          </Link>
+        </p>
       </section>
 
       {/* Footer */}
