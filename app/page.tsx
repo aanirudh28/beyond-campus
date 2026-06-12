@@ -1318,6 +1318,22 @@ export default function Home() {
             </a>
           </div>
         </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px 28px', marginBottom: 32 }}>
+          {[
+            { label: 'Curated Jobs Feed', href: '/jobs' },
+            { label: 'Career Guides', href: '/guides' },
+            { label: 'Free Resume Roast', href: '/resources/resume-roast' },
+            { label: 'Job Tracker', href: '/job-tracker' },
+            { label: 'Consulting Casebooks', href: '/resources/consulting' },
+            { label: 'Student Results', href: '/results' },
+          ].map(l => (
+            <a key={l.href} href={l.href} style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.55)', transition: 'color 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#fff' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.55)' }}>
+              {l.label}
+            </a>
+          ))}
+        </div>
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <p style={{ fontSize: 13, color: 'var(--muted)' }}>© {new Date().getFullYear()} Beyond Campus. All rights reserved.</p>
           <p style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)' }}>beyond-campus.in</p>

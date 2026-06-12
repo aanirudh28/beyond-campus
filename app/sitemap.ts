@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { JOB_DOMAINS, getPublishedJobs } from '@/lib/jobsPublic'
+import { getAllGuides } from '@/lib/guides'
 
 export const revalidate = 3600 // refresh hourly so newly published jobs appear without a redeploy
 
@@ -10,6 +11,7 @@ const BASE = 'https://www.beyond-campus.in'
 const STATIC_ROUTES: [string, 'daily' | 'weekly' | 'monthly', number][] = [
   ['', 'weekly', 1.0],
   ['/jobs', 'daily', 0.9],
+  ['/guides', 'weekly', 0.9],
   ['/summer', 'weekly', 0.9],
   ['/book', 'weekly', 0.9],
   ['/cohort', 'weekly', 0.9],
@@ -36,6 +38,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency,
     priority,
   }))
+
+  for (const g of getAllGuides()) {
+    entries.push({
+      url: `${BASE}/guides/${g.slug}`,
+      lastModified: new Date(`${g.dateModified}T00:00:00Z`),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    })
+  }
 
   for (const d of JOB_DOMAINS) {
     entries.push({ url: `${BASE}/jobs/${d.slug}`, changeFrequency: 'daily', priority: 0.8 })

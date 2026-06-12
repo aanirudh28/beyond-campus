@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { FAQS } from './faqs'
 
 // ──────────────────────── TYPES ────────────────────────
 type SkillEntry = { skill: string; why: string }
@@ -2086,6 +2087,22 @@ export default function CareerToolkitPage() {
                 <div style={{ fontSize: 24, marginBottom: 10 }}>{s.icon}</div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: 'white', marginBottom: 8 }}>{s.title}</div>
                 <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}>{s.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* FAQ */}
+        <div style={{ marginBottom: 64 }}>
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', marginBottom: 8 }}>FAQ</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: 'white' }}>Common questions, straight answers</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 760, margin: '0 auto' }}>
+            {FAQS.map(f => (
+              <div key={f.q} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '20px 24px' }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'white', marginBottom: 8 }}>{f.q}</div>
+                <div style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75 }}>{f.a}</div>
               </div>
             ))}
           </div>
