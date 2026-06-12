@@ -19,8 +19,8 @@ export async function generateMetadata({
   if (!info) return {}
   const url = `https://www.beyond-campus.in/jobs/${info.slug}`
   return {
-    title: `${info.title} — Updated Daily | Beyond Campus`,
-    description: `${info.blurb} Hand-screened from official company career pages — entry-level and India-eligible only.`,
+    title: `${info.title} (Updated Daily) | Beyond Campus`,
+    description: `${info.blurb} Hand-screened from official company career pages, entry-level and India-eligible only.`,
     alternates: { canonical: url },
     openGraph: { title: info.title, description: info.blurb, url },
   }
@@ -37,7 +37,7 @@ export default async function JobsDomainPage({
 
   return (
     <PageShell>
-      <SiteNav />
+      <SiteNav links={[{ label: 'Jobs', href: '/jobs' }, { label: 'Guides', href: '/guides' }]} />
       <section style={{ position: 'relative', overflow: 'hidden', padding: '120px 24px 40px' }}>
         <HeroGlow />
         <div style={{ maxWidth: 880, margin: '0 auto', position: 'relative' }}>
@@ -58,7 +58,7 @@ export default async function JobsDomainPage({
           </h1>
           <p style={{ fontSize: 16, color: 'var(--muted)', lineHeight: 1.75, maxWidth: 640, marginBottom: 28 }}>
             {info.blurb} Every listing is verified from the company&apos;s official career page and
-            screened by a human — no expired links, no fake &quot;fresher&quot; roles asking for 5 years of
+            screened by a human. No expired links, no fake &quot;fresher&quot; roles asking for 5 years of
             experience.
           </p>
           <DomainChips active={info.slug} />
@@ -69,7 +69,7 @@ export default async function JobsDomainPage({
         <div style={{ maxWidth: 880, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
           {jobs.length === 0 ? (
             <p style={{ color: 'var(--muted)', fontSize: 15 }}>
-              No open {info.label} roles right now — new ones are curated daily, so check back
+              No open {info.label} roles right now. New ones are curated daily, so check back
               soon. Meanwhile, browse all open roles on the main jobs page.
             </p>
           ) : (

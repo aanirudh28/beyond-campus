@@ -127,8 +127,8 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                 Stop reading. <em>Start applying.</em>
               </h2>
               <p style={{ fontSize: 14.5, color: 'var(--muted)', maxWidth: 480, margin: '0 auto 22px', lineHeight: 1.7 }}>
-                Browse today&apos;s curated, verified openings — every role is entry-level and
-                India-eligible — and track every application free.
+                Browse today&apos;s curated, verified openings (every role is entry-level and
+                India-eligible) and track every application free.
               </p>
               <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href="/jobs" className="btn-primary" style={{ padding: '12px 26px', fontSize: 14 }}>

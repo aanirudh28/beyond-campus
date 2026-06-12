@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 
 /* ----------------------------------------------------------------------------
    Public, read-only access to the curated jobs feed for the SEO pages under
-   /jobs. Uses the anon key — RLS only exposes rows with status = 'published',
+   /jobs. Uses the anon key; RLS only exposes rows with status = 'published',
    so nothing pending/rejected can leak. No cookies, safe at build/ISR time.
 ---------------------------------------------------------------------------- */
 
@@ -33,7 +33,7 @@ export const JOB_DOMAINS: JobDomainInfo[] = [
     label: 'Consulting',
     title: 'Consulting Jobs & Internships for Freshers in India',
     blurb:
-      'Entry-level consulting and strategy roles open to 0–2 year candidates — analyst programs, research roles, and boutique firms that hire off-campus.',
+      'Entry-level consulting and strategy roles open to 0-2 year candidates: analyst programs, research roles, and boutique firms that hire off-campus.',
   },
   {
     slug: 'finance',
@@ -41,7 +41,7 @@ export const JOB_DOMAINS: JobDomainInfo[] = [
     label: 'Finance',
     title: 'Finance Jobs & Internships for Freshers in India',
     blurb:
-      'Fresher finance roles — analyst, investment research, FP&A, and fintech openings that do not require an IIM tag or campus placement.',
+      'Fresher finance roles: analyst, investment research, FP&A, and fintech openings that do not require an IIM tag or campus placement.',
   },
   {
     slug: 'marketing',
@@ -57,7 +57,7 @@ export const JOB_DOMAINS: JobDomainInfo[] = [
     label: 'Business Development',
     title: 'Business Development & Sales Jobs for Freshers in India',
     blurb:
-      'BD, sales, and partnerships roles for freshers — the fastest hiring funnel into high-growth startups for non-tech students.',
+      'BD, sales, and partnerships roles for freshers, and the fastest hiring funnel into high-growth startups for non-tech students.',
   },
   {
     slug: 'operations',
@@ -65,7 +65,7 @@ export const JOB_DOMAINS: JobDomainInfo[] = [
     label: 'Operations',
     title: 'Operations Jobs & Internships for Freshers in India',
     blurb:
-      'Ops, program management, and supply chain roles for 0–2 year candidates at startups and growth-stage companies.',
+      'Ops, program management, and supply chain roles for 0-2 year candidates at startups and growth-stage companies.',
   },
   {
     slug: 'founders-office',
@@ -73,7 +73,7 @@ export const JOB_DOMAINS: JobDomainInfo[] = [
     label: "Founder's Office",
     title: "Founder's Office Jobs for Freshers in India",
     blurb:
-      "Founder's Office and Chief of Staff style roles — the highest-leverage entry point for ambitious non-tech freshers.",
+      "Founder's Office and Chief of Staff style roles. The highest-leverage entry point for ambitious non-tech freshers.",
   },
 ]
 

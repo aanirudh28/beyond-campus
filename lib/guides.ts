@@ -4,8 +4,8 @@ import { consultingWithoutIimGuide } from '@/content/guides/consulting-internshi
 import { foundersOfficeGuide } from '@/content/guides/founders-office-roles-freshers'
 
 /* ----------------------------------------------------------------------------
-   Guides are TS modules exporting frontmatter + a markdown body — no fs reads,
-   so they bundle cleanly into the static pages AND the runtime sitemap.
+   Guides are TS modules exporting frontmatter + a markdown body (no fs reads,
+   so they bundle cleanly into the static pages AND the runtime sitemap).
    To add a guide: copy a file in content/guides/, register it here, done.
 ---------------------------------------------------------------------------- */
 

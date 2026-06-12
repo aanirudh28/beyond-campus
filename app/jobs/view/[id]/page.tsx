@@ -20,10 +20,10 @@ export async function generateMetadata({
   if (!job) return { title: 'Job not found | Beyond Campus' }
   const info = domainInfo(job.domain)
   const url = `https://www.beyond-campus.in/jobs/view/${job.id}`
-  const title = `${job.role} at ${job.company}${job.location ? ` — ${job.location}` : ''} | Beyond Campus Jobs`
+  const title = `${job.role} at ${job.company}${job.location ? `, ${job.location}` : ''} | Beyond Campus Jobs`
   const description =
     job.jd_summary ||
-    `${job.role} opening at ${job.company} — entry-level ${info?.label || 'business'} role for freshers in India, verified from the official career page.`
+    `${job.role} opening at ${job.company}: entry-level ${info?.label || 'business'} role for freshers in India, verified from the official career page.`
   return {
     title,
     description,
@@ -52,7 +52,7 @@ export default async function JobDetailPage({
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
     title: job.role,
-    description: `<p>${job.jd_summary || `${job.role} role at ${job.company}.`}</p><p>Entry-level ${info?.label || 'business'} role open to freshers and candidates with 0–2 years of experience in India. Apply directly on the company's official career page.</p>`,
+    description: `<p>${job.jd_summary || `${job.role} role at ${job.company}.`}</p><p>Entry-level ${info?.label || 'business'} role open to freshers and candidates with 0-2 years of experience in India. Apply directly on the company's official career page.</p>`,
     datePosted,
     ...(validThrough ? { validThrough } : {}),
     hiringOrganization: { '@type': 'Organization', name: job.company },
@@ -80,7 +80,7 @@ export default async function JobDetailPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingJsonLd) }}
       />
-      <SiteNav />
+      <SiteNav links={[{ label: 'Jobs', href: '/jobs' }, { label: 'Guides', href: '/guides' }]} />
       <section style={{ position: 'relative', overflow: 'hidden', padding: '120px 24px 32px' }}>
         <HeroGlow />
         <div style={{ maxWidth: 760, margin: '0 auto', position: 'relative' }}>
@@ -151,7 +151,7 @@ export default async function JobDetailPage({
             </h2>
             <ul style={{ fontSize: 14.5, color: 'var(--muted)', lineHeight: 1.9, paddingLeft: 18, margin: 0 }}>
               <li>
-                Don&apos;t just apply and pray — find the hiring manager or a team member at{' '}
+                Don&apos;t just apply and pray. Find the hiring manager or a team member at{' '}
                 {job.company} on LinkedIn and send a short, specific message the same day.
               </li>
               <li>
@@ -162,7 +162,7 @@ export default async function JobDetailPage({
                 first.
               </li>
               <li>
-                Follow up after 5–7 days. Most freshers never do — it&apos;s the cheapest edge you
+                Follow up after 5-7 days. Most freshers never do, and it&apos;s the cheapest edge you
                 have. The{' '}
                 <Link href="/job-tracker" style={{ color: 'var(--blue-soft)' }}>
                   free Job Tracker

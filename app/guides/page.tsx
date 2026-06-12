@@ -41,7 +41,7 @@ export default function GuidesPage() {
             Guides for the <em>off-campus</em> job hunt
           </h1>
           <p style={{ fontSize: 16, color: 'var(--muted)', lineHeight: 1.75, maxWidth: 620 }}>
-            Everything here is the actual playbook we run with students — the same systems behind
+            Everything here is the actual playbook we run with students. The same systems behind
             offers at EY, Blinkit, Times of India and dozens of startups. No recycled LinkedIn
             advice.
           </p>

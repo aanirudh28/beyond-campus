@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Beyond Campus — Off-campus placements for non-tech students'
+export const alt = 'Beyond Campus: Off-campus placements for non-tech students'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -71,7 +71,7 @@ export default function Image() {
             Land your dream role without campus placements
           </div>
           <div style={{ fontSize: 28, color: 'rgba(255,255,255,0.55)', maxWidth: 880 }}>
-            Consulting · Finance · Marketing · Founder&apos;s Office — off-campus, for non-tech students
+            Consulting · Finance · Marketing · Founder&apos;s Office · off-campus, for non-tech students
           </div>
         </div>
         <div
