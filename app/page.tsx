@@ -18,7 +18,7 @@ const COMPANY_LOGOS = [
   { name: 'Aon',           src: '/logos/aon.svg',          h: 16 },
   { name: 'Razorpay',      src: '/logos/razorpay.svg',     h: 16 },
   { name: 'Zomato',        src: '/logos/zomato.svg',       h: 14 },
-  { name: 'Blinkit',       src: '/logos/blinkit.svg',      h: 22 },
+  { name: 'Blinkit',       src: '/logos/blinkit.png',      h: 22 },
   { name: 'Urban Company', src: '/logos/urbancompany.png', h: 22 },
 ]
 

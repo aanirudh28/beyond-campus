@@ -54,8 +54,14 @@ export default function ResultsPage() {
           {RESULTS.map((r, i) => (
             <div key={r.slug} className="rw-card" data-reveal style={{ transitionDelay: `${(i % 3) * 0.08}s` }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
-                <Image src={r.photo} alt={r.name} width={76} height={76} quality={85}
-                  style={{ width: 76, height: 76, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 0 0 3px rgba(79,124,255,0.25), 0 8px 28px rgba(0,0,0,0.4)' }} />
+                {r.photo ? (
+                  <Image src={r.photo} alt={r.name} width={76} height={76} quality={85}
+                    style={{ width: 76, height: 76, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 0 0 3px rgba(79,124,255,0.25), 0 8px 28px rgba(0,0,0,0.4)' }} />
+                ) : (
+                  <div aria-label={r.name} style={{ width: 76, height: 76, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', fontFamily: 'var(--serif)', fontSize: 30, lineHeight: 1, color: 'white', boxShadow: '0 0 0 3px rgba(79,124,255,0.25), 0 8px 28px rgba(0,0,0,0.4)' }}>
+                    {r.name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()}
+                  </div>
+                )}
                 <span className="rw-placed">✓ {r.badge || `PLACED${r.daysToOffer ? ` IN ${r.daysToOffer} DAYS` : ''}`}</span>
               </div>
 
