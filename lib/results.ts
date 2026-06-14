@@ -101,7 +101,8 @@ export const RESULTS: StudentResult[] = [
   },
   {
     slug: 'nida',
-    name: 'Nida Tanveer',
+    name: 'Nida Tanweer',
+    photo: '/results/nida.webp',
     college: 'LSR, Delhi',
     company: 'Macquarie Group',
     companyLogo: '/logos/macquarie.png',
