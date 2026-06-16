@@ -11,11 +11,11 @@ export const consultingWithoutIimGuide: Guide = {
   dateModified: '2026-06-12',
   readMinutes: 8,
   md: String.raw`
-Let's kill the myth first: people will tell you that McKinsey, BCG and Bain are impossible without a tier-1 college tag. That is simply not true. Students from tier-2 and tier-3 colleges make it into all three firms every single year, almost always off-campus. They just enter through doors most students have never heard of.
+Let's kill the myth first: people will tell you that McKinsey, BCG and Bain are impossible without a tier-1 college tag. That is simply not true. Students from tier-2 and tier-3 colleges make it into all three firms every single year. Most of those offers still come through campus placements, but a real, doable share are landed off-campus by students who go after them directly. They just enter through doors most students have never heard of.
 
 ## The MBB doors nobody tells you about
 
-The client-facing consultant role hired from campus placements is one narrow door. The same firms run large knowledge and capability teams in India that hire off-campus, year-round, and screen on skill rather than college tag:
+The client-facing consultant role hired from campus placements is one narrow door. The same firms run large knowledge and capability teams in India that hire off-campus at specific intake windows through the year:
 
 - **BCG Vantage** (BCG's knowledge team): analysts who build the research, benchmarks and sector expertise that consulting teams run on. Hires freshers and 0-2 year candidates across Indian offices.
 - **Bain Capability Network (BCN)**: Bain's global delivery arm with specialized groups like the **Private Equity Group**, **Manufacturing and Services**, and **CoE Retail**. BCN analysts work on live Bain cases and people from non-target colleges join every year.
@@ -29,7 +29,7 @@ MBB knowledge teams are one path. The wider market is even bigger:
 
 **Boutique and mid-size firms.** Hundreds of Indian firms doing strategy, market research and implementation work: Praxis, Redseer, 1Lattice, Auctus, Vector and dozens more. They hire analysts and interns off-campus year-round, and they care about your casework, not your college.
 
-**Big 4 and global firms.** Deloitte, EY, KPMG, PwC (consulting arms), Accenture Strategy, Kearney, LEK. Big 4 hiring volume is enormous and substantially off-campus or via referral. One of our students cracked EY from a tier-3 college; the offer came from outreach, not a placement cell.
+**Big 4 and global firms.** Deloitte, EY, KPMG, PwC (consulting arms), Accenture Strategy, Aon, Everest Group. Big 4 hiring volume is enormous and substantially off-campus or via referral. One of our students cracked EY from a tier-3 college; the offer came from outreach, not a placement cell.
 
 **Internal strategy teams.** Every large startup has a strategy, business ops or Chief of Staff team doing consulting-style work: market sizing, expansion planning, pricing. These roles are open to freshers, pay well, and convert into consulting interviews later. A [Founder's Office role](/guides/founders-office-roles-for-freshers) is often the best-disguised consulting job in the market.
 
