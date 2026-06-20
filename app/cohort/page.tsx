@@ -10,6 +10,57 @@ declare global {
   interface Window { Razorpay: any }
 }
 
+const TESTIMONIALS = [
+  {
+    name: 'Sowmya Bhaskaran',
+    role: 'MBA - Business Analytics, Golden Gate University',
+    img: '',
+    text: "I've had an incredible experience with Cohort 1. The level of genuine support, guidance, and encouragement provided throughout the journey is truly rare to find. Thank you for sharing such valuable resources and creating such a supportive learning environment. Wishing you and the entire team all the very best!!",
+  },
+  {
+    name: 'Ayush Shukla',
+    role: 'International Trade & Investment, IAC | DU26',
+    img: 'https://media.licdn.com/dms/image/v2/D5603AQHDTU70u0TiMQ/profile-displayphoto-scale_100_100/B56ZtrmV.CIcAg-/0/1767036773813',
+    text: "Have been in touch with Anirudh for the past 5 months, and the way he hypes me up is just awesome. He has more confidence in me than I have on myself. I highly recommend everyone to go ahead and register for the next cohort. Best of luck Anirudh and Everyone!!",
+  },
+  {
+    name: 'Ayushi Kacholiya',
+    role: 'Cohort 1 Alumna',
+    img: 'https://media.licdn.com/dms/image/v2/D5603AQFimaxueYJ6Jw/profile-displayphoto-scale_100_100/B56Z4OGHHBIkAc-/0/1778352944209',
+    text: "Highly recommend joining the cohort. Sanya and Anirudh's one on one sessions have not just built confidence — their guidance has helped in leaving no doors unopened. They've helped in identifying problems in depth and corrected them through the right resources. Priceless guidance! 🙌",
+  },
+  {
+    name: 'Aman Sharma',
+    role: 'B.Com (H), PGDAV Delhi University',
+    img: 'https://media.licdn.com/dms/image/v2/D5603AQG09ryi4vWwlg/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1714215007950',
+    text: "Anirudh and Sanya bring a wealth of experience and provide incredibly practical advice throughout the process. Would highly recommend this to anyone looking to land off-campus internships or full-time opportunities.",
+  },
+  {
+    name: 'Reesa Kaur',
+    role: 'PepsiCo | Ex-adidas, Economic Times',
+    img: 'https://media.licdn.com/dms/image/v2/D5603AQEhrK_zF18Rsw/profile-displayphoto-scale_100_100/B56Z6LvOPmKwAc-/0/1780460873476',
+    text: "Had an amazing experience with Cohort 1. The depth of guidance here is genuinely hard to find elsewhere. Wishing you all the very best!",
+  },
+  {
+    name: 'Adya Pandey',
+    role: 'LSR | Economics Hons | McKinsey Forward',
+    img: 'https://media.licdn.com/dms/image/v2/D5603AQEEubUS3_Cb3g/profile-displayphoto-scale_100_100/B56Znso5VyJkAc-/0/1760611770938',
+    text: "6 months back, texting Anirudh to just rant about placements and stuff — and here he is with a crazy helpful cohort. Do join guys. All the best! :)",
+  },
+  {
+    name: 'Vanshika Khetan',
+    role: 'Blume Ventures | Ex-KPMG, Adani',
+    img: 'https://media.licdn.com/dms/image/v2/D5603AQE94XfaI4DJQg/profile-displayphoto-scale_100_100/B56Zy5weqyJQAg-/0/1772643021213',
+    text: "Can't ask for a better mentor!! Best hypeman out there :) Do join the cohort guys!",
+  },
+  {
+    name: 'Karthik R H',
+    role: 'Student, Podar International School',
+    img: '',
+    text: "Incredible Cohort 💯 Definitely a worthwhile investment. I have known Anirudh bhaiya for months — he is always on the tips of his toes to help out people. 100% recommend. #BeyondCampus",
+  },
+]
+
 const INCLUSIONS = [
   { icon: '📅', t: '8 Weekly Live Sessions', d: 'Direct mentor access every week — no pre-recorded lectures' },
   { icon: '📧', t: '50+ Cold Email Templates', d: 'Proven across consulting, finance, Founder\'s Office, and BD' },
@@ -127,8 +178,12 @@ export default function CohortPage() {
         .faq-plus.open{transform:rotate(45deg)}
         .faq-body{overflow:hidden;transition:max-height 0.3s ease}
         .mobile-sticky{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:12px 16px;background:rgba(11,11,15,0.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.07);animation:slideUp 0.3s ease;display:flex;gap:10px}
-        @media(min-width:769px){.mobile-sticky{display:none!important}.grid-3{grid-template-columns:repeat(3,1fr)!important}}
-        @media(max-width:768px){.cta-row{flex-direction:column!important}}
+        .tcard{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:16px;transition:border-color 0.3s,transform 0.3s}
+        .tcard:hover{border-color:rgba(79,124,255,0.3);transform:translateY(-3px)}
+        .tscroll{display:flex;gap:16px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;-ms-overflow-style:none}
+        .tscroll::-webkit-scrollbar{display:none}
+        @media(min-width:769px){.mobile-sticky{display:none!important}.grid-3{grid-template-columns:repeat(3,1fr)!important}.tscroll{display:grid;grid-template-columns:repeat(2,1fr);overflow-x:visible}}
+        @media(max-width:768px){.cta-row{flex-direction:column!important}.tcard{min-width:280px}}
       `}</style>
 
       <NoiseOverlay />
@@ -205,6 +260,40 @@ export default function CohortPage() {
             <a href="/program" style={{ fontSize: 13, color: '#4F7CFF', fontWeight: 600, textDecoration: 'none', borderBottom: '1px solid rgba(79,124,255,0.35)', paddingBottom: 2 }}>
               See the full 8-week curriculum →
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section style={{ padding: '72px 24px' }}>
+        <div style={{ maxWidth: 1040, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#4F7CFF', display: 'block', marginBottom: 10 }}>WHAT COHORT 1 SAYS</span>
+            <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(24px,4vw,38px)', lineHeight: 1.15 }}>Real words from real students</h2>
+          </div>
+          <div className="tscroll">
+            {TESTIMONIALS.map((t, i) => {
+              const initials = t.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+              const colors = ['#4F7CFF','#7B61FF','#00D2FF','#22c55e','#f59e0b','#ec4899','#14b8a6','#8b5cf6']
+              const color = colors[i % colors.length]
+              return (
+                <div key={i} className="tcard">
+                  <div style={{ fontSize: 20, color: '#4F7CFF', lineHeight: 1 }}>"</div>
+                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.72)', lineHeight: 1.8, margin: 0, flex: 1 }}>{t.text}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
+                    {t.img ? (
+                      <img src={t.img} alt={t.name} width={40} height={40} style={{ borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1.5px solid rgba(255,255,255,0.1)' }} />
+                    ) : (
+                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: color + '22', border: `1.5px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color, flexShrink: 0 }}>{initials}</div>
+                    )}
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'white' }}>{t.name}</div>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{t.role}</div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
