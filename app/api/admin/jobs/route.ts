@@ -6,12 +6,21 @@ import { serviceClient } from '@/lib/tracker'
 import { fetchAtsPostings, syncSources, extractJobFromContent, JobSourceRow } from '@/lib/jobs'
 
 const ADMIN_PASSWORD = 'beyondcampus2024'
+// Limited intern password — can add/review jobs only, never sees the rest of /admin.
+const INTERN_PASSWORD = 'bcjobs2026'
+// Actions reserved for the founder (pull from ATS APIs / spend AI tokens).
+const ADMIN_ONLY_ACTIONS = ['add_source', 'toggle_source', 'sync_now']
 
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    if (body.password !== ADMIN_PASSWORD) {
+    const isAdmin = body.password === ADMIN_PASSWORD
+    const isIntern = body.password === INTERN_PASSWORD
+    if (!isAdmin && !isIntern) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!isAdmin && ADMIN_ONLY_ACTIONS.includes(body.action)) {
+      return NextResponse.json({ error: 'This action needs the founder login.' }, { status: 403 })
     }
     const svc = serviceClient()
 
