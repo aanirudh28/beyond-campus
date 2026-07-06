@@ -242,8 +242,9 @@ export function buildDailySet(opts: {
   const stretchPool = unpicked(opts.candidates)
   let stretch = takeRandom(stretchPool.filter((q) => inBand(pOf(q), STRETCH_BAND)), 1, rng)
   if (stretch.length === 0) {
-    // hardest question still below the flow band ≈ closest thing to a stretch
-    const below = stretchPool.filter((q) => pOf(q) < FLOW_BAND[0]).sort((a, b) => pOf(a) - pOf(b))
+    // nearest question below the flow band ≈ closest thing to a stretch
+    // (highest P under 0.65 — never the brutal extreme of the bank)
+    const below = stretchPool.filter((q) => pOf(q) < FLOW_BAND[0]).sort((a, b) => pOf(b) - pOf(a))
     stretch = below.slice(0, 1)
   }
   pick(stretch)

@@ -91,29 +91,53 @@ export async function ensureAptiProfile(userId: string, email: string): Promise<
   return data as AptiProfile
 }
 
-// Small bank (Phase 0): load whole curriculum once per request set-build.
-export async function loadCurriculum() {
+export interface Curriculum {
+  topics: TopicRow[]
+  skills: SkillRow[]
+  skillById: Map<string, SkillRow>
+  domainOfSkill: (skillId: string) => string
+}
+
+const DOMAIN_ORDER = ['quant', 'logical', 'verbal', 'di', 'business']
+function domainRank(domain: string): number {
+  const i = DOMAIN_ORDER.indexOf(domain)
+  return i === -1 ? DOMAIN_ORDER.length : i
+}
+
+// Module-level cache: the curriculum changes only when the founder edits
+// content, and a 5-minute staleness window is invisible to students. Saves
+// 2 Supabase round trips on every answer.
+const CURRICULUM_TTL_MS = 5 * 60_000
+let curriculumCache: { data: Curriculum; at: number } | null = null
+
+export async function loadCurriculum(): Promise<Curriculum> {
+  const cached = curriculumCache
+  if (cached && Date.now() - cached.at < CURRICULUM_TTL_MS) return cached.data
+
   const svc = serviceClient()
   const [{ data: topics }, { data: skills }] = await Promise.all([
     svc.from('apti_topics').select('*').order('ord'),
     svc.from('apti_skills').select('*').order('ord'),
   ])
   const topicById = new Map((topics ?? []).map((t: TopicRow) => [t.id, t]))
-  // curriculum order: topics by (domain, ord), skills by ord within topic
+  // Curriculum order: foundation loop first — quant arithmetic before logical
+  // before verbal (docs/aptitude/03 sequencing), then topic ord, then skill ord.
   const orderedSkills = [...(skills ?? [])].sort((a: SkillRow, b: SkillRow) => {
+    if (a.topic_id === b.topic_id) return a.ord - b.ord
     const ta = topicById.get(a.topic_id) as TopicRow, tb = topicById.get(b.topic_id) as TopicRow
-    if (ta.id !== tb.id) return ta.ord - tb.ord || ta.domain.localeCompare(tb.domain)
-    return a.ord - b.ord
+    return domainRank(ta.domain) - domainRank(tb.domain) || ta.ord - tb.ord || ta.slug.localeCompare(tb.slug)
   })
-  return {
+  const domainBySkill = new Map(
+    orderedSkills.map((s: SkillRow) => [s.id, (topicById.get(s.topic_id) as TopicRow).domain])
+  )
+  const data: Curriculum = {
     topics: (topics ?? []) as TopicRow[],
     skills: orderedSkills as SkillRow[],
     skillById: new Map(orderedSkills.map((s: SkillRow) => [s.id, s])),
-    domainOfSkill: (skillId: string) => {
-      const s = orderedSkills.find((x: SkillRow) => x.id === skillId)
-      return s ? (topicById.get(s.topic_id) as TopicRow).domain : 'quant'
-    },
+    domainOfSkill: (skillId: string) => domainBySkill.get(skillId) ?? 'quant',
   }
+  curriculumCache = { data, at: Date.now() }
+  return data
 }
 
 export function rowToSkillState(row: Record<string, unknown> | null): SkillState {
@@ -223,19 +247,21 @@ export async function loadSetQuestions(ids: string[]): Promise<QuestionRow[]> {
   return ids.map((id) => byId.get(id)).filter(Boolean) as QuestionRow[]
 }
 
-// Attempt-weighted mean of the user's skill ratings within one domain.
-export async function recomputeDomainRating(userId: string, domain: string): Promise<number | null> {
-  const svc = serviceClient()
-  const curriculum = await loadCurriculum()
-  const { data: rows } = await svc
-    .from('apti_skill_state').select('skill_id, rating, attempts').eq('user_id', userId)
-  const inDomain = (rows ?? []).filter((r: { skill_id: string }) => curriculum.domainOfSkill(r.skill_id) === domain)
+// Attempt-weighted mean of skill ratings within one domain. Pure — the
+// answer route passes rows it already holds (with the fresh rating patched
+// in) instead of re-querying.
+export function computeDomainRating(
+  rows: { skill_id: string; rating: number; attempts: number }[],
+  curriculum: Curriculum,
+  domain: string
+): number | null {
+  const inDomain = rows.filter((r) => curriculum.domainOfSkill(r.skill_id) === domain)
   if (inDomain.length === 0) return null
   let weight = 0, sum = 0
   for (const r of inDomain) {
-    const w = Math.max(1, r.attempts as number)
+    const w = Math.max(1, r.attempts)
     weight += w
-    sum += (r.rating as number) * w
+    sum += r.rating * w
   }
   return Math.round(sum / weight)
 }

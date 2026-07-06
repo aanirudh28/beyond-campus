@@ -269,6 +269,11 @@ export default function SetPlayer({ setId, questions, startCursor, initialSummar
                   </button>
                 ))}
               </div>
+              {submitting && (
+                <p style={{ margin: '12px 0 0', textAlign: 'center', color: COLORS.muted2, fontSize: 13 }}>
+                  Checking…
+                </p>
+              )}
             </Card>
           )}
         </>

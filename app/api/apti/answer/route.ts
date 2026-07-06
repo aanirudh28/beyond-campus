@@ -3,7 +3,7 @@ export const runtime = 'nodejs'
 import { NextResponse } from 'next/server'
 import { getAuthedUser, serviceClient } from '@/lib/tracker'
 import {
-  loadCurriculum, rowToSkillState, recomputeDomainRating,
+  loadCurriculum, rowToSkillState, computeDomainRating,
   type QuestionRow, type DailySetRow,
 } from '@/lib/apti'
 import {
@@ -26,7 +26,8 @@ const CONFIDENCES = ['sure', 'thinkso', 'guessing']
 
 // Grades one answer server-side and applies every state change: Elo (user
 // skill + question), rolling windows, mastery, review cards, set cursor,
-// streak on completion. Returns the full reveal payload.
+// streak on completion. Latency-sensitive (runs between "Sure" and the
+// reveal): reads and writes are batched into parallel phases.
 export async function POST(request: Request) {
   const user = await getAuthedUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -46,9 +47,12 @@ export async function POST(request: Request) {
 
   const svc = serviceClient()
 
-  // ---- validate the set + position ----
-  const { data: setRow } = await svc
-    .from('apti_daily_sets').select('*').eq('id', body.setId).single()
+  // ---- phase 1: validate set + question (parallel, curriculum is cached) ----
+  const [{ data: setRow }, { data: qRow }, curriculum] = await Promise.all([
+    svc.from('apti_daily_sets').select('*').eq('id', body.setId).single(),
+    svc.from('apti_questions').select('*').eq('id', body.questionId).single(),
+    loadCurriculum(),
+  ])
   const set = setRow as DailySetRow | null
   if (!set || set.user_id !== user.id) {
     return NextResponse.json({ error: 'Set not found' }, { status: 404 })
@@ -59,11 +63,12 @@ export async function POST(request: Request) {
   if (set.question_ids[set.cursor] !== body.questionId) {
     return NextResponse.json({ error: 'Out of order', expected: set.cursor }, { status: 409 })
   }
-
-  const { data: qRow } = await svc
-    .from('apti_questions').select('*').eq('id', body.questionId).single()
   const question = qRow as QuestionRow | null
   if (!question) return NextResponse.json({ error: 'Question not found' }, { status: 404 })
+
+  const skill = curriculum.skillById.get(question.skill_id)
+  if (!skill) return NextResponse.json({ error: 'Skill not found' }, { status: 500 })
+  const domain = curriculum.domainOfSkill(question.skill_id)
 
   // ---- grade ----
   const answer = question.payload.answer
@@ -80,18 +85,24 @@ export async function POST(request: Request) {
     chosen = { key: body.chosenKey ?? null }
   }
 
-  // ---- skill state + Elo ----
-  const curriculum = await loadCurriculum()
-  const skill = curriculum.skillById.get(question.skill_id)
-  if (!skill) return NextResponse.json({ error: 'Skill not found' }, { status: 500 })
-  const domain = curriculum.domainOfSkill(question.skill_id)
+  // ---- phase 2: user state reads (parallel) ----
+  const willComplete = set.cursor + 1 >= set.question_ids.length
+  const [{ data: stateRows }, { data: card }, { data: profile }, setAttemptsRes] = await Promise.all([
+    svc.from('apti_skill_state').select('*').eq('user_id', user.id),
+    svc.from('apti_review_cards').select('*')
+      .eq('user_id', user.id).eq('question_id', question.id).eq('redeemed', false)
+      .maybeSingle(),
+    svc.from('apti_profiles').select('*').eq('user_id', user.id).single(),
+    willComplete
+      ? svc.from('apti_attempts').select('correct').eq('set_id', set.id)
+      : Promise.resolve({ data: null }),
+  ])
 
-  const { data: stateRow } = await svc
-    .from('apti_skill_state').select('*')
-    .eq('user_id', user.id).eq('skill_id', question.skill_id).maybeSingle()
+  const stateRow = (stateRows ?? []).find((r: { skill_id: string }) => r.skill_id === question.skill_id) ?? null
   const state: SkillState = rowToSkillState(stateRow)
   const masteryBefore = state.mastery
 
+  // ---- compute: Elo, mastery, cards, ratings, streak ----
   const score = attemptScore(correct, timeMs, question.time_benchmark_sec)
   // hinted answers never move ratings (mastery credit is halved instead)
   const { userDelta, questionDelta } = assisted
@@ -119,54 +130,25 @@ export async function POST(request: Request) {
     benchmarkSeconds: skill.benchmark_seconds,
   })
 
-  await svc.from('apti_skill_state').upsert({
-    user_id: user.id,
-    skill_id: question.skill_id,
-    rating: nextState.rating,
-    attempts: nextState.attempts,
-    correct: nextState.correct,
-    rolling: nextState.rolling,
-    times_ms: nextState.timesMs,
-    mastery: nextState.mastery,
-    probe_streak: nextState.probeStreak,
-    last_practiced: new Date().toISOString(),
-  }, { onConflict: 'user_id,skill_id' })
+  // domain rating from rows already in hand, with the fresh rating patched in
+  const patchedRows = [
+    ...(stateRows ?? []).filter((r: { skill_id: string }) => r.skill_id !== question.skill_id),
+    { skill_id: question.skill_id, rating: nextState.rating, attempts: nextState.attempts },
+  ]
+  const domainRating = computeDomainRating(patchedRows, curriculum, domain)
+  const ratings: Record<string, number> = { ...(profile?.ratings ?? {}) }
+  const domainBefore = ratings[domain] ?? null
+  if (domainRating !== null) ratings[domain] = domainRating
 
-  await svc.from('apti_questions').update({
-    rating: question.rating + questionDelta,
-    attempts: question.attempts + 1,
-    correct: question.correct + (correct ? 1 : 0),
-  }).eq('id', question.id)
-
-  // ---- attempt log ----
-  const isReviewSlot = set.review_card_ids.length > 0 && set.cursor < 2
-  const { data: attemptRow } = await svc.from('apti_attempts').insert({
-    user_id: user.id,
-    question_id: question.id,
-    set_id: set.id,
-    context: isReviewSlot ? 'review' : 'daily',
-    correct,
-    chosen,
-    time_ms: timeMs,
-    confidence,
-    assisted,
-    rating_before: state.rating,
-    rating_after: nextState.rating,
-  }).select('id').single()
-
-  // ---- review cards ----
   let redemption: { isReview: boolean; redeemed: boolean } | null = null
-  const { data: card } = await svc
-    .from('apti_review_cards').select('*')
-    .eq('user_id', user.id).eq('question_id', question.id).eq('redeemed', false)
-    .maybeSingle()
+  let cardWrite: PromiseLike<unknown> = Promise.resolve()
   if (card) {
     const next = nextCardState(
       { intervalDays: Number(card.interval_days), correctStreak: card.correct_streak },
       correct,
       card.error_type
     )
-    await svc.from('apti_review_cards').update({
+    cardWrite = svc.from('apti_review_cards').update({
       interval_days: next.intervalDays,
       correct_streak: next.correctStreak,
       redeemed: next.redeemed,
@@ -175,7 +157,7 @@ export async function POST(request: Request) {
     redemption = { isReview: true, redeemed: next.redeemed }
   } else if (!correct) {
     // first miss on this question → it joins the redemption queue for tomorrow
-    await svc.from('apti_review_cards').insert({
+    cardWrite = svc.from('apti_review_cards').insert({
       user_id: user.id,
       question_id: question.id,
       skill_id: question.skill_id,
@@ -184,58 +166,77 @@ export async function POST(request: Request) {
     })
   }
 
-  // ---- domain rating on the profile ----
-  const domainRating = await recomputeDomainRating(user.id, domain)
-  const { data: profile } = await svc
-    .from('apti_profiles').select('*').eq('user_id', user.id).single()
-  const ratings: Record<string, number> = { ...(profile?.ratings ?? {}) }
-  const domainBefore = ratings[domain] ?? null
-  if (domainRating !== null) ratings[domain] = domainRating
-
-  // ---- advance the set / complete ----
   const newCursor = set.cursor + 1
-  const done = newCursor >= set.question_ids.length
   let summary: Record<string, unknown> | null = null
   let streak = profile?.streak ?? 0
+  const profileUpdate: Record<string, unknown> = { ratings }
 
-  if (done) {
+  if (willComplete) {
     const today = istDateString()
     streak = nextStreak({ streak: profile?.streak ?? 0, lastSetDate: profile?.last_set_date ?? null }, today)
-    const { data: setAttempts } = await svc
-      .from('apti_attempts').select('correct, context').eq('set_id', set.id)
-    const correctCount = (setAttempts ?? []).filter((a: { correct: boolean }) => a.correct).length + 0
+    const priorCorrect = (setAttemptsRes.data ?? []).filter((a: { correct: boolean }) => a.correct).length
     const ratingDeltas: Record<string, number> = {}
     for (const [d, r] of Object.entries(ratings)) {
       const startR = (set.ratings_at_start ?? {})[d]
-      if (typeof startR === 'number') ratingDeltas[d] = r - startR
-      else ratingDeltas[d] = 0
+      ratingDeltas[d] = typeof startR === 'number' ? r - startR : 0
     }
     summary = {
-      correct: correctCount,
+      correct: priorCorrect + (correct ? 1 : 0),
       total: set.question_ids.length,
       ratingDeltas,
       streak,
     }
-    await svc.from('apti_profiles').update({
-      ratings,
-      streak,
-      longest_streak: Math.max(profile?.longest_streak ?? 0, streak),
-      last_set_date: today,
-    }).eq('user_id', user.id)
-  } else {
-    await svc.from('apti_profiles').update({ ratings }).eq('user_id', user.id)
+    profileUpdate.streak = streak
+    profileUpdate.longest_streak = Math.max(profile?.longest_streak ?? 0, streak)
+    profileUpdate.last_set_date = today
   }
 
-  await svc.from('apti_daily_sets').update({
-    cursor: newCursor,
-    ...(done ? { completed_at: new Date().toISOString(), summary } : {}),
-  }).eq('id', set.id)
+  // ---- phase 3: writes (parallel — all independent) ----
+  const isReviewSlot = set.review_card_ids.length > 0 && set.cursor < 2
+  const [attemptRes] = await Promise.all([
+    svc.from('apti_attempts').insert({
+      user_id: user.id,
+      question_id: question.id,
+      set_id: set.id,
+      context: isReviewSlot ? 'review' : 'daily',
+      correct,
+      chosen,
+      time_ms: timeMs,
+      confidence,
+      assisted,
+      rating_before: state.rating,
+      rating_after: nextState.rating,
+    }).select('id').single(),
+    svc.from('apti_skill_state').upsert({
+      user_id: user.id,
+      skill_id: question.skill_id,
+      rating: nextState.rating,
+      attempts: nextState.attempts,
+      correct: nextState.correct,
+      rolling: nextState.rolling,
+      times_ms: nextState.timesMs,
+      mastery: nextState.mastery,
+      probe_streak: nextState.probeStreak,
+      last_practiced: new Date().toISOString(),
+    }, { onConflict: 'user_id,skill_id' }),
+    svc.from('apti_questions').update({
+      rating: question.rating + questionDelta,
+      attempts: question.attempts + 1,
+      correct: question.correct + (correct ? 1 : 0),
+    }).eq('id', question.id),
+    cardWrite,
+    svc.from('apti_profiles').update(profileUpdate).eq('user_id', user.id),
+    svc.from('apti_daily_sets').update({
+      cursor: newCursor,
+      ...(willComplete ? { completed_at: new Date().toISOString(), summary } : {}),
+    }).eq('id', set.id),
+  ])
 
   // ---- reveal payload (the ONLY place answers leave the server) ----
   const chosenOption = (question.payload.options ?? []).find((o) => o.key === body.chosenKey)
   const trapName = !correct && chosenOption?.trap ? chosenOption.trap : null
   return NextResponse.json({
-    attemptId: attemptRow?.id ?? null,
+    attemptId: attemptRes.data?.id ?? null,
     correct,
     answerKeys: answer.keys ?? null,
     answerValue: answer.value ?? null,
@@ -255,6 +256,6 @@ export async function POST(request: Request) {
     },
     domain: { name: domain, before: domainBefore, after: domainRating },
     redemption,
-    set: { cursor: newCursor, total: set.question_ids.length, done, summary },
+    set: { cursor: newCursor, total: set.question_ids.length, done: willComplete, summary },
   })
 }
