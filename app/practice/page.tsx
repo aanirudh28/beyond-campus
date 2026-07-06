@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { COLORS, Card, PrimaryBtn, Mono, DOMAIN_LABELS } from '@/app/components/apti/ui'
+import Link from 'next/link'
+import {
+  GRAD, COLORS, Card, PrimaryBtn, Mono, Chip, DOMAIN_LABELS, AptiStyles,
+} from '@/app/components/apti/ui'
 import type { SetSummary } from '@/app/components/apti/SetPlayer'
 
 interface TodayData {
@@ -43,91 +46,170 @@ export default function PracticePage() {
   }, [])
 
   const today = new Date().toLocaleDateString('en-IN', {
-    weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata',
+    weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Asia/Kolkata',
   })
 
-  if (error) {
-    return (
-      <main style={{ maxWidth: 480, margin: '0 auto', padding: '64px 20px', textAlign: 'center' }}>
-        <p style={{ color: COLORS.muted }}>{error}</p>
-      </main>
-    )
-  }
-
-  if (!data) {
-    return (
-      <main style={{ maxWidth: 480, margin: '0 auto', padding: '64px 20px', textAlign: 'center' }}>
-        <p style={{ color: COLORS.muted2, fontSize: 14 }}>Building today&rsquo;s set…</p>
-      </main>
-    )
-  }
-
-  const { set, profile } = data
-  const done = !!set.completedAt
-  const started = set.cursor > 0 && !done
-  const remaining = set.total - set.cursor
-
   return (
-    <main style={{ maxWidth: 480, margin: '0 auto', padding: '32px 20px 64px' }}>
-      {/* header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 24 }}>
-        <span style={{ color: COLORS.muted, fontSize: 14 }}>{today}</span>
-        <Mono style={{ fontSize: 14, color: profile.streak > 0 ? '#fff' : COLORS.muted2 }}>
-          🔥 {profile.streak} day{profile.streak === 1 ? '' : 's'}
-        </Mono>
-      </div>
+    <main style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+      <AptiStyles />
 
-      {/* the set card */}
-      <Card style={{ padding: 28, marginBottom: 20 }}>
-        <h1 style={{ fontFamily: 'var(--serif)', fontWeight: 400, fontSize: 26, margin: '0 0 6px' }}>
-          {done ? 'Done for today.' : started ? 'Pick up where you left off' : 'Today’s Set'}
-        </h1>
-        <p style={{ color: COLORS.muted, fontSize: 14, margin: '0 0 20px' }}>
-          {done
-            ? `${set.summary?.correct ?? '—'}/${set.total} correct. Tomorrow’s set is already brewing.`
-            : started
-              ? `${remaining} question${remaining === 1 ? '' : 's'} left · ~${Math.ceil(remaining * 1.2)} min`
-              : `${set.total} questions · ~${Math.ceil(set.total * 1.2)} min${set.reviewCount > 0 ? ` · ${set.reviewCount} redemption` : ''}`}
-        </p>
-        {!done && (
-          <PrimaryBtn onClick={() => router.push(`/practice/set/${set.id}`)}>
-            {started ? `Resume — ${remaining} left` : `▶ Start today’s ${set.total}`}
-          </PrimaryBtn>
-        )}
-        {done && set.summary && (
-          <div>
-            {Object.entries(set.summary.ratingDeltas ?? {}).map(([domain, delta]) => (
-              <div key={domain} style={{
-                display: 'flex', justifyContent: 'space-between', padding: '10px 0',
-                borderTop: `1px solid ${COLORS.hair}`, fontSize: 14,
-              }}>
-                <span style={{ color: COLORS.muted }}>{DOMAIN_LABELS[domain] ?? domain}</span>
-                <Mono style={{ color: (delta as number) >= 0 ? COLORS.correct : COLORS.wrong }}>
-                  {(delta as number) >= 0 ? `▲ +${delta}` : `▼ ${delta}`}
-                </Mono>
-              </div>
-            ))}
+      {/* ambient aurora */}
+      <div aria-hidden style={{
+        position: 'absolute', top: -180, left: '50%', transform: 'translateX(-50%)',
+        width: 640, height: 420, borderRadius: '50%', pointerEvents: 'none',
+        background: 'radial-gradient(ellipse at center, rgba(79,124,255,0.16), rgba(123,97,255,0.06) 55%, transparent 75%)',
+        filter: 'blur(40px)', animation: 'aurora-drift 14s ease-in-out infinite alternate',
+      }} />
+
+      <div style={{ maxWidth: 520, margin: '0 auto', padding: '28px 20px 80px', position: 'relative' }}>
+        {/* header */}
+        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 44 }}>
+          <Link href="/" style={{ fontFamily: 'var(--serif)', fontSize: 19, letterSpacing: -0.4 }}>
+            Beyond Campus <span style={{ color: COLORS.blueSoft, fontStyle: 'italic' }}>Apti</span>
+          </Link>
+          {data && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 7, padding: '7px 14px',
+              borderRadius: 100, background: 'rgba(255,255,255,0.04)', border: `1px solid ${COLORS.hair}`,
+            }}>
+              <span style={{
+                fontSize: 15,
+                animation: data.profile.streak > 0 ? 'apti-flame 1.8s ease-in-out infinite' : 'none',
+                display: 'inline-block',
+                filter: data.profile.streak > 0 ? 'none' : 'grayscale(1) opacity(0.5)',
+              }}>🔥</span>
+              <Mono style={{ fontSize: 14, fontWeight: 600 }}>{data.profile.streak}</Mono>
+            </div>
+          )}
+        </header>
+
+        {error && <p style={{ color: COLORS.muted, textAlign: 'center', padding: '60px 0' }}>{error}</p>}
+
+        {!data && !error && (
+          <div style={{ textAlign: 'center', padding: '80px 0' }}>
+            <div style={{
+              width: 36, height: 36, margin: '0 auto 18px', borderRadius: '50%',
+              border: '3px solid rgba(79,124,255,0.2)', borderTopColor: COLORS.blue,
+              animation: 'spin 0.8s linear infinite',
+            }} />
+            <p style={{ color: COLORS.muted2, fontSize: 14 }}>Building today&rsquo;s set…</p>
           </div>
         )}
-      </Card>
 
-      {/* ratings strip */}
-      {Object.keys(profile.ratings).length > 0 && (
-        <Card style={{ padding: 18 }}>
-          <p style={{ margin: '0 0 10px', fontSize: 12, color: COLORS.muted2, letterSpacing: 2, textTransform: 'uppercase', fontFamily: 'var(--mono)' }}>
-            Apti Rating
-          </p>
-          {Object.entries(profile.ratings).map(([domain, rating]) => (
-            <div key={domain} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 15 }}>
-              <span style={{ color: COLORS.muted }}>{DOMAIN_LABELS[domain] ?? domain}</span>
-              <Mono style={{ fontWeight: 600 }}>{rating as number}</Mono>
-            </div>
-          ))}
-          <p style={{ margin: '10px 0 0', fontSize: 12, color: COLORS.muted2 }}>
-            Provisional until 50 attempts — it settles as you practice.
-          </p>
-        </Card>
-      )}
+        {data && (() => {
+          const { set, profile } = data
+          const done = !!set.completedAt
+          const started = set.cursor > 0 && !done
+          const remaining = set.total - set.cursor
+          const freshCount = set.total - set.reviewCount
+
+          return (
+            <>
+              {/* hero */}
+              <div className="apti-in" style={{ marginBottom: 28 }}>
+                <p className="mono-label" style={{ marginBottom: 10 }}>{today}</p>
+                <h1 style={{
+                  fontFamily: 'var(--serif)', fontWeight: 400, fontSize: 40,
+                  letterSpacing: -1.2, lineHeight: 1.1, marginBottom: 8,
+                }}>
+                  {done ? <>That&rsquo;s a <em style={{ fontStyle: 'italic', color: COLORS.blueSoft }}>wrap.</em></>
+                    : started ? <>Pick it back <em style={{ fontStyle: 'italic', color: COLORS.blueSoft }}>up.</em></>
+                    : <>Today&rsquo;s <em style={{ fontStyle: 'italic', color: COLORS.blueSoft }}>ten.</em></>}
+                </h1>
+                <p style={{ color: COLORS.muted, fontSize: 15, lineHeight: 1.55 }}>
+                  {done
+                    ? 'Practice banked. The streak holds. See you tomorrow.'
+                    : started
+                      ? `${remaining} question${remaining === 1 ? '' : 's'} between you and today’s tick.`
+                      : 'One focused set a day beats a panicked weekend before the test.'}
+                </p>
+              </div>
+
+              {/* set card */}
+              <Card style={{ padding: 26, marginBottom: 18, position: 'relative', overflow: 'hidden' }}>
+                <div aria-hidden style={{
+                  position: 'absolute', inset: 0, pointerEvents: 'none',
+                  background: 'linear-gradient(135deg, rgba(79,124,255,0.06), transparent 55%)',
+                }} />
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
+                  <Chip>{set.total} questions</Chip>
+                  {set.reviewCount > 0 && <Chip color={COLORS.stretch} bg={COLORS.stretchBg}>↺ {set.reviewCount} redemption</Chip>}
+                  <Chip>~{Math.ceil(set.total * 1.2)} min</Chip>
+                </div>
+
+                {!done && (
+                  <>
+                    {started && (
+                      <div style={{ height: 6, background: 'rgba(255,255,255,0.07)', borderRadius: 100, overflow: 'hidden', marginBottom: 18 }}>
+                        <div style={{ height: '100%', width: `${(set.cursor / set.total) * 100}%`, background: GRAD, borderRadius: 100 }} />
+                      </div>
+                    )}
+                    <PrimaryBtn onClick={() => router.push(`/practice/set/${set.id}`)}>
+                      {started ? `Resume — ${remaining} left` : `Start today’s ${set.total} →`}
+                    </PrimaryBtn>
+                    {!started && (
+                      <p style={{ textAlign: 'center', fontSize: 12.5, color: COLORS.muted2, marginTop: 12 }}>
+                        {set.reviewCount > 0
+                          ? `${set.reviewCount} question${set.reviewCount === 1 ? '' : 's'} that beat you before, ${freshCount} fresh.`
+                          : 'Adaptive — it meets you at your level.'}
+                      </p>
+                    )}
+                  </>
+                )}
+
+                {done && set.summary && (
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 6 }}>
+                      <Mono style={{ fontSize: 34, fontWeight: 600 }}>
+                        {set.summary.correct}<span style={{ color: COLORS.muted2, fontSize: 20 }}>/{set.total}</span>
+                      </Mono>
+                      <span style={{ color: COLORS.muted, fontSize: 14 }}>correct today</span>
+                    </div>
+                    {Object.entries(set.summary.ratingDeltas ?? {}).map(([domain, delta]) => (
+                      <div key={domain} style={{
+                        display: 'flex', justifyContent: 'space-between', padding: '11px 0',
+                        borderTop: `1px solid ${COLORS.hair}`, fontSize: 14,
+                      }}>
+                        <span style={{ color: COLORS.muted }}>{DOMAIN_LABELS[domain] ?? domain}</span>
+                        <Mono style={{ color: (delta as number) > 0 ? COLORS.correct : (delta as number) < 0 ? COLORS.wrong : COLORS.muted2, fontWeight: 600 }}>
+                          {(delta as number) > 0 ? `▲ +${delta}` : (delta as number) < 0 ? `▼ ${delta}` : '· 0'}
+                        </Mono>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Card>
+
+              {/* ratings */}
+              {Object.keys(profile.ratings).length > 0 && (
+                <Card style={{ padding: 22, marginBottom: 18 }}>
+                  <p className="mono-label" style={{ marginBottom: 14 }}>Apti Rating</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(3, Object.keys(profile.ratings).length)}, 1fr)`, gap: 14 }}>
+                    {Object.entries(profile.ratings).map(([domain, rating]) => (
+                      <div key={domain}>
+                        <Mono style={{ fontSize: 26, fontWeight: 600, display: 'block', lineHeight: 1.1 }}>
+                          {rating as number}
+                        </Mono>
+                        <span style={{ fontSize: 12, color: COLORS.muted2 }}>{DOMAIN_LABELS[domain] ?? domain}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <p style={{ margin: '14px 0 0', fontSize: 12, color: COLORS.muted2, lineHeight: 1.5 }}>
+                    Provisional until 50 attempts. Every question moves it — up or down. That&rsquo;s the point.
+                  </p>
+                </Card>
+              )}
+
+              {/* longest streak footnote */}
+              {profile.longestStreak > 1 && (
+                <p style={{ textAlign: 'center', fontSize: 12.5, color: COLORS.muted2 }}>
+                  Longest streak: <Mono style={{ color: COLORS.muted }}>{profile.longestStreak} days</Mono>
+                </p>
+              )}
+            </>
+          )
+        })()}
+      </div>
     </main>
   )
 }

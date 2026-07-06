@@ -12,6 +12,7 @@ interface TodayResponse {
     total: number
     completedAt: string | null
     summary: SetSummary | null
+    reviewCount: number
   }
   questions: ClientQuestion[]
 }
@@ -62,6 +63,7 @@ export default function SetPage({ params }: { params: Promise<{ id: string }> })
         setId={data.set.id}
         questions={data.questions}
         startCursor={data.set.cursor}
+        reviewCount={data.set.reviewCount}
         initialSummary={data.set.completedAt ? data.set.summary : null}
       />
     </main>

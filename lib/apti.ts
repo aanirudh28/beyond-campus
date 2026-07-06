@@ -68,16 +68,24 @@ export interface ClientQuestion {
   type: string
   stem_md: string
   options: { key: string; text: string }[]
-  hint_count: number
+  // hints are progressive nudges only — never the answer or solution — so the
+  // ladder can render instantly client-side. Taking one flags the attempt as
+  // assisted (no rating movement), which the client reports on submit.
+  hints: string[]
+  skill_name: string
+  domain: string
 }
 
-export function clientSafeQuestion(q: QuestionRow): ClientQuestion {
+export function clientSafeQuestion(q: QuestionRow, curriculum: Curriculum): ClientQuestion {
+  const skill = curriculum.skillById.get(q.skill_id)
   return {
     id: q.id,
     type: q.type,
     stem_md: q.payload.stem_md,
     options: (q.payload.options ?? []).map((o) => ({ key: o.key, text: o.text })),
-    hint_count: q.payload.hints?.length ?? 0,
+    hints: q.payload.hints ?? [],
+    skill_name: skill?.name ?? '',
+    domain: curriculum.domainOfSkill(q.skill_id),
   }
 }
 
