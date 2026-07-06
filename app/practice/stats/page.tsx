@@ -15,6 +15,44 @@ interface Stats {
   }[]
   errorMix: Record<string, number>
   calibration: Record<string, { n: number; correct: number }>
+  dayCounts: Record<string, number>
+}
+
+// GitHub-style consistency grid: last 12 weeks, columns = weeks, rows = days.
+function Heatmap({ dayCounts }: { dayCounts: Record<string, number> }) {
+  const weeks: { date: string; count: number }[][] = []
+  const today = new Date()
+  const start = new Date(today)
+  start.setDate(start.getDate() - 83 - ((start.getDay() + 6) % 7)) // align to Monday
+  let week: { date: string; count: number }[] = []
+  for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+    const key = d.toISOString().slice(0, 10)
+    week.push({ date: key, count: dayCounts[key] ?? 0 })
+    if (week.length === 7) { weeks.push(week); week = [] }
+  }
+  if (week.length > 0) weeks.push(week)
+
+  const cellColor = (c: number) =>
+    c === 0 ? 'rgba(255,255,255,0.05)'
+    : c < 6 ? 'rgba(79,124,255,0.35)'
+    : c < 15 ? 'rgba(79,124,255,0.65)'
+    : '#7B61FF'
+
+  return (
+    <div style={{ display: 'flex', gap: 4, overflowX: 'auto', paddingBottom: 4 }}>
+      {weeks.map((w, i) => (
+        <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {w.map((day) => (
+            <div
+              key={day.date}
+              title={`${day.date}: ${day.count} question${day.count === 1 ? '' : 's'}`}
+              style={{ width: 13, height: 13, borderRadius: 3.5, background: cellColor(day.count) }}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  )
 }
 
 const ZONE_META: Record<string, { label: string; advice: string; color: string }> = {
@@ -108,6 +146,15 @@ export default function StatsPage() {
               </Card>
             ))}
           </div>
+
+          {/* consistency — the only chart where volume matters */}
+          <Card className="apti-in" style={{ marginBottom: 18, animationDelay: '0.04s' }}>
+            <p className="mono-label" style={{ marginBottom: 4 }}>Consistency</p>
+            <p style={{ fontSize: 12.5, color: COLORS.muted2, marginBottom: 14 }}>
+              Twelve weeks. Streaks are made of squares like these.
+            </p>
+            <Heatmap dayCounts={stats.dayCounts ?? {}} />
+          </Card>
 
           {/* error mix — the insight most students never get */}
           {totalErrors >= 3 && dominantError && (

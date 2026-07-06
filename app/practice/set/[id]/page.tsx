@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation'
 import SetPlayer, { type ClientQuestion, type SetSummary } from '@/app/components/apti/SetPlayer'
 import { COLORS } from '@/app/components/apti/ui'
 
-interface TodayResponse {
+interface SetResponse {
   set: {
     id: string
+    kind: string
     cursor: number
     total: number
     completedAt: string | null
@@ -19,24 +20,20 @@ interface TodayResponse {
 
 export default function SetPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
-  const [data, setData] = useState<TodayResponse | null>(null)
+  const [data, setData] = useState<SetResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     let cancelled = false
-    fetch('/api/apti/daily-set')
+    fetch(`/api/apti/set/${id}`)
       .then((r) => {
         if (r.status === 401) { router.push('/login?next=/practice'); return null }
+        if (r.status === 404) { router.replace('/practice'); return null }
         if (!r.ok) throw new Error('load failed')
         return r.json()
       })
-      .then((d: TodayResponse | null) => {
-        if (!d || cancelled) return
-        // only today's set is playable — anything else bounces home
-        if (d.set.id !== id) { router.replace('/practice'); return }
-        setData(d)
-      })
+      .then((d: SetResponse | null) => { if (d && !cancelled) setData(d) })
       .catch(() => { if (!cancelled) setError('Could not load the set. Refresh to retry.') })
     return () => { cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,6 +58,7 @@ export default function SetPage({ params }: { params: Promise<{ id: string }> })
     <main>
       <SetPlayer
         setId={data.set.id}
+        kind={data.set.kind}
         questions={data.questions}
         startCursor={data.set.cursor}
         reviewCount={data.set.reviewCount}

@@ -33,10 +33,13 @@ export async function GET() {
     sure: { n: 0, correct: 0 }, thinkso: { n: 0, correct: 0 }, guessing: { n: 0, correct: 0 },
   }
   const activeDays = new Set<string>()
+  const dayCounts: Record<string, number> = {}
   let totalCorrect = 0
 
   for (const a of attempts ?? []) {
-    activeDays.add(String(a.created_at).slice(0, 10))
+    const day = String(a.created_at).slice(0, 10)
+    activeDays.add(day)
+    dayCounts[day] = (dayCounts[day] ?? 0) + 1
     if (a.correct) totalCorrect++
     if (a.confidence && calibration[a.confidence]) {
       calibration[a.confidence].n++
@@ -86,5 +89,6 @@ export async function GET() {
     skills: skillsOut,
     errorMix,
     calibration,
+    dayCounts,
   })
 }

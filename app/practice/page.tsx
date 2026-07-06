@@ -25,12 +25,38 @@ interface TodayData {
     lastSetDate: string | null
     ratings: Record<string, number>
   }
+  nextUp: {
+    dueReviews: number
+    weakestSkill: { id: string; slug: string; name: string; accuracy: number } | null
+  }
 }
 
 export default function PracticePage() {
   const [data, setData] = useState<TodayData | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [sessionBusy, setSessionBusy] = useState(false)
+  const [sessionError, setSessionError] = useState<string | null>(null)
   const router = useRouter()
+
+  const startSession = async (payload: { kind: string; skillId?: string }) => {
+    if (sessionBusy) return
+    setSessionBusy(true)
+    setSessionError(null)
+    try {
+      const res = await fetch('/api/apti/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const d = await res.json()
+      if (!res.ok) { setSessionError(d.error || 'Could not start the session'); return }
+      router.push(`/practice/set/${d.setId}`)
+    } catch {
+      setSessionError('Network hiccup — try again.')
+    } finally {
+      setSessionBusy(false)
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -190,6 +216,58 @@ export default function PracticePage() {
                   </div>
                 )}
               </Card>
+
+              {/* keep going — extra practice with real reasons */}
+              {done && (data.nextUp.dueReviews > 0 || data.nextUp.weakestSkill) && (
+                <div className="apti-in" style={{ marginBottom: 18 }}>
+                  <p className="mono-label" style={{ marginBottom: 12 }}>Keep going?</p>
+                  {sessionError && <p style={{ color: COLORS.wrong, fontSize: 13, marginBottom: 10 }}>{sessionError}</p>}
+                  <div style={{ display: 'grid', gap: 10 }}>
+                    {data.nextUp.dueReviews > 0 && (
+                      <button
+                        onClick={() => startSession({ kind: 'review' })}
+                        disabled={sessionBusy}
+                        className="apti-option"
+                        style={{
+                          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                          padding: '16px 18px', borderRadius: 14, fontFamily: 'inherit', fontSize: 15,
+                          background: COLORS.stretchBg, border: '1px solid rgba(251,191,36,0.3)',
+                          color: '#fff', cursor: 'pointer', textAlign: 'left',
+                        }}
+                      >
+                        <span>
+                          <strong>↺ Clear your backlog</strong>
+                          <span style={{ display: 'block', fontSize: 12.5, color: COLORS.muted, marginTop: 3 }}>
+                            {data.nextUp.dueReviews} question{data.nextUp.dueReviews === 1 ? '' : 's'} that beat you, due for redemption
+                          </span>
+                        </span>
+                        <span style={{ color: COLORS.stretch }}>→</span>
+                      </button>
+                    )}
+                    {data.nextUp.weakestSkill && (
+                      <button
+                        onClick={() => startSession({ kind: 'topic', skillId: data.nextUp.weakestSkill!.id })}
+                        disabled={sessionBusy}
+                        className="apti-option"
+                        style={{
+                          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                          padding: '16px 18px', borderRadius: 14, fontFamily: 'inherit', fontSize: 15,
+                          background: 'rgba(79,124,255,0.07)', border: '1px solid rgba(79,124,255,0.3)',
+                          color: '#fff', cursor: 'pointer', textAlign: 'left',
+                        }}
+                      >
+                        <span>
+                          <strong>◎ Drill {data.nextUp.weakestSkill.name}</strong>
+                          <span style={{ display: 'block', fontSize: 12.5, color: COLORS.muted, marginTop: 3 }}>
+                            Your weakest skill right now — {data.nextUp.weakestSkill.accuracy}% accuracy
+                          </span>
+                        </span>
+                        <span style={{ color: COLORS.blueSoft }}>→</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* ratings */}
               {Object.keys(profile.ratings).length > 0 && (

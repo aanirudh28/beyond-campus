@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { GRAD, COLORS, Mono, Card, Chip, AptiStyles, DOMAIN_LABELS } from '@/app/components/apti/ui'
 import AptiNav from '@/app/components/apti/Nav'
@@ -34,7 +35,30 @@ export default function MapPage() {
   const [states, setStates] = useState<Map<string, SkillState>>(new Map())
   const [openSkill, setOpenSkill] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [sessionBusy, setSessionBusy] = useState(false)
+  const [sessionError, setSessionError] = useState<string | null>(null)
   const supabase = createClient()
+  const router = useRouter()
+
+  const practiceSkill = async (skillId: string) => {
+    if (sessionBusy) return
+    setSessionBusy(true)
+    setSessionError(null)
+    try {
+      const res = await fetch('/api/apti/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kind: 'topic', skillId }),
+      })
+      const d = await res.json()
+      if (!res.ok) { setSessionError(d.error || 'Could not start the session'); return }
+      router.push(`/practice/set/${d.setId}`)
+    } catch {
+      setSessionError('Network hiccup — try again.')
+    } finally {
+      setSessionBusy(false)
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -189,6 +213,19 @@ export default function MapPage() {
                             ? 'Holding strong. Maintenance probes will keep it honest.'
                             : 'It enters your daily sets when the map reaches it — or sooner if you keep missing it.'}
                       </p>
+                      <button
+                        onClick={() => practiceSkill(skill.id)}
+                        disabled={sessionBusy}
+                        style={{
+                          marginTop: 12, width: '100%', padding: '12px 16px',
+                          background: GRAD, color: '#fff', border: 'none', borderRadius: 100,
+                          fontWeight: 700, fontSize: 14, fontFamily: 'inherit',
+                          cursor: sessionBusy ? 'default' : 'pointer', opacity: sessionBusy ? 0.6 : 1,
+                        }}
+                      >
+                        {sessionBusy ? 'Building…' : 'Practice this skill →'}
+                      </button>
+                      {sessionError && <p style={{ margin: '10px 0 0', fontSize: 12.5, color: COLORS.wrong }}>{sessionError}</p>}
                     </div>
                   )
                 })}

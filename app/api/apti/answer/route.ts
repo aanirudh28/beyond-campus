@@ -172,8 +172,14 @@ export async function POST(request: Request) {
   const profileUpdate: Record<string, unknown> = { ratings }
 
   if (willComplete) {
-    const today = istDateString()
-    streak = nextStreak({ streak: profile?.streak ?? 0, lastSetDate: profile?.last_set_date ?? null }, today)
+    // only the daily set carries the streak — extra sessions are gravy
+    if (set.kind === 'daily') {
+      const today = istDateString()
+      streak = nextStreak({ streak: profile?.streak ?? 0, lastSetDate: profile?.last_set_date ?? null }, today)
+      profileUpdate.streak = streak
+      profileUpdate.longest_streak = Math.max(profile?.longest_streak ?? 0, streak)
+      profileUpdate.last_set_date = today
+    }
     const priorCorrect = (setAttemptsRes.data ?? []).filter((a: { correct: boolean }) => a.correct).length
     const ratingDeltas: Record<string, number> = {}
     for (const [d, r] of Object.entries(ratings)) {
@@ -185,20 +191,21 @@ export async function POST(request: Request) {
       total: set.question_ids.length,
       ratingDeltas,
       streak,
+      kind: set.kind,
     }
-    profileUpdate.streak = streak
-    profileUpdate.longest_streak = Math.max(profile?.longest_streak ?? 0, streak)
-    profileUpdate.last_set_date = today
   }
 
   // ---- phase 3: writes (parallel — all independent) ----
   const isReviewSlot = set.review_card_ids.length > 0 && set.cursor < 2
+  const attemptContext = set.kind === 'review' ? 'review'
+    : set.kind === 'topic' ? 'topic'
+    : isReviewSlot ? 'review' : 'daily'
   const [attemptRes] = await Promise.all([
     svc.from('apti_attempts').insert({
       user_id: user.id,
       question_id: question.id,
       set_id: set.id,
-      context: isReviewSlot ? 'review' : 'daily',
+      context: attemptContext,
       correct,
       chosen,
       time_ms: timeMs,

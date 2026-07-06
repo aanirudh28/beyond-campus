@@ -2,7 +2,7 @@ export const runtime = 'nodejs'
 
 import { NextResponse } from 'next/server'
 import { getAuthedUser } from '@/lib/tracker'
-import { ensureAptiProfile, getOrBuildTodaySet, loadSetQuestions, loadCurriculum, clientSafeQuestion } from '@/lib/apti'
+import { ensureAptiProfile, getOrBuildTodaySet, loadSetQuestions, loadCurriculum, clientSafeQuestion, getNextUp } from '@/lib/apti'
 
 // Returns today's set (building it on first request of the IST day) with
 // client-safe question payloads: stems and options only — answers, traps and
@@ -13,9 +13,10 @@ export async function GET() {
 
   const profile = await ensureAptiProfile(user.id, user.email!)
   const set = await getOrBuildTodaySet(user.id, profile)
-  const [questions, curriculum] = await Promise.all([
+  const [questions, curriculum, nextUp] = await Promise.all([
     loadSetQuestions(set.question_ids),
     loadCurriculum(),
+    getNextUp(user.id),
   ])
 
   return NextResponse.json({
@@ -35,5 +36,6 @@ export async function GET() {
       lastSetDate: profile.last_set_date,
       ratings: profile.ratings ?? {},
     },
+    nextUp,
   })
 }

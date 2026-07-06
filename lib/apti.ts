@@ -5,7 +5,7 @@
 
 import { serviceClient } from '@/lib/tracker'
 import {
-  buildDailySet, chooseFocusSkills, istDateString,
+  buildDailySet, chooseFocusSkills, istDateString, expectedScore,
   type CandidateQuestion, type DueReview, type Mastery, type SkillState,
   DEFAULT_SKILL_STATE,
 } from '@/lib/apti-engine'
@@ -253,6 +253,108 @@ export async function loadSetQuestions(ids: string[]): Promise<QuestionRow[]> {
   const { data } = await svc.from('apti_questions').select('*').in('id', ids)
   const byId = new Map((data ?? []).map((q: QuestionRow) => [q.id, q]))
   return ids.map((id) => byId.get(id)).filter(Boolean) as QuestionRow[]
+}
+
+export async function getOwnedSet(userId: string, setId: string): Promise<DailySetRow | null> {
+  const svc = serviceClient()
+  const { data } = await svc.from('apti_daily_sets').select('*').eq('id', setId).maybeSingle()
+  const set = data as DailySetRow | null
+  return set && set.user_id === userId ? set : null
+}
+
+// On-demand skill session (from the mastery map): 8 questions hugging the
+// student's flow band. Prefers unseen questions; with a young bank, falls
+// back to least-recently relevant seen ones rather than refusing to practice.
+export async function buildTopicSession(userId: string, skillId: string): Promise<DailySetRow | { error: string }> {
+  const svc = serviceClient()
+  const [{ data: profile }, { data: state }, { data: bank }, { data: recent }] = await Promise.all([
+    svc.from('apti_profiles').select('ratings').eq('user_id', userId).single(),
+    svc.from('apti_skill_state').select('rating').eq('user_id', userId).eq('skill_id', skillId).maybeSingle(),
+    svc.from('apti_questions').select('id, rating').eq('status', 'approved').eq('skill_id', skillId),
+    svc.from('apti_attempts').select('question_id')
+      .eq('user_id', userId)
+      .gte('created_at', new Date(Date.now() - 60 * 86_400_000).toISOString()),
+  ])
+  if (!bank || bank.length === 0) return { error: 'No questions for this skill yet' }
+
+  const userRating = state?.rating ?? 1000
+  const seen = new Set((recent ?? []).map((a: { question_id: string }) => a.question_id))
+  const closeness = (q: { rating: number }) => Math.abs(expectedScore(userRating, q.rating) - 0.75)
+  const unseen = bank.filter((q) => !seen.has(q.id)).sort((a, b) => closeness(a) - closeness(b))
+  const fallback = bank.filter((q) => seen.has(q.id)).sort((a, b) => closeness(a) - closeness(b))
+  const ids = [...unseen, ...fallback].slice(0, 8).map((q) => q.id)
+
+  const { data: created, error } = await svc.from('apti_daily_sets').insert({
+    user_id: userId,
+    set_date: istDateString(),
+    kind: 'topic',
+    question_ids: ids,
+    ratings_at_start: profile?.ratings ?? {},
+  }).select('*').single()
+  if (error) {
+    return { error: error.code === '23505'
+      ? 'One extra session per day for now — paste supabase/apti-upgrade-1.sql to unlock unlimited sessions.'
+      : 'Could not start the session' }
+  }
+  return created as DailySetRow
+}
+
+// "Clear your backlog" session: everything due in the redemption queue, up to 8.
+export async function buildReviewSession(userId: string): Promise<DailySetRow | { error: string }> {
+  const svc = serviceClient()
+  const [{ data: profile }, { data: due }] = await Promise.all([
+    svc.from('apti_profiles').select('ratings').eq('user_id', userId).single(),
+    svc.from('apti_review_cards')
+      .select('id, question_id')
+      .eq('user_id', userId).eq('redeemed', false)
+      .not('question_id', 'is', null)
+      .lte('due_at', new Date().toISOString())
+      .order('due_at').limit(8),
+  ])
+  if (!due || due.length === 0) return { error: 'Nothing due — your backlog is clear' }
+
+  const { data: created, error } = await svc.from('apti_daily_sets').insert({
+    user_id: userId,
+    set_date: istDateString(),
+    kind: 'review',
+    question_ids: due.map((c: { question_id: string }) => c.question_id),
+    review_card_ids: due.map((c: { id: string }) => c.id),
+    ratings_at_start: profile?.ratings ?? {},
+  }).select('*').single()
+  if (error) {
+    return { error: error.code === '23505'
+      ? 'One extra session per day for now — paste supabase/apti-upgrade-1.sql to unlock unlimited sessions.'
+      : 'Could not start the session' }
+  }
+  return created as DailySetRow
+}
+
+// Powers the Today page's "next up" cards: what's due, and where you're weakest.
+export async function getNextUp(userId: string) {
+  const svc = serviceClient()
+  const curriculum = await loadCurriculum()
+  const [{ count: dueCount }, { data: states }] = await Promise.all([
+    svc.from('apti_review_cards')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId).eq('redeemed', false)
+      .not('question_id', 'is', null)
+      .lte('due_at', new Date().toISOString()),
+    svc.from('apti_skill_state').select('skill_id, attempts, correct, mastery').eq('user_id', userId),
+  ])
+  let weakest: { id: string; slug: string; name: string; accuracy: number } | null = null
+  for (const s of states ?? []) {
+    if (s.attempts < 4) continue
+    const acc = s.correct / s.attempts
+    if (acc >= 0.8) continue
+    if (!weakest || acc < weakest.accuracy) {
+      const skill = curriculum.skillById.get(s.skill_id)
+      if (skill) weakest = { id: skill.id, slug: skill.slug, name: skill.name, accuracy: acc }
+    }
+  }
+  return {
+    dueReviews: dueCount ?? 0,
+    weakestSkill: weakest ? { ...weakest, accuracy: Math.round(weakest.accuracy * 100) } : null,
+  }
 }
 
 // Attempt-weighted mean of skill ratings within one domain. Pure — the
