@@ -6,6 +6,7 @@ import Link from 'next/link'
 import {
   GRAD, COLORS, Card, PrimaryBtn, Mono, Chip, DOMAIN_LABELS, AptiStyles,
 } from '@/app/components/apti/ui'
+import AptiNav from '@/app/components/apti/Nav'
 import type { SetSummary } from '@/app/components/apti/SetPlayer'
 
 interface TodayData {
@@ -39,7 +40,17 @@ export default function PracticePage() {
         if (!r.ok) throw new Error('load failed')
         return r.json()
       })
-      .then((d) => { if (d && !cancelled) setData(d) })
+      .then((d: TodayData | null) => {
+        if (!d || cancelled) return
+        // brand-new account → the diagnostic IS the onboarding
+        const isFresh = Object.keys(d.profile.ratings ?? {}).length === 0 &&
+          d.set.cursor === 0 && !d.set.completedAt && !d.profile.lastSetDate
+        if (isFresh && !sessionStorage.getItem('apti_skip_onboarding')) {
+          router.replace('/practice/start')
+          return
+        }
+        setData(d)
+      })
       .catch(() => { if (!cancelled) setError('Could not load today’s set. Refresh to retry.') })
     return () => { cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -210,6 +221,7 @@ export default function PracticePage() {
           )
         })()}
       </div>
+      <AptiNav active="today" />
     </main>
   )
 }

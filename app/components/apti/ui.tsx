@@ -50,9 +50,11 @@ export function Chip({ children, color = COLORS.muted, bg = 'rgba(255,255,255,0.
   )
 }
 
-export function Card({ children, style }: { children: ReactNode; style?: React.CSSProperties }) {
+export function Card({ children, style, className }: {
+  children: ReactNode; style?: React.CSSProperties; className?: string
+}) {
   return (
-    <div style={{
+    <div className={className} style={{
       background: COLORS.card, border: `1px solid ${COLORS.hair}`,
       borderRadius: 18, padding: 22, backdropFilter: 'blur(8px)', ...style,
     }}>
