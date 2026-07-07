@@ -7,15 +7,16 @@ import {
   GRAD, COLORS, Card, PrimaryBtn, Mono, Chip, DOMAIN_LABELS, AptiStyles,
 } from '@/app/components/apti/ui'
 import AptiNav from '@/app/components/apti/Nav'
+import { trackAptiEvent } from '@/app/components/apti/track'
 
 // First-class doorways to the rest of the platform — the tab bar is for
 // switching, these are for discovering.
-function ExploreCard({ href, glyph, title, line, accent, style }: {
+function ExploreCard({ href, glyph, title, line, accent, style, onClick }: {
   href: string; glyph: string; title: string; line: string; accent: string
-  style?: React.CSSProperties
+  style?: React.CSSProperties; onClick?: () => void
 }) {
   return (
-    <Link href={href} className="apti-option" style={{
+    <Link href={href} onClick={onClick} className="apti-option" style={{
       display: 'flex', flexDirection: 'column', gap: 8,
       padding: '18px 16px', borderRadius: 16,
       background: 'rgba(255,255,255,0.03)', border: `1px solid ${COLORS.hair}`,
@@ -357,6 +358,17 @@ export default function PracticePage() {
                     style={{ gridColumn: '1 / -1' }}
                   />
                 </div>
+              </div>
+
+              {/* quiet mentorship doorway — doc 10 surface 3: no badges, no popups */}
+              <div className="apti-in" style={{ marginBottom: 18 }}>
+                <ExploreCard
+                  href="/program"
+                  glyph="🧭" title="Mentorship"
+                  line="Apti clears the test. Humans clear the interview — cohorts, 1:1 calls, resume."
+                  accent="rgba(255,255,255,0.04)"
+                  onClick={() => trackAptiEvent('cohort_cta_clicked', { surface: 'nav' })}
+                />
               </div>
 
               {/* longest streak footnote */}
