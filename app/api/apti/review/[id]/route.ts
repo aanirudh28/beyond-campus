@@ -15,6 +15,7 @@ import { blueprintBySlug, type MockSectionRow } from '@/lib/apti-mocks'
 
 interface ReviewItem {
   questionId: string
+  attemptId: number | null   // anchors the AI tutor (set scope; mocks use mockId+questionId)
   index: number
   section: string | null
   skillName: string
@@ -64,6 +65,7 @@ function trapExplanationFor(q: QuestionRow, chosenKey: string | null): string | 
 }
 
 interface AttemptRow {
+  id: number
   question_id: string
   correct: boolean
   chosen: { key?: string | null; value?: number | null } | null
@@ -106,6 +108,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         const correct = !!chosen && (q.payload.answer.keys ?? []).includes(chosen)
         items.push({
           ...baseItem(q, curriculum),
+          attemptId: null,
           index,
           section: sections.length > 1 ? sec.name : null,
           chosenKey: chosen,
@@ -145,7 +148,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
   const [{ data: attemptRows }, questions, curriculum] = await Promise.all([
     svc.from('apti_attempts')
-      .select('question_id, correct, chosen, time_ms, confidence, assisted, error_type, rating_before, rating_after')
+      .select('id, question_id, correct, chosen, time_ms, confidence, assisted, error_type, rating_before, rating_after')
       .eq('user_id', user.id).eq('set_id', set.id)
       .order('created_at', { ascending: true }),
     loadSetQuestions(set.question_ids),
@@ -168,6 +171,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const chosenKey = attempt.chosen?.key ?? null
     items.push({
       ...baseItem(q, curriculum),
+      attemptId: attempt.id,
       index: i + 1,
       section: null,
       chosenKey,

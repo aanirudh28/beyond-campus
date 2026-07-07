@@ -8,6 +8,7 @@ import {
   AccuracyRing, AptiStyles,
 } from '@/app/components/apti/ui'
 import AptiNav from '@/app/components/apti/Nav'
+import TutorPanel from '@/app/components/apti/TutorPanel'
 
 // The review room: every question you've answered in a session, reopened —
 // your pick, the right pick, the trap, the solution, the clock. Works for
@@ -15,6 +16,7 @@ import AptiNav from '@/app/components/apti/Nav'
 
 interface ReviewItem {
   questionId: string
+  attemptId: number | null
   index: number
   section: string | null
   skillName: string
@@ -198,7 +200,9 @@ function OptionRows({ item }: { item: ReviewItem }) {
   )
 }
 
-function QuestionCard({ item, open, onToggle }: { item: ReviewItem; open: boolean; onToggle: () => void }) {
+function QuestionCard({ item, open, onToggle, mockId }: {
+  item: ReviewItem; open: boolean; onToggle: () => void; mockId: string | null
+}) {
   return (
     <Card style={{ padding: 0, marginBottom: 10, overflow: 'hidden' }}>
       <button
@@ -285,6 +289,19 @@ function QuestionCard({ item, open, onToggle }: { item: ReviewItem; open: boolea
               </div>
             )}
           </div>
+
+          {/* AI tutor — mocks anchor by mockId+questionId, sets by attemptId */}
+          {(mockId || item.attemptId != null) && (
+            <div style={{ marginTop: 12 }}>
+              <TutorPanel
+                scope={mockId ? 'mock' : 'set'}
+                attemptId={item.attemptId}
+                mockId={mockId ?? undefined}
+                questionId={item.questionId}
+                correct={item.status === 'correct'}
+              />
+            </div>
+          )}
         </div>
       )}
     </Card>
@@ -456,6 +473,7 @@ export default function ReviewPage({ params, searchParams }: {
             <QuestionCard
               key={item.questionId}
               item={item}
+              mockId={isMock ? id : null}
               open={!!openIds[item.questionId]}
               onToggle={() => setOpenIds((s) => ({ ...s, [item.questionId]: !s[item.questionId] }))}
             />

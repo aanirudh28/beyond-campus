@@ -7,6 +7,7 @@ import {
   GRAD, COLORS, MiniMd, Mono, Chip, Card, PrimaryBtn,
   CountUpNumber, AccuracyRing, AptiStyles, DOMAIN_LABELS,
 } from './ui'
+import TutorPanel from './TutorPanel'
 
 export interface ClientQuestion {
   id: string
@@ -615,6 +616,9 @@ export default function SetPlayer({ setId, kind = 'daily', questions, startCurso
               </div>
             )}
           </Card>
+
+          {/* AI tutor — anchored to this graded attempt; key resets the chat per question */}
+          <TutorPanel key={reveal.attemptId ?? 'tutor'} scope="set" attemptId={reveal.attemptId} correct={reveal.correct} />
 
           {/* error tagging — required on a miss */}
           {!reveal.correct && (
