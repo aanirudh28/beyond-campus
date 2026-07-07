@@ -6,6 +6,8 @@ import { COLORS } from './ui'
 const ITEMS = [
   { key: 'today', href: '/practice', glyph: '◉', label: 'Today' },
   { key: 'map', href: '/practice/map', glyph: '▦', label: 'Map' },
+  { key: 'mocks', href: '/practice/mocks', glyph: '⏱', label: 'Mocks' },
+  { key: 'ready', href: '/practice/companies', glyph: '◎', label: 'Ready' },
   { key: 'stats', href: '/practice/stats', glyph: '∿', label: 'Stats' },
 ] as const
 
@@ -27,17 +29,18 @@ export default function AptiNav({ active }: { active: NavKey }) {
           <Link
             key={item.key}
             href={item.href}
+            aria-label={item.label}
             style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '10px 18px', borderRadius: 100,
+              display: 'flex', alignItems: 'center', gap: 7,
+              padding: isActive ? '10px 16px' : '10px 13px', borderRadius: 100,
               background: isActive ? 'rgba(79,124,255,0.16)' : 'transparent',
               color: isActive ? '#fff' : COLORS.muted2,
-              fontSize: 13.5, fontWeight: 600,
-              transition: 'background 0.2s, color 0.2s',
+              fontSize: 13, fontWeight: 600,
+              transition: 'background 0.2s, color 0.2s, padding 0.2s',
             }}
           >
             <span style={{ fontSize: 14, color: isActive ? COLORS.blueSoft : 'inherit' }}>{item.glyph}</span>
-            {item.label}
+            {isActive && item.label}
           </Link>
         )
       })}
