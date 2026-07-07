@@ -4,8 +4,9 @@ import { usePathname } from 'next/navigation'
 
 export default function WhatsAppButton() {
   const pathname = usePathname()
-  // the tracker has its own floating + button in the same corner
-  if (pathname?.startsWith('/tracker')) return null
+  // the tracker has its own floating + button in the same corner;
+  // the practice app has a bottom tab bar; admin consoles need the corner free
+  if (pathname?.startsWith('/tracker') || pathname?.startsWith('/practice') || pathname?.startsWith('/admin')) return null
 
   return (
     <a

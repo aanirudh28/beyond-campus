@@ -7,6 +7,30 @@ import {
   GRAD, COLORS, Card, PrimaryBtn, Mono, Chip, DOMAIN_LABELS, AptiStyles,
 } from '@/app/components/apti/ui'
 import AptiNav from '@/app/components/apti/Nav'
+
+// First-class doorways to the rest of the platform — the tab bar is for
+// switching, these are for discovering.
+function ExploreCard({ href, glyph, title, line, accent }: {
+  href: string; glyph: string; title: string; line: string; accent: string
+}) {
+  return (
+    <Link href={href} className="apti-option" style={{
+      display: 'flex', flexDirection: 'column', gap: 8,
+      padding: '18px 16px', borderRadius: 16,
+      background: 'rgba(255,255,255,0.03)', border: `1px solid ${COLORS.hair}`,
+      position: 'relative', overflow: 'hidden',
+    }}>
+      <span aria-hidden style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: `linear-gradient(135deg, ${accent}, transparent 60%)`,
+      }} />
+      <span style={{ fontSize: 24, lineHeight: 1 }}>{glyph}</span>
+      <span style={{ fontSize: 15.5, fontWeight: 700 }}>{title}</span>
+      <span style={{ fontSize: 12.5, color: COLORS.muted, lineHeight: 1.5 }}>{line}</span>
+      <span style={{ fontSize: 13, color: COLORS.blueSoft, fontWeight: 600 }}>Open →</span>
+    </Link>
+  )
+}
 import type { SetSummary } from '@/app/components/apti/SetPlayer'
 
 interface TodayData {
@@ -288,6 +312,37 @@ export default function PracticePage() {
                   </p>
                 </Card>
               )}
+
+              {/* the rest of the platform, front and centre */}
+              <div className="apti-in" style={{ marginBottom: 18 }}>
+                <p className="mono-label" style={{ marginBottom: 12 }}>Go further</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <ExploreCard
+                    href="/practice/mocks"
+                    glyph="⏱" title="Take a mock"
+                    line="15-min checkpoint. Every result ends in a fix plan."
+                    accent="rgba(123,97,255,0.10)"
+                  />
+                  <ExploreCard
+                    href="/practice/companies"
+                    glyph="🎯" title="Am I ready?"
+                    line="Deloitte, ICICI, HUL — one honest number each."
+                    accent="rgba(79,124,255,0.10)"
+                  />
+                  <ExploreCard
+                    href="/practice/map"
+                    glyph="🗺" title="Mastery map"
+                    line="Every skill, its earned colour, your next focus."
+                    accent="rgba(52,211,153,0.08)"
+                  />
+                  <ExploreCard
+                    href="/practice/stats"
+                    glyph="📈" title="Your patterns"
+                    line="Why you miss, when you rush, how you're trending."
+                    accent="rgba(251,191,36,0.08)"
+                  />
+                </div>
+              </div>
 
               {/* longest streak footnote */}
               {profile.longestStreak > 1 && (
