@@ -486,8 +486,9 @@ export default function Home() {
               <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 8, zIndex: 200 }}>
               <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: 8, minWidth: 250, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
                 {[
+                  { href: '/aptitude', label: '🧮 Apti — Aptitude Practice', badge: 'NEW', badgeStyle: { background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white' } },
                   { href: '/resources/resume-roast', label: '🔥 Resume Roast', badge: 'FREE AI', badgeStyle: { background: '#ef4444', color: 'white' } },
-                  { href: '/job-tracker', label: '🎯 Job Tracker', badge: 'NEW', badgeStyle: { background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', color: 'white' } },
+                  { href: '/job-tracker', label: '🎯 Job Tracker', badge: 'free', badgeStyle: { color: '#93BBFF' } },
                   { href: '/resources/excel-interview-prep', label: '📊 Excel Interview Prep', badge: 'NEW', badgeStyle: { background: 'linear-gradient(135deg, #10b981, #06b6d4)', color: 'white' } },
                   { href: '/resources/resume-builder', label: '📄 Resume Builder', badge: 'free', badgeStyle: { color: '#6ee7b7' } },
                   { href: '/resources/career-toolkit', label: '🛠️ Career Toolkit', badge: '15 roles', badgeStyle: { color: '#6ee7b7' } },
@@ -841,8 +842,8 @@ export default function Home() {
             Don&apos;t trust us yet? <em>Smart.</em><br />Start with the free stuff.
           </h2>
           <p data-reveal style={{ color: 'var(--muted)', fontSize: 16, maxWidth: 560, lineHeight: 1.7, marginBottom: 48 }}>
-            Seven free tools covering every stage of the hunt — fix the resume, practice the interview,
-            run the outreach, track every application. Use them, see how we think, then decide
+            Eight free tools covering every stage of the hunt — fix the resume, clear the aptitude
+            round, run the outreach, track every application. Use them, see how we think, then decide
             if you want us in your corner.
           </p>
 
@@ -898,14 +899,41 @@ export default function Home() {
               <span className="tool-cta" style={{ marginTop: 0 }}>Track my applications →</span>
             </a>
 
+            {/* Featured — Apti with mini rating strip */}
+            <a href="/aptitude" className="tool-card b3" data-reveal data-index="03" style={{ transitionDelay: '0.12s', color: 'inherit', borderColor: 'rgba(123,97,255,0.25)' }} onClick={cta('Apti Aptitude Practice', 'free_tools')}>
+              <span className="bento-kicker" style={{ color: '#b4a6ff' }}>STEP 03 — CLEAR THE TEST</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+                <span style={{ fontSize: 34, lineHeight: 1 }}>🧮</span>
+                <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: '4px 10px', borderRadius: 100, color: '#7B61FF', background: '#7B61FF1a', border: '1px solid #7B61FF40' }}>NEW</span>
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: 'white', marginBottom: 12 }}>Apti — Aptitude Practice</div>
+              <p style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, marginBottom: 22 }}>
+                10 adaptive questions a day, a rating that moves like chess Elo, and a readiness score for every company you&apos;re targeting.
+              </p>
+              <div style={{ display: 'flex', gap: 8, marginTop: 'auto', marginBottom: 20 }}>
+                {[
+                  { l: 'QUANT', n: '1287', d: '▲ 12' },
+                  { l: 'LOGICAL', n: '1194', d: '▲ 8' },
+                  { l: 'VERBAL', n: '1226', d: '▲ 3' },
+                ].map(col => (
+                  <div key={col.l} style={{ flex: 1, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '9px 9px 7px' }}>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 8.5, letterSpacing: 1.2, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>{col.l}</div>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 15, fontWeight: 700, color: 'white', lineHeight: 1 }}>{col.n}</div>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 9.5, color: '#4ade80', marginTop: 4 }}>{col.d}</div>
+                  </div>
+                ))}
+              </div>
+              <span className="tool-cta" style={{ marginTop: 0 }}>Find my level →</span>
+            </a>
+
             {/* The rest of the arsenal */}
             {[
-              { span: 'b2', index: '03', icon: '📊', title: 'Excel Interview Prep', badge: 'NEW', badgeColor: '#10b981', desc: 'Drill the exact Excel tests analyst and finance roles screen with.', href: '/resources/excel-interview-prep', cta: 'Start practicing →' },
-              { span: 'b2', index: '04', icon: '📄', title: 'Resume Builder', badge: 'FREE', badgeColor: '#6ee7b7', desc: 'ATS-safe templates that survive the recruiter’s 6-second scan.', href: '/resources/resume-builder', cta: 'Build mine →' },
-              { span: 'b2', index: '05', icon: '✉️', title: 'Cold Email Pack', badge: '50 TEMPLATES', badgeColor: '#93BBFF', desc: 'The exact emails our students used to get real replies from hiring managers.', href: '/resources/cold-email-pack', cta: 'Steal the templates →' },
-              { span: 'b2', index: '06', icon: '💬', title: 'LinkedIn Scripts', badge: '20 SCRIPTS', badgeColor: '#7dd3fc', desc: 'Word-for-word DMs that turn strangers into referrals — without sounding desperate.', href: '/resources/linkedin-scripts', cta: 'Get the scripts →' },
-              { span: 'b2', index: '07', icon: '🛠️', title: 'Career Toolkit', badge: '15 ROLES', badgeColor: '#fbbf24', desc: 'Role-by-role guides for consulting, finance, marketing, BD, ops and Founder’s Office.', href: '/resources/career-toolkit', cta: 'Browse toolkits →' },
-              { span: 'b2', index: '08', icon: '📚', title: 'Career Guides', badge: 'FREE', badgeColor: '#a78bfa', desc: 'The complete off-campus playbooks: cold emails that get replies, consulting without an IIM, Founder\'s Office roles.', href: '/guides', cta: 'Read the guides →' },
+              { span: 'b2', index: '04', icon: '📊', title: 'Excel Interview Prep', badge: 'NEW', badgeColor: '#10b981', desc: 'Drill the exact Excel tests analyst and finance roles screen with.', href: '/resources/excel-interview-prep', cta: 'Start practicing →' },
+              { span: 'b2', index: '05', icon: '📄', title: 'Resume Builder', badge: 'FREE', badgeColor: '#6ee7b7', desc: 'ATS-safe templates that survive the recruiter’s 6-second scan.', href: '/resources/resume-builder', cta: 'Build mine →' },
+              { span: 'b2', index: '06', icon: '✉️', title: 'Cold Email Pack', badge: '50 TEMPLATES', badgeColor: '#93BBFF', desc: 'The exact emails our students used to get real replies from hiring managers.', href: '/resources/cold-email-pack', cta: 'Steal the templates →' },
+              { span: 'b2', index: '07', icon: '💬', title: 'LinkedIn Scripts', badge: '20 SCRIPTS', badgeColor: '#7dd3fc', desc: 'Word-for-word DMs that turn strangers into referrals — without sounding desperate.', href: '/resources/linkedin-scripts', cta: 'Get the scripts →' },
+              { span: 'b2', index: '08', icon: '🛠️', title: 'Career Toolkit', badge: '15 ROLES', badgeColor: '#fbbf24', desc: 'Role-by-role guides for consulting, finance, marketing, BD, ops and Founder’s Office.', href: '/resources/career-toolkit', cta: 'Browse toolkits →' },
+              { span: 'b2', index: '09', icon: '📚', title: 'Career Guides', badge: 'FREE', badgeColor: '#a78bfa', desc: 'The complete off-campus playbooks: cold emails that get replies, consulting without an IIM, Founder\'s Office roles.', href: '/guides', cta: 'Read the guides →' },
             ].map((tool, i) => (
               <a key={tool.title} href={tool.href} className={`tool-card ${tool.span}`} data-reveal data-index={tool.index} style={{ transitionDelay: `${0.16 + i * 0.06}s`, color: 'inherit', padding: '28px 26px' }} onClick={cta(tool.title, 'free_tools')}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -1325,6 +1353,7 @@ export default function Home() {
             { label: 'Career Guides', href: '/guides' },
             { label: 'Free Resume Roast', href: '/resources/resume-roast' },
             { label: 'Job Tracker', href: '/job-tracker' },
+            { label: 'Aptitude Practice', href: '/aptitude' },
             { label: 'Consulting Casebooks', href: '/resources/consulting' },
             { label: 'Student Results', href: '/results' },
           ].map(l => (

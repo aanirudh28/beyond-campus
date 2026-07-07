@@ -257,6 +257,22 @@ export default function DashboardPage() {
           ))}
         </div>
 
+        {/* ── Aptitude practice cross-link ── */}
+        <a href="/practice" style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+          background: 'linear-gradient(135deg, rgba(79,124,255,0.08), rgba(123,97,255,0.08))',
+          border: '1px solid rgba(79,124,255,0.25)', borderRadius: 24, padding: '24px 36px',
+          marginBottom: 16, textDecoration: 'none',
+        }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'white', marginBottom: 4 }}>🧮 Daily aptitude practice</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>
+              Free, adaptive, 12 minutes a day — clear the test that gates every placement.
+            </div>
+          </div>
+          <span style={{ color: '#93BBFF', fontSize: 14, fontWeight: 700, whiteSpace: 'nowrap' }}>Start →</span>
+        </a>
+
         {/* ── Section 4: Resources ── */}
         <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 24, padding: '32px 36px', marginBottom: 16 }}>
           <h2 style={{ fontSize: 15, fontWeight: 700, color: 'white', margin: '0 0 20px' }}>My Resources</h2>

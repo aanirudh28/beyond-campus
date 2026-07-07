@@ -95,6 +95,9 @@ export function SiteNav({
             {l.label}
           </Link>
         ))}
+        <Link href="/aptitude" className="nav-link nav-hide-mobile">
+          Aptitude Practice
+        </Link>
         <a href={cta.href} className="btn-primary" style={{ padding: '10px 22px', fontSize: 14 }}>
           <span>{cta.label}</span>
         </a>

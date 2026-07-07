@@ -220,6 +220,10 @@ export default function TrackerPage() {
             <Link href="/tracker/analytics" className="bc-navlink" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 13px', borderRadius: 9, color: 'rgba(255,255,255,0.5)', fontSize: 12.5, fontWeight: 600, textDecoration: 'none' }}>
               <Icon name="chart" size={13} /><span className="hide-mobile">Analytics</span>
             </Link>
+            <Link href="/practice" className="bc-navlink" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 13px', borderRadius: 9, color: 'rgba(255,255,255,0.5)', fontSize: 12.5, fontWeight: 600, textDecoration: 'none' }}>
+              <Icon name="brain" size={13} /><span className="hide-mobile">Apti</span>
+              <span style={{ fontSize: 8, fontWeight: 800, padding: '2px 5px', borderRadius: 100, background: GRAD, color: 'white', letterSpacing: 0.5 }}>NEW</span>
+            </Link>
           </nav>
 
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
