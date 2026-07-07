@@ -104,6 +104,32 @@ const LEAD_STEPS: Step[] = [
   },
 ]
 
+// Apti launch (docs/aptitude/11): announce to the existing warm base, capped
+// per run so the rollout spreads over days instead of starving the drips.
+// Step 1 is gated on step 0's actual send date, not account age.
+const APTI_MAX_PER_RUN = 30
+const APTI_STEPS: Step[] = [
+  {
+    sequence: 'apti', step: 0, afterDays: 0,
+    subject: 'We built the aptitude platform we wished existed. It\'s free.',
+    body: name => `
+      <h1 style="font-size: 22px; margin: 0 0 12px;">${name ? `${name.split(' ')[0]}, the` : 'The'} aptitude round just got beatable 🧮</h1>
+      <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7;">Every placement season, sharp students get filtered out by a 60-minute aptitude test — not because they can't do the maths, but because they practised randomly and never found out <em>why</em> they miss.</p>
+      <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7;">So we built <strong style="color: white;">Apti</strong>: 10 adaptive questions a day at your level, a rating that moves like chess Elo, your mistakes brought back until you beat them, and an honest readiness score for Deloitte, ICICI, HUL — whoever you're targeting.</p>
+      <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7;">Free. Actually free — every question, every mock, every explanation. Forever.</p>
+      ${ctaButton(`${SITE}/aptitude`, 'See how it works →')}`,
+  },
+  {
+    sequence: 'apti', step: 1, afterDays: 4,
+    subject: '8 questions tell you exactly where you stand',
+    body: name => `
+      <h1 style="font-size: 22px; margin: 0 0 12px;">${name ? `${name.split(' ')[0]}, most` : 'Most'} students prep blind. You don't have to.</h1>
+      <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7;">Apti's diagnostic takes 8 questions and about two minutes. At the end you get your starting rating, your two biggest gaps, and your first focus topic — the exact place your prep should begin.</p>
+      <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7;">From there it's 12 minutes a day. The set adapts to you, your mistakes come back on a schedule until you redeem them, and the rating tells you the truth about whether you're ready.</p>
+      ${ctaButton(`${SITE}/aptitude`, 'Find my level →')}`,
+  },
+]
+
 export async function GET(req: NextRequest) {
   const auth = req.headers.get('authorization')
   if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -115,13 +141,19 @@ export async function GET(req: NextRequest) {
 
   const [{ data: optoutRows }, { data: sentRows }, { data: trackerUsers }] = await Promise.all([
     svc.from('nurture_optouts').select('email'),
-    svc.from('nurture_sends').select('email, sequence, step'),
+    svc.from('nurture_sends').select('email, sequence, step, sent_at'),
     svc.from('tracker_profiles').select('email, name, created_at, email_reminders_enabled'),
   ])
 
   const optouts = new Set((optoutRows || []).map(r => r.email.toLowerCase()))
   const sent = new Set((sentRows || []).map(r => `${r.email.toLowerCase()}|${r.sequence}|${r.step}`))
   const trackerEmails = new Set((trackerUsers || []).map(u => u.email.toLowerCase()))
+  // when each address got the apti announcement — gates apti step 1 below
+  const aptiAnnouncedAt = new Map<string, string>()
+  for (const r of sentRows || []) {
+    if (r.sequence === 'apti' && r.step === 0) aptiAnnouncedAt.set(r.email.toLowerCase(), r.sent_at)
+  }
+  const roastAudience = new Set<string>()
   const mailedThisRun = new Set<string>()
   let sends = 0
 
@@ -184,6 +216,7 @@ export async function GET(req: NextRequest) {
     }
     for (const [email, createdAt] of latestRoast) {
       if (trackerEmails.has(email)) continue
+      roastAudience.add(email)
       for (const step of ROAST_STEPS) {
         if (createdAt <= daysAgo(step.afterDays)) await trySend(email, null, step)
       }
@@ -254,6 +287,31 @@ export async function GET(req: NextRequest) {
       }
     } catch { /* digest failure must not affect the nurture run */ }
   }
+
+  // ---- Apti launch announcement (runs last: fills leftover budget only) ----
+  try {
+    const { data: aptiProfiles } = await svc.from('apti_profiles').select('email')
+    const aptiUsers = new Set((aptiProfiles || []).map(p => (p.email ?? '').toLowerCase()))
+
+    // whole warm base, deduped: leads + roast-only emails + tracker users
+    const audience = new Map<string, string | null>()
+    for (const [email] of leadEmails) audience.set(email, null)
+    for (const email of roastAudience) audience.set(email, null)
+    for (const u of trackerUsers || []) {
+      if (u.email && u.email_reminders_enabled !== false) audience.set(u.email.toLowerCase(), u.name)
+    }
+
+    let aptiSends = 0
+    for (const [email, name] of audience) {
+      if (aptiSends >= APTI_MAX_PER_RUN || sends >= MAX_SENDS_PER_RUN) break
+      if (aptiUsers.has(email)) continue // already practicing — no announcement
+      const before = sends
+      const announcedAt = aptiAnnouncedAt.get(email)
+      if (!announcedAt) await trySend(email, name, APTI_STEPS[0])
+      else if (announcedAt <= daysAgo(APTI_STEPS[1].afterDays)) await trySend(email, name, APTI_STEPS[1])
+      if (sends > before) aptiSends++
+    }
+  } catch { /* apti announcement must not affect the nurture run */ }
 
   return NextResponse.json({ sent: sends })
 }
