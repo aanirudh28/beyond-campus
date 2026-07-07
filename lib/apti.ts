@@ -52,6 +52,7 @@ export interface DailySetRow {
   ratings_at_start: Record<string, number>
   completed_at: string | null
   summary: Record<string, unknown> | null
+  created_at: string
 }
 export interface AptiProfile {
   user_id: string

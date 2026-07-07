@@ -66,7 +66,9 @@ const ITEMS = [
 
 export type NavKey = (typeof ITEMS)[number]['key']
 
-export default function AptiNav({ active }: { active: NavKey }) {
+// 'none' renders the bar with no tab lit — for surfaces that live between
+// tabs (history, session review).
+export default function AptiNav({ active }: { active: NavKey | 'none' }) {
   return (
     <nav style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,

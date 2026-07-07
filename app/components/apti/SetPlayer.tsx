@@ -301,6 +301,18 @@ export default function SetPlayer({ setId, kind = 'daily', questions, startCurso
         )}
 
         <div className="apti-in" style={{ animationDelay: '0.3s', marginTop: 28 }}>
+          <button
+            onClick={() => router.push(`/practice/review/${setId}`)}
+            className="apti-option"
+            style={{
+              width: '100%', padding: '15px 22px', marginBottom: 12,
+              background: 'rgba(79,124,255,0.08)', color: '#fff',
+              border: '1px solid rgba(79,124,255,0.35)', borderRadius: 100,
+              fontWeight: 600, fontSize: 15, fontFamily: 'inherit', cursor: 'pointer',
+            }}
+          >
+            Review your answers →
+          </button>
           {isDaily && s && (
             <button
               onClick={() => shareResultCard(s)}

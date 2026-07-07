@@ -10,15 +10,16 @@ import AptiNav from '@/app/components/apti/Nav'
 
 // First-class doorways to the rest of the platform — the tab bar is for
 // switching, these are for discovering.
-function ExploreCard({ href, glyph, title, line, accent }: {
+function ExploreCard({ href, glyph, title, line, accent, style }: {
   href: string; glyph: string; title: string; line: string; accent: string
+  style?: React.CSSProperties
 }) {
   return (
     <Link href={href} className="apti-option" style={{
       display: 'flex', flexDirection: 'column', gap: 8,
       padding: '18px 16px', borderRadius: 16,
       background: 'rgba(255,255,255,0.03)', border: `1px solid ${COLORS.hair}`,
-      position: 'relative', overflow: 'hidden',
+      position: 'relative', overflow: 'hidden', ...style,
     }}>
       <span aria-hidden style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
@@ -237,6 +238,13 @@ export default function PracticePage() {
                         </Mono>
                       </div>
                     ))}
+                    <Link href={`/practice/review/${set.id}`} style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: '13px 0 2px', borderTop: `1px solid ${COLORS.hair}`,
+                      fontSize: 14, fontWeight: 600, color: COLORS.blueSoft,
+                    }}>
+                      Review today&rsquo;s answers <span>→</span>
+                    </Link>
                   </div>
                 )}
               </Card>
@@ -340,6 +348,13 @@ export default function PracticePage() {
                     glyph="📈" title="Your patterns"
                     line="Why you miss, when you rush, how you're trending."
                     accent="rgba(251,191,36,0.08)"
+                  />
+                  <ExploreCard
+                    href="/practice/history"
+                    glyph="📓" title="Session history"
+                    line="Every set and mock you've sat — reopen any question, any solution, any time."
+                    accent="rgba(255,255,255,0.045)"
+                    style={{ gridColumn: '1 / -1' }}
                   />
                 </div>
               </div>

@@ -156,6 +156,13 @@ export default function MockReportPage({ params }: { params: Promise<{ id: strin
       </Card>
 
       <div className="apti-in" style={{ animationDelay: '0.24s' }}>
+        <Link href={`/practice/review/${id}?type=mock`} style={{
+          display: 'block', textAlign: 'center', padding: '14px', borderRadius: 100,
+          background: 'rgba(79,124,255,0.08)', border: '1px solid rgba(79,124,255,0.35)',
+          fontSize: 14.5, fontWeight: 600, marginBottom: 10,
+        }}>
+          Review every question →
+        </Link>
         <Link href="/practice/companies" style={{
           display: 'block', textAlign: 'center', padding: '14px', borderRadius: 100,
           background: 'rgba(255,255,255,0.05)', border: `1px solid ${COLORS.hair}`,
