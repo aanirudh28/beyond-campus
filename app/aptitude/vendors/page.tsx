@@ -8,12 +8,12 @@ export const revalidate = 3600
 const SITE = 'https://www.beyond-campus.in'
 
 export const metadata: Metadata = {
-  title: 'Aptitude Test Vendors Decoded: AMCAT, eLitmus, SHL, Mettl, Aon | Apti',
+  title: 'Aptitude Test Vendors Decoded: AMCAT, eLitmus, SHL, Mettl, TCS iON | Apti',
   description:
-    'The test platforms behind placement rounds, explained: AMCAT, eLitmus, SHL, Mercer Mettl and Aon cut-e. Format, scoring, negative marking and what to drill for each. Free adaptive practice.',
+    'The test platforms behind placement rounds, explained: AMCAT, eLitmus, SHL, Mercer Mettl and TCS iON NQT. Format, scoring, negative marking and what to drill for each. Free adaptive practice.',
   alternates: { canonical: `${SITE}/aptitude/vendors` },
   openGraph: {
-    title: 'Know Your Test Vendor — AMCAT, eLitmus, SHL, Mettl, Aon',
+    title: 'Know Your Test Vendor — AMCAT, eLitmus, SHL, Mettl, TCS iON',
     description: 'The platform decides the pattern. Decode the test you are actually about to sit.',
     url: `${SITE}/aptitude/vendors`,
     siteName: 'Beyond Campus',
@@ -38,8 +38,8 @@ export default function VendorsIndex() {
           </h1>
           <p style={{ color: 'var(--muted)', fontSize: 15.5, lineHeight: 1.7, margin: 0 }}>
             The same company can feel like a different test depending on the platform behind it. AMCAT adapts
-            and never lets you go back; eLitmus punishes wrong answers; Aon cut-e is over before you settle in.
-            Decode the one you are actually about to sit.
+            and never lets you go back; eLitmus punishes wrong answers; one TCS NQT score travels across dozens
+            of companies. Decode the one you are actually about to sit.
           </p>
         </div>
       </section>

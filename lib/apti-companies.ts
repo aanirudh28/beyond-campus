@@ -52,10 +52,10 @@ export const COMPANIES: CompanyPattern[] = [
     },
   },
   {
-    slug: 'kpmg', name: 'KPMG', tier: 'big4', vendor: 'Aon cut-e',
-    sectionsLine: 'Short sharp modules (scales) — speed under pressure is the test',
+    slug: 'kpmg', name: 'KPMG', tier: 'big4', vendor: 'In-house cognitive modules',
+    sectionsLine: 'Short sharp cognitive modules — speed under pressure is the test',
     negativeMarking: true, season: 'Sep–Dec',
-    cutoffNote: 'cut-e modules are short; a few careless errors sink a module',
+    cutoffNote: 'Modules are short; a few careless errors sink a whole module',
     confidence: 'estimated',
     skillWeights: {
       'fraction-percent-conversion': 3, 'percentage-change': 2, 'basic-averages': 2,
