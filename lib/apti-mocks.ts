@@ -219,7 +219,7 @@ export async function gradeMockAttempt(
 
 // ---------------- readiness (docs/aptitude/08 formula) ----------------
 
-const MASTERY_VALUE: Record<string, number> = {
+export const MASTERY_VALUE: Record<string, number> = {
   unseen: 0, learning: 0.25, familiar: 0.5, proficient: 0.85, mastered: 1, rusty: 0.6,
 }
 

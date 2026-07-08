@@ -156,6 +156,24 @@ export default function CompaniesPage() {
         </div>
       )}
 
+      {/* ---- panic mode doorway ---- */}
+      {!loading && !picking && (
+        <Link href="/practice/panic" className="apti-in apti-option" style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+          padding: '15px 18px', marginBottom: 20, borderRadius: 16, textDecoration: 'none', color: '#fff',
+          background: 'linear-gradient(135deg, rgba(251,191,36,0.1), rgba(79,124,255,0.06))',
+          border: '1px solid rgba(251,191,36,0.3)',
+        }}>
+          <span>
+            <span style={{ fontSize: 15, fontWeight: 700, display: 'block' }}>◍ Test coming up?</span>
+            <span style={{ fontSize: 12.5, color: COLORS.muted, marginTop: 2, display: 'block' }}>
+              Get a day-by-day panic plan — the few skills that move your score most, triaged to the days you have.
+            </span>
+          </span>
+          <span style={{ color: COLORS.stretch, fontWeight: 700, whiteSpace: 'nowrap' }}>Plan it →</span>
+        </Link>
+      )}
+
       {/* ---- readiness cards ---- */}
       {!loading && !picking && (
         <>
