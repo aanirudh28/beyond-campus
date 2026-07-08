@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { serviceClient } from '@/lib/tracker'
 import { emailShell, ctaButton } from '@/lib/nurture'
+import { buildWeeklyAutopsy, type WrongHighlight } from '@/lib/apti-weekly'
+import { loadCurriculum, type QuestionPayload } from '@/lib/apti'
 
 // Daily drip sequences. One email max per address per run; hard cap per run
 // keeps us inside Resend's free tier (100/day) alongside follow-up reminders.
@@ -180,6 +182,116 @@ export async function GET(req: NextRequest) {
       sends++
       await new Promise(r => setTimeout(r, 550)) // stay under Resend's rate limit
     } catch { /* one bad address shouldn't kill the batch */ }
+  }
+
+  // ---- Sunday: apti weekly autopsy (doc 06 §2) — runs FIRST so active
+  // practicers get their report as the day's one email, ahead of any drip ----
+  if (new Date().getUTCDay() === 0) {
+    try {
+      const now = new Date()
+      const jan1 = new Date(Date.UTC(now.getUTCFullYear(), 0, 1))
+      const isoWeek = now.getUTCFullYear() * 100 + Math.ceil(((now.getTime() - jan1.getTime()) / 86400000 + 1) / 7)
+
+      // audience: ≥2 completed sets in the last 7 days
+      const { data: weekSets } = await svc
+        .from('apti_daily_sets')
+        .select('user_id, ratings_at_start, created_at')
+        .not('completed_at', 'is', null)
+        .gte('created_at', daysAgo(7))
+        .order('created_at', { ascending: true })
+      const byUser = new Map<string, { count: number; startRatings: Record<string, number> }>()
+      for (const s of weekSets ?? []) {
+        const cur = byUser.get(s.user_id)
+        if (cur) cur.count++
+        else byUser.set(s.user_id, { count: 1, startRatings: s.ratings_at_start ?? {} })
+      }
+      const activeIds = [...byUser.entries()].filter(([, v]) => v.count >= 2).map(([id]) => id).slice(0, 40)
+
+      if (activeIds.length > 0) {
+        const [{ data: aptiProfilesRows }, { data: weekAttempts }, curriculum] = await Promise.all([
+          svc.from('apti_profiles').select('user_id, email, ratings').in('user_id', activeIds),
+          svc.from('apti_attempts')
+            .select('user_id, question_id, correct, error_type, time_ms, rating_before')
+            .in('user_id', activeIds)
+            .gte('created_at', daysAgo(7)),
+          loadCurriculum(),
+        ])
+
+        // one fetch for every wrong question any active user hit this week
+        const wrongByUser = new Map<string, { question_id: string; rating_before: number | null }[]>()
+        for (const a of weekAttempts ?? []) {
+          if (a.correct) continue
+          const list = wrongByUser.get(a.user_id) ?? []
+          list.push({ question_id: a.question_id, rating_before: a.rating_before })
+          wrongByUser.set(a.user_id, list)
+        }
+        const wrongQids = [...new Set([...wrongByUser.values()].flat().map((w) => w.question_id))]
+        const { data: wrongQuestions } = wrongQids.length > 0
+          ? await svc.from('apti_questions').select('id, skill_id, payload').in('id', wrongQids)
+          : { data: [] }
+        const questionById = new Map((wrongQuestions ?? []).map((q) => [q.id, q]))
+
+        // per-user accuracy per skill for the "biggest lever" line
+        for (const profile of aptiProfilesRows ?? []) {
+          if (!profile.email) continue
+          const mine = (weekAttempts ?? []).filter((a) => a.user_id === profile.user_id)
+          const errorMix: Record<string, number> = {}
+          const bySkill = new Map<string, { correct: number; total: number }>()
+          for (const a of mine) {
+            const q = questionById.get(a.question_id)
+            if (!a.correct && a.error_type) errorMix[a.error_type] = (errorMix[a.error_type] ?? 0) + 1
+            if (q) {
+              const s = bySkill.get(q.skill_id) ?? { correct: 0, total: 0 }
+              s.total++
+              if (a.correct) s.correct++
+              bySkill.set(q.skill_id, s)
+            }
+          }
+          let weakest: { name: string; accuracy: number } | null = null
+          for (const [skillId, s] of bySkill) {
+            if (s.total < 3) continue
+            const acc = Math.round((s.correct / s.total) * 100)
+            if (acc < 80 && (!weakest || acc < weakest.accuracy)) {
+              const skill = curriculum.skillById.get(skillId)
+              if (skill) weakest = { name: skill.name, accuracy: acc }
+            }
+          }
+          // most instructive misses = highest-rated moments (hardest earned)
+          const highlights: WrongHighlight[] = (wrongByUser.get(profile.user_id) ?? [])
+            .sort((a, b) => (b.rating_before ?? 0) - (a.rating_before ?? 0))
+            .slice(0, 3)
+            .flatMap((w) => {
+              const q = questionById.get(w.question_id)
+              if (!q) return []
+              const payload = q.payload as QuestionPayload
+              const skill = curriculum.skillById.get(q.skill_id)
+              const trapNames = Object.keys(payload.trap_explanations ?? {})
+              return [{
+                stemMd: payload.stem_md,
+                skillName: skill?.name ?? '',
+                trapExplanation: trapNames.length > 0 ? payload.trap_explanations![trapNames[0]] : null,
+              }]
+            })
+
+          const stats = byUser.get(profile.user_id)!
+          const { subject, body } = buildWeeklyAutopsy({
+            setsCompleted: stats.count,
+            startRatings: stats.startRatings,
+            ratings: profile.ratings ?? {},
+            errorMix,
+            wrongCount: mine.filter((a) => !a.correct).length,
+            attemptCount: mine.length,
+            wrongHighlights: highlights,
+            weakestSkill: weakest,
+          })
+          await trySend(profile.email, null, {
+            sequence: 'apti_weekly', step: isoWeek, afterDays: 0,
+            subject,
+            body: () => `${body}${ctaButton(`${SITE}/practice`, 'Steal the misses back →')}`,
+          })
+        }
+      }
+    } catch { /* autopsy failure must not affect the nurture run */ }
   }
 
   // ---- Tracker sequence (welcome / day 3 / day 7) ----
