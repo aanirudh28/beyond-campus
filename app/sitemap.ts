@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next'
 import { JOB_DOMAINS, getPublishedJobs } from '@/lib/jobsPublic'
 import { getAllGuides } from '@/lib/guides'
+import { getPublicTopics, getSeoQuestionSlugs } from '@/lib/apti-public'
+import { COMPANIES } from '@/lib/apti-companies'
 
 export const revalidate = 3600 // refresh hourly so newly published jobs appear without a redeploy
 
@@ -51,6 +53,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const d of JOB_DOMAINS) {
     entries.push({ url: `${BASE}/jobs/${d.slug}`, changeFrequency: 'daily', priority: 0.8 })
+  }
+
+  // aptitude SEO families (topic hubs · company pages · curated questions);
+  // helpers fail soft, so a DB hiccup shrinks the sitemap instead of 500ing
+  for (const t of await getPublicTopics()) {
+    entries.push({ url: `${BASE}/aptitude/${t.slug}`, changeFrequency: 'weekly', priority: 0.8 })
+  }
+  for (const c of COMPANIES) {
+    entries.push({ url: `${BASE}/aptitude/companies/${c.slug}`, changeFrequency: 'weekly', priority: 0.8 })
+  }
+  for (const q of await getSeoQuestionSlugs(500)) {
+    entries.push({ url: `${BASE}/aptitude/q/${q.slug}`, changeFrequency: 'monthly', priority: 0.6 })
   }
 
   const jobs = await getPublishedJobs(undefined, 500)

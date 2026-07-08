@@ -1,5 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getPublicTopics, DOMAIN_LABELS } from '@/lib/apti-public'
+
+// refreshed hourly so newly seeded topics appear without a redeploy
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'Free Aptitude Practice for Placements | Apti by Beyond Campus',
@@ -95,7 +99,16 @@ const PREVIEW_OPTIONS = [
   { key: 'D', text: 'No profit, no loss', state: '' },
 ]
 
-export default function AptitudeLanding() {
+export default async function AptitudeLanding() {
+  // fail-soft: builds without DB env render the page with the browser hidden
+  const topics = await getPublicTopics()
+  const byDomain = new Map<string, typeof topics>()
+  for (const t of topics) {
+    const list = byDomain.get(t.domain) ?? []
+    list.push(t)
+    byDomain.set(t.domain, list)
+  }
+
   return (
     <main style={{ minHeight: '100vh', background: '#0B0B0F', color: 'white', fontFamily: "'DM Sans', sans-serif" }}>
       <style>{`
@@ -220,6 +233,29 @@ export default function AptitudeLanding() {
           ))}
         </div>
       </section>
+
+      {/* Browse by topic — the doorway into the SEO hub pages */}
+      {topics.length > 0 && (
+        <section style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px 70px' }}>
+          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(24px, 4vw, 34px)', textAlign: 'center', margin: '0 0 28px', letterSpacing: -0.5 }}>
+            Browse by topic
+          </h2>
+          {[...byDomain.entries()].map(([domain, list]) => (
+            <div key={domain} style={{ marginBottom: 22 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 10px' }}>
+                {DOMAIN_LABELS[domain] ?? domain}
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                {list.map(t => (
+                  <Link key={t.slug} href={`/aptitude/${t.slug}`} style={{ fontSize: 14, padding: '10px 18px', borderRadius: 100, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)', textDecoration: 'none' }}>
+                    {t.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
 
       {/* Pitch */}
       <section style={{ maxWidth: 720, margin: '0 auto', padding: '0 24px 70px', textAlign: 'center' }}>
