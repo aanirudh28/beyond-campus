@@ -13,13 +13,26 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const svc = serviceClient()
-  const [curriculum, { data: attempts }, { data: qRows }, { data: states }] = await Promise.all([
+  const monthAgo = new Date(Date.now() - 28 * 86_400_000).toISOString()
+  const [curriculum, { data: attempts }, { data: qRows }, { data: states },
+    { data: monthSets }, { data: profile }, { data: nudgeShown }] = await Promise.all([
     loadCurriculum(),
     svc.from('apti_attempts')
       .select('question_id, correct, time_ms, confidence, error_type, context, created_at')
       .eq('user_id', user.id).order('created_at', { ascending: true }).limit(2000),
     svc.from('apti_questions').select('id, skill_id, time_benchmark_sec'),
     svc.from('apti_skill_state').select('skill_id, rating, mastery').eq('user_id', user.id),
+    svc.from('apti_daily_sets')
+      .select('ratings_at_start, created_at')
+      .eq('user_id', user.id).eq('kind', 'daily')
+      .not('completed_at', 'is', null)
+      .gte('created_at', monthAgo)
+      .order('created_at', { ascending: true }),
+    svc.from('apti_profiles').select('ratings').eq('user_id', user.id).single(),
+    svc.from('apti_events')
+      .select('id', { count: 'exact', head: false })
+      .eq('user_id', user.id).eq('name', 'plateau_nudge_shown')
+      .gte('created_at', monthAgo).limit(1),
   ])
 
   const skillOfQuestion = new Map((qRows ?? []).map((q) => [q.id, q.skill_id]))
@@ -79,8 +92,43 @@ export async function GET() {
     }
   }).sort((a, b) => a.accuracy - b.accuracy)
 
+  // ---- plateau detection (doc 10 surface 2): ≥10 daily sets spanning ≥3
+  // weeks with the primary domain's rating stuck in a ±15 band. Served at
+  // most once per 28 days — the event is written when we SERVE it, so page
+  // refreshes can't multiply the nudge.
+  let plateau: { domain: string; rating: number; weeks: number } | null = null
+  const sets = monthSets ?? []
+  if (sets.length >= 10 && (nudgeShown ?? []).length === 0) {
+    const spanDays = (new Date(sets[sets.length - 1].created_at).getTime() -
+      new Date(sets[0].created_at).getTime()) / 86_400_000
+    if (spanDays >= 21) {
+      // primary domain = where the practice actually went
+      const domainAttempts: Record<string, number> = {}
+      for (const [skillId, agg] of perSkill) {
+        const d = curriculum.domainOfSkill(skillId)
+        domainAttempts[d] = (domainAttempts[d] ?? 0) + agg.attempts
+      }
+      const primary = Object.entries(domainAttempts).sort((a, b) => b[1] - a[1])[0]?.[0]
+      const current = (profile?.ratings ?? {})[primary ?? '']
+      if (primary && typeof current === 'number') {
+        const series = sets
+          .map((s) => (s.ratings_at_start ?? {})[primary])
+          .filter((r): r is number => typeof r === 'number')
+          .concat(current)
+        if (series.length >= 10 && Math.max(...series) - Math.min(...series) <= 30) {
+          plateau = { domain: primary, rating: current, weeks: Math.round(spanDays / 7) }
+          await svc.from('apti_events').insert({
+            user_id: user.id, name: 'plateau_nudge_shown',
+            props: { domain: primary, rating: current },
+          })
+        }
+      }
+    }
+  }
+
   const totalAttempts = (attempts ?? []).length
   return NextResponse.json({
+    plateau,
     totals: {
       attempts: totalAttempts,
       accuracy: totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0,

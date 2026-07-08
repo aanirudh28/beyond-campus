@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { COLORS, Card, Mono, AccuracyRing, AptiStyles } from '@/app/components/apti/ui'
 import AptiNav from '@/app/components/apti/Nav'
+import { trackAptiEvent } from '@/app/components/apti/track'
+
+const MOCK_CTA_DISMISSED = 'apti_mock_cta_dismissed'
 
 interface Report {
   score: number
@@ -22,6 +25,8 @@ export default function MockReportPage({ params }: { params: Promise<{ id: strin
   const { id } = use(params)
   const [name, setName] = useState('')
   const [report, setReport] = useState<Report | null>(null)
+  const [kind, setKind] = useState('')
+  const [ctaDismissed, setCtaDismissed] = useState(true) // resolved from localStorage after mount
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const router = useRouter()
@@ -39,6 +44,15 @@ export default function MockReportPage({ params }: { params: Promise<{ id: strin
         if (!d.submittedAt) { router.replace(`/practice/mocks/${id}`); return }
         setName(d.name)
         setReport(d.report)
+        setKind(d.kind ?? '')
+        // doc 10 surface 1: rung-2+ mocks only, dismiss sticks, shown-once tracked
+        if (d.kind && d.kind !== 'checkpoint' && !localStorage.getItem(MOCK_CTA_DISMISSED)) {
+          setCtaDismissed(false)
+          if (!sessionStorage.getItem(`apti_pw_${id}`)) {
+            sessionStorage.setItem(`apti_pw_${id}`, '1')
+            trackAptiEvent('paywall_viewed', { surface: 'postmock', mockId: id })
+          }
+        }
       })
       .catch(() => { if (!cancelled) setError('Could not load the report.') })
     return () => { cancelled = true }
@@ -173,10 +187,38 @@ export default function MockReportPage({ params }: { params: Promise<{ id: strin
         <Link href="/practice/mocks" style={{ display: 'block', textAlign: 'center', padding: '10px', fontSize: 13.5, color: COLORS.muted2 }}>
           Back to mocks
         </Link>
-        <p style={{ textAlign: 'center', fontSize: 12, color: COLORS.muted2, marginTop: 18, lineHeight: 1.6 }}>
-          Want a human to walk this report with you? The ₹549 strategy call is credited toward any cohort.{' '}
-          <Link href="/program" style={{ color: COLORS.blueSoft }}>Details</Link>
-        </p>
+        {/* doc 10 surface 1: contextual, dismissible, rung-2+ only — no popups */}
+        {kind && kind !== 'checkpoint' && !ctaDismissed ? (
+          <div style={{
+            position: 'relative', marginTop: 18, padding: '16px 40px 16px 18px', borderRadius: 14,
+            background: 'rgba(79,124,255,0.06)', border: '1px solid rgba(79,124,255,0.25)',
+          }}>
+            <button
+              aria-label="Dismiss"
+              onClick={() => { localStorage.setItem(MOCK_CTA_DISMISSED, '1'); setCtaDismissed(true) }}
+              style={{
+                position: 'absolute', top: 10, right: 12, background: 'none', border: 'none',
+                color: COLORS.muted2, cursor: 'pointer', fontSize: 15, padding: 2,
+              }}
+            >✕</button>
+            <p style={{ fontSize: 13.5, color: COLORS.muted, lineHeight: 1.6, margin: 0 }}>
+              Want a human to walk this report with you? The <strong style={{ color: '#fff' }}>₹549 strategy call</strong> is
+              credited toward any cohort within 30 days.{' '}
+              <Link
+                href="/book?utm_source=apti&utm_content=postmock"
+                onClick={() => trackAptiEvent('cohort_cta_clicked', { surface: 'postmock', mockId: id })}
+                style={{ color: COLORS.blueSoft, fontWeight: 600 }}
+              >
+                Book the call →
+              </Link>
+            </p>
+          </div>
+        ) : (
+          <p style={{ textAlign: 'center', fontSize: 12, color: COLORS.muted2, marginTop: 18, lineHeight: 1.6 }}>
+            Apti clears the test. Humans clear the interview.{' '}
+            <Link href="/program" style={{ color: COLORS.blueSoft }}>Mentorship</Link>
+          </p>
+        )}
       </div>
 
       <AptiNav active="mocks" />

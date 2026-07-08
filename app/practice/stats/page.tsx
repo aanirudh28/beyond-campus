@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { GRAD, COLORS, Mono, Card, Chip, AptiStyles, DOMAIN_LABELS } from '@/app/components/apti/ui'
 import AptiNav from '@/app/components/apti/Nav'
+import { trackAptiEvent } from '@/app/components/apti/track'
 
 interface Stats {
+  plateau: { domain: string; rating: number; weeks: number } | null
   totals: { attempts: number; accuracy: number; activeDays: number }
   skills: {
     slug: string; name: string; domain: string; attempts: number
@@ -82,6 +84,7 @@ const CONF_LABELS: Record<string, string> = { sure: 'Sure', thinkso: 'Think so',
 
 export default function StatsPage() {
   const [stats, setStats] = useState<Stats | null>(null)
+  const [plateauDismissed, setPlateauDismissed] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
@@ -133,6 +136,32 @@ export default function StatsPage() {
 
       {stats && stats.totals.attempts >= 10 && (
         <>
+          {/* plateau nudge (doc 10 surface 2) — served at most once per 28 days */}
+          {stats.plateau && !plateauDismissed && (
+            <Card className="apti-in" style={{ marginBottom: 18, position: 'relative', padding: '18px 40px 18px 20px', border: '1px solid rgba(79,124,255,0.3)' }}>
+              <button
+                aria-label="Dismiss"
+                onClick={() => setPlateauDismissed(true)}
+                style={{ position: 'absolute', top: 12, right: 14, background: 'none', border: 'none', color: COLORS.muted2, cursor: 'pointer', fontSize: 15, padding: 2 }}
+              >✕</button>
+              <p className="mono-label" style={{ marginBottom: 8 }}>
+                {DOMAIN_LABELS[stats.plateau.domain] ?? stats.plateau.domain} · flat ~{stats.plateau.weeks} weeks at <Mono>{stats.plateau.rating}</Mono>
+              </p>
+              <p style={{ fontSize: 14, color: COLORS.muted, lineHeight: 1.65, margin: '0 0 10px' }}>
+                You&rsquo;re putting in the sets — the number isn&rsquo;t moving. Plateaus at your level are
+                usually <strong style={{ color: '#fff' }}>strategy, not effort</strong>. This is the exact
+                problem cohort mentors solve.
+              </p>
+              <a
+                href="/book?utm_source=apti&utm_content=plateau"
+                onClick={() => trackAptiEvent('cohort_cta_clicked', { surface: 'plateau' })}
+                style={{ fontSize: 13.5, fontWeight: 600, color: COLORS.blueSoft }}
+              >
+                Talk strategy with a human — ₹549, credited to any cohort →
+              </a>
+            </Card>
+          )}
+
           {/* totals strip */}
           <div className="apti-in" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 26 }}>
             {[
