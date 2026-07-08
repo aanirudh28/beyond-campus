@@ -225,6 +225,35 @@ export async function POST(req: Request) {
         return NextResponse.json({ ok: true })
       }
 
+      // Designate/undesignate a question for the public SEO pages (doc 11 §4).
+      // Only approved questions can go public; the slug is derived from the
+      // stem + a short id suffix so it stays unique and readable.
+      case 'seo': {
+        if (!body.id || typeof body.on !== 'boolean') {
+          return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
+        }
+        if (!body.on) {
+          await svc.from('apti_questions').update({ seo_slug: null }).eq('id', body.id)
+          return NextResponse.json({ ok: true, seoSlug: null })
+        }
+        const { data: q } = await svc.from('apti_questions')
+          .select('id, status, payload, seo_slug').eq('id', body.id).single()
+        if (!q) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+        if (q.status !== 'approved') {
+          return NextResponse.json({ error: 'Approve the question first' }, { status: 400 })
+        }
+        if (q.seo_slug) return NextResponse.json({ ok: true, seoSlug: q.seo_slug })
+        const stem = ((q.payload as QuestionPayload).stem_md ?? '')
+        const slugBase = stem.toLowerCase()
+          .replace(/\*\*/g, '')
+          .replace(/[^a-z0-9\s-]/g, '')
+          .trim().split(/\s+/).slice(0, 9).join('-')
+          .slice(0, 70).replace(/-+$/, '')
+        const seoSlug = `${slugBase || 'question'}-${String(q.id).slice(0, 6)}`
+        await svc.from('apti_questions').update({ seo_slug: seoSlug }).eq('id', body.id)
+        return NextResponse.json({ ok: true, seoSlug })
+      }
+
       default:
         return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
     }

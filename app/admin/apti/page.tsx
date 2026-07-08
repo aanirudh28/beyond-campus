@@ -99,11 +99,15 @@ export default function AptiConsole() {
     setPicked(null); setRevealed(false); setEditing(false); setRejectOpen(false)
   }
 
-  const verdict = async (v: 'approve' | 'reject', reason?: string) => {
+  const verdict = async (v: 'approve' | 'reject', reason?: string, publish = false) => {
     if (!current || busy) return
     setBusy(true)
     try {
       await api('verdict', { id: current.id, verdict: v, reason })
+      if (v === 'approve' && publish) {
+        // also designate for the public /aptitude SEO pages (doc 11 §4)
+        try { await api('seo', { id: current.id, on: true }) } catch { /* approval already landed */ }
+      }
       setSkills((s) => s.map((sk) => sk.slug === current.skill_slug
         ? { ...sk, draft: Math.max(0, sk.draft - 1), approved: sk.approved + (v === 'approve' ? 1 : 0) }
         : sk))
@@ -152,6 +156,7 @@ export default function AptiConsole() {
       if (!revealed && ['A', 'B', 'C', 'D'].includes(k)) { setPicked(k); setRevealed(true); return }
       if (!revealed) return
       if (k === 'Y') verdict('approve')
+      else if (k === 'P') verdict('approve', undefined, true)
       else if (k === 'X') setRejectOpen(true)
       else if (k === 'E') { setEditPayload(JSON.parse(JSON.stringify(current.payload))); setEditing(true) }
       else if (k === 'S') advance()
@@ -285,6 +290,14 @@ export default function AptiConsole() {
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 <button onClick={() => verdict('approve')} disabled={busy} style={btn('rgba(52,211,153,0.85)')}>
                   Approve <span style={{ opacity: 0.7 }}>(Y)</span>
+                </button>
+                <button
+                  onClick={() => verdict('approve', undefined, true)}
+                  disabled={busy}
+                  title="Approve and show on the public /aptitude SEO pages"
+                  style={btn('rgba(79,124,255,0.75)')}
+                >
+                  Approve + public <span style={{ opacity: 0.7 }}>(P)</span>
                 </button>
                 <button onClick={() => setRejectOpen((v) => !v)} disabled={busy} style={btn('rgba(248,113,113,0.8)')}>
                   Reject <span style={{ opacity: 0.7 }}>(X)</span>
