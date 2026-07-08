@@ -7,10 +7,14 @@ import { GRAD, COLORS, Mono, Card, Chip, AptiStyles, DOMAIN_LABELS } from '@/app
 import AptiNav from '@/app/components/apti/Nav'
 
 interface Topic { id: string; domain: string; slug: string; name: string; ord: number; meta: { one_liner?: string } }
-interface Skill { id: string; topic_id: string; slug: string; name: string; ord: number; benchmark_rating: number }
+interface Skill { id: string; topic_id: string; slug: string; name: string; ord: number; benchmark_rating: number; prereq_skill_slugs: string[] }
 interface SkillState { skill_id: string; rating: number; attempts: number; correct: number; mastery: string; last_practiced: string | null }
 
 const DOMAIN_ORDER = ['quant', 'logical', 'verbal', 'di', 'business']
+
+// A prerequisite counts as met once it reaches familiar. Below that (learning,
+// rusty, unseen) it leaves the dependent skill on shaky ground.
+const READY_MASTERY = ['familiar', 'proficient', 'mastered']
 
 const MASTERY_META: Record<string, { label: string; color: string; bg: string; border: string }> = {
   unseen:     { label: 'Unseen',     color: COLORS.muted2, bg: 'rgba(255,255,255,0.02)', border: COLORS.hair },
@@ -89,18 +93,33 @@ export default function MapPage() {
     return groups
   }, [topics])
 
-  // recommended focus: first not-yet-proficient skill in curriculum order
+  const bySlug = useMemo(() => new Map(skills.map((s) => [s.slug, s])), [skills])
+
+  const masteryOf = (id: string) => states.get(id)?.mastery ?? 'unseen'
+  const prereqSkillsOf = (skill: Skill): Skill[] =>
+    (skill.prereq_skill_slugs ?? []).map((slug) => bySlug.get(slug)).filter((s): s is Skill => !!s)
+  // a skill is ready when every prereq that exists in the bank is familiar+
+  const isReady = (skill: Skill) =>
+    prereqSkillsOf(skill).every((p) => READY_MASTERY.includes(masteryOf(p.id)))
+
+  // recommended focus: earliest open skill (curriculum order) whose prereqs are
+  // met; falls back to raw order if everything open is still blocked
   const focusSkillId = useMemo(() => {
-    for (const domain of DOMAIN_ORDER) {
-      for (const t of byDomain.get(domain) ?? []) {
-        for (const s of skills.filter((x) => x.topic_id === t.id).sort((a, b) => a.ord - b.ord)) {
-          const m = states.get(s.id)?.mastery ?? 'unseen'
-          if (m !== 'proficient' && m !== 'mastered') return s.id
-        }
-      }
-    }
-    return null
-  }, [byDomain, skills, states])
+    const ordered: Skill[] = []
+    for (const domain of DOMAIN_ORDER)
+      for (const t of byDomain.get(domain) ?? [])
+        for (const s of skills.filter((x) => x.topic_id === t.id).sort((a, b) => a.ord - b.ord))
+          ordered.push(s)
+    const open = ordered.filter((s) => !['proficient', 'mastered'].includes(masteryOf(s.id)))
+    const ready = open.filter(isReady)
+    return (ready.length > 0 ? ready : open)[0]?.id ?? null
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [byDomain, skills, states, bySlug])
+
+  const focusSkill = skills.find((s) => s.id === focusSkillId) ?? null
+  const focusTopic = topics.find((t) => t.id === focusSkill?.topic_id) ?? null
+  const focusMetPrereqs = focusSkill ? prereqSkillsOf(focusSkill).filter((p) => READY_MASTERY.includes(masteryOf(p.id))) : []
+  const focusUnlocks = focusSkill ? skills.filter((s) => (s.prereq_skill_slugs ?? []).includes(focusSkill.slug)) : []
 
   const masteredCount = [...states.values()].filter((s) => s.mastery === 'proficient' || s.mastery === 'mastered').length
 
@@ -130,6 +149,32 @@ export default function MapPage() {
           }}>{m.label}</span>
         ))}
       </div>
+
+      {/* recommended focus — the skill graph's headline: what to do next, and why */}
+      {!loading && focusSkill && (
+        <button
+          onClick={() => setOpenSkill(focusSkill.id)}
+          className="apti-in"
+          style={{
+            display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer',
+            marginBottom: 30, padding: '18px 20px', borderRadius: 16, fontFamily: 'inherit',
+            background: 'linear-gradient(135deg, rgba(79,124,255,0.1), rgba(123,97,255,0.08))',
+            border: '1px solid rgba(79,124,255,0.35)', animationDelay: '0.15s', color: '#fff',
+          }}
+        >
+          <p className="mono-label" style={{ color: COLORS.blueSoft, marginBottom: 8 }}>→ Recommended focus</p>
+          <p style={{ fontSize: 17, fontWeight: 700, marginBottom: 6 }}>
+            {focusSkill.name}
+            {focusTopic && <span style={{ color: COLORS.muted2, fontWeight: 400, fontSize: 14 }}> · {focusTopic.name}</span>}
+          </p>
+          <p style={{ fontSize: 13.5, color: COLORS.muted, lineHeight: 1.6 }}>
+            {focusMetPrereqs.length > 0
+              ? `${focusMetPrereqs.map((p) => p.name).join(' and ')} ${focusMetPrereqs.length > 1 ? 'are' : 'is'} solid, so this is your next rung.`
+              : 'Foundational ground — most of what comes later leans on it.'}
+            {focusUnlocks.length > 0 && ` Clear it and ${focusUnlocks[0].name} opens up.`}
+          </p>
+        </button>
+      )}
 
       {loading && <p style={{ color: COLORS.muted2, textAlign: 'center', padding: '40px 0' }}>Charting…</p>}
 
@@ -206,6 +251,48 @@ export default function MapPage() {
                           <span style={{ color: COLORS.muted2, fontSize: 11.5 }}>attempts</span>
                         </div>
                       </div>
+
+                      {/* prerequisites — builds-on chips, and a strengthen-first nudge if weak */}
+                      {(() => {
+                        const prereqs = prereqSkillsOf(skill)
+                        if (prereqs.length === 0) return null
+                        const weak = prereqs.filter((p) => !READY_MASTERY.includes(masteryOf(p.id)))
+                        return (
+                          <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${COLORS.hair}` }}>
+                            <p className="mono-label" style={{ marginBottom: 8 }}>Builds on</p>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                              {prereqs.map((p) => {
+                                const pm = MASTERY_META[masteryOf(p.id)]
+                                return (
+                                  <span key={p.id} style={{
+                                    fontSize: 12, padding: '5px 11px', borderRadius: 100,
+                                    color: pm.color, background: pm.bg, border: `1px solid ${pm.border}`,
+                                  }}>{p.name} · {pm.label}</span>
+                                )
+                              })}
+                            </div>
+                            {weak.length > 0 && (
+                              <div style={{ marginTop: 10, padding: '11px 13px', borderRadius: 10, background: COLORS.stretchBg, border: '1px solid rgba(251,191,36,0.3)' }}>
+                                <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.82)', lineHeight: 1.55, margin: '0 0 9px' }}>
+                                  Shaky ground: {skill.name} leans on {weak.map((p) => p.name).join(' and ')}. Strengthen {weak.length > 1 ? 'those' : 'that'} first and this gets much easier.
+                                </p>
+                                <button
+                                  onClick={() => practiceSkill(weak[0].id)}
+                                  disabled={sessionBusy}
+                                  style={{
+                                    padding: '8px 14px', fontSize: 12.5, fontFamily: 'inherit', fontWeight: 600,
+                                    background: 'rgba(251,191,36,0.15)', color: COLORS.stretch, border: '1px solid rgba(251,191,36,0.4)',
+                                    borderRadius: 100, cursor: sessionBusy ? 'default' : 'pointer',
+                                  }}
+                                >
+                                  Drill {weak[0].name} first →
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
+
                       <p style={{ margin: '12px 0 0', fontSize: 12.5, color: COLORS.muted2, lineHeight: 1.55 }}>
                         {skill.id === focusSkillId
                           ? '→ Your current focus — today’s set is built around this.'

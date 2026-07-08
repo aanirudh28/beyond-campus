@@ -5,7 +5,7 @@ import {
   expectedScore, attemptScore, eloUpdate,
   pushWindow, median, computeMastery,
   nextCardState, errorIntervalModifier,
-  nextStreak, buildDailySet, chooseFocusSkills,
+  nextStreak, buildDailySet, chooseFocusSkills, skillReady,
   DEFAULT_SKILL_STATE,
   type SkillState, type CandidateQuestion,
 } from '../lib/apti-engine.ts'
@@ -189,4 +189,28 @@ test('chooseFocusSkills: first two not-yet-proficient in order', () => {
     c: { mastery: 'unseen' },
   })
   assert.deepEqual(focus, ['b', 'c'])
+})
+
+test('chooseFocusSkills: prereqs steer focus to ready skills first', () => {
+  // c depends on b; b is only 'learning', so c is blocked. a (no prereq) and
+  // d (prereq a is proficient) are ready and should be chosen over c.
+  const states = {
+    a: { mastery: 'familiar' as const },
+    b: { mastery: 'learning' as const },
+    c: { mastery: 'unseen' as const },
+    d: { mastery: 'unseen' as const },
+  }
+  const prereqs = { c: ['b'], d: ['a'] }
+  assert.deepEqual(chooseFocusSkills(['a', 'b', 'c', 'd'], states, prereqs), ['a', 'b'])
+  // once b is proficient, its dependent c becomes ready and outranks nothing
+  // above it; with a mastered, focus is b then c
+  const states2 = { ...states, a: { mastery: 'mastered' as const }, b: { mastery: 'familiar' as const } }
+  assert.deepEqual(chooseFocusSkills(['a', 'b', 'c', 'd'], states2, prereqs), ['b', 'c'])
+})
+
+test('skillReady: blocked until every prereq is familiar+', () => {
+  const prereqs = { x: ['p', 'q'] }
+  assert.equal(skillReady('x', prereqs, { p: { mastery: 'familiar' }, q: { mastery: 'learning' } }), false)
+  assert.equal(skillReady('x', prereqs, { p: { mastery: 'familiar' }, q: { mastery: 'proficient' } }), true)
+  assert.equal(skillReady('root', {}, {}), true) // no prereqs → always ready
 })

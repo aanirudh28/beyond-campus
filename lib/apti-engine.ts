@@ -318,15 +318,33 @@ export function pickChallengeQuestions(
   return picked
 }
 
-// First not-yet-proficient skill in curriculum order is the focus; the next
-// one rides along so the pool never starves.
+// A skill is "ready" when every prerequisite is at least familiar. Learning,
+// rusty and unseen prereqs all leave it blocked — you don't build Profit &
+// Loss on shaky Percentages. Skills with no prereqs are always ready.
+const READY_MASTERY = new Set<Mastery>(['familiar', 'proficient', 'mastered'])
+
+export function skillReady(
+  skillId: string,
+  prereqsBySkill: Record<string, string[]>,
+  states: Record<string, Pick<SkillState, 'mastery'>>
+): boolean {
+  const prereqs = prereqsBySkill[skillId] ?? []
+  return prereqs.every((p) => READY_MASTERY.has(states[p]?.mastery ?? 'unseen'))
+}
+
+// Focus = the earliest not-yet-proficient skills IN curriculum order whose
+// prerequisites are already met. If everything open is still blocked (rare, and
+// only very early), fall back to raw curriculum order so the set never starves.
+// prereqsBySkill is optional so existing callers/tests keep working.
 export function chooseFocusSkills(
   orderedSkillIds: string[],
-  states: Record<string, Pick<SkillState, 'mastery'>>
+  states: Record<string, Pick<SkillState, 'mastery'>>,
+  prereqsBySkill: Record<string, string[]> = {}
 ): string[] {
   const open = orderedSkillIds.filter((id) => {
     const m = states[id]?.mastery ?? 'unseen'
     return m !== 'proficient' && m !== 'mastered'
   })
-  return open.slice(0, 2)
+  const ready = open.filter((id) => skillReady(id, prereqsBySkill, states))
+  return (ready.length > 0 ? ready : open).slice(0, 2)
 }

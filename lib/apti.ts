@@ -40,6 +40,7 @@ export interface SkillRow {
   ord: number
   benchmark_rating: number
   benchmark_seconds: number
+  prereq_skill_slugs: string[]
 }
 export interface TopicRow { id: string; domain: string; slug: string; name: string; ord: number }
 export interface DailySetRow {
@@ -106,6 +107,7 @@ export interface Curriculum {
   skills: SkillRow[]
   skillById: Map<string, SkillRow>
   domainOfSkill: (skillId: string) => string
+  prereqBySkillId: Record<string, string[]>   // skill id → prerequisite skill ids
 }
 
 const DOMAIN_ORDER = ['quant', 'logical', 'verbal', 'di', 'business']
@@ -140,11 +142,21 @@ export async function loadCurriculum(): Promise<Curriculum> {
   const domainBySkill = new Map(
     orderedSkills.map((s: SkillRow) => [s.id, (topicById.get(s.topic_id) as TopicRow).domain])
   )
+  // resolve prereq slugs → ids once, dropping any that don't exist in the bank
+  const idBySlug = new Map(orderedSkills.map((s: SkillRow) => [s.slug, s.id]))
+  const prereqBySkillId: Record<string, string[]> = {}
+  for (const s of orderedSkills as SkillRow[]) {
+    const ids = (s.prereq_skill_slugs ?? [])
+      .map((slug) => idBySlug.get(slug))
+      .filter((id): id is string => !!id)
+    if (ids.length > 0) prereqBySkillId[s.id] = ids
+  }
   const data: Curriculum = {
     topics: (topics ?? []) as TopicRow[],
     skills: orderedSkills as SkillRow[],
     skillById: new Map(orderedSkills.map((s: SkillRow) => [s.id, s])),
     domainOfSkill: (skillId: string) => domainBySkill.get(skillId) ?? 'quant',
+    prereqBySkillId,
   }
   curriculumCache = { data, at: Date.now() }
   return data
@@ -209,7 +221,11 @@ export async function getOrBuildTodaySet(userId: string, profile: AptiProfile): 
     if (row.attempts > 0) practiced.push(row.skill_id)
   }
 
-  const focus = chooseFocusSkills(curriculum.skills.map((s) => s.id), masteryBySkill)
+  const focus = chooseFocusSkills(
+    curriculum.skills.map((s) => s.id),
+    masteryBySkill,
+    curriculum.prereqBySkillId
+  )
   const dueReviews: DueReview[] = (dueCards ?? []).map(
     (c: { id: string; question_id: string; skill_id: string }) => ({
       cardId: c.id, questionId: c.question_id, skillId: c.skill_id,
