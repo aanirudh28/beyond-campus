@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 type Profile = {
   id: string
@@ -258,7 +259,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Aptitude practice cross-link ── */}
-        <a href="/practice" style={{
+        <Link href="/practice" style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
           background: 'linear-gradient(135deg, rgba(79,124,255,0.08), rgba(123,97,255,0.08))',
           border: '1px solid rgba(79,124,255,0.25)', borderRadius: 24, padding: '24px 36px',
@@ -271,7 +272,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <span style={{ color: '#93BBFF', fontSize: 14, fontWeight: 700, whiteSpace: 'nowrap' }}>Start →</span>
-        </a>
+        </Link>
 
         {/* ── Section 4: Resources ── */}
         <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 24, padding: '32px 36px', marginBottom: 16 }}>

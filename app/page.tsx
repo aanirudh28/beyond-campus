@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import Link from 'next/link'
 import LeadCapturePopup from './components/LeadCapturePopup'
 import { track } from '@/lib/analytics'
 
@@ -900,7 +901,7 @@ export default function Home() {
             </a>
 
             {/* Featured — Apti with mini rating strip */}
-            <a href="/aptitude" className="tool-card b3" data-reveal data-index="03" style={{ transitionDelay: '0.12s', color: 'inherit', borderColor: 'rgba(123,97,255,0.25)' }} onClick={cta('Apti Aptitude Practice', 'free_tools')}>
+            <Link href="/aptitude" className="tool-card b3" data-reveal data-index="03" style={{ transitionDelay: '0.12s', color: 'inherit', borderColor: 'rgba(123,97,255,0.25)' }} onClick={cta('Apti Aptitude Practice', 'free_tools')}>
               <span className="bento-kicker" style={{ color: '#b4a6ff' }}>STEP 03 — CLEAR THE TEST</span>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
                 <span style={{ fontSize: 34, lineHeight: 1 }}>🧮</span>
@@ -924,7 +925,7 @@ export default function Home() {
                 ))}
               </div>
               <span className="tool-cta" style={{ marginTop: 0 }}>Find my level →</span>
-            </a>
+            </Link>
 
             {/* The rest of the arsenal */}
             {[
