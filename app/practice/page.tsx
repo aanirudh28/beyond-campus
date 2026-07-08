@@ -470,6 +470,13 @@ export default function PracticePage() {
                     accent="rgba(255,255,255,0.045)"
                     style={{ gridColumn: '1 / -1' }}
                   />
+                  <ExploreCard
+                    href="/practice/circles"
+                    glyph="🔥" title="Study circle"
+                    line="5 to 8 friends, one shared scoreboard. Nobody quits in front of friends."
+                    accent="rgba(123,97,255,0.1)"
+                    style={{ gridColumn: '1 / -1' }}
+                  />
                 </div>
               </div>
 
