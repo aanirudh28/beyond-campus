@@ -278,6 +278,46 @@ export function buildDailySet(opts: {
   }
 }
 
+// ---------- daily challenge ----------
+
+// Everyone gets the same 3 questions each IST day (doc 09: ambient community;
+// doc 11: the Wordle share loop). One per domain where the bank allows, mid
+// band so it's fair across levels, nothing repeated from recent challenges.
+export const CHALLENGE_BAND: [number, number] = [1100, 1350]
+export const CHALLENGE_SIZE = 3
+
+export function pickChallengeQuestions(
+  candidates: { id: string; domain: string; rating: number }[],
+  recentIds: Set<string>,
+  rng: () => number = Math.random
+): string[] {
+  const inBand = (q: { rating: number }) =>
+    q.rating >= CHALLENGE_BAND[0] && q.rating <= CHALLENGE_BAND[1]
+  const fresh = candidates.filter((q) => !recentIds.has(q.id))
+  const pool = fresh.filter(inBand).length >= CHALLENGE_SIZE ? fresh.filter(inBand) : fresh
+
+  const byDomain = new Map<string, { id: string; domain: string; rating: number }[]>()
+  for (const q of pool) {
+    const list = byDomain.get(q.domain) ?? []
+    list.push(q)
+    byDomain.set(q.domain, list)
+  }
+
+  const picked: string[] = []
+  for (const domain of ['quant', 'logical', 'verbal']) {
+    const list = (byDomain.get(domain) ?? []).filter((q) => !picked.includes(q.id))
+    if (list.length > 0 && picked.length < CHALLENGE_SIZE) {
+      picked.push(list[Math.floor(rng() * list.length)].id)
+    }
+  }
+  // young banks may not cover all three domains — fill from anywhere
+  const rest = pool.filter((q) => !picked.includes(q.id))
+  while (picked.length < CHALLENGE_SIZE && rest.length > 0) {
+    picked.push(rest.splice(Math.floor(rng() * rest.length), 1)[0].id)
+  }
+  return picked
+}
+
 // First not-yet-proficient skill in curriculum order is the focus; the next
 // one rides along so the pool never starves.
 export function chooseFocusSkills(

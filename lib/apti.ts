@@ -6,6 +6,7 @@
 import { serviceClient } from '@/lib/tracker'
 import {
   buildDailySet, chooseFocusSkills, istDateString, expectedScore,
+  pickChallengeQuestions, CHALLENGE_SIZE,
   type CandidateQuestion, type DueReview, type Mastery, type SkillState,
   DEFAULT_SKILL_STATE,
 } from '@/lib/apti-engine'
@@ -328,6 +329,50 @@ export async function buildReviewSession(userId: string): Promise<DailySetRow | 
       : 'Could not start the session' }
   }
   return created as DailySetRow
+}
+
+// ---------- daily challenge (needs supabase/apti-upgrade-3.sql) ----------
+
+export interface ChallengeRow { challenge_date: string; question_ids: string[] }
+
+// Get-or-create today's global challenge. Returns null when the table hasn't
+// been created yet (upgrade-3 not pasted) so callers can hide the feature
+// instead of breaking the Today page.
+export async function ensureTodayChallenge(): Promise<ChallengeRow | null> {
+  const svc = serviceClient()
+  const today = istDateString()
+
+  const { data: existing, error: readError } = await svc
+    .from('apti_daily_challenges').select('*')
+    .eq('challenge_date', today).maybeSingle()
+  if (readError) return null // table missing → feature off
+  if (existing) return existing as ChallengeRow
+
+  const [{ data: recent }, { data: bank }, curriculum] = await Promise.all([
+    svc.from('apti_daily_challenges')
+      .select('question_ids')
+      .order('challenge_date', { ascending: false })
+      .limit(60),
+    svc.from('apti_questions').select('id, skill_id, rating').eq('status', 'approved'),
+    loadCurriculum(),
+  ])
+  const recentIds = new Set((recent ?? []).flatMap((r: { question_ids: string[] }) => r.question_ids))
+  const candidates = (bank ?? []).map((q: { id: string; skill_id: string; rating: number }) => ({
+    id: q.id,
+    domain: curriculum.domainOfSkill(q.skill_id),
+    rating: q.rating,
+  }))
+  const ids = pickChallengeQuestions(candidates, recentIds)
+  if (ids.length < CHALLENGE_SIZE) return null // bank too young — feature off
+
+  const { error } = await svc.from('apti_daily_challenges')
+    .insert({ challenge_date: today, question_ids: ids })
+  if (error && error.code !== '23505') return null
+  // 23505 = a parallel request won the insert race — read theirs
+  const { data: row } = await svc
+    .from('apti_daily_challenges').select('*')
+    .eq('challenge_date', today).single()
+  return row as ChallengeRow | null
 }
 
 // Powers the Today page's "next up" cards: what's due, and where you're weakest.

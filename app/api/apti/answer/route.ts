@@ -94,7 +94,7 @@ export async function POST(request: Request) {
       .maybeSingle(),
     svc.from('apti_profiles').select('*').eq('user_id', user.id).single(),
     willComplete
-      ? svc.from('apti_attempts').select('correct').eq('set_id', set.id)
+      ? svc.from('apti_attempts').select('correct, time_ms').eq('set_id', set.id)
       : Promise.resolve({ data: null }),
   ])
 
@@ -180,7 +180,8 @@ export async function POST(request: Request) {
       profileUpdate.longest_streak = Math.max(profile?.longest_streak ?? 0, streak)
       profileUpdate.last_set_date = today
     }
-    const priorCorrect = (setAttemptsRes.data ?? []).filter((a: { correct: boolean }) => a.correct).length
+    const priorAttempts = (setAttemptsRes.data ?? []) as { correct: boolean; time_ms: number }[]
+    const priorCorrect = priorAttempts.filter((a) => a.correct).length
     const ratingDeltas: Record<string, number> = {}
     for (const [d, r] of Object.entries(ratings)) {
       const startR = (set.ratings_at_start ?? {})[d]
@@ -189,6 +190,8 @@ export async function POST(request: Request) {
     summary = {
       correct: priorCorrect + (correct ? 1 : 0),
       total: set.question_ids.length,
+      // total solve time powers the challenge leaderboard tiebreak
+      totalTimeMs: priorAttempts.reduce((a, x) => a + (x.time_ms ?? 0), 0) + timeMs,
       ratingDeltas,
       streak,
       kind: set.kind,
@@ -199,6 +202,7 @@ export async function POST(request: Request) {
   const isReviewSlot = set.review_card_ids.length > 0 && set.cursor < 2
   const attemptContext = set.kind === 'review' ? 'review'
     : set.kind === 'topic' ? 'topic'
+    : set.kind === 'challenge' ? 'challenge'
     : isReviewSlot ? 'review' : 'daily'
   const [attemptRes] = await Promise.all([
     svc.from('apti_attempts').insert({
@@ -253,6 +257,11 @@ export async function POST(request: Request) {
     shortcutMd: question.payload.shortcut_md ?? null,
     benchmarkSec: question.time_benchmark_sec,
     timeMs,
+    // community stats after answering (doc 09 phase-1): aggregates only,
+    // shown once the question has enough attempts to be meaningful
+    qStats: question.attempts >= 20
+      ? { attempts: question.attempts, correctPct: Math.round((question.correct / question.attempts) * 100) }
+      : null,
     skill: {
       slug: skill.slug,
       name: skill.name,
