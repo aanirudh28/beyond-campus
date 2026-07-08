@@ -140,6 +140,7 @@ export const COMPANIES: CompanyPattern[] = [
     skillWeights: {
       'percentage-change': 3, 'successive-change': 2, 'weighted-average': 3, 'alligation': 2,
       'cp-sp-basics': 3, 'markup-discount': 2, 'combining-ratios': 2, 'basic-averages': 2,
+      'contribution-margin': 3, 'growth-cagr': 2, 'business-conclusion': 2, 'top-down-sizing': 1,
       'series-next-term': 1, 'two-statement': 1, 'linear-arrangement': 1,
     },
   },
@@ -152,8 +153,23 @@ export const COMPANIES: CompanyPattern[] = [
     skillWeights: {
       'work-rates': 3, 'combined-work': 2, 'pipes-cisterns': 1, 'speed-basics': 2,
       'percentage-change': 2, 'weighted-average': 2, 'basic-averages': 2,
+      'bottom-up-sizing': 2, 'breakeven': 1,
       'combining-ratios': 2, 'series-next-term': 2, 'linear-arrangement': 2,
       'circular-arrangement': 1, 'two-statement': 2,
+    },
+  },
+  {
+    slug: 'founders-office', name: "Founder's Office / Chief of Staff", tier: 'newage',
+    vendor: 'take-home case / live assignment',
+    sectionsLine: 'A business case: market sizing, unit economics, and a data-backed recommendation',
+    negativeMarking: false, season: 'Rolling, heaviest Jun–Sep',
+    cutoffNote: 'Judged on structure and defensible assumptions, not a single exact number',
+    confidence: 'estimated',
+    skillWeights: {
+      'top-down-sizing': 3, 'bottom-up-sizing': 3, 'estimation-sense': 2,
+      'contribution-margin': 3, 'breakeven': 3, 'growth-cagr': 2, 'profit-bridge': 2,
+      'chart-reading': 2, 'business-conclusion': 3, 'tradeoff-decision': 3,
+      'percentage-change': 2, 'weighted-average': 1,
     },
   },
 ]

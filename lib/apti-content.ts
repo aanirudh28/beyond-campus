@@ -181,6 +181,48 @@ export const TRAP_LIBRARIES: Record<string, Trap[]> = {
     { name: 'converted-all', description: 'illegally converted a universal statement' },
     { name: 'no-case-missed', description: 'missed the Venn case that makes the possibility true/false' },
   ],
+  // ---- business & case aptitude (the consulting / Founder's Office bridge) ----
+  'top-down-sizing': [
+    { name: 'wrong-population', description: 'anchored on the wrong base population (a neighbourhood, or a whole country, not the city asked)' },
+    { name: 'single-use', description: 'undercounted uses per person, or the fraction of people who actually buy' },
+    { name: 'full-penetration', description: 'assumed nearly everyone buys, or many uses each, giving more than the population can plausibly consume' },
+    { name: 'magnitude-slip', description: 'right structure but one factor off by a power of ten (lakh vs crore)' },
+  ],
+  'bottom-up-sizing': [
+    { name: 'wrong-base', description: 'sized straight from population instead of building up from the unit driver (rides, transactions, visits)' },
+    { name: 'coverage-slip', description: 'assumed too much activity per unit, or too little throughput per server' },
+    { name: 'frequency-slip', description: 'used the wrong number of uses or transactions per period' },
+    { name: 'magnitude-slip', description: 'right structure but one factor off by a power of ten' },
+  ],
+  'contribution-margin': [
+    { name: 'revenue-as-contribution', description: 'used the full selling price without subtracting the variable cost' },
+    { name: 'cost-as-contribution', description: 'reported the variable cost itself as the contribution' },
+    { name: 'margin-rule-of-thumb', description: 'assumed a round margin (like 50 percent) instead of subtracting the actual variable cost' },
+    { name: 'fixed-in-unit', description: 'folded a share of fixed cost into the per-unit contribution, where it does not belong' },
+  ],
+  breakeven: [
+    { name: 'price-not-contribution', description: 'divided fixed cost by the selling price instead of the contribution per unit' },
+    { name: 'variable-cost-base', description: 'divided fixed cost by the variable cost per unit' },
+    { name: 'contribution-halved', description: 'used a wrong (often halved) contribution per unit' },
+    { name: 'ignored-fixed', description: 'left out part of the fixed cost, or set a per-day figure against a monthly cost' },
+  ],
+  'growth-cagr': [
+    { name: 'simple-growth', description: 'divided the total percentage growth by the number of years instead of compounding' },
+    { name: 'doubling-slip', description: 'over-applied a doubling or tripling heuristic to the yearly rate' },
+    { name: 'under-guess', description: 'picked a rate too low to reach the end value when compounded' },
+    { name: 'total-as-annual', description: 'reported the total multiple or total growth as if it were the annual rate' },
+  ],
+  'chart-reading': [
+    { name: 'absolute-vs-relative', description: 'read an absolute change where a share or percentage was asked, or the reverse' },
+    { name: 'axis-misread', description: 'misread the scale, the units, or a broken or secondary axis' },
+    { name: 'cherry-point', description: 'drew a trend from a single point instead of the whole series' },
+  ],
+  'business-conclusion': [
+    { name: 'share-not-units', description: 'compared market shares directly without converting them to actual unit counts' },
+    { name: 'assumed-cancel', description: 'assumed two opposing changes cancel instead of multiplying them out' },
+    { name: 'static-market', description: 'held the market size fixed and missed that it grew or shrank' },
+    { name: 'correlation-cause', description: 'inferred cause from two figures that merely move together' },
+  ],
 }
 
 // Domain-level fallbacks for skills without a bespoke library yet.
@@ -200,6 +242,12 @@ const GENERIC_TRAPS: Record<string, Trap[]> = {
     { name: 'near-synonym', description: 'a near-synonym that misses the contextual meaning' },
     { name: 'grammar-overcorrect', description: 'a correction that introduces a different error' },
     { name: 'scope-shift', description: 'an option that overstates or narrows the passage’s claim' },
+  ],
+  business: [
+    { name: 'wrong-base', description: 'anchored on the wrong base value (population, market, or cost) for the estimate' },
+    { name: 'structure-slip', description: 'a decomposition that skips or double-counts a step' },
+    { name: 'magnitude-slip', description: 'right approach but an answer off by a power of ten' },
+    { name: 'asked-vs-found', description: 'solved for a related quantity, not the one asked' },
   ],
 }
 
@@ -225,6 +273,7 @@ export interface SkillContext {
 
 export function buildGenerationPrompt(skill: SkillContext, count: number, existingStems: string[]): string {
   const traps = trapsForSkill(skill.slug, skill.domain)
+  if (skill.domain === 'business') return buildBusinessGenerationPrompt(skill, count, existingStems, traps)
   return `You write ORIGINAL aptitude questions for Indian placement tests (BBA/BCom/BA audience, tier-2/3 colleges). Never reproduce a published question.
 
 Write ${count} multiple-choice questions for this skill:
@@ -247,6 +296,38 @@ RULES:
 ${existingStems.slice(0, 15).map((s) => `- ${s.slice(0, 90)}`).join('\n') || '- (none yet)'}
 9. self_check_answer_key: independently re-derive the answer from scratch and write which key it is. If your re-derivation disagrees with answer_key, fix the question before output.
 10. No em dashes in any student-facing text.`
+}
+
+// Business & Case Aptitude reads differently from arithmetic: the value is the
+// decomposition and the defensible assumption, not a clean single number. Same
+// output schema (4 trap-mapped MCQ options) so the whole admin pipeline,
+// validation and cold-solve verification work unchanged.
+function buildBusinessGenerationPrompt(skill: SkillContext, count: number, existingStems: string[], traps: Trap[]): string {
+  return `You write ORIGINAL business and case-style aptitude questions for Indian placement and Founder's Office / consulting-analyst prep (BBA/BCom audience). Never reproduce a published question.
+
+Write ${count} multiple-choice questions for this skill:
+SKILL: ${skill.name} (topic: ${skill.topicName}, domain: business)
+DIFFICULTY: a typical solver has rating ~${skill.benchmarkRating} (1000 = beginner, 1400 = strong); mix one notch easier and one harder across the batch.
+TIME BENCHMARK: a proficient student solves one in ~${skill.benchmarkSeconds}s.
+
+This is BUSINESS reasoning, not textbook arithmetic. Match the sub-genre to the skill:
+- Market sizing / guesstimates: the four options are spaced roughly one order of magnitude apart; the correct one is the defensible order of magnitude. The teaching is the DECOMPOSITION (base x fraction x uses), never a precise number. State assumptions in the solution.
+- Case math (contribution, breakeven, growth/CAGR, profit levers): realistic Indian business scenarios (a cloud kitchen, a D2C brand, a kirana chain, an app). Numbers should resolve cleanly.
+- Data / chart insight: give a small set of figures in words; the question is the business "so what". Distractors confuse share with units, absolute with relative, or correlation with cause.
+
+TRAP LIBRARY - every wrong option MUST be the exact result of one of these named mistakes:
+${traps.map((t) => `- ${t.name}: ${t.description}`).join('\n')}
+
+RULES:
+1. Exactly 4 options (A-D), exactly one defensible/correct. Compute every distractor by actually making its trap's mistake, no filler.
+2. solution_md: numbered steps (max 5) showing the decomposition or business logic. For sizing, show the estimation tree and end on the order of magnitude. Bold the final answer with **.
+3. shortcut_md: the reusable structure ("population x fraction x uses", "fixed cost / contribution", "end / start, then the yearly multiple").
+4. hints: exactly 2, progressive, never revealing the answer.
+5. Each wrong option gets trap (the library name) and trap_explanation: 1-2 sentences written TO the student ("You compared shares instead of units...").
+6. Realistic Indian business context (Rs, real-feeling firms), never forced. Do NOT duplicate the structure of these existing questions:
+${existingStems.slice(0, 15).map((s) => `- ${s.slice(0, 90)}`).join('\n') || '- (none yet)'}
+7. self_check_answer_key: independently re-derive the answer; if it disagrees with answer_key, fix the question before output.
+8. No em dashes in any student-facing text.`
 }
 
 // JSON schema for structured outputs (additionalProperties:false everywhere,
