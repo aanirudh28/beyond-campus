@@ -3,6 +3,7 @@ import { JOB_DOMAINS, getPublishedJobs } from '@/lib/jobsPublic'
 import { getAllGuides } from '@/lib/guides'
 import { getPublicTopics, getSeoQuestionSlugs } from '@/lib/apti-public'
 import { COMPANIES } from '@/lib/apti-companies'
+import { VENDORS } from '@/lib/apti-vendors'
 
 export const revalidate = 3600 // refresh hourly so newly published jobs appear without a redeploy
 
@@ -62,6 +63,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   for (const c of COMPANIES) {
     entries.push({ url: `${BASE}/aptitude/companies/${c.slug}`, changeFrequency: 'weekly', priority: 0.8 })
+  }
+  entries.push({ url: `${BASE}/aptitude/vendors`, changeFrequency: 'weekly', priority: 0.7 })
+  for (const v of VENDORS) {
+    entries.push({ url: `${BASE}/aptitude/vendors/${v.slug}`, changeFrequency: 'weekly', priority: 0.8 })
   }
   for (const q of await getSeoQuestionSlugs(500)) {
     entries.push({ url: `${BASE}/aptitude/q/${q.slug}`, changeFrequency: 'monthly', priority: 0.6 })

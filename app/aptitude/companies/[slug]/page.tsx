@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { COMPANIES } from '@/lib/apti-companies'
 import { getPublicTopics } from '@/lib/apti-public'
+import { vendorForCompany } from '@/lib/apti-vendors'
 import { PageShell, SiteNav, SiteFooter, HeroGlow } from '@/app/components/SiteChrome'
 
 // Public company prep page (doc 08/11): the test pattern, what to drill and
@@ -58,6 +59,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
     }))
   const relatedTopics = [...new Map(weighted.flatMap((w) => (w.topic ? [[w.topic.slug, w.topic] as const] : []))).values()].slice(0, 8)
   const peers = COMPANIES.filter((c) => c.tier === company.tier && c.slug !== company.slug).slice(0, 6)
+  const vendor = vendorForCompany(company)
 
   const drillGroups = [
     { title: 'Heavily tested — start here', color: '#F87171', items: weighted.filter((w) => w.weight >= 3) },
@@ -83,6 +85,15 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
             {company.sectionsLine}. Test vendor: <strong style={{ color: 'white' }}>{company.vendor}</strong>.
             {' '}{company.negativeMarking ? 'Negative marking applies — accuracy beats attempts.' : 'No negative marking reported — attempt everything.'}
           </p>
+          {vendor && (
+            <Link href={`/aptitude/vendors/${vendor.slug}`} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 16,
+              padding: '9px 16px', borderRadius: 100, fontSize: 13.5, fontWeight: 600,
+              background: 'rgba(79,124,255,0.08)', border: '1px solid rgba(79,124,255,0.3)', color: 'var(--blue-soft)',
+            }}>
+              Decode the {vendor.name} test format →
+            </Link>
+          )}
         </div>
       </section>
 

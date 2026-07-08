@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getPublicTopics, DOMAIN_LABELS } from '@/lib/apti-public'
+import { VENDORS } from '@/lib/apti-vendors'
 import { PageShell, SiteNav, SiteFooter, HeroGlow } from '@/app/components/SiteChrome'
 
 // refreshed hourly so newly seeded topics appear without a redeploy
@@ -249,6 +250,26 @@ export default async function AptitudeLanding() {
           </div>
         </section>
       )}
+
+      {/* Know your test vendor — the vendor decoder SEO cluster */}
+      <section style={{ padding: '0 24px 70px' }}>
+        <div data-reveal style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <h2 style={{ fontFamily: 'var(--serif)', fontWeight: 400, fontSize: 'clamp(24px, 4vw, 34px)', textAlign: 'center', margin: '0 0 8px', letterSpacing: -0.5 }}>
+            Know your test vendor
+          </h2>
+          <p style={{ color: 'var(--muted)', fontSize: 14.5, lineHeight: 1.7, textAlign: 'center', maxWidth: 600, margin: '0 auto 28px' }}>
+            The platform decides the pattern. AMCAT adapts and never lets you go back; eLitmus punishes wrong answers.
+            Decode the test you are actually about to sit.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
+            {VENDORS.map(v => (
+              <Link key={v.slug} href={`/aptitude/vendors/${v.slug}`} className="bc-card" style={{ fontSize: 14, fontWeight: 600, padding: '10px 18px', borderRadius: 100, color: 'rgba(255,255,255,0.85)' }}>
+                {v.name} →
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Pitch */}
       <section style={{ padding: '0 24px 70px', textAlign: 'center' }}>
