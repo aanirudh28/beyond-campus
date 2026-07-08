@@ -8,6 +8,7 @@ import {
 } from '@/app/components/apti/ui'
 import AptiNav from '@/app/components/apti/Nav'
 import { trackAptiEvent } from '@/app/components/apti/track'
+import { shareChallengeCard } from '@/app/components/apti/share'
 
 // First-class doorways to the rest of the platform — the tab bar is for
 // switching, these are for discovering.
@@ -55,14 +56,45 @@ interface TodayData {
     dueReviews: number
     weakestSkill: { id: string; slug: string; name: string; accuracy: number } | null
   }
+  community?: { completedToday: number }
+}
+
+interface ChallengeData {
+  available: boolean
+  total?: number
+  participants?: number
+  my?: null | { setId: string; done: boolean; correct?: number; totalTimeMs?: number; topPct?: number }
+}
+
+// ambient presence reads as an empty room below this (doc 09)
+const PRESENCE_MIN = 25
+
+function fmtDuration(ms: number): string {
+  const s = Math.round(ms / 1000)
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 }
 
 export default function PracticePage() {
   const [data, setData] = useState<TodayData | null>(null)
+  const [challenge, setChallenge] = useState<ChallengeData | null>(null)
+  const [challengeBusy, setChallengeBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [sessionBusy, setSessionBusy] = useState(false)
   const [sessionError, setSessionError] = useState<string | null>(null)
   const router = useRouter()
+
+  const startChallenge = async () => {
+    if (challengeBusy) return
+    if (challenge?.my && !challenge.my.done) { router.push(`/practice/set/${challenge.my.setId}`); return }
+    setChallengeBusy(true)
+    try {
+      const res = await fetch('/api/apti/challenge', { method: 'POST' })
+      const d = await res.json()
+      if (res.ok) router.push(`/practice/set/${d.setId}`)
+    } catch { /* the card simply stays; retry on next tap */ } finally {
+      setChallengeBusy(false)
+    }
+  }
 
   const startSession = async (payload: { kind: string; skillId?: string }) => {
     if (sessionBusy) return
@@ -104,6 +136,11 @@ export default function PracticePage() {
         setData(d)
       })
       .catch(() => { if (!cancelled) setError('Could not load today’s set. Refresh to retry.') })
+    // challenge is additive — its failure must never block the Today page
+    fetch('/api/apti/challenge')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: ChallengeData | null) => { if (d && !cancelled) setChallenge(d) })
+      .catch(() => {})
     return () => { cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -249,6 +286,82 @@ export default function PracticePage() {
                   </div>
                 )}
               </Card>
+
+              {/* ambient presence — real count, shown only once the room is full enough */}
+              {(data.community?.completedToday ?? 0) >= PRESENCE_MIN && (
+                <p style={{ textAlign: 'center', fontSize: 13, color: COLORS.muted2, margin: '-6px 0 18px' }}>
+                  <span style={{ color: COLORS.correct }}>●</span>{' '}
+                  <Mono style={{ color: COLORS.muted }}>{data.community!.completedToday}</Mono> students did today&rsquo;s set
+                </p>
+              )}
+
+              {/* daily challenge — same 3 questions for everyone (doc 09/11) */}
+              {challenge?.available && (
+                <Card style={{ padding: 20, marginBottom: 18, position: 'relative', overflow: 'hidden' }}>
+                  <div aria-hidden style={{
+                    position: 'absolute', inset: 0, pointerEvents: 'none',
+                    background: 'linear-gradient(135deg, rgba(123,97,255,0.08), transparent 55%)',
+                  }} />
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <p className="mono-label" style={{ color: COLORS.purple }}>⚡ Daily Challenge</p>
+                    {(challenge.participants ?? 0) >= PRESENCE_MIN && (
+                      <Mono style={{ fontSize: 12, color: COLORS.muted2 }}>{challenge.participants} in today</Mono>
+                    )}
+                  </div>
+                  {challenge.my?.done ? (
+                    <div>
+                      <p style={{ fontSize: 15, lineHeight: 1.6 }}>
+                        <Mono style={{ fontWeight: 700 }}>{challenge.my.correct}/{challenge.total}</Mono>
+                        {typeof challenge.my.totalTimeMs === 'number' && challenge.my.totalTimeMs > 0 && (
+                          <> in <Mono style={{ fontWeight: 700 }}>{fmtDuration(challenge.my.totalTimeMs)}</Mono></>
+                        )}
+                        {typeof challenge.my.topPct === 'number' && (
+                          <span style={{ color: COLORS.blueSoft }}> — top {challenge.my.topPct}% today</span>
+                        )}
+                      </p>
+                      <p style={{ fontSize: 12.5, color: COLORS.muted2, margin: '6px 0 12px' }}>
+                        Same 3 questions for every student. New ones at midnight.
+                      </p>
+                      <button
+                        onClick={() => shareChallengeCard({
+                          correct: challenge.my!.correct ?? 0,
+                          total: challenge.total ?? 3,
+                          totalTimeMs: challenge.my!.totalTimeMs,
+                          topPct: challenge.my!.topPct,
+                        })}
+                        className="apti-option"
+                        style={{
+                          padding: '10px 18px', borderRadius: 100, fontFamily: 'inherit', fontSize: 13.5,
+                          background: 'rgba(255,255,255,0.04)', border: `1px solid ${COLORS.hair}`,
+                          color: '#fff', fontWeight: 600, cursor: 'pointer',
+                        }}
+                      >
+                        Challenge a friend ↗
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={startChallenge}
+                      disabled={challengeBusy}
+                      className="apti-option"
+                      style={{
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%',
+                        padding: '14px 16px', borderRadius: 14, fontFamily: 'inherit', fontSize: 15,
+                        background: 'rgba(123,97,255,0.08)', border: '1px solid rgba(123,97,255,0.35)',
+                        color: '#fff', cursor: 'pointer', textAlign: 'left',
+                      }}
+                    >
+                      <span>
+                        <strong>{challenge.my ? 'Resume the challenge' : `Same ${challenge.total} questions, every student`}</strong>
+                        <span style={{ display: 'block', fontSize: 12.5, color: COLORS.muted, marginTop: 3 }}>
+                          {challenge.my ? 'Finish what you started' : 'Score + time decides your percentile. No streak risk.'}
+                        </span>
+                      </span>
+                      <span style={{ color: COLORS.purple }}>→</span>
+                    </button>
+                  )}
+                </Card>
+              )}
 
               {/* keep going — extra practice with real reasons */}
               {done && (data.nextUp.dueReviews > 0 || data.nextUp.weakestSkill) && (

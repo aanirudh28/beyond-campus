@@ -57,6 +57,7 @@ const KIND_LABEL: Record<string, string> = {
   topic: 'Skill Drill',
   review: 'Redemption Run',
   comeback: 'Comeback Set',
+  challenge: 'Daily Challenge',
 }
 
 const ERROR_LABELS: Record<string, string> = {

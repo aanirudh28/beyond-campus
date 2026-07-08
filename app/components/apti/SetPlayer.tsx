@@ -8,6 +8,7 @@ import {
   CountUpNumber, AccuracyRing, AptiStyles, DOMAIN_LABELS,
 } from './ui'
 import TutorPanel from './TutorPanel'
+import { shareResultCard, shareChallengeCard } from './share'
 
 export interface ClientQuestion {
   id: string
@@ -33,12 +34,14 @@ interface Reveal {
   skill: { name: string; ratingBefore: number; ratingAfter: number; masteryBefore: string; mastery: string }
   domain: { name: string; before: number | null; after: number | null }
   redemption: { isReview: boolean; redeemed: boolean } | null
+  qStats: { attempts: number; correctPct: number } | null
   set: { cursor: number; total: number; done: boolean; summary: SetSummary | null }
 }
 
 export interface SetSummary {
   correct: number
   total: number
+  totalTimeMs?: number
   ratingDeltas: Record<string, number>
   streak: number
   kind?: string
@@ -50,80 +53,6 @@ const MILESTONES: Record<number, string> = {
   21: 'Twenty-one days. This is who you are now.',
   50: 'Fifty days. Placement season should be nervous.',
   100: 'One hundred days. Legendary.',
-}
-
-// WhatsApp-status-sized brag card, drawn locally — nothing leaves the device
-// unless the student shares it.
-async function shareResultCard(s: SetSummary) {
-  const size = 1080
-  const canvas = document.createElement('canvas')
-  canvas.width = size
-  canvas.height = size
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
-
-  ctx.fillStyle = '#0B0B0F'
-  ctx.fillRect(0, 0, size, size)
-  const glow = ctx.createRadialGradient(size / 2, 240, 60, size / 2, 240, 620)
-  glow.addColorStop(0, 'rgba(79,124,255,0.28)')
-  glow.addColorStop(0.55, 'rgba(123,97,255,0.10)')
-  glow.addColorStop(1, 'rgba(0,0,0,0)')
-  ctx.fillStyle = glow
-  ctx.fillRect(0, 0, size, size)
-
-  const serif = getComputedStyle(document.body).getPropertyValue('--serif') || 'Georgia, serif'
-  const mono = getComputedStyle(document.body).getPropertyValue('--mono') || 'monospace'
-
-  ctx.textAlign = 'center'
-  ctx.fillStyle = 'rgba(255,255,255,0.45)'
-  ctx.font = `500 26px ${mono}`
-  ctx.fillText('B E Y O N D   C A M P U S   ·   A P T I', size / 2, 130)
-
-  ctx.font = '120px serif'
-  ctx.fillText('🔥', size / 2, 330)
-
-  const grad = ctx.createLinearGradient(size / 2 - 260, 0, size / 2 + 260, 0)
-  grad.addColorStop(0, '#4F7CFF')
-  grad.addColorStop(1, '#7B61FF')
-  ctx.fillStyle = grad
-  ctx.font = `400 150px ${serif}`
-  ctx.fillText(`Day ${s.streak}`, size / 2, 510)
-
-  ctx.fillStyle = '#ffffff'
-  ctx.font = `400 54px ${serif}`
-  ctx.fillText('of daily aptitude practice', size / 2, 590)
-
-  ctx.fillStyle = 'rgba(255,255,255,0.75)'
-  ctx.font = `600 44px ${mono}`
-  ctx.fillText(`${s.correct}/${s.total} correct today`, size / 2, 700)
-
-  const deltas = Object.entries(s.ratingDeltas).filter(([, d]) => d !== 0)
-  if (deltas.length > 0) {
-    ctx.fillStyle = '#34D399'
-    ctx.font = `600 38px ${mono}`
-    const line = deltas.slice(0, 3).map(([dom, d]) =>
-      `${dom.charAt(0).toUpperCase() + dom.slice(1)} ${d > 0 ? '▲+' : '▼'}${Math.abs(d)}`).join('   ')
-    ctx.fillText(line, size / 2, 775)
-  }
-
-  ctx.fillStyle = 'rgba(255,255,255,0.4)'
-  ctx.font = `500 30px ${mono}`
-  ctx.fillText('beyond-campus.in/practice', size / 2, 960)
-
-  const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
-  if (!blob) return
-  const file = new File([blob], `apti-day-${s.streak}.png`, { type: 'image/png' })
-  if (navigator.canShare?.({ files: [file] })) {
-    try {
-      await navigator.share({ files: [file], text: `Day ${s.streak} of daily aptitude practice 🔥` })
-      return
-    } catch { /* user cancelled — fall through to download */ }
-  }
-  const a = document.createElement('a')
-  a.href = URL.createObjectURL(blob)
-  a.download = file.name
-  a.click()
-  URL.revokeObjectURL(a.href)
 }
 
 type Phase = 'answer' | 'confidence' | 'reveal' | 'done'
@@ -254,6 +183,7 @@ export default function SetPlayer({ setId, kind = 'daily', questions, startCurso
   if (phase === 'done') {
     const s = summary
     const isDaily = kind === 'daily'
+    const isChallenge = kind === 'challenge'
     const milestone = isDaily && s ? MILESTONES[s.streak] : undefined
     return (
       <div style={{ maxWidth: 520, margin: '0 auto', padding: '56px 20px 80px' }}>
@@ -262,18 +192,22 @@ export default function SetPlayer({ setId, kind = 'daily', questions, startCurso
           <div style={{
             fontSize: milestone ? 64 : 52,
             animation: 'apti-flame 1.6s ease-in-out infinite', display: 'inline-block',
-          }}>{isDaily ? '🔥' : kind === 'review' ? '↺' : '◆'}</div>
+          }}>{isDaily ? '🔥' : isChallenge ? '⚡' : kind === 'review' ? '↺' : '◆'}</div>
           <h1 style={{ fontFamily: 'var(--serif)', fontSize: 38, fontWeight: 400, letterSpacing: -1, margin: '10px 0 6px' }}>
             {isDaily
               ? <>Day {s?.streak ?? 1} <em style={{ fontStyle: 'italic', color: COLORS.blueSoft }}>done.</em></>
-              : kind === 'review'
-                ? <>Backlog <em style={{ fontStyle: 'italic', color: COLORS.blueSoft }}>faced.</em></>
-                : <>Session <em style={{ fontStyle: 'italic', color: COLORS.blueSoft }}>banked.</em></>}
+              : isChallenge
+                ? <>Challenge <em style={{ fontStyle: 'italic', color: COLORS.blueSoft }}>closed.</em></>
+                : kind === 'review'
+                  ? <>Backlog <em style={{ fontStyle: 'italic', color: COLORS.blueSoft }}>faced.</em></>
+                  : <>Session <em style={{ fontStyle: 'italic', color: COLORS.blueSoft }}>banked.</em></>}
           </h1>
           <p style={{ color: milestone ? COLORS.blueSoft : COLORS.muted, fontSize: milestone ? 16 : 15, marginBottom: 32, fontWeight: milestone ? 600 : 400 }}>
             {milestone ?? (isDaily
               ? 'Most people never practice at all. You just did.'
-              : 'Extra reps, no strings. The streak still lives on the daily set.')}
+              : isChallenge
+                ? 'Same 3 questions for every student today. Your percentile is waiting on the Today page.'
+                : 'Extra reps, no strings. The streak still lives on the daily set.')}
           </p>
         </div>
 
@@ -314,9 +248,11 @@ export default function SetPlayer({ setId, kind = 'daily', questions, startCurso
           >
             Review your answers →
           </button>
-          {isDaily && s && (
+          {(isDaily || isChallenge) && s && (
             <button
-              onClick={() => shareResultCard(s)}
+              onClick={() => (isChallenge
+                ? shareChallengeCard({ correct: s.correct, total: s.total, totalTimeMs: s.totalTimeMs })
+                : shareResultCard(s))}
               className="apti-option"
               style={{
                 width: '100%', padding: '15px 22px', marginBottom: 12,
@@ -325,7 +261,7 @@ export default function SetPlayer({ setId, kind = 'daily', questions, startCurso
                 fontWeight: 600, fontSize: 15, fontFamily: 'inherit', cursor: 'pointer',
               }}
             >
-              Share the streak ↗
+              {isChallenge ? 'Challenge a friend ↗' : 'Share the streak ↗'}
             </button>
           )}
           <PrimaryBtn onClick={() => router.push('/practice')}>
@@ -586,6 +522,17 @@ export default function SetPlayer({ setId, kind = 'daily', questions, startCurso
                 {' '}→ <strong style={{ color: COLORS.blueSoft, textTransform: 'capitalize' }}>{reveal.skill.mastery}</strong>
               </span>
             </div>
+          )}
+
+          {/* community stat — you're not alone in this trap / you're ahead */}
+          {reveal.qStats && (reveal.correct ? reveal.qStats.correctPct < 50 : reveal.qStats.correctPct < 80) && (
+            <p className="apti-in" style={{
+              fontSize: 13, color: COLORS.muted, textAlign: 'center', margin: '0 0 12px',
+            }}>
+              {reveal.correct
+                ? <>Only <Mono style={{ color: COLORS.correct }}>{reveal.qStats.correctPct}%</Mono> get this right. You&rsquo;re in that group.</>
+                : <><Mono style={{ color: COLORS.stretch }}>{100 - reveal.qStats.correctPct}%</Mono> get this wrong — now you know the trap.</>}
+            </p>
           )}
 
           {/* the trap */}
