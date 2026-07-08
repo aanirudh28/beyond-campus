@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getSeoQuestionBySlug, DOMAIN_LABELS } from '@/lib/apti-public'
 import PublicQuestion from '@/app/components/apti/PublicQuestion'
+import { PageShell, SiteNav, SiteFooter, HeroGlow } from '@/app/components/SiteChrome'
+import { AptiStyles } from '@/app/components/apti/ui'
 
 // One public page per founder-curated question (doc 11 §4): the LeetCode-
 // discuss long-tail play. Full layered explanation is public by design.
@@ -57,51 +59,44 @@ export default async function QuestionPage({ params }: { params: Promise<{ slug:
   }
 
   return (
-    <main style={{ minHeight: '100vh', background: '#0B0B0F', color: 'white', fontFamily: "'DM Sans', sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap'); * { box-sizing: border-box; }`}</style>
+    <PageShell>
+      <AptiStyles />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <SiteNav cta={{ label: 'Start free →', href: '/login?next=/practice' }} />
 
-      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', maxWidth: 1100, margin: '0 auto' }}>
-        <Link href="/" style={{ textDecoration: 'none', fontFamily: "'DM Serif Display', serif", fontSize: 21, color: 'white', letterSpacing: -0.5 }}>
-          Beyond<span style={{ color: '#4F7CFF' }}>Campus</span>
-        </Link>
-        <Link href="/login?next=/practice" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>Log in →</Link>
-      </nav>
-
-      <section style={{ maxWidth: 680, margin: '0 auto', padding: '36px 24px 20px' }}>
-        <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: '#93BBFF', margin: '0 0 12px' }}>
-          <Link href="/aptitude" style={{ color: '#93BBFF', textDecoration: 'none' }}>Aptitude</Link>
-          {' '}·{' '}
-          <Link href={`/aptitude/${q.topicSlug}`} style={{ color: '#93BBFF', textDecoration: 'none' }}>{q.topicName}</Link>
-          {' '}· {DOMAIN_LABELS[q.domain] ?? q.domain}
-        </p>
-        <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(24px, 4vw, 34px)', lineHeight: 1.3, margin: '0 0 8px', letterSpacing: -0.5 }}>
-          {stem}
-        </h1>
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0 }}>
-          Try it first — the solution, the trap, and the shortcut reveal after you pick.
-        </p>
-      </section>
-
-      <section style={{ maxWidth: 680, margin: '0 auto', padding: '16px 24px 48px' }}>
-        <PublicQuestion q={q} />
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 20 }}>
-          <Link href={`/aptitude/${q.topicSlug}`} style={{ fontSize: 14, padding: '10px 18px', borderRadius: 100, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none' }}>
-            More {q.topicName.toLowerCase()} →
-          </Link>
-          <Link href="/aptitude" style={{ fontSize: 14, padding: '10px 18px', borderRadius: 100, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none' }}>
-            What is Apti? →
-          </Link>
+      <section style={{ position: 'relative', overflow: 'hidden', padding: '120px 24px 20px' }}>
+        <HeroGlow />
+        <div style={{ maxWidth: 680, margin: '0 auto', position: 'relative' }}>
+          <p className="mono-label" style={{ marginBottom: 14, fontSize: 11 }}>
+            <Link href="/aptitude" style={{ color: 'var(--blue-soft)' }}>Aptitude</Link>
+            {' '}·{' '}
+            <Link href={`/aptitude/${q.topicSlug}`} style={{ color: 'var(--blue-soft)' }}>{q.topicName}</Link>
+            {' '}· {DOMAIN_LABELS[q.domain] ?? q.domain}
+          </p>
+          <h1 style={{ fontFamily: 'var(--serif)', fontWeight: 400, fontSize: 'clamp(24px, 4vw, 34px)', lineHeight: 1.3, margin: '0 0 10px', letterSpacing: -0.5 }}>
+            {stem}
+          </h1>
+          <p style={{ color: 'var(--muted)', fontSize: 14, margin: 0 }}>
+            Try it first — the solution, the trap, and the shortcut reveal after you pick.
+          </p>
         </div>
       </section>
 
-      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '28px 24px', textAlign: 'center' }}>
-        <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, margin: 0 }}>
-          <Link href="/aptitude" style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'none' }}>Apti</Link>
-          {' '}· free adaptive aptitude practice ·{' '}
-          <Link href="/" style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'none' }}>Beyond Campus</Link>
-        </p>
-      </footer>
-    </main>
+      <section style={{ padding: '8px 24px 60px' }}>
+        <div style={{ maxWidth: 680, margin: '0 auto' }}>
+          <PublicQuestion q={q} />
+          <div data-reveal style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 20 }}>
+            <Link href={`/aptitude/${q.topicSlug}`} className="bc-card" style={{ fontSize: 14, padding: '10px 18px', borderRadius: 100, color: 'rgba(255,255,255,0.8)' }}>
+              More {q.topicName.toLowerCase()} →
+            </Link>
+            <Link href="/aptitude" className="bc-card" style={{ fontSize: 14, padding: '10px 18px', borderRadius: 100, color: 'rgba(255,255,255,0.8)' }}>
+              What is Apti? →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <SiteFooter tagline="Free adaptive aptitude practice for Indian placement tests — every question, every explanation, forever." />
+    </PageShell>
   )
 }
