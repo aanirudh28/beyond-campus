@@ -157,21 +157,28 @@ export async function GET(req: NextRequest) {
   const mailedThisRun = new Set<string>()
   let sends = 0
 
+  const runStart = Date.now()
   const trySend = async (email: string, name: string | null, step: Step) => {
     const key = email.toLowerCase()
     if (sends >= MAX_SENDS_PER_RUN) return
+    // leave headroom under the 60s function limit — the rest go next run
+    if (Date.now() - runStart > 45_000) return
     if (optouts.has(key) || mailedThisRun.has(key)) return
     if (sent.has(`${key}|${step.sequence}|${step.step}`)) return
     try {
-      await resend.emails.send({
+      // the SDK reports failures via `error`, it does NOT throw — a 429 from
+      // Resend's ~2 req/s limit must not be recorded as sent
+      const { error } = await resend.emails.send({
         from: 'Beyond Campus <bookings@beyond-campus.in>',
         to: email,
         subject: step.subject,
         html: emailShell(step.body(name), email),
       })
+      if (error) return
       await svc.from('nurture_sends').insert({ email: key, sequence: step.sequence, step: step.step })
       mailedThisRun.add(key)
       sends++
+      await new Promise(r => setTimeout(r, 550)) // stay under Resend's rate limit
     } catch { /* one bad address shouldn't kill the batch */ }
   }
 

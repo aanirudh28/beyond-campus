@@ -39,8 +39,11 @@ export async function GET(req: NextRequest) {
 
   const resend = new Resend(process.env.RESEND_API_KEY!)
   let sent = 0
+  const runStart = Date.now()
 
   for (const profile of profiles || []) {
+    // leave headroom under the 60s function limit — the rest go next run
+    if (Date.now() - runStart > 45_000) break
     if (profile.last_reminder_sent_at && profile.last_reminder_sent_at > throttleCutoff) continue
 
     const items = due.filter(d => d.user_id === profile.user_id).slice(0, 5)
@@ -59,7 +62,9 @@ export async function GET(req: NextRequest) {
       </tr>`).join('')
 
     try {
-      await resend.emails.send({
+      // the SDK reports failures via `error`, it does NOT throw — a 429 from
+      // Resend's ~2 req/s limit must not mark the reminder as sent
+      const { error } = await resend.emails.send({
         from: 'Beyond Campus <bookings@beyond-campus.in>',
         to: profile.email,
         subject: `⏰ ${items.length} follow-up${items.length > 1 ? 's' : ''} due — don't let them forget you`,
@@ -73,8 +78,10 @@ export async function GET(req: NextRequest) {
             <p style="color: rgba(255,255,255,0.25); font-size: 11.5px; margin-top: 26px;">You get these because follow-up reminders are on. Turn them off anytime in tracker settings ⚙️.</p>
           </div>`,
       })
+      if (error) continue
       await svc.from('tracker_profiles').update({ last_reminder_sent_at: new Date().toISOString() }).eq('user_id', profile.user_id)
       sent++
+      await new Promise(r => setTimeout(r, 550)) // stay under Resend's rate limit
     } catch { /* one failed email shouldn't kill the batch */ }
   }
 
