@@ -181,7 +181,89 @@ export const CARDS_CH2: Card[] = [
       },
     ],
   },
+  {
+    id: 'ch2_moonlight_offer',
+    chapter: 1,
+    kind: 'decision',
+    title: 'THE SECOND LAPTOP',
+    base: `A friend runs an agency and offers you steady weekend work, ₹35,000 a month, invoiced to a company that competes vaguely with yours. Your contract has a clause about this. Half your batch does it anyway, on second laptops with the camera covered. The money would change your year. The clause does not care about your year.`,
+    options: [
+      {
+        id: 'moonlight',
+        label: 'Take it quietly. Everyone does it.',
+        effects: { savings: 3.5, burnout: 8, skills: 3 },
+        setFlags: ['moonlighted'],
+        outcome:
+          'The extra money is real and so is the low hum of a secret. You get very good at closing tabs quickly. Some bills, you learn, arrive years after the purchase.',
+      },
+      {
+        id: 'decline',
+        label: 'Pass. Sleep is worth more than ₹35,000.',
+        effects: { reputation: 3, burnout: -3 },
+        outcome:
+          'The friend finds someone else. Your weekends stay yours and your background checks stay boring, which is the only way background checks should ever be.',
+      },
+    ],
+  },
+  {
+    id: 'ch2_love_or_ladder',
+    chapter: 1,
+    kind: 'decision',
+    title: 'THE PERSON IN THE ELEVATOR',
+    base: `Someone at work laughs at your worst joke and remembers how you take your chai. It is becoming something. Office relationships are a genre with famous endings, good and bad, and your promotion cycle is four months away. Your grandmother, telepathically, has already started asking about "any good news".`,
+    options: [
+      {
+        id: 'lean_in_love',
+        label: 'Let it become something. Work is not a life.',
+        effects: { family: 10, burnout: -6, reputation: -2 },
+        setFlags: ['love_early'],
+        outcome:
+          'The chai breaks get longer and the bad days get shorter. HR raises an eyebrow. Your grandmother, six hundred kilometres away, somehow already knows.',
+      },
+      {
+        id: 'ladder_first',
+        label: 'Keep it professional. Bad timing.',
+        effects: { skills: 4, burnout: 3 },
+        outcome:
+          'Clean, sensible, and slightly grey. They transfer to the Pune office next year. You think about the chai sometimes.',
+      },
+    ],
+  },
   // ---- events ----
+  {
+    id: 'ch2_ev_mentor_intro',
+    chapter: 1,
+    kind: 'event',
+    title: 'THE THREAD PAYS EARLY',
+    condition: { flag: 'mentor_kept' },
+    base: `Your old manager, the one you never stopped messaging, calls out of nowhere. "There is a panel next month judging young talent in the industry. I put your name in. Do not embarrass me." This is what those two-line monthly messages were quietly buying.`,
+    options: [
+      {
+        id: 'show_up',
+        label: 'Prepare like it matters. It does.',
+        effects: { reputation: 8, network: 8 },
+        setFlags: ['mentor_dividend'],
+        outcome:
+          'You do not win the panel. You meet four people who remember you afterwards, which is a bigger prize wearing a smaller trophy.',
+      },
+    ],
+  },
+  {
+    id: 'ch2_ev_ipo_flatmate',
+    chapter: 1,
+    kind: 'event',
+    title: 'THE FLATMATE LOTTERY',
+    base: `Your flatmate's startup lists. His ESOPs, which he complained about for two years while you split the electricity bill, are suddenly worth ₹3 crore on paper. He buys the good whisky and pays the full deposit on a new flat. The electricity bill in your name stays exactly the same size.`,
+    options: [
+      {
+        id: 'process',
+        label: 'Toast him. Luck is not a strategy, but it exists.',
+        effects: { network: 3, burnout: 4 },
+        outcome:
+          'You are genuinely happy for him and genuinely rattled for a month. Both things are allowed. The lesson you keep: be somewhere upside is possible.',
+      },
+    ],
+  },
   {
     id: 'ch2_ev_appraisal',
     chapter: 1,

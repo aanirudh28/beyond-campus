@@ -26,6 +26,14 @@ export interface ChoiceRecord {
   optionId: string
 }
 
+export interface TrailPoint {
+  age: number
+  year: number
+  salary: number
+  savings: number
+  burnout: number
+}
+
 export interface GameState {
   seed: number
   profile: Profile
@@ -35,6 +43,7 @@ export interface GameState {
   stats: Stats
   flags: Record<string, true> // sparse: mentor_kept, excel_learned, moved_metro...
   history: ChoiceRecord[]
+  trail: TrailPoint[] // stat snapshots at chapter boundaries, for the timeline chart
 }
 
 export interface Effects {

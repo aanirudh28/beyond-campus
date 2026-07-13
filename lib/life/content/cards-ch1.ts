@@ -182,6 +182,72 @@ export const CARDS_CH1: Card[] = [
   },
   // ---- events ----
   {
+    id: 'ch1_english_tax',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE ENGLISH TAX',
+    condition: { city: 'tier3' },
+    base: `In the mock group discussion, you had the best point in the room and said it last, quietly, in a sentence you rehearsed twice. The city kids talk in easy, careless English, like it costs them nothing. For you it costs something every time. There is a daily practice circle that meets online at 7 a.m. It is embarrassing. It works.`,
+    options: [
+      {
+        id: 'grind',
+        label: 'Join the 7 a.m. circle. Pay the tax now.',
+        effects: { skills: 10, burnout: 4, network: 4 },
+        setFlags: ['english_grind'],
+        outcome:
+          'For three months you are the worst speaker in a room of strangers. By placement season, interviewers stop noticing your English and start noticing your answers.',
+      },
+      {
+        id: 'avoid',
+        label: 'Avoid English-heavy rounds. Play to strengths.',
+        effects: { burnout: -3, family: 2 },
+        outcome:
+          'There is comfort in the mother tongue and there is a toll booth on certain roads. You take the routes without one, and there are fewer of them.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_fest_hustle',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE SPONSORSHIP DESK',
+    base: `The college fest needs someone to raise sponsorships. Unpaid, thankless, and it means calling forty local businesses that mostly say no. It is also the closest thing to a real BD job that exists on this campus, and the coordinator title goes on the resume either way.`,
+    options: [
+      {
+        id: 'hustle',
+        label: 'Take the desk. Forty nos are forty reps.',
+        effects: { network: 8, skills: 6, burnout: 4 },
+        setFlags: ['proof_of_work'],
+        outcome:
+          'You close ₹1.8 lakhs from a gym, a cafe, and a coaching centre. In interviews, "tell me about a sale you made" stops being a trap.',
+      },
+      {
+        id: 'skip_fest',
+        label: 'Skip it. Applications need those hours.',
+        effects: { skills: 3 },
+        outcome:
+          'The fest happens without you. So does the story you would have told for the next five years.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_ev_first_interview',
+    chapter: 0,
+    kind: 'event',
+    title: 'THE FIRST REAL INTERVIEW',
+    base: `It goes badly. Not movie-badly, just ordinary-badly: you blank on "walk me through your resume", laugh nervously at your own answer, and hear yourself say "I am a quick learner" twice. The interviewer is kind about it, which somehow stings more. Everyone's first one goes like this. Nobody says so.`,
+    options: [
+      {
+        id: 'debrief',
+        label: 'Write down every question the same night.',
+        effects: { skills: 5, burnout: 3, reputation: 2 },
+        setFlags: ['first_blood'],
+        outcome:
+          'The document is titled "never again.docx". Interview two is mediocre. Interview five is good. The compounding is invisible and absolutely real.',
+      },
+    ],
+  },
+  {
     id: 'ch1_ev_ghosting',
     chapter: 0,
     kind: 'event',

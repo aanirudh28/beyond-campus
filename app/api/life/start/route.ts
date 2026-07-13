@@ -44,7 +44,11 @@ export async function POST(req: Request) {
       )
     }
 
-    const seed = crypto.randomInt(2 ** 31)
+    // Challenge links replay a friend's exact deck: honour a shared seed.
+    const seed =
+      Number.isInteger(body?.seed) && body.seed >= 0 && body.seed < 2 ** 31
+        ? body.seed
+        : crypto.randomInt(2 ** 31)
     const { data, error } = await svc
       .from('life_runs')
       .insert({

@@ -37,6 +37,16 @@ export const ENDINGS: Ending[] = [
     match: { allFlags: ['own_business'], minSavings: 35 },
   },
   {
+    id: 'the_exit',
+    name: 'The Exit',
+    emoji: '💸',
+    tone: 'good',
+    blurb:
+      'Employee six, a pay cut everyone mocked, and years of doing five jobs badly. Then the term sheet landed and finished the argument. The risk was the resume.',
+    baselineRarity: 2,
+    match: { allFlags: ['exit_money'], minSavings: 85 },
+  },
+  {
     id: 'the_hometown_king',
     name: 'The Hometown King',
     emoji: '🏡',
@@ -255,6 +265,26 @@ export const ENDINGS: Ending[] = [
       'You never left, and it was a choice, not a failure to launch. Every family emergency for two decades found you already there. Some careers are measured in presence.',
     baselineRarity: 4,
     match: { allFlags: ['stayed_rooted'], minStat: { family: 65 } },
+  },
+  {
+    id: 'the_one_person_channel',
+    name: 'The One-Person Channel',
+    emoji: '📡',
+    tone: 'weird',
+    blurb:
+      'You spent two decades renting other people’s distribution, then built your own at an age everyone called too late. Now rooms you have never entered quote you inside them.',
+    baselineRarity: 3,
+    match: { allFlags: ['one_person_channel'], minStat: { network: 70 } },
+  },
+  {
+    id: 'the_sandwich_generation',
+    name: 'The Sandwich Generation',
+    emoji: '🫓',
+    tone: 'weird',
+    blurb:
+      'Parents on one side, a child on the other, and you in the middle holding both. No award exists for this. It is the most common heroism in India, and you did it without dropping either.',
+    baselineRarity: 4,
+    match: { allFlags: ['parents_secured', 'kid'], minStat: { family: 55 } },
   },
   {
     id: 'the_people_bank',

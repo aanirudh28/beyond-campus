@@ -2,8 +2,9 @@
 
 import { use, useEffect, useState } from 'react'
 import Link from 'next/link'
-import type { Ending, Stats } from '@/lib/life/types'
+import type { Ending, Stats, TrailPoint } from '@/lib/life/types'
 import { SiteFooter, SiteNav } from '@/app/components/SiteChrome'
+import LifeTimeline from '@/app/components/life/LifeTimeline'
 
 interface PublicRun {
   ending: Ending
@@ -11,6 +12,7 @@ interface PublicRun {
   oneLiner: string
   rarity: number
   stats: Stats
+  trail?: TrailPoint[] | null
 }
 
 const TONE_COLOR = { good: '#93BBFF', bad: '#FF8F8F', weird: '#FFC65C' } as const
@@ -114,6 +116,8 @@ export default function LifeResultPage({ params }: { params: Promise<{ id: strin
               ))}
             </div>
 
+            {run.trail && <LifeTimeline trail={run.trail} />}
+
             <div style={{ textAlign: 'left', marginBottom: 40 }}>
               {run.epilogue.split(/\n\n+/).map((para, i) => (
                 <p
@@ -130,7 +134,7 @@ export default function LifeResultPage({ params }: { params: Promise<{ id: strin
                 Your 20 years will go differently<em style={{ color: 'var(--blue-soft)' }}>.</em>
               </h2>
               <p style={{ fontSize: 14.5, color: 'var(--muted)', lineHeight: 1.7, margin: '0 0 20px' }}>
-                35 choices. 27 endings. 15 minutes. Free, no signup, and the ending is yours to
+                35 choices. 32 endings. 15 minutes. Free, no signup, and the ending is yours to
                 earn or avoid.
               </p>
               <Link href="/20years/play" className="btn-primary" style={{ textDecoration: 'none' }}>

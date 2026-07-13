@@ -11,7 +11,7 @@ export const contentType = 'image/png'
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   let endingName = 'Which ending will you get?'
   let emoji = '⏳'
-  let rarityLine = '35 CHOICES · 27 ENDINGS · 20 YEARS'
+  let rarityLine = '35 CHOICES · 32 ENDINGS · 20 YEARS'
 
   try {
     const { id } = await params

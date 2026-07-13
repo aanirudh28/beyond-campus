@@ -157,7 +157,67 @@ export const CARDS_CH6: Card[] = [
       },
     ],
   },
+  {
+    id: 'ch6_memoir',
+    chapter: 5,
+    kind: 'decision',
+    title: 'THE CHANNEL WITH YOUR NAME ON IT',
+    condition: { minStat: { reputation: 60 } },
+    base: `Twenty years of scars and playbooks are sitting in your head, monetisable and mortal. A weekly channel, a newsletter, maybe the book your industry keeps not writing. Building an audience at 40 feels faintly ridiculous. So did cold-messaging an alum at 21.`,
+    options: [
+      {
+        id: 'publish',
+        label: 'Build the one-person channel. Ship weekly.',
+        effects: { network: 12, reputation: 8, burnout: 5, savings: 4 },
+        setFlags: ['one_person_channel'],
+        outcome:
+          'Episode one gets 400 views, mostly relatives. Episode forty gets quoted back to you in a boardroom. The distribution you rent all career, you finally start to own.',
+      },
+      {
+        id: 'stay_private',
+        label: 'Stay private. The work was the point.',
+        effects: { burnout: -4, family: 3 },
+        outcome:
+          'The knowledge stays in rooms you are personally in. It is enough. It is also, a small voice notes, perishable.',
+      },
+    ],
+  },
   // ---- events ----
+  {
+    id: 'ch6_ev_mentee_founder',
+    chapter: 5,
+    kind: 'event',
+    title: 'ROW THREE, REVISITED',
+    condition: { flag: 'gives_back' },
+    base: `The quiet student from row three, the one whose offer-letter screenshot you framed, calls. She runs a forty-person company now. "I need an advisor I trust. Quarter percent equity, one call a month. You taught me the market has doors. Let me hold one open for you this time."`,
+    options: [
+      {
+        id: 'accept_advisory',
+        label: 'Accept. The elevator came back up.',
+        effects: { savings: 8, reputation: 6, network: 6, burnout: -3 },
+        setFlags: ['elevator_returned'],
+        outcome:
+          'The monthly calls are the best hour of your month. Somewhere in a small-town classroom, someone is sitting in row three of her Saturday session.',
+      },
+    ],
+  },
+  {
+    id: 'ch6_ev_empty_chair',
+    chapter: 5,
+    kind: 'event',
+    title: 'THE EMPTY CHAIR',
+    base: `Your father does not see the end of this chapter. It is peaceful, and it is still the heaviest thing that has ever happened to you. In the drawer of his desk you find a folder with every newspaper cutting about your industry from twenty years, annotated in his handwriting. He was keeping up. He never once said so.`,
+    options: [
+      {
+        id: 'carry_it',
+        label: 'Keep the folder on your own desk.',
+        effects: { family: 10, burnout: 6, reputation: 2 },
+        setFlags: ['the_folder'],
+        outcome:
+          'Grief, it turns out, is love with nowhere urgent to go. You start calling your mother on Tuesdays, and you keep the clippings going in the same folder.',
+      },
+    ],
+  },
   {
     id: 'ch6_ev_reunion',
     chapter: 5,

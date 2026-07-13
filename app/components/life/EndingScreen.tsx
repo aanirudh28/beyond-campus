@@ -1,8 +1,19 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import type { Ending, LifeReportItem, Stats } from '@/lib/life/types'
+import type { Ending, LifeReportItem, Stats, TrailPoint } from '@/lib/life/types'
+import { ENDINGS } from '@/lib/life/content/endings'
 import ShareCard from './ShareCard'
+import LifeTimeline from './LifeTimeline'
+
+export interface GhostView {
+  ageLine: string // "At 21-23, you chose"
+  takenLabel: string
+  otherLabel: string
+  endingName: string
+  emoji: string
+  savingsDelta: number // ghost savings minus real savings, ₹ lakhs
+}
 
 export interface EndingResult {
   runId: string | null
@@ -13,6 +24,11 @@ export interface EndingResult {
   stats: Stats
   report: LifeReportItem[]
   shareUrl: string | null
+  trail?: TrailPoint[]
+  ghosts?: GhostView[]
+  challengeUrl?: string | null
+  discovered?: number // endings collected on this device, recorded at finale
+  endingIsNew?: boolean
 }
 
 const TONE_COLOR: Record<Ending['tone'], string> = {
@@ -28,7 +44,9 @@ export default function EndingScreen({
   result: EndingResult
   onReplay: () => void
 }) {
-  const { ending, epilogue, oneLiner, rarity, stats, report, shareUrl, runId } = result
+  const { ending, epilogue, oneLiner, rarity, stats, report, shareUrl, runId, trail, ghosts, challengeUrl } = result
+  const discovered = result.discovered ?? 0
+  const isNew = result.endingIsNew ?? false
   const cardRef = useRef<HTMLDivElement>(null)
   const [email, setEmail] = useState('')
   const [claimed, setClaimed] = useState(runId === null) // offline runs show everything
@@ -61,6 +79,12 @@ export default function EndingScreen({
     const msg = shareUrl
       ? `I just lived the next 20 years of my career in 20 minutes and ended up as *${ending.name}* ${ending.emoji} Only ${rarity}% of players get this ending. What will yours be? ${shareUrl}`
       : `I just lived the next 20 years of my career in 20 minutes and ended up as *${ending.name}* ${ending.emoji} Play yours: https://www.beyond-campus.in/20years`
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
+  }
+
+  function shareChallenge() {
+    if (!challengeUrl) return
+    const msg = `I lived a whole 20-year career and got *${ending.name}* ${ending.emoji} Now live MY EXACT life: same cards, same twists, your choices. Beat my ending: ${challengeUrl}`
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
@@ -152,6 +176,22 @@ export default function EndingScreen({
         ONLY {rarity}% OF PLAYERS GET THIS ENDING
       </div>
 
+      {discovered > 0 && (
+        <div
+          style={{
+            fontFamily: 'var(--mono)',
+            fontSize: 10.5,
+            letterSpacing: 1.5,
+            color: 'var(--muted-2)',
+            marginTop: -22,
+            marginBottom: 30,
+          }}
+        >
+          {isNew && <span style={{ color: 'var(--blue-soft)' }}>NEW ENDING · </span>}
+          {discovered} OF {ENDINGS.length} DISCOVERED
+        </div>
+      )}
+
       <div style={{ textAlign: 'left', marginBottom: 32 }}>
         {epilogue.split(/\n\n+/).map((para, i) => (
           <p
@@ -167,6 +207,8 @@ export default function EndingScreen({
           </p>
         ))}
       </div>
+
+      {trail && <LifeTimeline trail={trail} />}
 
       <div
         className="bc-card"
@@ -204,8 +246,13 @@ export default function EndingScreen({
         }}
       >
         <button className="btn-primary" style={{ padding: '13px 24px' }} onClick={shareWhatsApp}>
-          <span>Challenge friends on WhatsApp</span>
+          <span>Share my ending</span>
         </button>
+        {challengeUrl && (
+          <button style={btnGhost} onClick={shareChallenge}>
+            ⚔ Send a friend this exact life
+          </button>
+        )}
         <button style={btnGhost} onClick={downloadCard}>
           {downloading ? 'Rendering…' : 'Download my card'}
         </button>
@@ -215,6 +262,49 @@ export default function EndingScreen({
           </button>
         )}
       </div>
+
+      {/* ---- The roads not taken ---- */}
+      {ghosts && ghosts.length > 0 && (
+        <div style={{ textAlign: 'left', marginBottom: 44 }}>
+          <div className="mono-label" style={{ marginBottom: 8 }}>
+            THE ROADS NOT TAKEN
+          </div>
+          <h2 style={{ fontFamily: 'var(--serif)', fontSize: 28, letterSpacing: -0.5, margin: '0 0 8px' }}>
+            Your parallel lives<em style={{ color: 'var(--blue-soft)' }}>.</em>
+          </h2>
+          <p style={{ fontSize: 14.5, color: 'var(--muted)', margin: '0 0 20px', lineHeight: 1.6 }}>
+            Same life, same luck, one choice flipped. This is what the simulation says was on the
+            other side of the door.
+          </p>
+          {ghosts.map((ghost, i) => (
+            <div key={i} className="bc-card" style={{ padding: '20px 20px 18px', marginBottom: 12 }}>
+              <p style={{ fontSize: 14.5, lineHeight: 1.65, color: 'var(--muted)', margin: '0 0 10px' }}>
+                {ghost.ageLine} <span style={{ color: 'rgba(255,255,255,0.85)' }}>“{ghost.takenLabel}”</span>
+                <br />
+                In the timeline where you chose{' '}
+                <span style={{ color: 'var(--blue-soft)' }}>“{ghost.otherLabel}”</span> instead:
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 24 }}>{ghost.emoji}</span>
+                <span style={{ fontFamily: 'var(--serif)', fontSize: 20 }}>{ghost.endingName}</span>
+                <span
+                  style={{
+                    fontFamily: 'var(--mono)',
+                    fontSize: 10.5,
+                    letterSpacing: 1,
+                    padding: '4px 10px',
+                    borderRadius: 100,
+                    border: `1px solid ${ghost.savingsDelta >= 0 ? 'rgba(122,183,255,0.35)' : 'rgba(255,107,107,0.35)'}`,
+                    color: ghost.savingsDelta >= 0 ? 'var(--blue-soft)' : '#FF8F8F',
+                  }}
+                >
+                  {ghost.savingsDelta >= 0 ? '+' : '-'}₹{Math.abs(ghost.savingsDelta).toFixed(0)}L NET WORTH
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ---- Life Report ---- */}
       <div style={{ textAlign: 'left' }}>

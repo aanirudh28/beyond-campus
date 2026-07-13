@@ -161,7 +161,76 @@ export const CARDS_CH5: Card[] = [
       },
     ],
   },
+  {
+    id: 'ch5_gulf_return',
+    chapter: 4,
+    kind: 'decision',
+    title: 'THE RETURN TICKET, PRICED',
+    pivotal: true,
+    condition: { flag: 'went_abroad' },
+    base: `The Gulf project ends and the renewal is on the table: five more tax-free years, or home. The corpus is built. Your parents have aged in fast-forward through a phone screen. Your accent has changed and so has your daughter's, and hers is changing away from yours.`,
+    options: [
+      {
+        id: 'return_home',
+        label: 'Come home. The corpus is enough.',
+        effects: { salary: { mult: 0.75 }, family: 15, burnout: -6 },
+        setFlags: ['returned_home'],
+        outcome:
+          'The India salary stings for two quarters. Then a random Tuesday dinner with your parents happens, unremarkable and unrepeatable, and the math stops mattering.',
+      },
+      {
+        id: 'extend',
+        label: 'Five more years. Finish the mission.',
+        effects: { savings: 12, family: -10, burnout: 6 },
+        outcome:
+          'The corpus grows past every target you ever set. Targets, you notice, have a way of moving the moment you reach them.',
+      },
+    ],
+  },
+  {
+    id: 'ch5_protege_slot',
+    chapter: 4,
+    kind: 'decision',
+    title: 'ONE SEAT, TWO NAMES',
+    condition: { flag: 'people_leader' },
+    base: `The post-correction org has one senior seat and two candidates: you, and the protégé you spent four years building. She is ready. So are you. The committee will take your recommendation, which is the cruellest form of power there is.`,
+    options: [
+      {
+        id: 'sponsor_her',
+        label: 'Put her name forward. Mean it.',
+        effects: { reputation: 12, network: 8, salary: { mult: 1.05 }, burnout: 3 },
+        setFlags: ['kingmaker'],
+        outcome:
+          'She gets the seat and never forgets the sentence you said in that room. Your title stays the same. Your standing, in the way that actually counts, does not.',
+      },
+      {
+        id: 'take_it',
+        label: 'Take the seat. You earned it first.',
+        effects: { salary: { mult: 1.2 }, reputation: -5 },
+        outcome:
+          'The seat is yours and it fits. The protégé leaves within a year, the way the best ones do when the ceiling shows itself.',
+      },
+    ],
+  },
   // ---- events ----
+  {
+    id: 'ch5_ev_moonlight_bill',
+    chapter: 4,
+    kind: 'event',
+    title: 'THE OLD INVOICE',
+    condition: { flag: 'moonlighted' },
+    base: `A routine background verification for a big role surfaces a nine-year-old agency invoice with your PAN on it. The recruiter is apologetic and firm. The offer is paused, then quietly withdrawn. The second laptop was closed years ago. Its bill, apparently, was not.`,
+    options: [
+      {
+        id: 'absorb_it',
+        label: 'Take the hit. Some tuition is retroactive.',
+        effects: { reputation: -9, burnout: 6 },
+        setFlags: ['career_scar'],
+        outcome:
+          'You tell the story honestly at the next interview before they can find it. Honesty converts about half the damage. The other half stays on the ledger.',
+      },
+    ],
+  },
   {
     id: 'ch5_ev_recovery',
     chapter: 4,

@@ -183,7 +183,94 @@ export const CARDS_CH3: Card[] = [
       },
     ],
   },
+  {
+    id: 'ch3_exam_verdict',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE LAST ATTEMPT',
+    pivotal: true,
+    condition: { flag: 'exam_track' },
+    base: `Attempt three of the bank exam is in four months. The first two missed by margins small enough to haunt. You are older now than most of the coaching batch, and your private-sector salary has quietly grown past what the posting would pay. Your father still keeps the newspaper cutting. So do you, somewhere.`,
+    options: [
+      {
+        id: 'all_in',
+        label: 'One real, final, all-in attempt.',
+        effects: { salary: 6.4, family: 12, skills: -4, burnout: 6 },
+        setFlags: ['govt_settled'],
+        outcome:
+          'You clear it. The colony hears the same day. The posting is two towns over, the pension is real, and a particular argument at a particular dinner table ends forever, in your favour and his.',
+      },
+      {
+        id: 'close_chapter',
+        label: 'Let it go. The exam was his dream.',
+        effects: { family: -6, burnout: -6, reputation: 4 },
+        setFlags: ['backed_self'],
+        outcome:
+          'You frame nothing and announce nothing, just stop renewing the test series. Years later your father tells a relative "the private line worked out" with something close to pride.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_rishta_season',
+    chapter: 2,
+    kind: 'decision',
+    title: 'RISHTA SEASON',
+    condition: { city: 'tier3', notFlag: 'engaged' },
+    base: `An aunt has "a very good family" on hold, the way other people hold parking spots. Photos have been exchanged without your knowledge. You are 27, which in your town's arithmetic is not early. The meeting is just chai, everyone insists. Nothing is ever just chai.`,
+    options: [
+      {
+        id: 'meet',
+        label: 'Go for the chai. Keep an open mind.',
+        effects: { family: 12, burnout: 2 },
+        setFlags: ['engaged'],
+        outcome:
+          'The third meeting, unsupervised at your insistence, is the one where you both stop performing. It becomes, against your expectations, something real.',
+      },
+      {
+        id: 'not_yet',
+        label: '"Not yet." Hold the line, again.',
+        effects: { family: -9, reputation: 2 },
+        outcome:
+          'The aunt is wounded in a way that will require two festivals to repair. The parking spot is given to someone else. Your timeline stays yours.',
+      },
+    ],
+  },
   // ---- events ----
+  {
+    id: 'ch3_ev_creator_deal',
+    chapter: 2,
+    kind: 'event',
+    title: 'THE FIRST BRAND EMAIL',
+    condition: { flag: 'creator_track' },
+    base: `A fintech brand emails: they want three posts from you, ₹75,000, full disclosure tags. Two years of writing honestly for free, and the internet has decided your voice is worth renting. The audience you built to find a job has become a small business of its own.`,
+    options: [
+      {
+        id: 'take_deal',
+        label: 'Take it, disclose it, stay honest in it.',
+        effects: { savings: 0.75, reputation: 5, network: 5 },
+        setFlags: ['creator_paid'],
+        outcome:
+          'The posts perform because they do not pretend. More emails arrive. Distribution, you now understand, is an asset that compounds like money.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_ev_dashboard_award',
+    chapter: 2,
+    kind: 'event',
+    title: 'THE QUERY THAT GOT FAMOUS',
+    condition: { flag: 'data_skills' },
+    base: `The reporting automation you built on those course-night evenings wins the internal ops award. The CFO asks who built it. For one strange week, you are the most famous analyst on your floor, and two team leads start a small polite war over your next posting.`,
+    options: [
+      {
+        id: 'leverage_it',
+        label: 'Convert the moment into the better team.',
+        effects: { salary: { mult: 1.08 }, reputation: 8, skills: 4 },
+        outcome:
+          'You pick the team with the harder problems. The award gathers dust. The skills that won it never do.',
+      },
+    ],
+  },
   {
     id: 'ch3_ev_fno',
     chapter: 2,

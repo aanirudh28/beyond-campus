@@ -31,7 +31,7 @@ const STEPS = [
   {
     no: '03',
     title: 'Meet your ending at 45',
-    desc: 'One of 27 endings, with a rarity score, a written epilogue of your life, and a Life Report showing exactly which choices decided it and what to do about them now, at 21.',
+    desc: 'One of 32 endings, with a rarity score, a written epilogue of your life, a graph of your two decades, and a Life Report showing exactly which choices decided it and what to do about them now, at 21.',
   },
 ]
 
@@ -93,7 +93,7 @@ export default function TwentyYearsLanding() {
             </Link>
           </div>
           <p data-reveal style={{ fontSize: 12.5, color: 'var(--muted-2)', marginTop: 18 }}>
-            Around 15 minutes · 27 possible endings · every run is different
+            Around 15 minutes · {ENDINGS.length} possible endings · every run is different
           </p>
         </div>
       </section>
@@ -155,7 +155,7 @@ export default function TwentyYearsLanding() {
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <Ledger no="Nº 02" label="The endings" />
           <h2 className="section-title" data-reveal style={{ marginBottom: 14 }}>
-            27 ways a career can go<em>.</em>
+            {ENDINGS.length} ways a career can go<em>.</em>
           </h2>
           <p
             data-reveal
@@ -220,7 +220,7 @@ export default function TwentyYearsLanding() {
             >
               <div style={{ fontSize: 34, marginBottom: 12 }}>❓</div>
               <div style={{ fontFamily: 'var(--serif)', fontSize: 21, marginBottom: 8 }}>
-                + 19 more
+                + {ENDINGS.length - SHOWCASE_IDS.length} more
               </div>
               <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--muted)', margin: 0 }}>
                 Including the one only a handful of players have ever unlocked.

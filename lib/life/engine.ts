@@ -58,6 +58,15 @@ export function createInitialState(profile: Profile, seed: number): GameState {
     stats,
     flags: {},
     history: [],
+    trail: [
+      {
+        age: CHAPTERS[0].ageFrom,
+        year: CHAPTERS[0].yearFrom,
+        salary: stats.salary,
+        savings: stats.savings,
+        burnout: stats.burnout,
+      },
+    ],
   }
 }
 
@@ -165,13 +174,19 @@ export function advanceChapter(state: GameState): GameState {
 
   const nextChapter = state.chapter + 1
   const nextMeta: ChapterMeta | undefined = CHAPTERS[nextChapter]
+  const age = nextMeta ? nextMeta.ageFrom : meta.ageTo
+  const year = nextMeta ? nextMeta.yearFrom : meta.yearTo
   return {
     ...state,
     flags: peaked && !flags['burnout_peaked'] ? { ...flags, burnout_peaked: true } : flags,
     chapter: nextChapter,
-    age: nextMeta ? nextMeta.ageFrom : meta.ageTo,
-    year: nextMeta ? nextMeta.yearFrom : meta.yearTo,
+    age,
+    year,
     stats,
+    trail: [
+      ...state.trail,
+      { age, year, salary: stats.salary, savings: stats.savings, burnout: stats.burnout },
+    ],
   }
 }
 
@@ -242,6 +257,77 @@ export function selectEnding(state: GameState): string {
     if (matchesEnding(e.match, probe)) return e.id
   }
   return 'the_open_road'
+}
+
+export interface GhostResult {
+  forkCardId: string
+  forkChapter: number
+  takenLabel: string // what the player actually chose
+  otherLabel: string // the road not taken
+  endingId: string
+  stats: Stats
+}
+
+// The roads not taken: replay the same seeded life, but flip one pivotal
+// choice and let the consequences cascade. Where the alternate timeline deals
+// a card the player never saw, a dedicated seeded stream picks for the ghost,
+// so the result is fully deterministic and costs zero AI calls.
+export function simulateGhost(
+  seed: number,
+  profile: Profile,
+  choices: ChoiceRecord[],
+  forkIndex: number,
+): GhostResult | null {
+  const fork = choices[forkIndex]
+  if (!fork) return null
+  const chosenByCard = new Map(choices.map((c) => [c.cardId, c.optionId]))
+  const ghostRng = mulberry32((seed ^ 0xc0ffee) >>> 0)
+
+  let state = createInitialState(profile, seed)
+  let takenLabel = ''
+  let otherLabel = ''
+  for (let ch = 0; ch < CHAPTERS.length; ch++) {
+    const cards = dealChapter(state)
+    for (const card of cards) {
+      let option: CardOption
+      if (card.id === fork.cardId) {
+        const taken = card.options.find((o) => o.id === fork.optionId)
+        const other = card.options.find((o) => o.id !== fork.optionId)
+        if (!taken || !other) return null
+        takenLabel = taken.label
+        otherLabel = other.label
+        option = other
+      } else {
+        const known = card.options.find((o) => o.id === chosenByCard.get(card.id))
+        option = known ?? card.options[Math.floor(ghostRng() * card.options.length)]
+      }
+      state = applyChoice(state, card, option)
+    }
+    state = advanceChapter(state)
+  }
+  if (!otherLabel) return null // the fork card never appeared in the ghost deal
+  return {
+    forkCardId: fork.cardId,
+    forkChapter: fork.c,
+    takenLabel,
+    otherLabel,
+    endingId: selectEnding(state),
+    stats: state.stats,
+  }
+}
+
+// Up to `max` fork points worth showing: pivotal decisions, earliest first.
+export function ghostForkIndices(choices: ChoiceRecord[], max = 2): number[] {
+  const indices: number[] = []
+  for (let i = 0; i < choices.length; i++) {
+    const card = ALL_CARDS[choices[i].c]?.find((c) => c.id === choices[i].cardId)
+    if (card?.pivotal && card.options.length > 1) indices.push(i)
+  }
+  if (indices.length <= max) return indices
+  // Spread across the life: first pivotal choice plus one from the middle years.
+  const picks = [indices[0]]
+  picks.push(indices[Math.floor(indices.length / 2)])
+  return picks.slice(0, max)
 }
 
 // Pivotal choices as human-readable lines, for the AI epilogue digest.

@@ -184,7 +184,76 @@ export const CARDS_CH4: Card[] = [
       },
     ],
   },
+  {
+    id: 'ch4_kids_fork',
+    chapter: 3,
+    kind: 'decision',
+    title: 'THE NURSERY QUESTION',
+    pivotal: true,
+    condition: { flag: 'engaged' },
+    base: `The conversation happens on an ordinary Tuesday over leftover dal. Now, or in three years when things are "more settled"? Everyone you ask gives the same useless answer: there is never a right time. The EMI, the promotion cycle, and your mother's hints all vote differently.`,
+    options: [
+      {
+        id: 'now',
+        label: 'Now. Things are never more settled.',
+        effects: { family: 14, savings: -3, burnout: 7 },
+        setFlags: ['kid'],
+        outcome:
+          'Sleep becomes a rumour and the promotion takes a year longer. A very small person laughs at your worst joke, and the org chart never fully recovers its importance.',
+      },
+      {
+        id: 'wait',
+        label: 'Three more years. Build the base first.',
+        effects: { savings: 3, family: -5 },
+        outcome:
+          'The base gets built. The conversation returns, as it was always going to, on another ordinary Tuesday, with slightly older people having it.',
+      },
+    ],
+  },
+  {
+    id: 'ch4_sabbatical_gate',
+    chapter: 3,
+    kind: 'decision',
+    title: 'THE THREE-MONTH DOOR',
+    condition: { minStat: { burnout: 60 } },
+    base: `The company quietly allows unpaid sabbaticals, a policy nobody uses because using it looks like weakness. You have been running on fumes and cold coffee for six quarters. Three months would cost real money and real optics. It might also be the difference between a long career and a short one.`,
+    options: [
+      {
+        id: 'take_it',
+        label: 'Take the three months. Repair the machine.',
+        effects: { burnout: -22, salary: { mult: 0.95 }, family: 8 },
+        setFlags: ['reset_taken'],
+        outcome:
+          'Month one you sleep. Month two you remember what hobbies are. Month three you come back sharper than the version of you who would have stayed, and only the calendar knows the difference.',
+      },
+      {
+        id: 'push_through',
+        label: 'Push through. Momentum is fragile.',
+        effects: { burnout: 9, salary: { mult: 1.05 } },
+        outcome:
+          'The quarter is saved and so is the optics. The fumes, however, are not a renewable resource, and the gauge keeps drifting left.',
+      },
+    ],
+  },
   // ---- events ----
+  {
+    id: 'ch4_ev_startup_exit',
+    chapter: 3,
+    kind: 'event',
+    title: 'THE TERM SHEET',
+    base: `The startup you joined as employee six gets acquired. Properly acquired, with bankers and champagne and a number in the press release. Your vested ESOPs convert to actual money: ₹26 lakhs after tax, wired to the same account that once trembled over a ₹4,999 scam deposit.`,
+    condition: { flag: 'own_esops', minStat: { skills: 55 } },
+    options: [
+      {
+        id: 'bank_it',
+        label: 'Bank it. Let the number sink in slowly.',
+        effects: { savings: 26, reputation: 6, burnout: -5 },
+        setFlags: ['exit_money'],
+        outcome:
+          'The wire hits on a Wednesday morning. You check it eleven times. The risk you took at 27, the pay cut everyone called foolish, has finished its argument.',
+      },
+    ],
+  },
   {
     id: 'ch4_ev_junior_star',
     chapter: 3,
