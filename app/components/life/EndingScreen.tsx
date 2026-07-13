@@ -1,0 +1,342 @@
+'use client'
+
+import { useRef, useState } from 'react'
+import type { Ending, LifeReportItem, Stats } from '@/lib/life/types'
+import ShareCard from './ShareCard'
+
+export interface EndingResult {
+  runId: string | null
+  ending: Ending
+  epilogue: string
+  oneLiner: string
+  rarity: number
+  stats: Stats
+  report: LifeReportItem[]
+  shareUrl: string | null
+}
+
+const TONE_COLOR: Record<Ending['tone'], string> = {
+  good: '#93BBFF',
+  bad: '#FF8F8F',
+  weird: '#FFC65C',
+}
+
+export default function EndingScreen({
+  result,
+  onReplay,
+}: {
+  result: EndingResult
+  onReplay: () => void
+}) {
+  const { ending, epilogue, oneLiner, rarity, stats, report, shareUrl, runId } = result
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [email, setEmail] = useState('')
+  const [claimed, setClaimed] = useState(runId === null) // offline runs show everything
+  const [claiming, setClaiming] = useState(false)
+  const [claimError, setClaimError] = useState('')
+  const [copied, setCopied] = useState(false)
+  const [downloading, setDownloading] = useState(false)
+
+  async function downloadCard() {
+    if (!cardRef.current || downloading) return
+    setDownloading(true)
+    try {
+      const html2canvas = (await import('html2canvas')).default
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 2,
+        backgroundColor: '#0B0B0F',
+        useCORS: true,
+      })
+      const link = document.createElement('a')
+      link.download = `my-20-years-${ending.id}.png`
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+    } catch {
+      // html2canvas can fail on odd mobile browsers; the wa.me path still works
+    }
+    setDownloading(false)
+  }
+
+  function shareWhatsApp() {
+    const msg = shareUrl
+      ? `I just lived the next 20 years of my career in 20 minutes and ended up as *${ending.name}* ${ending.emoji} Only ${rarity}% of players get this ending. What will yours be? ${shareUrl}`
+      : `I just lived the next 20 years of my career in 20 minutes and ended up as *${ending.name}* ${ending.emoji} Play yours: https://www.beyond-campus.in/20years`
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
+  }
+
+  async function copyLink() {
+    if (!shareUrl) return
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {}
+  }
+
+  async function claim() {
+    if (!runId || claiming) return
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setClaimError('That email does not look right.')
+      return
+    }
+    setClaiming(true)
+    setClaimError('')
+    try {
+      const res = await fetch('/api/life/claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ runId, email }),
+      })
+      if (!res.ok) throw new Error('claim failed')
+      setClaimed(true)
+    } catch {
+      setClaimError('Could not save that. Try once more?')
+    }
+    setClaiming(false)
+  }
+
+  const btnGhost: React.CSSProperties = {
+    padding: '13px 22px',
+    borderRadius: 100,
+    border: '1px solid rgba(255,255,255,0.2)',
+    background: 'transparent',
+    color: 'var(--fg)',
+    fontSize: 14,
+    fontWeight: 600,
+    fontFamily: 'inherit',
+    cursor: 'pointer',
+  }
+
+  return (
+    <div
+      style={{
+        maxWidth: 560,
+        margin: '0 auto',
+        padding: '48px 20px 80px',
+        textAlign: 'center',
+        animation: 'lifeCardIn 0.8s cubic-bezier(0.22,1,0.36,1)',
+      }}
+    >
+      <div className="mono-label" style={{ marginBottom: 24 }}>
+        THE LEDGER CLOSES · AGE 45 · 2050
+      </div>
+      <div style={{ fontSize: 72, lineHeight: 1, marginBottom: 16 }}>{ending.emoji}</div>
+      <h1
+        style={{
+          fontFamily: 'var(--serif)',
+          fontSize: 'clamp(40px, 10vw, 60px)',
+          letterSpacing: -1.5,
+          lineHeight: 1.02,
+          margin: '0 0 18px',
+          background: 'var(--grad)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }}
+      >
+        {ending.name}
+      </h1>
+      <div
+        style={{
+          display: 'inline-block',
+          fontFamily: 'var(--mono)',
+          fontSize: 11,
+          letterSpacing: 2,
+          color: TONE_COLOR[ending.tone],
+          border: `1px solid ${TONE_COLOR[ending.tone]}55`,
+          borderRadius: 100,
+          padding: '7px 16px',
+          marginBottom: 32,
+        }}
+      >
+        ONLY {rarity}% OF PLAYERS GET THIS ENDING
+      </div>
+
+      <div style={{ textAlign: 'left', marginBottom: 32 }}>
+        {epilogue.split(/\n\n+/).map((para, i) => (
+          <p
+            key={i}
+            style={{
+              fontSize: 16,
+              lineHeight: 1.75,
+              color: 'rgba(255,255,255,0.85)',
+              margin: '0 0 14px',
+            }}
+          >
+            {para}
+          </p>
+        ))}
+      </div>
+
+      <div
+        className="bc-card"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr 1fr',
+          gap: 8,
+          padding: '18px 12px',
+          marginBottom: 28,
+        }}
+      >
+        {[
+          ['FINAL CTC', stats.salary > 0 ? `₹${stats.salary.toFixed(1)} LPA` : 'Off payroll'],
+          ['NET WORTH', `${stats.savings < 0 ? '-' : ''}₹${Math.abs(stats.savings).toFixed(0)}L`],
+          ['BURNOUT', stats.burnout >= 70 ? 'High' : stats.burnout >= 40 ? 'Managed' : 'Low'],
+        ].map(([label, value]) => (
+          <div key={label}>
+            <div className="mono-label" style={{ fontSize: 9.5, marginBottom: 6 }}>
+              {label}
+            </div>
+            <div style={{ fontFamily: 'var(--serif)', fontSize: 20, color: 'var(--fg)' }}>
+              {value}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 10,
+          justifyContent: 'center',
+          marginBottom: 48,
+        }}
+      >
+        <button className="btn-primary" style={{ padding: '13px 24px' }} onClick={shareWhatsApp}>
+          <span>Challenge friends on WhatsApp</span>
+        </button>
+        <button style={btnGhost} onClick={downloadCard}>
+          {downloading ? 'Rendering…' : 'Download my card'}
+        </button>
+        {shareUrl && (
+          <button style={btnGhost} onClick={copyLink}>
+            {copied ? 'Copied ✓' : 'Copy link'}
+          </button>
+        )}
+      </div>
+
+      {/* ---- Life Report ---- */}
+      <div style={{ textAlign: 'left' }}>
+        <div className="mono-label" style={{ marginBottom: 8 }}>
+          THE LIFE REPORT
+        </div>
+        <h2
+          style={{
+            fontFamily: 'var(--serif)',
+            fontSize: 28,
+            letterSpacing: -0.5,
+            margin: '0 0 8px',
+          }}
+        >
+          Where your timeline turned<em style={{ color: 'var(--blue-soft)' }}>.</em>
+        </h2>
+        <p style={{ fontSize: 14.5, color: 'var(--muted)', margin: '0 0 20px', lineHeight: 1.6 }}>
+          The moments that decided this ending, and what to do about them now, at the age where
+          they are still cheap to fix.
+        </p>
+
+        {(claimed ? report : report.slice(0, 1)).map((item, i) => (
+          <div key={i} className="bc-card" style={{ padding: '20px 20px 18px', marginBottom: 12 }}>
+            <p
+              style={{
+                fontFamily: 'var(--serif)',
+                fontStyle: 'italic',
+                fontSize: 16.5,
+                lineHeight: 1.5,
+                color: 'var(--fg)',
+                margin: '0 0 10px',
+              }}
+            >
+              {item.moment}
+            </p>
+            <p style={{ fontSize: 14.5, lineHeight: 1.65, color: 'var(--muted)', margin: '0 0 10px' }}>
+              {item.lesson}
+            </p>
+            <p
+              style={{
+                fontSize: 14.5,
+                lineHeight: 1.65,
+                color: 'rgba(255,255,255,0.85)',
+                margin: '0 0 14px',
+              }}
+            >
+              {item.action}
+            </p>
+            <a
+              href={item.cta.href}
+              style={{
+                fontFamily: 'var(--mono)',
+                fontSize: 11.5,
+                letterSpacing: 1.5,
+                color: 'var(--blue-soft)',
+                textDecoration: 'none',
+              }}
+            >
+              {item.cta.label.toUpperCase()} →
+            </a>
+          </div>
+        ))}
+
+        {!claimed && (
+          <div
+            className="bc-card"
+            style={{ padding: '24px 20px', marginBottom: 12, textAlign: 'center' }}
+          >
+            <p style={{ fontSize: 15, color: 'var(--fg)', fontWeight: 600, margin: '0 0 6px' }}>
+              {report.length - 1} more turning points in your run
+            </p>
+            <p style={{ fontSize: 13.5, color: 'var(--muted)', margin: '0 0 16px' }}>
+              Drop your email and the full Life Report unlocks, free.
+            </p>
+            <div style={{ display: 'flex', gap: 8, maxWidth: 400, margin: '0 auto' }}>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@college.email"
+                style={{
+                  flex: 1,
+                  padding: '12px 16px',
+                  borderRadius: 100,
+                  border: '1px solid rgba(255,255,255,0.18)',
+                  background: 'rgba(255,255,255,0.04)',
+                  color: 'var(--fg)',
+                  fontSize: 14,
+                  fontFamily: 'inherit',
+                  outline: 'none',
+                }}
+              />
+              <button
+                className="btn-primary"
+                style={{ padding: '12px 20px', fontSize: 14 }}
+                onClick={claim}
+                disabled={claiming}
+              >
+                <span>{claiming ? '…' : 'Unlock'}</span>
+              </button>
+            </div>
+            {claimError && (
+              <p style={{ fontSize: 12.5, color: '#FF8F8F', margin: '10px 0 0' }}>{claimError}</p>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div style={{ marginTop: 40, display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+        <button style={btnGhost} onClick={onReplay}>
+          ↺ Live a different life
+        </button>
+        <a
+          href="/resources/resume-roast"
+          className="btn-primary"
+          style={{ padding: '13px 24px', textDecoration: 'none' }}
+        >
+          <span>Now fix the real one →</span>
+        </a>
+      </div>
+
+      <ShareCard ref={cardRef} ending={ending} rarity={rarity} stats={stats} oneLiner={oneLiner} />
+    </div>
+  )
+}
