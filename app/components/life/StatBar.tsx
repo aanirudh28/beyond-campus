@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import type { Stats } from '@/lib/life/types'
 
 const BARS: { key: keyof Stats; label: string }[] = [
@@ -10,6 +11,38 @@ const BARS: { key: keyof Stats; label: string }[] = [
   { key: 'family', label: 'FAM' },
 ]
 
+// Tween a number toward its target so salary/savings feel like they move,
+// not snap. rAF-based; settles exactly on the target.
+function useCountUp(target: number, ms = 700) {
+  const [shown, setShown] = useState(target)
+  const latest = useRef(target)
+  useEffect(() => {
+    latest.current = shown
+  }, [shown])
+  useEffect(() => {
+    const from = latest.current
+    if (from === target) return
+    let raf = 0
+    const t0 = performance.now()
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - t0) / ms)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setShown(p >= 1 ? target : from + (target - from) * eased)
+      if (p < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target, ms])
+  return shown
+}
+
+interface FloatingDelta {
+  key: string
+  text: string
+  good: boolean
+  stamp: number
+}
+
 export default function StatBar({
   stats,
   age,
@@ -19,6 +52,36 @@ export default function StatBar({
   age: number
   year: number
 }) {
+  const [seen, setSeen] = useState<Stats>(stats)
+  const [floats, setFloats] = useState<Record<string, FloatingDelta>>({})
+  const salary = useCountUp(stats.salary)
+  const savings = useCountUp(stats.savings)
+
+  // Derive the floating "+8 / −6" tags when stats change — the sanctioned
+  // adjust-state-during-render pattern, no effect needed.
+  if (seen !== stats) {
+    setSeen(stats)
+    const next: Record<string, FloatingDelta> = {}
+    for (const { key } of BARS) {
+      const d = Math.round(stats[key] - seen[key])
+      if (d === 0) continue
+      next[key] = {
+        key,
+        text: `${d > 0 ? '+' : ''}${d}`,
+        good: key === 'burnout' ? d < 0 : d > 0,
+        stamp: seen[key],
+      }
+    }
+    if (Object.keys(next).length) setFloats((f) => ({ ...f, ...next }))
+  }
+
+  // Tags clear shortly after the last change lands.
+  useEffect(() => {
+    if (!Object.keys(floats).length) return
+    const t = setTimeout(() => setFloats({}), 1400)
+    return () => clearTimeout(t)
+  }, [floats])
+
   return (
     <div
       style={{
@@ -47,10 +110,10 @@ export default function StatBar({
           AGE {age} <span style={{ color: 'var(--muted-2)' }}>· {year}</span>
         </span>
         <span style={{ color: 'var(--blue-soft)' }}>
-          {stats.salary > 0 ? `₹${stats.salary.toFixed(1)} LPA` : 'NO INCOME'}
+          {salary > 0.05 ? `₹${salary.toFixed(1)} LPA` : 'NO INCOME'}
           <span style={{ color: 'var(--muted-2)' }}>
             {' '}
-            · {stats.savings < 0 ? '-' : ''}₹{Math.abs(stats.savings).toFixed(1)}L SAVED
+            · {savings < 0 ? '-' : ''}₹{Math.abs(savings).toFixed(1)}L SAVED
           </span>
         </span>
       </div>
@@ -73,8 +136,27 @@ export default function StatBar({
                 ? '#FFB65C'
                 : 'rgba(255,255,255,0.45)'
             : 'var(--blue)'
+          const float = floats[key]
           return (
-            <div key={key}>
+            <div key={key} style={{ position: 'relative' }}>
+              {float && (
+                <span
+                  key={float.stamp}
+                  style={{
+                    position: 'absolute',
+                    top: -4,
+                    right: 0,
+                    fontFamily: 'var(--mono)',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: float.good ? 'var(--blue-soft)' : '#FF8F8F',
+                    animation: 'lifeDeltaFloat 1.3s ease-out forwards',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {float.text}
+                </span>
+              )}
               <div
                 style={{
                   fontFamily: 'var(--mono)',

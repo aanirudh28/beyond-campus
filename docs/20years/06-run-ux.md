@@ -36,8 +36,23 @@ As built (`DecisionCard.tsx`, `StatBar.tsx`, `ChapterIntro.tsx`):
 - **The outcome beat is sacred:** after every choice, the authored `outcome`
   line + stat-delta chips, on their own beat before the next card. Never
   auto-advance past it; consequence legibility is the game.
-- Pivotal cards get a subtle marker (the ⟡ glyph) — players should be able to
-  feel weight without knowing the mechanics.
+- Pivotal cards get a subtle marker (the ⟡ glyph), a gradient border, a
+  slower entrance, and one haptic buzz — players should be able to feel
+  weight without knowing the mechanics.
+- The outcome beat is choreographed: the road not taken dims and strikes
+  through, the consequence slides in, delta chips pop one by one, and the
+  HUD floats "+8 / −6" tags over the affected bars while salary/savings
+  count up rather than snap.
+- **The montage (between chapters):** the years that pass invisibly in
+  `advanceChapter` get a beat — the year counter rolls forward, 2–4 ledger
+  lines narrate the passive drift ("The appraisal cycles do their quiet
+  work. ₹4.2 → ₹5.6 LPA."), and one authored flavor line sets the next
+  chapter's mood. Auto-advances (~4s), tap-to-skip, and absorbs the AI
+  scene-loading wait. Copy lives in `Montage.tsx` (display-only — never in
+  the content graph).
+- A low ambient glow behind all content shifts hue per chapter (dawn blue at
+  21 → warm gold at 45; `chapterTheme.ts`) so the screen ages with the
+  player.
 - Chapter intro screens hold on AI readiness with a 6s timeout, then proceed
   with authored text (see §6 for retry).
 
@@ -46,7 +61,12 @@ As built (`DecisionCard.tsx`, `StatBar.tsx`, `ChapterIntro.tsx`):
 The payoff is a *sequence*, not a screen. Order is load-bearing — emotion
 first, comparison second, conversion last:
 
-1. **The reveal:** ending name + emoji + tone-colored treatment, rarity line
+0. **The weighing (finale theater):** before the reveal, a ~3.4s suspense
+   beat — "Twenty years. 37 choices." — while ending names flicker past
+   like a slowing slot machine (pure theater; the result is already
+   computed). Runs even when the API answers instantly.
+1. **The reveal:** ending name + emoji + tone-colored treatment (staged:
+   emoji pops, name rises, one haptic buzz), rarity line
    ("7% of 12,400 lives end here").
 2. **The epilogue:** 4 paragraphs (AI or authored). Full-bleed reading view.
 3. **The life graph:** net worth + salary trails (`LifeTimeline.tsx`) with the

@@ -1,6 +1,7 @@
 'use client'
 
 import type { ChapterMeta } from '@/lib/life/types'
+import { chapterHue } from './chapterTheme'
 
 export default function ChapterIntro({
   meta,
@@ -11,6 +12,7 @@ export default function ChapterIntro({
   ready: boolean
   onBegin: () => void
 }) {
+  const hue = chapterHue(meta.index)
   return (
     <div
       style={{
@@ -23,10 +25,12 @@ export default function ChapterIntro({
         padding: '40px 24px',
         maxWidth: 560,
         margin: '0 auto',
-        animation: 'lifeCardIn 0.6s cubic-bezier(0.22,1,0.36,1)',
       }}
     >
-      <div className="mono-label" style={{ marginBottom: 18 }}>
+      <div
+        className="mono-label"
+        style={{ marginBottom: 18, animation: 'lifeFadeUp 0.5s ease both' }}
+      >
         CHAPTER {meta.index + 1} OF 6 · AGE {meta.ageFrom}–{meta.ageTo} · {meta.yearFrom}–
         {meta.yearTo}
       </div>
@@ -37,10 +41,12 @@ export default function ChapterIntro({
           letterSpacing: -1,
           lineHeight: 1.05,
           margin: '0 0 20px',
-          background: 'var(--grad)',
+          background: `linear-gradient(120deg, ${hue.accent}, var(--fg))`,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
+          animation: 'lifeFadeUp 0.6s cubic-bezier(0.22,1,0.36,1) both',
+          animationDelay: '0.25s',
         }}
       >
         {meta.title.charAt(0) + meta.title.slice(1).toLowerCase()}
@@ -52,6 +58,8 @@ export default function ChapterIntro({
           color: 'var(--muted)',
           margin: '0 0 32px',
           maxWidth: 440,
+          animation: 'lifeFadeUp 0.6s ease both',
+          animationDelay: '0.55s',
         }}
       >
         {meta.intro}
@@ -60,7 +68,13 @@ export default function ChapterIntro({
         className="btn-primary"
         onClick={onBegin}
         disabled={!ready}
-        style={{ opacity: ready ? 1 : 0.55, minWidth: 200, justifyContent: 'center' }}
+        style={{
+          opacity: ready ? 1 : 0.55,
+          minWidth: 200,
+          justifyContent: 'center',
+          animation: 'lifeFadeUp 0.5s ease both',
+          animationDelay: '0.85s',
+        }}
       >
         <span>{ready ? 'Live it' : 'The years are loading…'}</span>
       </button>

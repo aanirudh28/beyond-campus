@@ -1,10 +1,11 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Ending, LifeReportItem, Stats, TrailPoint } from '@/lib/life/types'
 import { ENDINGS } from '@/lib/life/content/endings'
 import ShareCard from './ShareCard'
 import LifeTimeline from './LifeTimeline'
+import { buzz } from './haptics'
 
 export interface GhostView {
   ageLine: string // "At 21-23, you chose"
@@ -54,6 +55,11 @@ export default function EndingScreen({
   const [claimError, setClaimError] = useState('')
   const [copied, setCopied] = useState(false)
   const [downloading, setDownloading] = useState(false)
+
+  // The reveal moment gets one buzz in the hand.
+  useEffect(() => {
+    buzz(30)
+  }, [])
 
   async function downloadCard() {
     if (!cardRef.current || downloading) return
@@ -138,13 +144,25 @@ export default function EndingScreen({
         margin: '0 auto',
         padding: '48px 20px 80px',
         textAlign: 'center',
-        animation: 'lifeCardIn 0.8s cubic-bezier(0.22,1,0.36,1)',
       }}
     >
-      <div className="mono-label" style={{ marginBottom: 24 }}>
+      <div
+        className="mono-label"
+        style={{ marginBottom: 24, animation: 'lifeFadeUp 0.5s ease both' }}
+      >
         THE LEDGER CLOSES · AGE 45 · 2050
       </div>
-      <div style={{ fontSize: 72, lineHeight: 1, marginBottom: 16 }}>{ending.emoji}</div>
+      <div
+        style={{
+          fontSize: 72,
+          lineHeight: 1,
+          marginBottom: 16,
+          animation: 'lifeChipPop 0.6s cubic-bezier(0.34,1.56,0.64,1) both',
+          animationDelay: '0.2s',
+        }}
+      >
+        {ending.emoji}
+      </div>
       <h1
         style={{
           fontFamily: 'var(--serif)',
@@ -156,6 +174,8 @@ export default function EndingScreen({
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
+          animation: 'lifeFadeUp 0.7s cubic-bezier(0.22,1,0.36,1) both',
+          animationDelay: '0.4s',
         }}
       >
         {ending.name}
@@ -171,6 +191,8 @@ export default function EndingScreen({
           borderRadius: 100,
           padding: '7px 16px',
           marginBottom: 32,
+          animation: 'lifeFadeUp 0.5s ease both',
+          animationDelay: '1s',
         }}
       >
         ONLY {rarity}% OF PLAYERS GET THIS ENDING
@@ -185,6 +207,8 @@ export default function EndingScreen({
             color: 'var(--muted-2)',
             marginTop: -22,
             marginBottom: 30,
+            animation: 'lifeFadeUp 0.5s ease both',
+            animationDelay: '1.25s',
           }}
         >
           {isNew && <span style={{ color: 'var(--blue-soft)' }}>NEW ENDING · </span>}
@@ -192,7 +216,14 @@ export default function EndingScreen({
         </div>
       )}
 
-      <div style={{ textAlign: 'left', marginBottom: 32 }}>
+      <div
+        style={{
+          textAlign: 'left',
+          marginBottom: 32,
+          animation: 'lifeFadeUp 0.7s ease both',
+          animationDelay: '1.5s',
+        }}
+      >
         {epilogue.split(/\n\n+/).map((para, i) => (
           <p
             key={i}
@@ -208,7 +239,11 @@ export default function EndingScreen({
         ))}
       </div>
 
-      {trail && <LifeTimeline trail={trail} />}
+      {trail && (
+        <div style={{ animation: 'lifeFadeUp 0.7s ease both', animationDelay: '1.9s' }}>
+          <LifeTimeline trail={trail} />
+        </div>
+      )}
 
       <div
         className="bc-card"
@@ -218,6 +253,8 @@ export default function EndingScreen({
           gap: 8,
           padding: '18px 12px',
           marginBottom: 28,
+          animation: 'lifeFadeUp 0.6s ease both',
+          animationDelay: '2.1s',
         }}
       >
         {[
@@ -243,6 +280,8 @@ export default function EndingScreen({
           gap: 10,
           justifyContent: 'center',
           marginBottom: 48,
+          animation: 'lifeFadeUp 0.6s ease both',
+          animationDelay: '2.3s',
         }}
       >
         <button className="btn-primary" style={{ padding: '13px 24px' }} onClick={shareWhatsApp}>

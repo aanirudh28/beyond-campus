@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import type { Card, ChoiceRecord, GameState, Profile } from '@/lib/life/types'
 import {
   advanceChapter,
@@ -18,9 +18,11 @@ import { ENDINGS, getEnding } from '@/lib/life/content/endings'
 import StatBar from '@/app/components/life/StatBar'
 import DecisionCard from '@/app/components/life/DecisionCard'
 import ChapterIntro from '@/app/components/life/ChapterIntro'
+import Montage, { type MontageData } from '@/app/components/life/Montage'
 import EndingScreen, { type EndingResult, type GhostView } from '@/app/components/life/EndingScreen'
+import { chapterHue } from '@/app/components/life/chapterTheme'
 
-type Phase = 'coldopen' | 'intro' | 'cards' | 'finale' | 'ending'
+type Phase = 'coldopen' | 'intro' | 'cards' | 'montage' | 'finale' | 'ending'
 
 const SAVE_KEY = 'bc20_run'
 const SAVE_TTL_MS = 24 * 60 * 60 * 1000
@@ -157,6 +159,7 @@ export default function PlayPage() {
   const [state, setState] = useState<GameState | null>(null)
   const [cards, setCards] = useState<Card[]>([])
   const [cardIndex, setCardIndex] = useState(0)
+  const [montage, setMontage] = useState<MontageData | null>(null)
   const [result, setResult] = useState<EndingResult | null>(null)
 
   const runRef = useRef<{ runId: string | null; token: string | null }>({
@@ -292,6 +295,13 @@ export default function PlayPage() {
     setPhase('finale')
     window.scrollTo(0, 0)
     clearSave()
+    // The reveal is theater: even if the API answers instantly, hold the
+    // weighing-of-the-ledger beat before showing the ending.
+    const t0 = Date.now()
+    const reveal = () => {
+      const wait = Math.max(0, 3400 - (Date.now() - t0))
+      setTimeout(() => setPhase('ending'), wait)
+    }
     const { runId, token } = runRef.current
     const { profile, seed } = finalState
     const extras = {
@@ -320,7 +330,7 @@ export default function PlayPage() {
             ...extras,
             ...recordDiscovery(data.ending.id),
           })
-          setPhase('ending')
+          reveal()
           return
         }
       } catch {}
@@ -339,7 +349,7 @@ export default function PlayPage() {
       ...extras,
       ...recordDiscovery(ending.id),
     })
-    setPhase('ending')
+    reveal()
   }
 
   function onResolved(option: Card['options'][number]) {
@@ -353,6 +363,8 @@ export default function PlayPage() {
       window.scrollTo(0, 0)
       return
     }
+    const finishedChapter = next.chapter
+    const before = next.stats
     next = advanceChapter(next)
     if (next.chapter < CHAPTERS.length) {
       setState(next)
@@ -360,7 +372,16 @@ export default function PlayPage() {
       setCardIndex(0)
       persist(next)
       fetchScene(next.chapter, next.history)
-      setPhase('intro')
+      // The years between chapters used to pass invisibly — now they get
+      // a beat. The montage also absorbs the AI scene-loading wait.
+      setMontage({
+        fromYear: CHAPTERS[finishedChapter].yearFrom,
+        toYear: CHAPTERS[next.chapter].yearFrom,
+        before,
+        after: next.stats,
+        enteringChapter: next.chapter,
+      })
+      setPhase('montage')
       window.scrollTo(0, 0)
     } else {
       setState(next)
@@ -372,6 +393,7 @@ export default function PlayPage() {
     setState(null)
     setCards([])
     setCardIndex(0)
+    setMontage(null)
     setResult(null)
     runRef.current = { runId: null, token: null }
     setNarrations({})
@@ -403,13 +425,55 @@ export default function PlayPage() {
   const pos = state ? ageAtCard(Math.min(state.chapter, 5), cardIndex, cards.length || 1) : null
 
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg)' }}>
+    <main className="life-run" style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg)' }}>
       <style>{`
         @keyframes lifeCardIn {
           from { opacity: 0; transform: translateY(16px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes lifeFadeUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes lifeFadeDim {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes lifeChipPop {
+          from { opacity: 0; transform: scale(0.6); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes lifeDeltaFloat {
+          0% { opacity: 0; transform: translateY(3px); }
+          18% { opacity: 1; }
+          100% { opacity: 0; transform: translateY(-14px); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .life-run *, .life-run { animation-duration: 0.01ms !important; animation-delay: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
       `}</style>
+
+      {/* The screen ages with the player: a low ambient glow whose color
+          shifts each chapter, dawn blue at 21 through warm gold at 45. */}
+      {state && phase !== 'coldopen' && (
+        <div
+          aria-hidden
+          style={{
+            position: 'fixed',
+            top: '-30vh',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '130vw',
+            height: '62vh',
+            borderRadius: '50%',
+            background: chapterHue(Math.min(state.chapter, CHAPTERS.length - 1)).glow,
+            filter: 'blur(90px)',
+            transition: 'background 1.6s ease',
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        />
+      )}
 
       {phase !== 'coldopen' && phase !== 'ending' && state && (
         <StatBar stats={state.stats} age={pos?.age ?? meta.ageFrom} year={pos?.year ?? meta.yearFrom} />
@@ -549,6 +613,17 @@ export default function PlayPage() {
         </div>
       )}
 
+      {phase === 'montage' && montage && (
+        <Montage
+          data={montage}
+          onDone={() => {
+            setMontage(null)
+            setPhase('intro')
+            window.scrollTo(0, 0)
+          }}
+        />
+      )}
+
       {phase === 'intro' && state && (
         <ChapterIntro
           meta={meta}
@@ -579,31 +654,85 @@ export default function PlayPage() {
         </div>
       )}
 
-      {phase === 'finale' && (
-        <div
-          style={{
-            minHeight: '70vh',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            padding: 24,
-          }}
-        >
-          <div className="mono-label" style={{ marginBottom: 20 }}>
-            2050
-          </div>
-          <h2 style={{ fontFamily: 'var(--serif)', fontSize: 32, margin: '0 0 12px' }}>
-            Compiling your ledger…
-          </h2>
-          <p style={{ color: 'var(--muted)', fontSize: 15 }}>
-            Twenty years of choices, weighed and named.
-          </p>
-        </div>
-      )}
+      {phase === 'finale' && <FinaleTheater choiceCount={state?.history.length ?? 0} />}
 
       {phase === 'ending' && result && <EndingScreen result={result} onReplay={replay} />}
     </main>
+  )
+}
+
+// Pure theater before the reveal: the ending is already decided, but the
+// ledger deserves a moment of suspense — names flicker past like a slot
+// machine deciding what to call your twenty years.
+function FinaleTheater({ choiceCount }: { choiceCount: number }) {
+  const [nameIdx, setNameIdx] = useState(0)
+  // A deterministic spread of names — the wheel is theater, not chance.
+  const names = useMemo(
+    () => ENDINGS.filter((_, i) => i % 3 === 0).map((e) => `${e.emoji} ${e.name}`),
+    [],
+  )
+  useEffect(() => {
+    let i = 0
+    let delay = 130
+    let timer: ReturnType<typeof setTimeout>
+    const tick = () => {
+      i += 1
+      delay = Math.min(360, delay * 1.13) // the wheel slows as it settles
+      setNameIdx(i % names.length)
+      timer = setTimeout(tick, delay)
+    }
+    timer = setTimeout(tick, delay)
+    return () => clearTimeout(timer)
+  }, [names])
+  return (
+    <div
+      style={{
+        minHeight: '70vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        padding: 24,
+      }}
+    >
+      <div className="mono-label" style={{ marginBottom: 20, animation: 'lifeFadeUp 0.5s ease both' }}>
+        2050
+      </div>
+      <h2
+        style={{
+          fontFamily: 'var(--serif)',
+          fontSize: 32,
+          margin: '0 0 12px',
+          animation: 'lifeFadeUp 0.6s ease both',
+          animationDelay: '0.3s',
+        }}
+      >
+        Twenty years. {choiceCount} choices.
+      </h2>
+      <p
+        style={{
+          color: 'var(--muted)',
+          fontSize: 15,
+          margin: '0 0 36px',
+          animation: 'lifeFadeUp 0.6s ease both',
+          animationDelay: '0.7s',
+        }}
+      >
+        Weighing the ledger, finding its name…
+      </p>
+      <div
+        className="mono-label"
+        style={{
+          fontSize: 13,
+          color: 'var(--blue-soft)',
+          minHeight: 20,
+          animation: 'lifeFadeUp 0.5s ease both',
+          animationDelay: '1.2s',
+        }}
+      >
+        {names[nameIdx]}
+      </div>
+    </div>
   )
 }
