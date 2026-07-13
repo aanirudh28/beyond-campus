@@ -20,6 +20,7 @@ const STATIC_ROUTES: [string, 'daily' | 'weekly' | 'monthly', number][] = [
   ['/cohort', 'weekly', 0.9],
   ['/job-tracker', 'weekly', 0.9],
   ['/aptitude', 'weekly', 0.9],
+  ['/20years', 'weekly', 0.9],
   ['/resources/resume-roast', 'weekly', 0.9],
   ['/program', 'weekly', 0.8],
   ['/free', 'weekly', 0.8],

@@ -187,12 +187,17 @@ export function ageAtCard(chapter: number, cardIndex: number, cardCount: number)
 
 export class ReplayError extends Error {}
 
-// Server-side validator: rebuild the whole run from (seed, profile, choices).
+// Rebuild state up to the entry of targetChapter from (seed, profile, choices).
 // Throws ReplayError on any tampering or drift.
-export function replayRun(seed: number, profile: Profile, choices: ChoiceRecord[]): GameState {
+export function replayToChapter(
+  seed: number,
+  profile: Profile,
+  choices: ChoiceRecord[],
+  targetChapter: number,
+): { state: GameState; consumed: number } {
   let state = createInitialState(profile, seed)
   let i = 0
-  for (let ch = 0; ch < CHAPTERS.length; ch++) {
+  for (let ch = 0; ch < targetChapter; ch++) {
     const cards = dealChapter(state)
     for (const card of cards) {
       const choice = choices[i++]
@@ -205,7 +210,13 @@ export function replayRun(seed: number, profile: Profile, choices: ChoiceRecord[
     }
     state = advanceChapter(state)
   }
-  if (i !== choices.length) throw new ReplayError('extra choices beyond the dealt cards')
+  return { state, consumed: i }
+}
+
+// Server-side validator: rebuild the whole run. Every choice must be consumed.
+export function replayRun(seed: number, profile: Profile, choices: ChoiceRecord[]): GameState {
+  const { state, consumed } = replayToChapter(seed, profile, choices, CHAPTERS.length)
+  if (consumed !== choices.length) throw new ReplayError('extra choices beyond the dealt cards')
   return state
 }
 

@@ -1,0 +1,146 @@
+'use client'
+
+import { use, useEffect, useState } from 'react'
+import Link from 'next/link'
+import type { Ending, Stats } from '@/lib/life/types'
+import { SiteFooter, SiteNav } from '@/app/components/SiteChrome'
+
+interface PublicRun {
+  ending: Ending
+  epilogue: string
+  oneLiner: string
+  rarity: number
+  stats: Stats
+}
+
+const TONE_COLOR = { good: '#93BBFF', bad: '#FF8F8F', weird: '#FFC65C' } as const
+
+export default function LifeResultPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const [run, setRun] = useState<PublicRun | null>(null)
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    fetch(`/api/life/${id}`)
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then(setRun)
+      .catch(() => setFailed(true))
+  }, [id])
+
+  return (
+    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg)' }}>
+      <SiteNav cta={{ label: 'Play free →', href: '/20years/play' }} />
+      <section style={{ maxWidth: 620, margin: '0 auto', padding: '130px 24px 80px', textAlign: 'center' }}>
+        {failed && (
+          <>
+            <h1 style={{ fontFamily: 'var(--serif)', fontSize: 36, marginBottom: 14 }}>
+              This life could not be found.
+            </h1>
+            <p style={{ color: 'var(--muted)', fontSize: 15.5, marginBottom: 28 }}>
+              The run may not have finished, or the link is broken. Yours is waiting either way.
+            </p>
+            <Link href="/20years/play" className="btn-primary" style={{ textDecoration: 'none' }}>
+              <span>Live your own 20 years →</span>
+            </Link>
+          </>
+        )}
+
+        {!failed && !run && (
+          <p className="mono-label" style={{ paddingTop: 60 }}>
+            OPENING THE LEDGER…
+          </p>
+        )}
+
+        {run && (
+          <>
+            <div className="mono-label" style={{ marginBottom: 22 }}>
+              SOMEONE LIVED 20 YEARS AND GOT
+            </div>
+            <div style={{ fontSize: 68, lineHeight: 1, marginBottom: 14 }}>{run.ending.emoji}</div>
+            <h1
+              style={{
+                fontFamily: 'var(--serif)',
+                fontSize: 'clamp(38px, 9vw, 56px)',
+                letterSpacing: -1.5,
+                lineHeight: 1.05,
+                margin: '0 0 16px',
+                background: 'var(--grad)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              {run.ending.name}
+            </h1>
+            <div
+              style={{
+                display: 'inline-block',
+                fontFamily: 'var(--mono)',
+                fontSize: 11,
+                letterSpacing: 2,
+                color: TONE_COLOR[run.ending.tone],
+                border: `1px solid ${TONE_COLOR[run.ending.tone]}55`,
+                borderRadius: 100,
+                padding: '7px 16px',
+                marginBottom: 30,
+              }}
+            >
+              ONLY {run.rarity}% OF PLAYERS GET THIS ENDING
+            </div>
+
+            <div
+              className="bc-card"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 8,
+                padding: '16px 12px',
+                marginBottom: 30,
+                maxWidth: 380,
+                marginLeft: 'auto',
+                marginRight: 'auto',
+              }}
+            >
+              {[
+                ['FINAL CTC', run.stats.salary > 0 ? `₹${Number(run.stats.salary).toFixed(1)} LPA` : 'Off payroll'],
+                ['NET WORTH', `${run.stats.savings < 0 ? '-' : ''}₹${Math.abs(Number(run.stats.savings)).toFixed(0)}L`],
+              ].map(([label, value]) => (
+                <div key={label as string}>
+                  <div className="mono-label" style={{ fontSize: 9.5, marginBottom: 6 }}>
+                    {label}
+                  </div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 20 }}>{value}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ textAlign: 'left', marginBottom: 40 }}>
+              {run.epilogue.split(/\n\n+/).map((para, i) => (
+                <p
+                  key={i}
+                  style={{ fontSize: 15.5, lineHeight: 1.75, color: 'rgba(255,255,255,0.82)', margin: '0 0 13px' }}
+                >
+                  {para}
+                </p>
+              ))}
+            </div>
+
+            <div className="bc-card" style={{ padding: '30px 24px' }}>
+              <h2 style={{ fontFamily: 'var(--serif)', fontSize: 26, margin: '0 0 10px' }}>
+                Your 20 years will go differently<em style={{ color: 'var(--blue-soft)' }}>.</em>
+              </h2>
+              <p style={{ fontSize: 14.5, color: 'var(--muted)', lineHeight: 1.7, margin: '0 0 20px' }}>
+                35 choices. 27 endings. 15 minutes. Free, no signup, and the ending is yours to
+                earn or avoid.
+              </p>
+              <Link href="/20years/play" className="btn-primary" style={{ textDecoration: 'none' }}>
+                <span>Play your 20 years →</span>
+              </Link>
+            </div>
+          </>
+        )}
+      </section>
+      <SiteFooter />
+    </main>
+  )
+}
