@@ -124,7 +124,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'The MBA, the certifications, the courses: you collected credentials the way others collect returns. Impeccably qualified, permanently preparing, still waiting to feel ready.',
     baselineRarity: 3,
-    match: { allFlags: ['mba_done'], maxSalary: 25 },
+    match: { anyFlags: ['mba_done', 'second_degree'], maxSalary: 25 },
   },
   {
     id: 'the_comfortable_trap',

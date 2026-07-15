@@ -212,7 +212,150 @@ export const CARDS_CH5: Card[] = [
       },
     ],
   },
+  {
+    id: 'ch5_raid_offer',
+    chapter: 4,
+    kind: 'decision',
+    title: 'BRING YOUR PEOPLE',
+    condition: { flag: 'people_leader' },
+    base: `A rival firm's offer comes with an asterisk: "and we would love it if your best three came along." Poaching your own team from the company that is bleeding, using the trust you built managing them. The money assumes you say yes to the asterisk. So does the industry's long memory.`,
+    options: [
+      {
+        id: 'go_alone',
+        label: 'Take the offer. Leave the team out of it.',
+        effects: { salary: { mult: 1.15 }, reputation: 5 },
+        outcome:
+          'You move alone and sleep fine. Two of the three find you a year later anyway, on their own steam, which is the version of loyalty that actually counts.',
+      },
+      {
+        id: 'bring_three',
+        label: 'Bring the three. Everyone eats better.',
+        effects: { salary: { mult: 1.25 }, reputation: -8, network: -4 },
+        setFlags: ['raided_team'],
+        outcome:
+          'The four of you land well and the money is real. The leadership that once sponsored you files the story under a word you do not get to choose.',
+      },
+    ],
+  },
+  {
+    id: 'ch5_school_anchor',
+    chapter: 4,
+    kind: 'decision',
+    title: 'THE SCHOOL YEAR VS THE DREAM ROLE',
+    pivotal: true,
+    condition: { flag: 'kid' },
+    base: `The role you have wanted for a decade opens in another city, in the middle of your kid's school year, one year before the board-exam runway begins. Your own father moved you twice as a child and you still remember both goodbyes. The offer letter does not have a checkbox for any of this.`,
+    options: [
+      {
+        id: 'take_role',
+        label: 'Take it. The family adjusts, families do.',
+        effects: { salary: { mult: 1.3 }, family: -9, burnout: 4 },
+        outcome:
+          'The role is everything the decade promised. The new school takes a year to feel like school. Everyone adjusts, which is true, and costs something, which is also true.',
+      },
+      {
+        id: 'anchor_home',
+        label: 'Decline. Some years belong to the child.',
+        effects: { family: 9, reputation: 2 },
+        setFlags: ['anchored_home'],
+        outcome:
+          'The role goes to someone else and stings for two quarters. The kid never knows the move almost happened, which is precisely the point of the decision.',
+      },
+    ],
+  },
+  {
+    id: 'ch5_speak_for_them',
+    chapter: 4,
+    kind: 'decision',
+    title: 'THE POST YOU DRAFT NINE TIMES',
+    base: `The industry is pretending the layoffs are "performance-based" and everyone knows better. You are safe, employed, and holding a draft that says the honest thing, with your name on it. Publishing it helps thousands of people feel less gaslit. It also gets read by every future employer you will ever have.`,
+    options: [
+      {
+        id: 'publish_it',
+        label: 'Publish. Someone with a safe seat has to.',
+        effects: { reputation: 9, network: 7, burnout: 3 },
+        setFlags: ['spoke_for_many'],
+        outcome:
+          'It travels for a week. Two CHROs privately agree, one recruiter blacklists you, and a hundred strangers write "thank you for saying it". Net worth: unchanged. Worth: changed.',
+      },
+      {
+        id: 'delete_draft',
+        label: 'Delete draft nine. Feed your family first.',
+        effects: { burnout: 4 },
+        outcome:
+          'A defensible silence; most silences are. The post someone else eventually writes says it worse and travels anyway.',
+      },
+    ],
+  },
   // ---- events ----
+  {
+    id: 'ch5_ev_insurance_dividend',
+    chapter: 4,
+    kind: 'event',
+    title: 'THE FORM YOU FILLED AT 31',
+    condition: { flag: 'parents_secured' },
+    base: `Your mother's knee replacement, both sides, ₹7.4 lakhs. The super top-up you set up during that awkward formalising conversation years ago covers all but the taxi fare. Your father watches you not panic at the billing counter and understands, finally, what that monthly transfer was.`,
+    options: [
+      {
+        id: 'walk_easy',
+        label: 'Wheel her out. The paperwork already worked.',
+        effects: { family: 8, burnout: -4, savings: -1 },
+        outcome:
+          'The scariest week of the year produces a bill you barely feel. Past-you, filling forms at 31, turns out to have been the richest person in the family.',
+      },
+    ],
+  },
+  {
+    id: 'ch5_ev_uninsured_bill',
+    chapter: 4,
+    kind: 'event',
+    title: 'THE BILL WITH NO NET',
+    condition: { notFlag: 'parents_secured' },
+    base: `Your mother's knee replacement, both sides, ₹7.4 lakhs. There is no policy because the conversation kept being postponed, so the corpus takes the hit directly, in one HDFC transfer with your thumb hovering over confirm. She apologises for the amount, which is the worst part by a distance.`,
+    options: [
+      {
+        id: 'pay_it',
+        label: 'Pay it. Then finally do the paperwork.',
+        effects: { savings: -8, family: 5, burnout: 5 },
+        outcome:
+          'She walks fine by Diwali, which is everything. The policy gets bought the same month, years late, priced like a lesson.',
+      },
+    ],
+  },
+  {
+    id: 'ch5_ev_angel_verdict',
+    chapter: 4,
+    kind: 'event',
+    title: 'THE CHEQUE REPORTS BACK',
+    condition: { flag: 'angel_cheque' },
+    base: `The logistics startup you wrote ₹5 lakhs into at 31 sells to a freight major. Not a unicorn story, a workmanlike one: your cheque comes back as ₹17 lakhs and a cap-table PDF you keep forever. Angel math, the batchmate texts: one in ten pays for the nine. You were the one.`,
+    options: [
+      {
+        id: 'bank_verdict',
+        label: 'Bank it. Toast the founder properly.',
+        effects: { savings: 12, network: 4 },
+        outcome:
+          'The return is nice. The decade of watching a company get built from one WhatsApp away, and being trusted inside it, was the actual dividend.',
+      },
+    ],
+  },
+  {
+    id: 'ch5_ev_front_page',
+    chapter: 4,
+    kind: 'event',
+    title: 'PAGE THREE, BOTTOM LEFT',
+    condition: { flag: 'gives_back' },
+    base: `The district newspaper runs a story on your Saturday classroom: one photo, four paragraphs, your name spelled almost right. Your father buys six copies from three different stalls so it does not look like one family clearing the stock. It absolutely looks like that.`,
+    options: [
+      {
+        id: 'frame_page',
+        label: 'Let him frame it. This one is his.',
+        effects: { family: 6, reputation: 5, network: 3 },
+        outcome:
+          'The framed page goes up next to your graduation photo. Of everything you have built, this is the artefact he explains to guests first.',
+      },
+    ],
+  },
   {
     id: 'ch5_ev_moonlight_bill',
     chapter: 4,

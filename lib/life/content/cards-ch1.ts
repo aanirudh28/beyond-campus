@@ -182,6 +182,106 @@ export const CARDS_CH1: Card[] = [
   },
   // ---- events ----
   {
+    id: 'ch1_commission_weekend',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE VARIABLE LIFE',
+    condition: { ambition: 'money' },
+    base: `An edtech sales team wants weekend closers. Pure commission, ₹800 per converted demo, and the top guy last month made more than your professor. It is also eleven hours of hearing "we will think about it" from parents who will not think about it. Money has an apprenticeship, and this is what it looks like.`,
+    options: [
+      {
+        id: 'close',
+        label: 'Take the weekends. Learn to ask for money.',
+        effects: { savings: 1.5, network: 6, skills: 5, burnout: 5 },
+        setFlags: ['commission_blood'],
+        outcome:
+          'You get hung up on forty times and close nine. Something permanent changes in how you walk into rooms: rejection stops being about you and starts being arithmetic.',
+      },
+      {
+        id: 'protect',
+        label: 'Skip it. Protect the final-year focus.',
+        effects: { skills: 4, burnout: -3 },
+        outcome:
+          'The grades hold and the weekends stay whole. The first time someone says "no" to you professionally is still ahead, waiting.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_fellowship_fork',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE ELEVEN-MONTH DETOUR',
+    pivotal: true,
+    condition: { ambition: 'impact' },
+    base: `A teaching fellowship in rural Rajasthan. Eleven months, a stipend that rounds to nothing, and the kind of work you actually said you wanted when the college asked for your "vision". Your batch will be eleven months of CTC ahead when you return. Some doors this opens do not exist anywhere else. Some doors it delays are the ones your family is watching.`,
+    options: [
+      {
+        id: 'go_teach',
+        label: 'Take the fellowship. Do the real thing first.',
+        effects: { skills: 8, reputation: 8, family: -6, network: 5 },
+        setFlags: ['mission_year'],
+        outcome:
+          'Eleven months in a village school rearrange what you think a hard problem is. Interviewers lean forward at this story for the rest of your life.',
+      },
+      {
+        id: 'corporate_first',
+        label: 'Corporate first. Impact needs a war chest.',
+        effects: { skills: 4, family: 4 },
+        outcome:
+          'The sensible sequence. The fellowship batch photos arrive on Instagram all year, and you look at them slightly too long.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_loan_shadow',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE EMI THAT GRADUATES WITH YOU',
+    condition: { city: 'tier2' },
+    base: `The education loan's moratorium ends six months after graduation, employed or not. ₹9,400 a month, addressed to a person who does not have a job yet. Evening tuition batches would cover it. They would also eat the exact hours the job hunt lives in.`,
+    options: [
+      {
+        id: 'tuition',
+        label: 'Take the tuition batches. Owe no one.',
+        effects: { savings: 1.2, family: 5, burnout: 4, skills: 2 },
+        setFlags: ['loan_fighter'],
+        outcome:
+          'Teaching class 11 accounts at 7 a.m. funds the EMI and, unexpectedly, teaches you to explain things simply. Two skills for one grind.',
+      },
+      {
+        id: 'ask_time',
+        label: 'Ask your father to cover six more months.',
+        effects: { family: -6, skills: 4 },
+        outcome:
+          'He says yes before you finish the sentence, which is somehow heavier than a no. The hunt gets your full hours. The debt gets a face.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_circle_fee',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE ROOMS WITH A COVER CHARGE',
+    condition: { city: 'metro' },
+    base: `A "young professionals circle" meets monthly at a five-star lobby. ₹6,000 a year, mostly juniors from famous colleges practising firm handshakes. Two members got referrals out of it last quarter. The city runs on rooms like this, and rooms like this run on people who showed up.`,
+    options: [
+      {
+        id: 'pay_in',
+        label: 'Pay it. Rooms compound.',
+        effects: { network: 9, savings: -0.1, reputation: 3 },
+        outcome:
+          'Meeting four is where you stop rehearsing your introduction. Meeting seven is where someone says "send me your CV" and actually means it.',
+      },
+      {
+        id: 'library',
+        label: 'Skip it. The library is free.',
+        effects: { skills: 6 },
+        outcome:
+          'The preparation deepens. The rooms keep meeting, with one fewer chair filled, and nobody notices, which is exactly the problem.',
+      },
+    ],
+  },
+  {
     id: 'ch1_english_tax',
     chapter: 0,
     kind: 'decision',
@@ -244,6 +344,38 @@ export const CARDS_CH1: Card[] = [
         setFlags: ['first_blood'],
         outcome:
           'The document is titled "never again.docx". Interview two is mediocre. Interview five is good. The compounding is invisible and absolutely real.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_ev_topper_unplaced',
+    chapter: 0,
+    kind: 'event',
+    title: 'THE TOPPER IS ALSO WAITING',
+    base: `The department topper, 9.4 CGPA, the one your mother compares you to, is also unplaced. You find out at the chai stall and feel two things at once: relief you are ashamed of, and a colder realisation. The game is not marks. It never was. Nobody updated the syllabus about that.`,
+    options: [
+      {
+        id: 'recalibrate',
+        label: 'Let it sink in. Play the actual game.',
+        effects: { reputation: 3, burnout: -4, skills: 2 },
+        outcome:
+          'You stop preparing for the exam that ended and start preparing for the market that never announces its pattern. The topper, to his credit, figures it out too, eventually.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_ev_resume_farm',
+    chapter: 0,
+    kind: 'event',
+    title: 'THE JOB THAT NEVER EXISTED',
+    base: `The perfect listing: your city, your profile, "urgent hiring". You apply within the hour. Weeks later a senior explains that half these posts are resume farms: agencies harvesting fresher CVs to pad their databases, no job behind the door. The listing is still up. It has 4,000 applicants now.`,
+    options: [
+      {
+        id: 'wise_up',
+        label: 'Learn to smell them. Warn the group.',
+        effects: { skills: 3, network: 3 },
+        outcome:
+          'You develop the checklist: no company name, no named human, salary "as per industry standards". The market has weather, and you are learning to read the sky.',
       },
     ],
   },

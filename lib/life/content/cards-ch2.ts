@@ -182,6 +182,106 @@ export const CARDS_CH2: Card[] = [
     ],
   },
   {
+    id: 'ch2_cousin_dukaan',
+    chapter: 1,
+    kind: 'decision',
+    title: 'THE SHOP GOES ONLINE',
+    condition: { city: 'tier3' },
+    base: `Your cousin's electronics shop wants to go online and you are officially "the one who knows computers". He is offering weekend work and a slice of whatever the online sales become. It is unglamorous, it is family, and it is a real P&L with your decisions in it, which is more than your job gives you.`,
+    options: [
+      {
+        id: 'build_it',
+        label: 'Build it with him. A real P&L beats a title.',
+        effects: { savings: 2, skills: 5, family: 6, burnout: 5 },
+        setFlags: ['side_biz'],
+        outcome:
+          'Eight months later the shop does ₹3 lakhs a month online and your cousin introduces you as "my partner". You learn margins, returns fraud, and festival-season cash flow: an MBA nobody can bill you for.',
+      },
+      {
+        id: 'stay_out',
+        label: 'Stay out. Family and money is a known explosive.',
+        effects: { burnout: -3, family: -3 },
+        outcome:
+          'A wise instinct, honestly. The shop finds a local agency, pays them badly, and grows anyway. Sunday lunches stay simple.',
+      },
+    ],
+  },
+  {
+    id: 'ch2_csr_secondment',
+    chapter: 1,
+    kind: 'decision',
+    title: 'SIX MONTHS OFF THE BILLABLES',
+    condition: { ambition: 'impact' },
+    base: `The company's foundation needs someone for a six-month skilling project in two districts. Same salary, zero career velocity, and the kind of work that made you pick "impact" when the form asked what pulls you. Your manager calls it "a detour". He is not wrong. Neither are you.`,
+    options: [
+      {
+        id: 'second_me',
+        label: 'Take the secondment. This is the point.',
+        effects: { reputation: 8, skills: 4, family: 3 },
+        setFlags: ['mission_track'],
+        outcome:
+          'Four hundred young people go through the program you rebuilt. The CSR head remembers your name for years, and so, more quietly, do you.',
+      },
+      {
+        id: 'stay_billable',
+        label: 'Stay on the billables. Impact can wait for leverage.',
+        effects: { salary: { mult: 1.08 }, skills: 4 },
+        outcome:
+          'The appraisal cycle rewards the choice. The form where you once wrote "impact" stays filed somewhere, patient.',
+      },
+    ],
+  },
+  {
+    id: 'ch2_psc_pressure',
+    chapter: 1,
+    kind: 'decision',
+    title: 'THE EXAM RETURNS',
+    condition: { ambition: 'stability', notFlag: 'exam_track' },
+    base: `At 24, the state PSC notification lands in the family group with three thumbs-up before you have even seen it. "Last few attempts left at your age." The private job is going fine, which convinces nobody. Stability, in your house, has exactly one spelling and it is a government posting.`,
+    options: [
+      {
+        id: 'weekend_prep',
+        label: 'Prep on weekends. Keep both doors open.',
+        effects: { family: 8, burnout: 6, skills: -4 },
+        setFlags: ['exam_track'],
+        outcome:
+          'Two years of split focus. The house is peaceful, the weekends are mock tests, and both doors stay half-open, which is a strange way for doors to be.',
+      },
+      {
+        id: 'firm_no',
+        label: 'Say the final no, kindly.',
+        effects: { family: -8, reputation: 3, burnout: -4 },
+        setFlags: ['backed_self'],
+        outcome:
+          'The group chat goes quiet for a week. The decision, once actually made, releases hours and guilt you did not know you were paying interest on.',
+      },
+    ],
+  },
+  {
+    id: 'ch2_toxic_brand',
+    chapter: 1,
+    kind: 'decision',
+    title: 'THE SCREAMER WITH THE GOOD LOGO',
+    base: `Your manager screams. Properly screams, in the open floor, twice a week, at whoever is nearest. The brand on your badge is the best you have ever had, and everyone says two years here changes your resume forever. HR calls his style "demanding excellence". Your Sunday-evening dread calls it something else.`,
+    options: [
+      {
+        id: 'endure',
+        label: 'Endure it for the brand. Two years, head down.',
+        effects: { burnout: 9, reputation: 5, skills: 5 },
+        setFlags: ['endured_toxic'],
+        outcome:
+          'The resume line is worth what they promised. The flinch when someone raises their voice takes longer to expense out than the two years did.',
+      },
+      {
+        id: 'transfer_out',
+        label: 'Engineer a transfer. No logo is worth the dread.',
+        effects: { burnout: -9, network: -3, family: 3 },
+        outcome:
+          'The new team is calmer and slightly slower. Years later you learn half his team from your batch quit the industry entirely. You did not.',
+      },
+    ],
+  },
+  {
     id: 'ch2_moonlight_offer',
     chapter: 1,
     kind: 'decision',
@@ -261,6 +361,39 @@ export const CARDS_CH2: Card[] = [
         effects: { network: 3, burnout: 4 },
         outcome:
           'You are genuinely happy for him and genuinely rattled for a month. Both things are allowed. The lesson you keep: be somewhere upside is possible.',
+      },
+    ],
+  },
+  {
+    id: 'ch2_ev_pf_awakening',
+    chapter: 1,
+    kind: 'event',
+    title: 'THE MONEY YOU FORGOT YOU HAD',
+    base: `A colleague's resignation paperwork reveals the thing nobody teaches: the PF account. Twelve percent of basic, matched, compounding quietly since day one. You log into the portal for the first time and find actual money with your name on it, built entirely out of your own inattention.`,
+    options: [
+      {
+        id: 'wake_up',
+        label: 'Read the payslip properly, once, finally.',
+        effects: { savings: 0.8, skills: 2 },
+        outcome:
+          'Basic, HRA, gratuity vesting, the works. Thirty minutes of boring reading turns out to be the highest-paid half hour of your year.',
+      },
+    ],
+  },
+  {
+    id: 'ch2_ev_salary_sheet',
+    chapter: 1,
+    kind: 'event',
+    title: 'THE ANONYMOUS SPREADSHEET',
+    base: `Someone from your batch makes an anonymous salary spreadsheet and it fills up in a day. Forty-one rows of exact CTCs. You are row 23. Above you: two people you carried through group projects. The sheet gets deleted by evening. What it did to everyone's Tuesday cannot be.`,
+    options: [
+      {
+        id: 'use_it',
+        label: 'Bookmark the numbers. Data over feelings.',
+        effects: { network: 2, burnout: 3 },
+        setFlags: ['knows_worth'],
+        outcome:
+          'The sting fades; the benchmark stays. At your next negotiation you quote the market like someone who has seen the market, because you have.',
       },
     ],
   },

@@ -184,6 +184,104 @@ export const CARDS_CH3: Card[] = [
     ],
   },
   {
+    id: 'ch3_evening_llb',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE BACKUP DEGREE',
+    condition: { ambition: 'stability' },
+    base: `An evening LLB. Three years of 6-to-9 classes, one more qualification for the wall, one more moat against a world that keeps rearranging itself. Or the same three years of evenings spent going dangerously deep in the field you already work in. Safety by accumulation, or safety by mastery.`,
+    options: [
+      {
+        id: 'enroll',
+        label: 'Enroll. Nobody can take a degree away.',
+        effects: { skills: 2, burnout: 6, savings: -1.5 },
+        setFlags: ['second_degree'],
+        outcome:
+          'Three years of evening lectures produce a real degree and a strange discovery: the classmates are the actual asset. Half of them are mid-career hedgers exactly like you.',
+      },
+      {
+        id: 'go_deep',
+        label: 'Go deep instead. Mastery is the moat.',
+        effects: { skills: 9, reputation: 3 },
+        outcome:
+          'The evenings compound into the kind of depth that gets you called into rooms. No certificate. Just the reputation of someone who actually knows.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_fintech_heat',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE ROCKET WITH YOUR NAME ON IT',
+    condition: { ambition: 'money' },
+    base: `The hottest fintech in the country is hiring for growth, and they move fast: one call, one case, one offer at a number that makes you re-read the email. The catch is public knowledge: 70-hour weeks, quarterly layoffs of the bottom decile, and a CEO who tweets at 3 a.m. Money is on the table. So is everything else.`,
+    options: [
+      {
+        id: 'board_rocket',
+        label: 'Board the rocket. Earn while the earning is good.',
+        effects: { salary: { mult: 1.45 }, burnout: 9, network: 6 },
+        setFlags: ['rocket_years'],
+        outcome:
+          'The money is real and so is the ringing in your ears. You learn more about growth in eighteen months than most learn in eight years, at a price the payslip does not itemise.',
+      },
+      {
+        id: 'let_it_pass',
+        label: 'Pass. Sustainable beats spectacular.',
+        effects: { salary: { mult: 1.1 }, burnout: -4 },
+        outcome:
+          'Half the people who joined that round were gone in two years, rich and hollow-eyed. The other half are rich. You chose not to flip that particular coin.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_social_arm',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE PAY CUT WITH A PURPOSE',
+    condition: { ambition: 'impact' },
+    base: `A social enterprise doing livelihood work wants you to run their partnerships. Twenty percent pay cut, a title that means something to you and nothing at weddings, and outcomes measured in families instead of quarters. The version of you from the college vision statement is watching this decision closely.`,
+    options: [
+      {
+        id: 'take_cut',
+        label: 'Take the cut. Buy the meaning.',
+        effects: { salary: { mult: 0.8 }, reputation: 9, family: -3, skills: 5 },
+        setFlags: ['mission_track'],
+        outcome:
+          'The work is slower, harder to measure, and the first time a beneficiary family names their shop after the scheme you built, no appraisal letter ever compares again.',
+      },
+      {
+        id: 'fund_instead',
+        label: 'Stay corporate, fund the work instead.',
+        effects: { savings: -2, reputation: 4 },
+        outcome:
+          'The monthly transfer to their donor program is real help. It is also, a quiet voice notes, outsourcing the version of you that form was about.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_sister_wedding',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE ELDER SIBLING TAX',
+    base: `Your sister's wedding is fixed and your father's numbers, which he shows nobody, do not close. He has not asked. He will not ask. You know the gap is about ₹3 lakhs because your mother mentioned the caterer's quote twice, which in this family is a siren.`,
+    options: [
+      {
+        id: 'close_gap',
+        label: 'Transfer the ₹3 lakhs before he has to ask.',
+        effects: { savings: -3, family: 12 },
+        outcome:
+          'He accepts it with a nod and never mentions it again. At the wedding he stands straighter than you have seen in years, and you understand exactly what you bought.',
+      },
+      {
+        id: 'token_help',
+        label: 'Give ₹50,000 and protect your own runway.',
+        effects: { savings: -0.5, family: -7 },
+        outcome:
+          'The wedding happens, slightly smaller. Your runway stays intact. Some ledgers in a family are never spoken of and never, ever closed.',
+      },
+    ],
+  },
+  {
     id: 'ch3_exam_verdict',
     chapter: 2,
     kind: 'decision',
@@ -236,6 +334,40 @@ export const CARDS_CH3: Card[] = [
     ],
   },
   // ---- events ----
+  {
+    id: 'ch3_ev_visa_call',
+    chapter: 2,
+    kind: 'event',
+    title: 'THE TORONTO CALL',
+    base: `Your best friend gets Canadian PR and calls you from the airport, giddy and slightly guilty. The group chat becomes flight prices and snow photos. Everyone asks when you are applying, in the tone of people asking why you are still standing on the platform after the train came.`,
+    options: [
+      {
+        id: 'stay_course',
+        label: 'Wish him well. Your compounding is here.',
+        effects: { burnout: 4, network: 3, family: 3 },
+        outcome:
+          'The pull is real for a season. So is the math you did: your equity, your network, your parents, all denominated in a country you understand. Different trains, both moving.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_ev_mentor_stumbles',
+    chapter: 2,
+    kind: 'event',
+    title: 'THE THREAD REVERSES',
+    condition: { flag: 'mentor_kept' },
+    base: `Your old manager, the one you message monthly, gets restructured out at 41. For the first time in the relationship, he sounds unsure. You realise, mid-call, that your network now contains doors he needs. The mentorship has quietly become a two-way street.`,
+    options: [
+      {
+        id: 'send_leads',
+        label: 'Work your network for him, hard, for a month.',
+        effects: { network: 6, reputation: 5, family: 2 },
+        setFlags: ['mentor_repaid'],
+        outcome:
+          'Two of your introductions become his interviews; one becomes his job. He never says thank you in so many words. He says it in every reference call for the rest of your career.',
+      },
+    ],
+  },
   {
     id: 'ch3_ev_creator_deal',
     chapter: 2,

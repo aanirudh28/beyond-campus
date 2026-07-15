@@ -109,6 +109,27 @@ export const FLAGS: Record<string, FlagDef> = {
   reset_taken: { desc: 'Took the three-month sabbatical and repaired the machine', narrative: true },
   hometown_builder: { desc: 'Went back and built something real in the hometown' },
 
+  // ---- depth drop (v4) ----
+  commission_blood: { desc: 'Learned to ask for money in the weekend edtech sales grind at 21', narrative: true },
+  mission_year: { desc: 'Took the eleven-month rural teaching fellowship before corporate', narrative: true },
+  loan_fighter: { desc: 'Paid the education-loan EMI with 7 a.m. tuition batches', narrative: true },
+  mission_track: { desc: 'Chose the impact lane: CSR secondment or the social enterprise', narrative: true },
+  endured_toxic: { desc: 'Endured the screamer for the brand-name years', narrative: true },
+  second_degree: { desc: 'Collected the evening LLB as a moat' },
+  mentor_repaid: { desc: 'Worked the network for the laid-off mentor; the thread reversed', narrative: true },
+  rocket_years: { desc: 'Boarded the 70-hour fintech rocket for the money years', narrative: true },
+  remote_roots: { desc: 'Took remote-forever and moved back near the parents', narrative: true },
+  chose_side: { desc: 'Committed to a sponsor in the reorg knife-fight', narrative: true },
+  repaired_us: { desc: 'Guarded the Sundays and repaired the quiet marriage', narrative: true },
+  side_biz: { desc: 'Built the cousin’s shop into a real online business on weekends', narrative: true },
+  angel_cheque: { desc: 'Wrote the ₹5 lakh angel cheque into a batchmate’s startup' },
+  raided_team: { desc: 'Took the rival’s offer and brought the best three along', narrative: true },
+  anchored_home: { desc: 'Declined the dream role to protect the kid’s school year', narrative: true },
+  spoke_for_many: { desc: 'Published the honest layoffs post with a safe seat and a real name', narrative: true },
+  sold_company: { desc: 'Sold the company; bought back the mornings', narrative: true },
+  parents_home: { desc: 'Parents moved in: one kitchen, one roof', narrative: true },
+  mentored_rival: { desc: 'Taught the half-price 28-year-old everything and outran the arithmetic', narrative: true },
+
   // ---- engine-owned ----
   burnout_peaked: { desc: 'Burnout crossed 85 at some chapter end (set by the engine; constitutional for the Burnout ending)' },
 }

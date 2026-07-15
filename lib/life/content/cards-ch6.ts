@@ -182,7 +182,114 @@ export const CARDS_CH6: Card[] = [
       },
     ],
   },
+  {
+    id: 'ch6_sell_or_build',
+    chapter: 5,
+    kind: 'decision',
+    title: 'THE NUMBER ON THE TABLE',
+    pivotal: true,
+    condition: { flag: 'own_business' },
+    base: `An acquirer puts a number on the table for the company you built out of the itch. It is not a fantasy number. It is a real one: enough to end every money question your family will ever have, in exchange for the thing you get up for. The founder forums have a saying: you sell twice, once for the money and once for the mornings.`,
+    options: [
+      {
+        id: 'sell',
+        label: 'Sell. Security is also a dream.',
+        effects: { savings: 18, burnout: -8, family: 6 },
+        setFlags: ['sold_company'],
+        outcome:
+          'The wire clears and the mornings go strange for a season. Then they refill: advisory seats, the kids, the long-postponed everything. The company thrives without you, which stings precisely once.',
+      },
+      {
+        id: 'keep_building',
+        label: 'Decline. The mornings are not for sale.',
+        effects: { reputation: 6, burnout: 5 },
+        outcome:
+          'The acquirer builds a competitor, as they politely warned. Some quarters you regret it. Most mornings you do not, and mornings outnumber quarters.',
+      },
+    ],
+  },
+  {
+    id: 'ch6_parents_move_in',
+    chapter: 5,
+    kind: 'decision',
+    title: 'THE HOUSE REARRANGES',
+    base: `The stairs in your parents' house have started writing cheques their knees cannot cash. The choice everyone dances around at dinner: they move in with you, or you set them up in a serviced flat ten minutes away. Both are love. They are different dialects of it, and the whole extended family has opinions in a third.`,
+    options: [
+      {
+        id: 'move_in',
+        label: 'They move in. One kitchen, one roof.',
+        effects: { family: 12, burnout: 5 },
+        setFlags: ['parents_home'],
+        outcome:
+          'The house gets louder, smaller, and warmer. Your kid absorbs a grandparent education no school sells. Some evenings you hide in the car for ten minutes, and that is fine too.',
+      },
+      {
+        id: 'ten_minutes',
+        label: 'The flat ten minutes away, fully set up.',
+        effects: { family: 4, savings: -3 },
+        outcome:
+          'Independence with a safety net, dignity intact on all sides. The ten minutes get driven daily. It works, in the way engineered things work.',
+      },
+    ],
+  },
+  {
+    id: 'ch6_half_price_rival',
+    chapter: 5,
+    kind: 'decision',
+    title: 'THE 28-YEAR-OLD WHO COSTS HALF',
+    base: `There is a 28-year-old in the org who does 80 percent of your job at 40 percent of your cost, and everyone can do that arithmetic, including you. The two moves on the board are old as guilds: hoard what only you know, or teach her everything and bet you can keep becoming the thing the org cannot yet name.`,
+    options: [
+      {
+        id: 'teach_everything',
+        label: 'Teach her everything. Outrun the arithmetic.',
+        effects: { reputation: 8, network: 5, skills: 4 },
+        setFlags: ['mentored_rival'],
+        outcome:
+          'She gets brilliant fast and tells everyone who made her so. You move up into the ambiguity that has no playbook yet, which was always the only defensible ground.',
+      },
+      {
+        id: 'guard_moat',
+        label: 'Guard the moat. Knowledge is the leverage.',
+        effects: { reputation: -5, burnout: 5 },
+        outcome:
+          'The gatekeeping works for six quarters. Then a reorg routes around the gate entirely, the way water does, and the moat becomes a museum.',
+      },
+    ],
+  },
   // ---- events ----
+  {
+    id: 'ch6_ev_first_goodbye',
+    chapter: 5,
+    kind: 'event',
+    title: 'THE FIRST OF THE BATCH',
+    base: `The class group, dormant for months, lights up at 6 a.m. and you know before you open it. Cardiac, 43, the guy who organised every reunion. The funeral WhatsApp has 200 members by evening. For one shocked week, the entire batch starts morning walks, downloads meditation apps, and hugs their kids mid-homework.`,
+    options: [
+      {
+        id: 'keep_walking',
+        label: 'Be one of the few who keeps the walk.',
+        effects: { burnout: -6, family: 6 },
+        outcome:
+          'Most of the batch stops walking by month two, as grief-fitness always goes. You keep the 6 a.m. loop, and you keep saying his name when people ask why.',
+      },
+    ],
+  },
+  {
+    id: 'ch6_ev_idea_returns',
+    chapter: 5,
+    kind: 'event',
+    title: 'THE NOTES APP OPENS ITSELF',
+    condition: { flag: 'dream_shelved' },
+    base: `A 26-year-old founder finds your decade-old conference talk and cold-emails you: she is building the exact thing you shelved, in a market that finally matured into it. She wants an hour a month and offers a sliver of advisor equity. The idea did not die. It waited for infrastructure, and for her.`,
+    options: [
+      {
+        id: 'advise_her',
+        label: 'Take the hour. Hand over the old notes.',
+        effects: { savings: 4, reputation: 4, network: 3 },
+        outcome:
+          'Watching her dodge the mistakes you would have made is a strange, generous pleasure. The shelf, it turns out, was not a grave. It was a relay baton.',
+      },
+    ],
+  },
   {
     id: 'ch6_ev_mentee_founder',
     chapter: 5,

@@ -136,6 +136,105 @@ export const CARDS_CH4: Card[] = [
     ],
   },
   {
+    id: 'ch4_remote_forever',
+    chapter: 3,
+    kind: 'decision',
+    title: 'THE PERMANENT DESK AT HOME',
+    base: `The company makes remote-forever official. You could move back near your parents, work from a room with actual sunlight, and never eat a cafeteria thali again. The unwritten fine print: promotions have a way of finding the people the leadership physically bumps into. Presence is a currency. So are Sunday lunches.`,
+    options: [
+      {
+        id: 'go_remote',
+        label: 'Take the desk at home. Life is the point.',
+        effects: { family: 10, burnout: -6, network: -6 },
+        setFlags: ['remote_roots'],
+        outcome:
+          'Your mother relearns your tea timing. Your name comes up in one fewer hallway. On most days the trade is obviously, absurdly worth it. Appraisal week is not most days.',
+      },
+      {
+        id: 'stay_visible',
+        label: 'Stay where the leadership walks.',
+        effects: { network: 7, reputation: 4, family: -5 },
+        outcome:
+          'The corridor collisions keep compounding. The flat stays rented, the city stays loud, and the org chart keeps knowing your face.',
+      },
+    ],
+  },
+  {
+    id: 'ch4_turf_war',
+    chapter: 3,
+    kind: 'decision',
+    title: 'THE REORG KNIFE-FIGHT',
+    base: `A reorg is coming and two VPs are recruiting foot soldiers. Yours pulls you aside: "I need to know you are with me." The other side is quietly winning. Company politics at this altitude is not optional, and neutrality, everyone knows, is also a side, usually the losing one.`,
+    options: [
+      {
+        id: 'pick_side',
+        label: 'Commit to your sponsor. Loyalty is legible.',
+        effects: { reputation: 6, network: 5, burnout: 4 },
+        setFlags: ['chose_side'],
+        outcome:
+          'Your VP survives the reorg, barely, and remembers exactly who stood where. Patronage is an old technology. It still ships.',
+      },
+      {
+        id: 'stay_neutral',
+        label: 'Stay neutral. Do the work, skip the war.',
+        effects: { reputation: -4, burnout: -4 },
+        outcome:
+          'Both camps mark you "unreliable" in the way only the uninvolved can be. The work stays excellent. The invitations get quieter.',
+      },
+    ],
+  },
+  {
+    id: 'ch4_quiet_distance',
+    chapter: 3,
+    kind: 'decision',
+    title: 'THE QUIET DISTANCE',
+    pivotal: true,
+    condition: { flag: 'engaged' },
+    base: `Nothing is wrong, which is the problem. The marriage has gone quiet under the EMIs and the calendars: two polite colleagues running a household. Your partner mentions, carefully, that you laughed more when you earned less. There is a fork here that no one announces, and most people only see it in the rearview mirror.`,
+    options: [
+      {
+        id: 'repair',
+        label: 'Guard the Sundays. Book the trip. Show up.',
+        effects: { family: 14, savings: -2, burnout: -4 },
+        setFlags: ['repaired_us'],
+        outcome:
+          'It takes four awkward Sundays before the laughing comes back. Cheapest high-return investment on your entire balance sheet, and the easiest one to have skipped.',
+      },
+      {
+        id: 'after_quarter',
+        label: 'After this quarter. The push is almost done.',
+        effects: { family: -10, burnout: 4 },
+        outcome:
+          'The quarter ends and another begins, as quarters do. The quiet gets a room of its own in the house, and starts paying rent.',
+      },
+    ],
+  },
+  {
+    id: 'ch4_angel_cheque',
+    chapter: 3,
+    kind: 'decision',
+    title: 'THE ₹5 LAKH BELIEF',
+    condition: { minStat: { savings: 25 } },
+    base: `A batchmate you actually respect is raising a tiny angel round for her logistics startup. ₹5 lakhs a cheque, twenty cheques, and she is being honest: "Assume it goes to zero. Most do." You have seen her work since college. Belief, for once, has a minimum ticket size.`,
+    options: [
+      {
+        id: 'write_it',
+        label: 'Write the cheque. Bet on people you have seen.',
+        effects: { savings: -5, network: 6 },
+        setFlags: ['angel_cheque'],
+        outcome:
+          'The money leaves quietly. What arrives is a seat close to a company being built, which teaches you more than the amount could ever earn in an index fund. The financial verdict comes later.',
+      },
+      {
+        id: 'pass_kindly',
+        label: 'Pass, kindly. Your capital has a family attached.',
+        effects: { savings: 1 },
+        outcome:
+          'She takes it well; founders keep score differently than you fear. The ₹5 lakhs stays in the index fund, doing its boring, dependable thing.',
+      },
+    ],
+  },
+  {
     id: 'ch4_body_invoice',
     chapter: 3,
     kind: 'decision',
