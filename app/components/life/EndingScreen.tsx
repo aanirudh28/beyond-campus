@@ -6,11 +6,13 @@ import { ENDINGS } from '@/lib/life/content/endings'
 import ShareCard from './ShareCard'
 import LifeTimeline from './LifeTimeline'
 import { buzz } from './haptics'
+import { trackLife } from '@/lib/life/track'
 
 export interface GhostView {
   ageLine: string // "At 21-23, you chose"
   takenLabel: string
   otherLabel: string
+  endingId?: string
   endingName: string
   emoji: string
   savingsDelta: number // ghost savings minus real savings, ₹ lakhs
@@ -56,13 +58,20 @@ export default function EndingScreen({
   const [copied, setCopied] = useState(false)
   const [downloading, setDownloading] = useState(false)
 
-  // The reveal moment gets one buzz in the hand.
+  // The reveal moment gets one buzz in the hand, and the view events fire once.
   useEffect(() => {
     buzz(30)
+    for (const ghost of ghosts ?? []) {
+      trackLife('ghost_viewed', { endingId: ghost.endingId ?? ghost.endingName })
+    }
+    trackLife('report_viewed', { itemCount: report.length })
+    if (discovered > 0) trackLife('collection_viewed', { discovered })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function downloadCard() {
     if (!cardRef.current || downloading) return
+    trackLife('share_clicked', { channel: 'image' })
     setDownloading(true)
     try {
       const html2canvas = (await import('html2canvas')).default
@@ -82,6 +91,7 @@ export default function EndingScreen({
   }
 
   function shareWhatsApp() {
+    trackLife('share_clicked', { channel: 'whatsapp' })
     const msg = shareUrl
       ? `I just lived the next 20 years of my career in 20 minutes and ended up as *${ending.name}* ${ending.emoji} Only ${rarity}% of players get this ending. What will yours be? ${shareUrl}`
       : `I just lived the next 20 years of my career in 20 minutes and ended up as *${ending.name}* ${ending.emoji} Play yours: https://www.beyond-campus.in/20years`
@@ -90,12 +100,15 @@ export default function EndingScreen({
 
   function shareChallenge() {
     if (!challengeUrl) return
+    trackLife('challenge_created')
+    trackLife('share_clicked', { channel: 'challenge' })
     const msg = `I lived a whole 20-year career and got *${ending.name}* ${ending.emoji} Now live MY EXACT life: same cards, same twists, your choices. Beat my ending: ${challengeUrl}`
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
   async function copyLink() {
     if (!shareUrl) return
+    trackLife('share_clicked', { channel: 'copy' })
     try {
       await navigator.clipboard.writeText(shareUrl)
       setCopied(true)
@@ -394,6 +407,7 @@ export default function EndingScreen({
             </p>
             <a
               href={item.cta.href}
+              onClick={() => trackLife('report_cta_clicked', { href: item.cta.href })}
               style={{
                 fontFamily: 'var(--mono)',
                 fontSize: 11.5,

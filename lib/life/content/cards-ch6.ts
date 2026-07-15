@@ -245,7 +245,7 @@ export const CARDS_CH6: Card[] = [
       {
         id: 'accept_seat',
         label: 'Accept the seat. Harvest the long game.',
-        effects: { salary: 6, reputation: 12, network: 8 },
+        effects: { salary: 4, reputation: 12, network: 8 },
         setFlags: ['board_seat'],
         outcome:
           'The advisor fee is nice. The letterhead is nicer. The proof that relationships compound harder than money is the nicest of all.',

@@ -15,7 +15,7 @@ export const CARDS_CH3: Card[] = [
       {
         id: 'mba',
         label: 'Take the plunge. Prep seriously, go all in.',
-        effects: { salary: { mult: 1.7 }, savings: -12, skills: 10, network: 15, burnout: 10 },
+        effects: { salary: { mult: 1.6 }, savings: -12, skills: 10, network: 15, burnout: 10 },
         setFlags: ['mba_done'],
         outcome:
           'Two brutal years, one loan that follows you like a pet, and a placement day that resets your salary graph. The badge opens doors. The EMI keeps you honest.',
@@ -195,7 +195,7 @@ export const CARDS_CH3: Card[] = [
       {
         id: 'all_in',
         label: 'One real, final, all-in attempt.',
-        effects: { salary: 6.4, family: 12, skills: -4, burnout: 6 },
+        effects: { salary: 4, family: 12, skills: -4, burnout: 6 },
         setFlags: ['govt_settled'],
         outcome:
           'You clear it. The colony hears the same day. The posting is two towns over, the pension is real, and a particular argument at a particular dinner table ends forever, in your favour and his.',

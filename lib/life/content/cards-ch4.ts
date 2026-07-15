@@ -88,13 +88,13 @@ export const CARDS_CH4: Card[] = [
     kind: 'decision',
     title: 'THE DUBAI CALL',
     pivotal: true,
-    base: `A Gulf offer lands: 1.7 times your package, tax-free, relocation paid. The money would reset your family's financial story in five years. It would also put you a flight away from every festival, every emergency, every ordinary Sunday that makes a family a family.`,
+    base: `A Gulf offer lands: 1.6 times your package, tax-free, relocation paid. The money would reset your family's financial story in five years. It would also put you a flight away from every festival, every emergency, every ordinary Sunday that makes a family a family.`,
     condition: { minStat: { skills: 50 } },
     options: [
       {
         id: 'go',
         label: 'Take it. Five hard years, then options forever.',
-        effects: { salary: { mult: 1.7 }, savings: 8, family: -14, network: 6, burnout: 8 },
+        effects: { salary: { mult: 1.6 }, savings: 8, family: -14, network: 6, burnout: 8 },
         setFlags: ['went_abroad'],
         outcome:
           'The savings graph goes vertical. The video calls get very good at pretending distance is a solved problem.',
@@ -221,7 +221,7 @@ export const CARDS_CH4: Card[] = [
       {
         id: 'take_it',
         label: 'Take the three months. Repair the machine.',
-        effects: { burnout: -22, salary: { mult: 0.95 }, family: 8 },
+        effects: { burnout: -15, salary: { mult: 0.95 }, family: 8 },
         setFlags: ['reset_taken'],
         outcome:
           'Month one you sleep. Month two you remember what hobbies are. Month three you come back sharper than the version of you who would have stayed, and only the calendar knows the difference.',
@@ -241,13 +241,13 @@ export const CARDS_CH4: Card[] = [
     chapter: 3,
     kind: 'event',
     title: 'THE TERM SHEET',
-    base: `The startup you joined as employee six gets acquired. Properly acquired, with bankers and champagne and a number in the press release. Your vested ESOPs convert to actual money: ₹26 lakhs after tax, wired to the same account that once trembled over a ₹4,999 scam deposit.`,
+    base: `The startup you joined as employee six gets acquired. Properly acquired, with bankers and champagne and a number in the press release. Your vested ESOPs convert to actual money: ₹20 lakhs after tax, wired to the same account that once trembled over a ₹4,999 scam deposit.`,
     condition: { flag: 'own_esops', minStat: { skills: 55 } },
     options: [
       {
         id: 'bank_it',
         label: 'Bank it. Let the number sink in slowly.',
-        effects: { savings: 26, reputation: 6, burnout: -5 },
+        effects: { savings: 20, reputation: 6, burnout: -5 },
         setFlags: ['exit_money'],
         outcome:
           'The wire hits on a Wednesday morning. You check it eleven times. The risk you took at 27, the pay cut everyone called foolish, has finished its argument.',

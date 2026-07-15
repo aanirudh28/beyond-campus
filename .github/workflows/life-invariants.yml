@@ -1,0 +1,26 @@
+# 20 Years determinism + fairness gate (docs/20years/11 §4).
+# Runs the invariant suite whenever the life engine or its content changes.
+# Habit: content drops go branch → PR so this gate runs before merge;
+# the balance report in the job log is the review artifact (doc 12 §3).
+name: life-invariants
+
+on:
+  push:
+    paths:
+      - 'lib/life/**'
+      - 'scripts/life-sim-test.ts'
+  pull_request:
+    paths:
+      - 'lib/life/**'
+      - 'scripts/life-sim-test.ts'
+
+jobs:
+  invariants:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx tsx scripts/life-sim-test.ts --ci

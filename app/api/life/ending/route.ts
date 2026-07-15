@@ -3,8 +3,11 @@ import { serviceClient } from '@/lib/tracker'
 import { verifyRunToken } from '@/lib/life/token'
 import { buildLifeReport, replayRun, ReplayError, selectEnding } from '@/lib/life/engine'
 import { getEnding } from '@/lib/life/content/endings'
+import { CONTENT_VERSION } from '@/lib/life/content/chapters'
+import { buildGhostSummaries } from '@/lib/life/ghosts'
 import { fallbackEpilogue, writeEpilogue } from '@/lib/life/ai'
 import { endingRarity } from '@/lib/life/rarity'
+import { logLifeEvents } from '@/lib/life/log-events'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -48,22 +51,44 @@ export async function POST(req: Request) {
     let prose = fallbackEpilogue(ending)
     const { data: allowed } = await svc.rpc('life_consume_ai_call', { run: runId })
     if (allowed) {
-      prose = (await writeEpilogue(finalState, ending)) ?? prose
+      const written = await writeEpilogue(finalState, ending)
+      if (written) prose = written
+      else await logLifeEvents(svc, runId, [{ n: 'ai_fallback', p: { callType: 'epilogue', reason: 'error' } }])
+    } else {
+      await logLifeEvents(svc, runId, [{ n: 'ai_fallback', p: { callType: 'epilogue', reason: 'budget' } }])
     }
 
-    await svc
+    // Stored-render (doc 04 §3): persist everything the public page needs,
+    // so old share links never re-simulate and never degrade.
+    const baseFields = {
+      choices: body.choices,
+      final_stats: finalState.stats,
+      ending_id: endingId,
+      epilogue: prose.epilogue,
+      one_liner: prose.oneLiner,
+      completed_at: new Date().toISOString(),
+    }
+    const p = run.profile
+    const storedRender = {
+      trail: finalState.trail,
+      ghosts: buildGhostSummaries(finalState),
+      challenge: `${run.seed}.${p.stream}.${p.city}.${p.ambition}`,
+      content_version: CONTENT_VERSION,
+    }
+    const { error: updateError } = await svc
       .from('life_runs')
-      .update({
-        choices: body.choices,
-        final_stats: finalState.stats,
-        ending_id: endingId,
-        epilogue: prose.epilogue,
-        one_liner: prose.oneLiner,
-        completed_at: new Date().toISOString(),
-      })
+      .update({ ...baseFields, ...storedRender })
       .eq('id', runId)
+    if (updateError) {
+      // v2 columns not pasted yet: degrade to v1 fields so the run completes.
+      await svc.from('life_runs').update(baseFields).eq('id', runId)
+    }
 
-    const rarity = await endingRarity(svc, endingId)
+    await logLifeEvents(svc, runId, [
+      { n: 'ending_reached', p: { endingId, tone: ending.tone, contentVersion: CONTENT_VERSION } },
+    ])
+
+    const rarity = await endingRarity(svc, endingId, run.profile)
 
     return NextResponse.json({
       id: runId,

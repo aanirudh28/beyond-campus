@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { Ending, Stats, TrailPoint } from '@/lib/life/types'
+import type { GhostSummary } from '@/lib/life/ghosts'
 import { SiteFooter, SiteNav } from '@/app/components/SiteChrome'
 import LifeTimeline from '@/app/components/life/LifeTimeline'
 
@@ -13,6 +14,8 @@ interface PublicRun {
   rarity: number
   stats: Stats
   trail?: TrailPoint[] | null
+  ghosts?: GhostSummary[] | null
+  challenge?: string | null
 }
 
 const TONE_COLOR = { good: '#93BBFF', bad: '#FF8F8F', weird: '#FFC65C' } as const
@@ -129,6 +132,40 @@ export default function LifeResultPage({ params }: { params: Promise<{ id: strin
               ))}
             </div>
 
+            {run.ghosts && run.ghosts.length > 0 && (
+              <div style={{ textAlign: 'left', marginBottom: 40 }}>
+                <div className="mono-label" style={{ marginBottom: 8 }}>
+                  THE ROADS THEY DIDN&apos;T TAKE
+                </div>
+                {run.ghosts.map((ghost, i) => (
+                  <div key={i} className="bc-card" style={{ padding: '18px 18px 16px', marginBottom: 10 }}>
+                    <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--muted)', margin: '0 0 8px' }}>
+                      {ghost.ageLine}{' '}
+                      <span style={{ color: 'rgba(255,255,255,0.85)' }}>“{ghost.takenLabel}”</span>. Had
+                      they chosen <span style={{ color: 'var(--blue-soft)' }}>“{ghost.otherLabel}”</span>:
+                    </p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 20 }}>{ghost.emoji}</span>
+                      <span style={{ fontFamily: 'var(--serif)', fontSize: 18 }}>{ghost.endingName}</span>
+                      <span
+                        style={{
+                          fontFamily: 'var(--mono)',
+                          fontSize: 10,
+                          letterSpacing: 1,
+                          padding: '3px 9px',
+                          borderRadius: 100,
+                          border: `1px solid ${ghost.savingsDelta >= 0 ? 'rgba(122,183,255,0.35)' : 'rgba(255,107,107,0.35)'}`,
+                          color: ghost.savingsDelta >= 0 ? 'var(--blue-soft)' : '#FF8F8F',
+                        }}
+                      >
+                        {ghost.savingsDelta >= 0 ? '+' : '-'}₹{Math.abs(ghost.savingsDelta)}L NET WORTH
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div className="bc-card" style={{ padding: '30px 24px' }}>
               <h2 style={{ fontFamily: 'var(--serif)', fontSize: 26, margin: '0 0 10px' }}>
                 Your 20 years will go differently<em style={{ color: 'var(--blue-soft)' }}>.</em>
@@ -137,9 +174,27 @@ export default function LifeResultPage({ params }: { params: Promise<{ id: strin
                 35 choices. 32 endings. 15 minutes. Free, no signup, and the ending is yours to
                 earn or avoid.
               </p>
-              <Link href="/20years/play" className="btn-primary" style={{ textDecoration: 'none' }}>
-                <span>Play your 20 years →</span>
-              </Link>
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link href="/20years/play" className="btn-primary" style={{ textDecoration: 'none' }}>
+                  <span>Play your 20 years →</span>
+                </Link>
+                {run.challenge && (
+                  <Link
+                    href={`/20years/play?l=${run.challenge}&c=${id}`}
+                    style={{
+                      padding: '13px 22px',
+                      borderRadius: 100,
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      color: 'var(--fg)',
+                      fontSize: 14,
+                      fontWeight: 600,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    ⚔ Live this exact life
+                  </Link>
+                )}
+              </div>
             </div>
           </>
         )}

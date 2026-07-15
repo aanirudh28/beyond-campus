@@ -40,11 +40,11 @@ export const ENDINGS: Ending[] = [
     id: 'the_exit',
     name: 'The Exit',
     emoji: '💸',
-    tone: 'good',
+    tone: 'weird',
     blurb:
       'Employee six, a pay cut everyone mocked, and years of doing five jobs badly. Then the term sheet landed and finished the argument. The risk was the resume.',
     baselineRarity: 2,
-    match: { allFlags: ['exit_money'], minSavings: 85 },
+    match: { allFlags: ['exit_money'], minSavings: 105 },
   },
   {
     id: 'the_hometown_king',
@@ -54,7 +54,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'You took everything the big cities taught you and planted it where you began. Your town has your fingerprints on it now, and your Sundays have a courtyard.',
     baselineRarity: 6,
-    match: { allFlags: ['hometown_builder'], minStat: { family: 65 }, minSavings: 50 },
+    match: { allFlags: ['hometown_builder'], minStat: { family: 70 }, minSavings: 55 },
   },
   {
     id: 'the_golden_handcuffs',
@@ -94,7 +94,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'The market taught you at full price, more than once, and the tuition came out of your future. The colleagues with the boring SIPs never posted screenshots. They did not need to.',
     baselineRarity: 3,
-    match: { allFlags: ['fno_burn'], maxSavings: 15 },
+    match: { allFlags: ['fno_burn'], maxSavings: 30 },
   },
   {
     id: 'the_ghost_of_linkedin',
@@ -134,7 +134,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'It was never bad enough to leave, so you never left. Twenty years of a job that fit like a warm chair, and a market value that quietly stopped being consulted.',
     baselineRarity: 5,
-    match: { maxSalary: 20, maxStat: { skills: 50 } },
+    match: { maxSalary: 24, maxStat: { skills: 55 } },
   },
   {
     id: 'married_to_the_work',
@@ -144,7 +144,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'The career got everything: the evenings, the decades, the person who stopped waiting. It paid magnificently, and it never once asked how you were doing.',
     baselineRarity: 3,
-    match: { allFlags: ['career_first'], minSalary: 45, maxStat: { family: 50 } },
+    match: { allFlags: ['career_first'], minSalary: 42, maxStat: { family: 55 } },
   },
   {
     id: 'the_knowledge_partner',
@@ -154,7 +154,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'You walked in through the research door nobody told your batch about, and then you kept walking. Your analysis now shapes decisions in rooms your college never dreamed of.',
     baselineRarity: 5,
-    match: { allFlags: ['mbb_research_track'], minStat: { skills: 65 } },
+    match: { allFlags: ['mbb_research_track'], minStat: { skills: 72 } },
   },
   {
     id: 'the_board_whisperer',

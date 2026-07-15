@@ -4,6 +4,7 @@ import { verifyRunToken } from '@/lib/life/token'
 import { replayToChapter, ReplayError, dealChapter } from '@/lib/life/engine'
 import { CHAPTERS } from '@/lib/life/content/chapters'
 import { sceneNarrations } from '@/lib/life/ai'
+import { logLifeEvents } from '@/lib/life/log-events'
 import type { ChoiceRecord } from '@/lib/life/types'
 
 export const runtime = 'nodejs'
@@ -46,7 +47,10 @@ export async function POST(req: Request) {
     const svc = serviceClient()
     // Atomic budget spend: 8 AI calls per run, enforced in the database.
     const { data: allowed } = await svc.rpc('life_consume_ai_call', { run: runId })
-    if (!allowed) return NextResponse.json(EMPTY)
+    if (!allowed) {
+      await logLifeEvents(svc, runId, [{ n: 'ai_fallback', p: { callType: 'scene', reason: 'budget' } }])
+      return NextResponse.json(EMPTY)
+    }
 
     const { data: run } = await svc
       .from('life_runs')
@@ -66,6 +70,9 @@ export async function POST(req: Request) {
     }
 
     const narrations = await sceneNarrations(cards, state)
+    if (!narrations) {
+      await logLifeEvents(svc, runId, [{ n: 'ai_fallback', p: { callType: 'scene', reason: 'error' } }])
+    }
     return NextResponse.json({ narrations: narrations ?? {} })
   } catch {
     return NextResponse.json(EMPTY)

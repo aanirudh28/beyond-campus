@@ -9,17 +9,17 @@ import {
   buildLifeReport,
   createInitialState,
   dealChapter,
-  ghostForkIndices,
   selectEnding,
-  simulateGhost,
 } from '@/lib/life/engine'
+import { buildGhostSummaries } from '@/lib/life/ghosts'
+import { flushBeacon, setLifeRunId, trackLife } from '@/lib/life/track'
 import { CHAPTERS, CONTENT_VERSION } from '@/lib/life/content/chapters'
 import { ENDINGS, getEnding } from '@/lib/life/content/endings'
 import StatBar from '@/app/components/life/StatBar'
 import DecisionCard from '@/app/components/life/DecisionCard'
 import ChapterIntro from '@/app/components/life/ChapterIntro'
 import Montage, { type MontageData } from '@/app/components/life/Montage'
-import EndingScreen, { type EndingResult, type GhostView } from '@/app/components/life/EndingScreen'
+import EndingScreen, { type EndingResult } from '@/app/components/life/EndingScreen'
 import { chapterHue } from '@/app/components/life/chapterTheme'
 
 type Phase = 'coldopen' | 'intro' | 'cards' | 'montage' | 'finale' | 'ending'
@@ -50,10 +50,14 @@ function parseSaveRaw(raw: string): SavedRun | null {
   }
 }
 
-// Challenge link: ?l=<seed>.<stream>.<city>.<ambition> replays a friend's exact deck.
-function parseChallengeParam(search: string): { seed: number; profile: Profile } | null {
+// Challenge link: ?l=<seed>.<stream>.<city>.<ambition>&c=<parentRunId>
+// replays a friend's exact deck and records the lineage (doc 07 §2).
+function parseChallengeParam(
+  search: string,
+): { seed: number; profile: Profile; parentRunId: string | null } | null {
   try {
-    const l = new URLSearchParams(search).get('l')
+    const params = new URLSearchParams(search)
+    const l = params.get('l')
     if (!l) return null
     const [seedStr, s, c, a] = l.split('.')
     const seed = Number(seedStr)
@@ -66,7 +70,12 @@ function parseChallengeParam(search: string): { seed: number; profile: Profile }
     ) {
       return null
     }
-    return { seed, profile: { stream: s, city: c, ambition: a } as Profile }
+    const parent = params.get('c')
+    return {
+      seed,
+      profile: { stream: s, city: c, ambition: a } as Profile,
+      parentRunId: parent && /^[0-9a-f-]{36}$/i.test(parent) ? parent : null,
+    }
   } catch {
     return null
   }
@@ -109,28 +118,6 @@ function rebuildFromSave(saved: SavedRun): { state: GameState; cards: Card[]; ca
     state = advanceChapter(state)
   }
   return null // save covers a finished run
-}
-
-function buildGhosts(finalState: GameState): GhostView[] {
-  const views: GhostView[] = []
-  for (const fi of ghostForkIndices(finalState.history)) {
-    const ghost = simulateGhost(finalState.seed, finalState.profile, finalState.history, fi)
-    if (!ghost) continue
-    const sameEnding = ghost.endingId === selectEnding(finalState)
-    const delta = Math.round(ghost.stats.savings - finalState.stats.savings)
-    if (sameEnding && Math.abs(delta) < 5) continue // the road converged, not worth showing
-    const meta = CHAPTERS[ghost.forkChapter]
-    const ending = getEnding(ghost.endingId)
-    views.push({
-      ageLine: `Around age ${meta.ageFrom}-${meta.ageTo}, you chose`,
-      takenLabel: ghost.takenLabel,
-      otherLabel: ghost.otherLabel,
-      endingName: ending.name,
-      emoji: ending.emoji,
-      savingsDelta: delta,
-    })
-  }
-  return views
 }
 
 const STREAMS = [
@@ -222,6 +209,12 @@ export default function PlayPage() {
       return
     }
     runRef.current = { runId: saved.runId, token: saved.token }
+    setLifeRunId(saved.runId)
+    bindAbandonBeacon()
+    abandonRef.current = {
+      chapter: rebuilt.state.chapter,
+      cardsAnswered: rebuilt.state.history.length,
+    }
     setState(rebuilt.state)
     setCards(rebuilt.cards)
     setCardIndex(rebuilt.cardIndex)
@@ -232,27 +225,53 @@ export default function PlayPage() {
     window.scrollTo(0, 0)
   }
 
-  function fetchScene(chapter: number, choices: ChoiceRecord[]) {
+  async function fetchScene(chapter: number, choices: ChoiceRecord[]) {
     const { token } = runRef.current
     if (!token) {
       setSceneReady((r) => ({ ...r, [chapter]: true }))
       return
     }
-    const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), 6000)
-    fetch('/api/life/scene', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, chapter, choices }),
-      signal: controller.signal,
-    })
-      .then((res) => (res.ok ? res.json() : { narrations: {} }))
-      .catch(() => ({ narrations: {} }))
-      .then((data) => {
+    // One retry (doc 05 §8); each attempt gets its own short window so the
+    // chapter screen never blocks long. Authored base text is the floor.
+    const attempt = async (timeoutMs: number): Promise<Record<string, string> | null> => {
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), timeoutMs)
+      try {
+        const res = await fetch('/api/life/scene', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, chapter, choices }),
+          signal: controller.signal,
+        })
+        if (!res.ok) return null
+        const data = await res.json()
+        const narrations = data?.narrations ?? {}
+        return Object.keys(narrations).length ? narrations : null
+      } catch {
+        return null
+      } finally {
         clearTimeout(timer)
-        setNarrations((n) => ({ ...n, [chapter]: data?.narrations ?? {} }))
-        setSceneReady((r) => ({ ...r, [chapter]: true }))
-      })
+      }
+    }
+    const narrations = (await attempt(5000)) ?? (await attempt(3500)) ?? {}
+    setNarrations((n) => ({ ...n, [chapter]: narrations }))
+    setSceneReady((r) => ({ ...r, [chapter]: true }))
+  }
+
+  const abandonRef = useRef<{ chapter: number; cardsAnswered: number } | null>(null)
+  const abandonBound = useRef(false)
+
+  function bindAbandonBeacon() {
+    if (abandonBound.current) return
+    abandonBound.current = true
+    window.addEventListener('pagehide', () => {
+      const snapshot = abandonRef.current
+      if (snapshot) {
+        trackLife('run_abandoned', snapshot)
+        abandonRef.current = null // bfcache restores re-arm via the next choice
+      }
+      flushBeacon()
+    })
   }
 
   async function start() {
@@ -267,7 +286,9 @@ export default function PlayPage() {
       const res = await fetch('/api/life/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(challenge ? { profile, seed } : { profile }),
+        body: JSON.stringify(
+          challenge ? { profile, seed, parentRunId: challenge.parentRunId } : { profile },
+        ),
       })
       if (res.ok) {
         const data = await res.json()
@@ -279,6 +300,10 @@ export default function PlayPage() {
     } catch {
       runRef.current = { runId: null, token: null }
     }
+    setLifeRunId(runRef.current.runId)
+    trackLife('profile_completed', { ...profile })
+    bindAbandonBeacon()
+    abandonRef.current = { chapter: 0, cardsAnswered: 0 }
     const initial = createInitialState(profile, seed)
     setState(initial)
     setCards(dealChapter(initial))
@@ -302,12 +327,14 @@ export default function PlayPage() {
       const wait = Math.max(0, 3400 - (Date.now() - t0))
       setTimeout(() => setPhase('ending'), wait)
     }
+    abandonRef.current = null
     const { runId, token } = runRef.current
     const { profile, seed } = finalState
+    const lifeParam = `${seed}.${profile.stream}.${profile.city}.${profile.ambition}`
     const extras = {
       trail: finalState.trail,
-      ghosts: buildGhosts(finalState),
-      challengeUrl: `https://www.beyond-campus.in/20years/play?l=${seed}.${profile.stream}.${profile.city}.${profile.ambition}`,
+      ghosts: buildGhostSummaries(finalState),
+      challengeUrl: `https://www.beyond-campus.in/20years/play?l=${lifeParam}${runId ? `&c=${runId}` : ''}`,
     }
     if (token) {
       try {
@@ -356,6 +383,8 @@ export default function PlayPage() {
     if (!state) return
     const card = cards[cardIndex]
     let next = applyChoice(state, card, option)
+    trackLife('card_answered', { cardId: card.id, optionId: option.id, chapter: state.chapter })
+    abandonRef.current = { chapter: state.chapter, cardsAnswered: next.history.length }
     if (cardIndex + 1 < cards.length) {
       setState(next)
       setCardIndex(cardIndex + 1)
@@ -364,6 +393,7 @@ export default function PlayPage() {
       return
     }
     const finishedChapter = next.chapter
+    trackLife('chapter_completed', { chapter: finishedChapter })
     const before = next.stats
     next = advanceChapter(next)
     if (next.chapter < CHAPTERS.length) {
@@ -395,6 +425,8 @@ export default function PlayPage() {
     setCardIndex(0)
     setMontage(null)
     setResult(null)
+    abandonRef.current = null
+    setLifeRunId(null)
     runRef.current = { runId: null, token: null }
     setNarrations({})
     setSceneReady({})

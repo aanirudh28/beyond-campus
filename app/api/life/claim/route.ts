@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { serviceClient } from '@/lib/tracker'
+import { logLifeEvents } from '@/lib/life/log-events'
 
 export const runtime = 'nodejs'
 
@@ -28,6 +29,7 @@ export async function POST(req: Request) {
       .maybeSingle()
     if (!run) return NextResponse.json({ error: 'Run not found' }, { status: 404 })
     await svc.from('leads').insert({ email: clean, resource: '20years' })
+    await logLifeEvents(svc, runId, [{ n: 'report_claimed' }])
     return NextResponse.json({ success: true })
   } catch {
     return NextResponse.json({ error: 'Could not save' }, { status: 500 })

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { serviceClient } from '@/lib/tracker'
 import { issueRunToken } from '@/lib/life/token'
+import { logLifeEvents } from '@/lib/life/log-events'
 
 export const runtime = 'nodejs'
 
@@ -44,23 +45,39 @@ export async function POST(req: Request) {
       )
     }
 
-    // Challenge links replay a friend's exact deck: honour a shared seed.
-    const seed =
-      Number.isInteger(body?.seed) && body.seed >= 0 && body.seed < 2 ** 31
-        ? body.seed
-        : crypto.randomInt(2 ** 31)
-    const { data, error } = await svc
+    // Challenge links replay a friend's exact deck: honour a shared seed,
+    // and record the lineage (doc 07 §2) so K-factor is measurable.
+    const seeded = Number.isInteger(body?.seed) && body.seed >= 0 && body.seed < 2 ** 31
+    const seed = seeded ? body.seed : crypto.randomInt(2 ** 31)
+    const parentRunId =
+      typeof body?.parentRunId === 'string' && /^[0-9a-f-]{36}$/i.test(body.parentRunId)
+        ? body.parentRunId
+        : null
+
+    const row = {
+      seed,
+      profile: { stream: p.stream, city: p.city, ambition: p.ambition },
+      ip_hash: ipHash,
+    }
+    let { data, error } = await svc
       .from('life_runs')
-      .insert({
-        seed,
-        profile: { stream: p.stream, city: p.city, ambition: p.ambition },
-        ip_hash: ipHash,
-      })
+      .insert(parentRunId ? { ...row, parent_run_id: parentRunId } : row)
       .select('id')
       .single()
+    if (error && parentRunId) {
+      // parent_run_id column not pasted yet: start the run without lineage.
+      ;({ data, error } = await svc.from('life_runs').insert(row).select('id').single())
+    }
     if (error || !data) {
       return NextResponse.json({ error: 'Could not start the run' }, { status: 500 })
     }
+
+    await logLifeEvents(svc, data.id, [
+      { n: 'run_started', p: { ...row.profile, seeded, hasParent: !!parentRunId } },
+      ...(parentRunId
+        ? [{ n: 'challenge_accepted' as const, p: { parent_run_id: parentRunId } }]
+        : []),
+    ])
 
     return NextResponse.json({ runId: data.id, seed, token: issueRunToken(data.id) })
   } catch {
