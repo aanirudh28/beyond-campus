@@ -139,11 +139,23 @@ export default function LifeResultPage({ params }: { params: Promise<{ id: strin
                 </div>
                 {run.ghosts.map((ghost, i) => (
                   <div key={i} className="bc-card" style={{ padding: '18px 18px 16px', marginBottom: 10 }}>
-                    <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--muted)', margin: '0 0 8px' }}>
-                      {ghost.ageLine}{' '}
-                      <span style={{ color: 'rgba(255,255,255,0.85)' }}>“{ghost.takenLabel}”</span>. Had
-                      they chosen <span style={{ color: 'var(--blue-soft)' }}>“{ghost.otherLabel}”</span>:
-                    </p>
+                    {ghost.kind === 'disciplined' ? (
+                      <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--muted)', margin: '0 0 8px' }}>
+                        <span className="mono-label" style={{ color: '#b4a6ff' }}>THE DISCIPLINED GHOST</span>
+                        {' '}Same luck, every choice the long game. That version ended as:
+                      </p>
+                    ) : (
+                      <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--muted)', margin: '0 0 8px' }}>
+                        {ghost.forkTitle && (
+                          <span className="mono-label" style={{ color: 'var(--blue-soft)', display: 'block', marginBottom: 4 }}>
+                            THE FORK · {ghost.forkTitle}
+                          </span>
+                        )}
+                        {ghost.ageLine}{' '}
+                        <span style={{ color: 'rgba(255,255,255,0.85)' }}>“{ghost.takenLabel}”</span>. Had
+                        they chosen <span style={{ color: 'var(--blue-soft)' }}>“{ghost.otherLabel}”</span>:
+                      </p>
+                    )}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 20 }}>{ghost.emoji}</span>
                       <span style={{ fontFamily: 'var(--serif)', fontSize: 18 }}>{ghost.endingName}</span>

@@ -316,6 +316,41 @@ export function simulateGhost(
   }
 }
 
+// The long-game option: what a disciplined player would pick, scored by
+// compounding assets (skills, network, reputation) net of burnout, with a
+// nod to salary multipliers. Deterministic; ties go to the first option.
+export function disciplinedOption(card: Card): CardOption {
+  let best = card.options[0]
+  let bestScore = -Infinity
+  for (const option of card.options) {
+    const fx = option.effects
+    const score =
+      (fx.skills ?? 0) +
+      (fx.network ?? 0) +
+      (fx.reputation ?? 0) -
+      (fx.burnout ?? 0) +
+      (typeof fx.salary === 'object' ? (fx.salary.mult - 1) * 10 : 0)
+    if (score > bestScore) {
+      bestScore = score
+      best = option
+    }
+  }
+  return best
+}
+
+// The disciplined ghost: same seed, same luck, every choice the long game.
+export function simulateDisciplined(seed: number, profile: Profile): GameState {
+  let state = createInitialState(profile, seed)
+  for (let ch = 0; ch < CHAPTERS.length; ch++) {
+    const cards = dealChapter(state)
+    for (const card of cards) {
+      state = applyChoice(state, card, disciplinedOption(card))
+    }
+    state = advanceChapter(state)
+  }
+  return state
+}
+
 // Up to `max` fork points worth showing: pivotal decisions, earliest first.
 export function ghostForkIndices(choices: ChoiceRecord[], max = 2): number[] {
   const indices: number[] = []

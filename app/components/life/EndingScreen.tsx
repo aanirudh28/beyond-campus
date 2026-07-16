@@ -4,19 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import type { Ending, LifeReportItem, Stats, TrailPoint } from '@/lib/life/types'
 import { ENDINGS } from '@/lib/life/content/endings'
 import ShareCard from './ShareCard'
+import GhostVersusCard from './GhostVersusCard'
 import LifeTimeline from './LifeTimeline'
 import { buzz } from './haptics'
 import { trackLife } from '@/lib/life/track'
+import type { GhostSummary } from '@/lib/life/ghosts'
 
-export interface GhostView {
-  ageLine: string // "At 21-23, you chose"
-  takenLabel: string
-  otherLabel: string
-  endingId?: string
-  endingName: string
-  emoji: string
-  savingsDelta: number // ghost savings minus real savings, ₹ lakhs
-}
+export type GhostView = GhostSummary
 
 export interface EndingResult {
   runId: string | null
@@ -50,7 +44,14 @@ export default function EndingScreen({
   const { ending, epilogue, oneLiner, rarity, stats, report, shareUrl, runId, trail, ghosts, challengeUrl } = result
   const discovered = result.discovered ?? 0
   const isNew = result.endingIsNew ?? false
+  // The versus card faces you against your most confronting ghost:
+  // the disciplined you if it diverged, else the biggest-swing fork.
+  const versusGhost =
+    ghosts?.find((g) => g.kind === 'disciplined') ??
+    ghosts?.slice().sort((a, b) => Math.abs(b.savingsDelta) - Math.abs(a.savingsDelta))[0] ??
+    null
   const cardRef = useRef<HTMLDivElement>(null)
+  const versusRef = useRef<HTMLDivElement>(null)
   const [email, setEmail] = useState('')
   const [claimed, setClaimed] = useState(runId === null) // offline runs show everything
   const [claiming, setClaiming] = useState(false)
@@ -69,19 +70,19 @@ export default function EndingScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  async function downloadCard() {
-    if (!cardRef.current || downloading) return
-    trackLife('share_clicked', { channel: 'image' })
+  async function renderCard(node: HTMLDivElement | null, filename: string, channel: string) {
+    if (!node || downloading) return
+    trackLife('share_clicked', { channel })
     setDownloading(true)
     try {
       const html2canvas = (await import('html2canvas')).default
-      const canvas = await html2canvas(cardRef.current, {
+      const canvas = await html2canvas(node, {
         scale: 2,
         backgroundColor: '#0B0B0F',
         useCORS: true,
       })
       const link = document.createElement('a')
-      link.download = `my-20-years-${ending.id}.png`
+      link.download = filename
       link.href = canvas.toDataURL('image/png')
       link.click()
     } catch {
@@ -89,6 +90,10 @@ export default function EndingScreen({
     }
     setDownloading(false)
   }
+
+  const downloadCard = () => renderCard(cardRef.current, `my-20-years-${ending.id}.png`, 'image')
+  const downloadVersus = () =>
+    renderCard(versusRef.current, `my-20-years-versus-${ending.id}.png`, 'versus')
 
   function shareWhatsApp() {
     trackLife('share_clicked', { channel: 'whatsapp' })
@@ -329,13 +334,36 @@ export default function EndingScreen({
             other side of the door.
           </p>
           {ghosts.map((ghost, i) => (
-            <div key={i} className="bc-card" style={{ padding: '20px 20px 18px', marginBottom: 12 }}>
-              <p style={{ fontSize: 14.5, lineHeight: 1.65, color: 'var(--muted)', margin: '0 0 10px' }}>
-                {ghost.ageLine} <span style={{ color: 'rgba(255,255,255,0.85)' }}>“{ghost.takenLabel}”</span>
-                <br />
-                In the timeline where you chose{' '}
-                <span style={{ color: 'var(--blue-soft)' }}>“{ghost.otherLabel}”</span> instead:
-              </p>
+            <div
+              key={i}
+              className="bc-card"
+              style={{
+                padding: '20px 20px 18px',
+                marginBottom: 12,
+                borderColor: ghost.kind === 'disciplined' ? 'rgba(123,97,255,0.4)' : undefined,
+              }}
+            >
+              {ghost.kind === 'disciplined' ? (
+                <p style={{ fontSize: 14.5, lineHeight: 1.65, color: 'var(--muted)', margin: '0 0 10px' }}>
+                  <span className="mono-label" style={{ color: '#b4a6ff', display: 'block', marginBottom: 6 }}>
+                    THE DISCIPLINED YOU
+                  </span>
+                  Same seed, same luck, every single choice the long game. That version of you
+                  ended as:
+                </p>
+              ) : (
+                <p style={{ fontSize: 14.5, lineHeight: 1.65, color: 'var(--muted)', margin: '0 0 10px' }}>
+                  {ghost.forkTitle && (
+                    <span className="mono-label" style={{ color: 'var(--blue-soft)', display: 'block', marginBottom: 6 }}>
+                      THE FORK · {ghost.forkTitle}
+                    </span>
+                  )}
+                  {ghost.ageLine} <span style={{ color: 'rgba(255,255,255,0.85)' }}>“{ghost.takenLabel}”</span>
+                  <br />
+                  In the timeline where you chose{' '}
+                  <span style={{ color: 'var(--blue-soft)' }}>“{ghost.otherLabel}”</span> instead:
+                </p>
+              )}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 24 }}>{ghost.emoji}</span>
                 <span style={{ fontFamily: 'var(--serif)', fontSize: 20 }}>{ghost.endingName}</span>
@@ -355,6 +383,11 @@ export default function EndingScreen({
               </div>
             </div>
           ))}
+          {versusGhost && (
+            <button style={{ ...btnGhost, width: '100%' }} onClick={downloadVersus}>
+              {downloading ? 'Rendering…' : '⬇ Download the versus card: you against your ghost'}
+            </button>
+          )}
         </div>
       )}
 
@@ -480,6 +513,7 @@ export default function EndingScreen({
       </div>
 
       <ShareCard ref={cardRef} ending={ending} rarity={rarity} stats={stats} oneLiner={oneLiner} />
+      {versusGhost && <GhostVersusCard ref={versusRef} ending={ending} stats={stats} ghost={versusGhost} />}
     </div>
   )
 }
