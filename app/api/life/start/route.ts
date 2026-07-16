@@ -54,9 +54,22 @@ export async function POST(req: Request) {
         ? body.parentRunId
         : null
 
+    // Challenge runs may carry a scoreboard name. Lives inside the profile
+    // jsonb (the engine reads only stream/city/ambition, so replay is safe);
+    // never copied into analytics events.
+    const name =
+      parentRunId && typeof body?.name === 'string'
+        ? body.name.replace(/[^\p{L}\p{N} .'-]/gu, '').trim().slice(0, 24)
+        : ''
+
     const row = {
       seed,
-      profile: { stream: p.stream, city: p.city, ambition: p.ambition },
+      profile: {
+        stream: p.stream,
+        city: p.city,
+        ambition: p.ambition,
+        ...(name ? { name } : {}),
+      },
       ip_hash: ipHash,
     }
     let { data, error } = await svc
@@ -73,7 +86,8 @@ export async function POST(req: Request) {
     }
 
     await logLifeEvents(svc, data.id, [
-      { n: 'run_started', p: { ...row.profile, seeded, hasParent: !!parentRunId } },
+      // Explicit fields only: the scoreboard name never enters analytics.
+      { n: 'run_started', p: { stream: p.stream, city: p.city, ambition: p.ambition, seeded, hasParent: !!parentRunId } },
       ...(parentRunId
         ? [{ n: 'challenge_accepted' as const, p: { parent_run_id: parentRunId } }]
         : []),

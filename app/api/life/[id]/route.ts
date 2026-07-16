@@ -31,6 +31,32 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     }
     const ending = getEnding(run.ending_id)
     const rarity = await endingRarity(svc, run.ending_id, run.profile)
+
+    // The scoreboard (doc 07 §2): everyone who accepted this life's
+    // challenge, ranked by net worth. Display names only, never emails.
+    let challengers: { name: string; endingName: string; emoji: string; savings: number }[] = []
+    try {
+      const { data: kids } = await svc
+        .from('life_runs')
+        .select('profile, ending_id, final_stats')
+        .eq('parent_run_id', id)
+        .not('completed_at', 'is', null)
+        .limit(50)
+      challengers = (kids ?? [])
+        .filter((k) => k.ending_id)
+        .map((k) => {
+          const e = getEnding(k.ending_id)
+          return {
+            name: (k.profile?.name || 'Anonymous').slice(0, 24),
+            endingName: e.name,
+            emoji: e.emoji,
+            savings: Math.round(Number(k.final_stats?.savings) || 0),
+          }
+        })
+        .sort((a, b) => b.savings - a.savings)
+        .slice(0, 20)
+    } catch {}
+
     await logLifeEvents(svc, id, [{ n: 'og_page_view' }])
     return NextResponse.json({
       ending,
@@ -41,6 +67,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       trail: run.trail ?? null,
       ghosts: run.ghosts ?? null,
       challenge: run.challenge ?? null,
+      challengers,
       createdAt: run.created_at,
     })
   } catch {

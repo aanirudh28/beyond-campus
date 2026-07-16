@@ -1,8 +1,62 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { HeroGlow, Ledger, SiteFooter, SiteNav, useReveal } from '@/app/components/SiteChrome'
 import { ENDINGS } from '@/lib/life/content/endings'
+
+interface WallEntry {
+  emoji: string
+  name: string
+  tone: 'good' | 'bad' | 'weird'
+  where: string
+  ago: string
+}
+
+// The multiverse wall: proof the world is being lived in, right now.
+function MultiverseWall() {
+  const [wall, setWall] = useState<WallEntry[]>([])
+  useEffect(() => {
+    fetch('/api/life/wall')
+      .then((r) => (r.ok ? r.json() : { wall: [] }))
+      .then((d) => setWall(d?.wall ?? []))
+      .catch(() => {})
+  }, [])
+  if (wall.length < 4) return null
+  return (
+    <section style={{ padding: '0 24px 10px', borderTop: '1px solid var(--hair)' }}>
+      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '26px 0' }}>
+        <div className="mono-label" style={{ marginBottom: 14 }}>
+          LATELY IN THE MULTIVERSE
+        </div>
+        <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 6 }}>
+          {wall.map((entry, i) => (
+            <div
+              key={i}
+              style={{
+                flex: '0 0 auto',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '9px 14px',
+                borderRadius: 100,
+                border: '1px solid var(--hair)',
+                background: 'rgba(255,255,255,0.03)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span style={{ fontSize: 16 }}>{entry.emoji}</span>
+              <span style={{ fontSize: 13, fontWeight: 600 }}>{entry.name}</span>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--muted-2)', letterSpacing: 1 }}>
+                {entry.where} · {entry.ago}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
 
 const SHOWCASE_IDS = [
   'the_corner_office',
@@ -46,6 +100,7 @@ export default function TwentyYearsLanding() {
         links={[
           { label: 'How it works', href: '#how' },
           { label: 'The endings', href: '#endings' },
+          { label: 'Your collection', href: '/20years/collection' },
         ]}
       />
 
@@ -97,6 +152,8 @@ export default function TwentyYearsLanding() {
           </p>
         </div>
       </section>
+
+      <MultiverseWall />
 
       {/* ── How it works ── */}
       <section id="how" style={{ padding: '90px 24px', borderTop: '1px solid var(--hair)' }}>

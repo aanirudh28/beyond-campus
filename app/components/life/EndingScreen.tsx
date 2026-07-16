@@ -18,6 +18,7 @@ export interface EndingResult {
   epilogue: string
   oneLiner: string
   rarity: number
+  savingsPercentile?: number | null // vs completed lives with your profile
   stats: Stats
   report: LifeReportItem[]
   shareUrl: string | null
@@ -26,6 +27,13 @@ export interface EndingResult {
   challengeUrl?: string | null
   discovered?: number // endings collected on this device, recorded at finale
   endingIsNew?: boolean
+  headToHead?: {
+    originalEnding: string
+    originalEmoji: string
+    originalSavings: number
+    mySavings: number
+    won: boolean
+  }
 }
 
 const TONE_COLOR: Record<Ending['tone'], string> = {
@@ -230,7 +238,48 @@ export default function EndingScreen({
           }}
         >
           {isNew && <span style={{ color: 'var(--blue-soft)' }}>NEW ENDING · </span>}
-          {discovered} OF {ENDINGS.length} DISCOVERED
+          <a href="/20years/collection" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+            {discovered} OF {ENDINGS.length} DISCOVERED
+          </a>
+        </div>
+      )}
+
+      {result.headToHead && (
+        <div
+          className="bc-card"
+          style={{
+            padding: '22px 20px',
+            marginBottom: 30,
+            border: `1px solid ${result.headToHead.won ? 'rgba(122,183,255,0.45)' : 'rgba(255,182,92,0.45)'}`,
+            animation: 'lifeFadeUp 0.6s ease both',
+            animationDelay: '1.4s',
+          }}
+        >
+          <div className="mono-label" style={{ marginBottom: 12 }}>
+            ⚔ THE HEAD-TO-HEAD · YOU LIVED THEIR EXACT LIFE
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 8, alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: 26 }}>{ending.emoji}</div>
+              <div style={{ fontFamily: 'var(--serif)', fontSize: 17 }}>You</div>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--blue-soft)' }}>
+                ₹{result.headToHead.mySavings}L
+              </div>
+            </div>
+            <div className="mono-label">VS</div>
+            <div>
+              <div style={{ fontSize: 26 }}>{result.headToHead.originalEmoji}</div>
+              <div style={{ fontFamily: 'var(--serif)', fontSize: 17 }}>The Original</div>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted)' }}>
+                ₹{result.headToHead.originalSavings}L · {result.headToHead.originalEnding}
+              </div>
+            </div>
+          </div>
+          <p style={{ fontSize: 13.5, color: 'var(--muted)', margin: '14px 0 0', lineHeight: 1.55 }}>
+            {result.headToHead.won
+              ? 'Same cards, same luck, better ledger. Their scoreboard already knows.'
+              : 'The original keeps the crown, for now. Same life, one more attempt?'}
+          </p>
         </div>
       )}
 
@@ -290,6 +339,15 @@ export default function EndingScreen({
           </div>
         ))}
       </div>
+
+      {typeof result.savingsPercentile === 'number' && (
+        <div
+          className="mono-label"
+          style={{ marginTop: -18, marginBottom: 28, animation: 'lifeFadeUp 0.6s ease both', animationDelay: '2.2s' }}
+        >
+          A RICHER LEDGER THAN {result.savingsPercentile}% OF LIVES LIKE YOURS
+        </div>
+      )}
 
       <div
         style={{

@@ -90,12 +90,34 @@ export async function POST(req: Request) {
 
     const rarity = await endingRarity(svc, endingId, run.profile)
 
+    // Where does this ledger sit among lives like theirs? Shown once the
+    // bucket has enough completed runs to mean anything.
+    let savingsPercentile: number | null = null
+    try {
+      const { data: peers } = await svc
+        .from('life_runs')
+        .select('final_stats')
+        .not('completed_at', 'is', null)
+        .filter('profile->>stream', 'eq', p.stream)
+        .filter('profile->>city', 'eq', p.city)
+        .order('completed_at', { ascending: false })
+        .limit(500)
+      const values = (peers ?? [])
+        .map((r) => Number(r.final_stats?.savings))
+        .filter((v) => Number.isFinite(v))
+      if (values.length >= 20) {
+        const below = values.filter((v) => v < finalState.stats.savings).length
+        savingsPercentile = Math.round((below / values.length) * 100)
+      }
+    } catch {}
+
     return NextResponse.json({
       id: runId,
       ending,
       epilogue: prose.epilogue,
       oneLiner: prose.oneLiner,
       rarity,
+      savingsPercentile,
       stats: finalState.stats,
       report,
       shareUrl: `${SITE}/20years/life/${runId}`,

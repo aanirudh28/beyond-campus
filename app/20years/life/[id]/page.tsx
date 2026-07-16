@@ -7,6 +7,13 @@ import type { GhostSummary } from '@/lib/life/ghosts'
 import { SiteFooter, SiteNav } from '@/app/components/SiteChrome'
 import LifeTimeline from '@/app/components/life/LifeTimeline'
 
+interface Challenger {
+  name: string
+  endingName: string
+  emoji: string
+  savings: number
+}
+
 interface PublicRun {
   ending: Ending
   epilogue: string
@@ -16,6 +23,7 @@ interface PublicRun {
   trail?: TrailPoint[] | null
   ghosts?: GhostSummary[] | null
   challenge?: string | null
+  challengers?: Challenger[]
 }
 
 const TONE_COLOR = { good: '#93BBFF', bad: '#FF8F8F', weird: '#FFC65C' } as const
@@ -177,6 +185,51 @@ export default function LifeResultPage({ params }: { params: Promise<{ id: strin
                 ))}
               </div>
             )}
+
+            {(() => {
+              const board = [
+                {
+                  name: 'The Original',
+                  endingName: run.ending.name,
+                  emoji: run.ending.emoji,
+                  savings: Math.round(Number(run.stats.savings) || 0),
+                },
+                ...(run.challengers ?? []),
+              ].sort((a, b) => b.savings - a.savings)
+              return (run.challengers?.length ?? 0) > 0 ? (
+                <div style={{ textAlign: 'left', marginBottom: 40 }}>
+                  <div className="mono-label" style={{ marginBottom: 8 }}>
+                    ⚔ THE SCOREBOARD · THIS LIFE HAS BEEN LIVED {board.length} TIMES
+                  </div>
+                  <div className="bc-card" style={{ padding: '10px 16px' }}>
+                    {board.map((row, i) => (
+                      <div
+                        key={`${row.name}${i}`}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 10,
+                          padding: '10px 4px',
+                          borderBottom: i < board.length - 1 ? '1px solid var(--hair)' : 'none',
+                        }}
+                      >
+                        <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted-2)', width: 18 }}>
+                          {i + 1}
+                        </span>
+                        <span style={{ fontSize: 18 }}>{row.emoji}</span>
+                        <span style={{ fontSize: 14.5, fontWeight: 600, flex: 1 }}>
+                          {row.name}
+                          <span style={{ color: 'var(--muted-2)', fontWeight: 400 }}> · {row.endingName}</span>
+                        </span>
+                        <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--blue-soft)' }}>
+                          ₹{row.savings}L
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null
+            })()}
 
             <div className="bc-card" style={{ padding: '30px 24px' }}>
               <h2 style={{ fontFamily: 'var(--serif)', fontSize: 26, margin: '0 0 10px' }}>

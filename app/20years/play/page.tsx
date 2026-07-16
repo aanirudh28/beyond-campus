@@ -141,6 +141,7 @@ export default function PlayPage() {
   const [stream, setStream] = useState<Profile['stream'] | null>(null)
   const [city, setCity] = useState<Profile['city'] | null>(null)
   const [ambition, setAmbition] = useState<Profile['ambition'] | null>(null)
+  const [scoreName, setScoreName] = useState('')
   const [starting, setStarting] = useState(false)
 
   const [state, setState] = useState<GameState | null>(null)
@@ -287,7 +288,9 @@ export default function PlayPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(
-          challenge ? { profile, seed, parentRunId: challenge.parentRunId } : { profile },
+          challenge
+            ? { profile, seed, parentRunId: challenge.parentRunId, name: scoreName }
+            : { profile },
         ),
       })
       if (res.ok) {
@@ -331,10 +334,29 @@ export default function PlayPage() {
     const { runId, token } = runRef.current
     const { profile, seed } = finalState
     const lifeParam = `${seed}.${profile.stream}.${profile.city}.${profile.ambition}`
+    // Challenge runs fetch the original life for the head-to-head verdict,
+    // concurrently with the ending call (the reveal theater absorbs both).
+    const parentPromise: Promise<{ ending?: { name: string; emoji: string }; stats?: { savings?: number } } | null> =
+      challenge?.parentRunId
+        ? fetch(`/api/life/${challenge.parentRunId}`)
+            .then((r) => (r.ok ? r.json() : null))
+            .catch(() => null)
+        : Promise.resolve(null)
+    const parent = await parentPromise
+    const originalSavings = Math.round(Number(parent?.stats?.savings) || 0)
     const extras = {
       trail: finalState.trail,
       ghosts: buildGhostSummaries(finalState),
       challengeUrl: `https://www.beyond-campus.in/20years/play?l=${lifeParam}${runId ? `&c=${runId}` : ''}`,
+      headToHead: parent?.ending
+        ? {
+            originalEnding: parent.ending.name,
+            originalEmoji: parent.ending.emoji,
+            originalSavings,
+            mySavings: Math.round(finalState.stats.savings),
+            won: finalState.stats.savings >= originalSavings,
+          }
+        : undefined,
     }
     if (token) {
       try {
@@ -351,6 +373,7 @@ export default function PlayPage() {
             epilogue: data.epilogue,
             oneLiner: data.oneLiner,
             rarity: data.rarity,
+            savingsPercentile: data.savingsPercentile ?? null,
             stats: data.stats,
             report: data.report,
             shareUrl: data.shareUrl ?? null,
@@ -541,6 +564,26 @@ export default function PlayPage() {
                 A friend sent you their exact life: same cards, same twists, same luck. Only the
                 choices are yours. Beat their ending.
               </p>
+              <input
+                type="text"
+                value={scoreName}
+                onChange={(e) => setScoreName(e.target.value.slice(0, 24))}
+                placeholder="Your name, for their scoreboard"
+                style={{
+                  marginTop: 12,
+                  width: '100%',
+                  maxWidth: 300,
+                  padding: '10px 16px',
+                  borderRadius: 100,
+                  border: '1px solid rgba(255,255,255,0.18)',
+                  background: 'rgba(255,255,255,0.04)',
+                  color: 'var(--fg)',
+                  fontSize: 14,
+                  fontFamily: 'inherit',
+                  outline: 'none',
+                  textAlign: 'center',
+                }}
+              />
             </div>
           )}
 
