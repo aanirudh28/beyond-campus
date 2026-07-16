@@ -47,10 +47,14 @@ export default function StatBar({
   stats,
   age,
   year,
+  facts = [],
+  onOpen,
 }: {
   stats: Stats
   age: number
   year: number
+  facts?: string[]
+  onOpen?: () => void
 }) {
   const [seen, setSeen] = useState<Stats>(stats)
   const [floats, setFloats] = useState<Record<string, FloatingDelta>>({})
@@ -84,6 +88,9 @@ export default function StatBar({
 
   return (
     <div
+      onClick={onOpen}
+      role={onOpen ? 'button' : undefined}
+      aria-label={onOpen ? 'Open your life so far' : undefined}
       style={{
         position: 'sticky',
         top: 0,
@@ -92,6 +99,7 @@ export default function StatBar({
         backdropFilter: 'blur(12px)',
         borderBottom: '1px solid var(--hair)',
         padding: '10px 16px 12px',
+        cursor: onOpen ? 'pointer' : undefined,
       }}
     >
       <div
@@ -190,6 +198,28 @@ export default function StatBar({
           )
         })}
       </div>
+      {facts.length > 0 && (
+        <div
+          style={{
+            maxWidth: 560,
+            margin: '8px auto 0',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            fontFamily: 'var(--mono)',
+            fontSize: 9.5,
+            letterSpacing: 1.2,
+            color: 'var(--muted-2)',
+          }}
+        >
+          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
+            {facts.slice(0, 4).join(' · ').toUpperCase()}
+          </span>
+          {onOpen && <span style={{ color: 'var(--blue-soft)', flexShrink: 0 }}>· YOUR LIFE ▾</span>}
+        </div>
+      )}
     </div>
   )
 }

@@ -7,8 +7,10 @@ import ShareCard from './ShareCard'
 import GhostVersusCard from './GhostVersusCard'
 import LifeTimeline from './LifeTimeline'
 import { buzz } from './haptics'
+import { chapterHue } from './chapterTheme'
 import { trackLife } from '@/lib/life/track'
 import type { GhostSummary } from '@/lib/life/ghosts'
+import type { DiaryChapter } from '@/lib/life/diary'
 
 export type GhostView = GhostSummary
 
@@ -24,6 +26,7 @@ export interface EndingResult {
   shareUrl: string | null
   trail?: TrailPoint[]
   ghosts?: GhostView[]
+  diary?: DiaryChapter[]
   challengeUrl?: string | null
   discovered?: number // endings collected on this device, recorded at finale
   endingIsNew?: boolean
@@ -66,6 +69,15 @@ export default function EndingScreen({
   const [claimError, setClaimError] = useState('')
   const [copied, setCopied] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [chronicleOpen, setChronicleOpen] = useState(false)
+
+  // The reveal wears the tone: aurora for earned endings, ember for warnings,
+  // amber for the stumbled-into ones.
+  const toneGlow = {
+    good: 'rgba(79,124,255,0.28)',
+    bad: 'rgba(255,107,107,0.22)',
+    weird: 'rgba(255,198,92,0.2)',
+  }[ending.tone]
 
   // The reveal moment gets one buzz in the hand, and the view events fire once.
   useEffect(() => {
@@ -180,14 +192,23 @@ export default function EndingScreen({
       </div>
       <div
         style={{
-          fontSize: 72,
-          lineHeight: 1,
-          marginBottom: 16,
+          position: 'relative',
+          display: 'inline-block',
           animation: 'lifeChipPop 0.6s cubic-bezier(0.34,1.56,0.64,1) both',
           animationDelay: '0.2s',
+          marginBottom: 16,
         }}
       >
-        {ending.emoji}
+        <div
+          style={{
+            position: 'absolute',
+            inset: -60,
+            background: `radial-gradient(circle, ${toneGlow}, transparent 70%)`,
+            filter: 'blur(10px)',
+            pointerEvents: 'none',
+          }}
+        />
+        <div style={{ position: 'relative', fontSize: 72, lineHeight: 1 }}>{ending.emoji}</div>
       </div>
       <h1
         style={{
@@ -309,6 +330,79 @@ export default function EndingScreen({
       {trail && (
         <div style={{ animation: 'lifeFadeUp 0.7s ease both', animationDelay: '1.9s' }}>
           <LifeTimeline trail={trail} />
+        </div>
+      )}
+
+      {/* ---- The Chronicle: the whole life, readable ---- */}
+      {result.diary && result.diary.length > 0 && (
+        <div style={{ marginBottom: 28, animation: 'lifeFadeUp 0.7s ease both', animationDelay: '2s' }}>
+          <button
+            style={{ ...{
+              padding: '13px 22px',
+              borderRadius: 100,
+              border: '1px solid rgba(255,255,255,0.2)',
+              background: 'transparent',
+              color: 'var(--fg)',
+              fontSize: 14,
+              fontWeight: 600,
+              fontFamily: 'inherit',
+              cursor: 'pointer',
+            }, width: '100%' }}
+            onClick={() => setChronicleOpen((v) => !v)}
+          >
+            {chronicleOpen ? '📖 Close the chronicle' : '📖 Read your whole life back'}
+          </button>
+          {chronicleOpen && (
+            <div className="bc-card" style={{ textAlign: 'left', padding: '22px 20px', marginTop: 10 }}>
+              {result.diary.map((chapter) => {
+                const hue = chapterHue(chapter.index)
+                return (
+                  <div key={chapter.index} style={{ marginBottom: 20 }}>
+                    <div
+                      style={{
+                        fontFamily: 'var(--mono)',
+                        fontSize: 10,
+                        letterSpacing: 2,
+                        color: hue.accent,
+                        marginBottom: 8,
+                      }}
+                    >
+                      {chapter.title} · AGE {chapter.ageFrom}–{chapter.ageTo} · {chapter.yearFrom}–{chapter.yearTo}
+                    </div>
+                    {chapter.entries.map((entry, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          borderLeft: `2px solid ${entry.pivotal ? hue.accent : 'rgba(255,255,255,0.1)'}`,
+                          padding: '2px 0 10px 12px',
+                          marginBottom: 4,
+                        }}
+                      >
+                        <div style={{ fontSize: 13.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>
+                          {entry.chose}
+                        </div>
+                        <div
+                          style={{
+                            fontFamily: 'var(--serif)',
+                            fontStyle: 'italic',
+                            fontSize: 14,
+                            lineHeight: 1.55,
+                            color: 'var(--muted)',
+                            marginTop: 3,
+                          }}
+                        >
+                          {entry.outcome}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })}
+              <p style={{ fontSize: 12.5, color: 'var(--muted-2)', margin: '4px 0 0', fontFamily: 'var(--mono)', letterSpacing: 1 }}>
+                WRITTEN BY YOUR CHOICES · {result.diary.reduce((n, c) => n + c.entries.length, 0)} ENTRIES
+              </p>
+            </div>
+          )}
         </div>
       )}
 

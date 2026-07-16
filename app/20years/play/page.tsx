@@ -12,6 +12,9 @@ import {
   selectEnding,
 } from '@/lib/life/engine'
 import { buildGhostSummaries } from '@/lib/life/ghosts'
+import { deriveIdentityFacts } from '@/lib/life/identity'
+import { buildDiary } from '@/lib/life/diary'
+import LifeSoFar from '@/app/components/life/LifeSoFar'
 import { flushBeacon, setLifeRunId, trackLife } from '@/lib/life/track'
 import { CHAPTERS, CONTENT_VERSION } from '@/lib/life/content/chapters'
 import { ENDINGS, getEnding } from '@/lib/life/content/endings'
@@ -149,6 +152,7 @@ export default function PlayPage() {
   const [cardIndex, setCardIndex] = useState(0)
   const [montage, setMontage] = useState<MontageData | null>(null)
   const [result, setResult] = useState<EndingResult | null>(null)
+  const [lifeOpen, setLifeOpen] = useState(false)
 
   const runRef = useRef<{ runId: string | null; token: string | null }>({
     runId: null,
@@ -347,6 +351,7 @@ export default function PlayPage() {
     const extras = {
       trail: finalState.trail,
       ghosts: buildGhostSummaries(finalState),
+      diary: buildDiary(finalState.history),
       challengeUrl: `https://www.beyond-campus.in/20years/play?l=${lifeParam}${runId ? `&c=${runId}` : ''}`,
       headToHead: parent?.ending
         ? {
@@ -448,6 +453,7 @@ export default function PlayPage() {
     setCardIndex(0)
     setMontage(null)
     setResult(null)
+    setLifeOpen(false)
     abandonRef.current = null
     setLifeRunId(null)
     runRef.current = { runId: null, token: null }
@@ -531,7 +537,22 @@ export default function PlayPage() {
       )}
 
       {phase !== 'coldopen' && phase !== 'ending' && state && (
-        <StatBar stats={state.stats} age={pos?.age ?? meta.ageFrom} year={pos?.year ?? meta.yearFrom} />
+        <StatBar
+          stats={state.stats}
+          age={pos?.age ?? meta.ageFrom}
+          year={pos?.year ?? meta.yearFrom}
+          facts={deriveIdentityFacts(state)}
+          onOpen={() => setLifeOpen(true)}
+        />
+      )}
+
+      {lifeOpen && state && phase !== 'coldopen' && phase !== 'ending' && (
+        <LifeSoFar
+          state={state}
+          facts={deriveIdentityFacts(state)}
+          diary={buildDiary(state.history)}
+          onClose={() => setLifeOpen(false)}
+        />
       )}
 
       {phase === 'coldopen' && (
