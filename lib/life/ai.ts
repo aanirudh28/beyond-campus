@@ -31,20 +31,38 @@ function statsLine(state: GameState) {
 
 // One call per chapter: rewrite each card's authored base text so it
 // remembers who this player is and what they chose before.
+//
+// Prompt-cache layering (doc 05 §3.1): the task+voice block and the full
+// chapter pool are stable across every player on this CONTENT_VERSION, so
+// they sit in system blocks behind cache_control breakpoints. Only the
+// player digest (a few hundred tokens) is paid at full price per call.
 export async function sceneNarrations(
   cards: Card[],
   state: GameState,
 ): Promise<Record<string, string> | null> {
   try {
+    const { ALL_CARDS } = await import('./content/chapters')
+    const pool = ALL_CARDS[state.chapter] ?? cards
     const moments = pivotalMoments(state)
-    const cardBlocks = cards
+    const poolBlock = pool
       .map((c) => `- id: ${c.id}\n  title: ${c.title}\n  text: ${c.base}`)
       .join('\n')
     const message = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 1400,
-      system: `You personalize scenes in an Indian career life-simulation game. For each scene you receive authored base text. Rewrite it in 2-3 sentences so it feels continuous with this specific player's life so far. Preserve every concrete fact and number in the base text exactly (salaries, costs, offers). Do not add new choices or new facts, only continuity and texture. ${VOICE}
-Return ONLY a JSON object mapping each scene id to its rewritten narration string. No other keys, no markdown.`,
+      system: [
+        {
+          type: 'text',
+          text: `You personalize scenes in an Indian career life-simulation game. Each scene has authored base text. Rewrite the requested scenes in 2-3 sentences each so they feel continuous with this specific player's life so far. Preserve every concrete fact and number in the base text exactly (salaries, costs, offers). Do not add new choices or new facts, only continuity and texture. ${VOICE}
+Return ONLY a JSON object mapping each requested scene id to its rewritten narration string. No other keys, no markdown.`,
+          cache_control: { type: 'ephemeral' },
+        },
+        {
+          type: 'text',
+          text: `Scene library for this chapter:\n${poolBlock}`,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
       messages: [
         {
           role: 'user',
@@ -52,8 +70,7 @@ Return ONLY a JSON object mapping each scene id to its rewritten narration strin
 Defining choices so far:
 ${moments.length ? moments.join('\n') : '(none yet, this is the beginning)'}
 
-Scenes to personalize:
-${cardBlocks}`,
+Personalize ONLY these scenes: ${cards.map((c) => c.id).join(', ')}`,
         },
       ],
     })
@@ -79,9 +96,17 @@ export async function writeEpilogue(
     const message = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 1000,
-      system: `You write the closing epilogue of an Indian career life-simulation game, addressed to the player who just lived ages 21 to 45. ${VOICE}
+      // Epilogues are never response-cached (the payoff must be about THIS
+      // life), but the static instruction block still prompt-caches.
+      system: [
+        {
+          type: 'text',
+          text: `You write the closing epilogue of an Indian career life-simulation game, addressed to the player who just lived ages 21 to 45. ${VOICE}
 Return ONLY JSON: {"epilogue": "<220-280 words, exactly 4 paragraphs separated by \\n\\n>", "one_liner": "<a sharp shareable caption under 20 words, no hashtags>"}
 The epilogue must: open inside a concrete scene from their final years, weave in 3-4 of their defining choices by name, be honest about what was lost as well as won, and end by turning to the real 21-year-old holding the phone, telling them which single habit from this run matters most right now. No generic advice.`,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
       messages: [
         {
           role: 'user',
