@@ -429,4 +429,103 @@ export const CARDS_CH4: Card[] = [
       },
     ],
   },
+
+  // ---- arc cards: these exist only because of a choice made earlier ----
+  {
+    id: 'ch4_first_payroll',
+    chapter: 3,
+    kind: 'decision',
+    title: 'THE 28TH OF THE MONTH',
+    pivotal: true,
+    condition: { flag: 'own_business' },
+    base: `Month three of the company. A client payment is stuck in someone's approval queue and payroll is due on the 1st for the two people who believed in you. The maths works if either you skip your own salary or the vendor invoices age another month. Founders discover accounting the way sailors discover weather.`,
+    options: [
+      {
+        id: 'skip_own',
+        label: 'Skip your own salary. Vendors and team come first.',
+        effects: { savings: -6, reputation: 5, burnout: 6 },
+        outcome:
+          'Your team never knows how close it was. The vendor pays you back in priority treatment for years. Your SIP takes the bullet, and dal chawal becomes a strategy.',
+      },
+      {
+        id: 'stretch_vendors',
+        label: 'Age the vendor invoices. Cash flow is a negotiation.',
+        effects: { savings: 2, reputation: -6 },
+        outcome:
+          'The vendors notice, because vendors always notice. Word moves quietly through the market that you pay late. Credit terms get shorter right when you need them longer.',
+      },
+    ],
+  },
+  {
+    id: 'ch4_gulf_anniversary',
+    chapter: 3,
+    kind: 'decision',
+    title: 'THE 30TH ANNIVERSARY, 2,600 KM AWAY',
+    condition: { flag: 'went_abroad' },
+    base: `Your parents' 30th anniversary lands in the same week as your project's go-live. The whole family is gathering, the kind of gathering that gets a professional photographer. Flights are ₹60,000 return and your manager has already said "your call" in the tone that means it is not.`,
+    options: [
+      {
+        id: 'fly',
+        label: 'Fly home. Go-lives recur, anniversaries do not.',
+        effects: { savings: -4, family: 9, reputation: -2 },
+        outcome:
+          'You are in the photograph. Your father introduces you to relatives twice, beaming both times. The go-live wobbles without you and lands anyway, the way most go-lives do.',
+      },
+      {
+        id: 'videocall',
+        label: 'Stay for the go-live. Join by video for the cake.',
+        effects: { family: -8, reputation: 5 },
+        outcome:
+          'The deployment is flawless and the client renews. In the photograph everyone is holding sweets, and there is a phone on a chair with your face on it, buffering.',
+      },
+    ],
+  },
+  {
+    id: 'ch4_batch_dividend',
+    chapter: 3,
+    kind: 'decision',
+    title: 'THE BATCH GROUP DELIVERS',
+    condition: { flag: 'mba_done' },
+    base: `The b-school WhatsApp group, dormant except for baby photos, suddenly produces: a batchmate now reports to a CXO who needs a strategy head, "someone who gets both boardroom and bazaar". The referral is yours for the asking. So is the 60-hour week that comes stapled to it.`,
+    options: [
+      {
+        id: 'leap',
+        label: 'Take the referral. This is why the loan existed.',
+        effects: { salary: { mult: 1.3 }, network: 4, burnout: 6 },
+        outcome:
+          'The degree finally pays its second dividend, the one nobody mentions at convocation: the room full of people who answer when you call. The hours are real. So is the seat.',
+      },
+      {
+        id: 'pass',
+        label: 'Pass this one. The current role has momentum.',
+        effects: { family: 3, reputation: 2 },
+        outcome:
+          'You type "not right now, keep me posted" and the group returns to baby photos. The batchmate who took it instead sends you a Diwali hamper every year, which stings precisely once a year.',
+      },
+    ],
+  },
+  {
+    id: 'ch4_llb_lane',
+    chapter: 3,
+    kind: 'decision',
+    title: 'THE MOAT GETS AN OFFER',
+    condition: { flag: 'second_degree' },
+    base: `An NBFC's compliance head just resigned mid-audit and someone remembered you have an LLB to go with the finance years. The offer: head of compliance, real designation, regulator-facing. The evening degree you collected "as backup" is asking to become the main storyline.`,
+    options: [
+      {
+        id: 'switch_lane',
+        label: 'Switch lanes. Compliance is where the moat was pointing.',
+        effects: { salary: { mult: 1.25 }, skills: 6, reputation: 3 },
+        outcome:
+          'The RBI circulars you read for fun are now your job description. Rare combination, priced accordingly. The evening classes finally explain themselves.',
+      },
+      {
+        id: 'keep_moat',
+        label: 'Decline. A moat you use up is just a bridge.',
+        effects: { skills: 2, family: 2 },
+        outcome:
+          'You stay in the finance lane with a law degree in your back pocket, unplayed. Optionality is comfortable. It is also, a small voice notes, permanently unexercised.',
+      },
+    ],
+  },
 ]

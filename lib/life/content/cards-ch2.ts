@@ -453,4 +453,105 @@ export const CARDS_CH2: Card[] = [
       },
     ],
   },
+
+  // ---- arc cards: these exist only because of a choice made earlier ----
+  {
+    id: 'ch2_night_shift',
+    chapter: 1,
+    kind: 'decision',
+    title: 'THE US CLIENT WANTS A NIGHT OWL',
+    condition: { flag: 'took_early_job' },
+    base: `The startup lands its first US client and someone has to own the 9 p.m. to 5 a.m. window. The founder asks you directly, because you are the one who says yes to things. ₹2 LPA bump, a title with "lead" in it, and a body clock that will belong to Eastern Standard Time.`,
+    options: [
+      {
+        id: 'own_it',
+        label: 'Take the night. Sleep is a rookie metric.',
+        effects: { salary: 2, burnout: 10, family: -5, reputation: 4 },
+        outcome:
+          'You learn more about clients in six months of 2 a.m. calls than most learn in three years. Breakfast becomes a meal you eat alone at 4 p.m.',
+      },
+      {
+        id: 'decline',
+        label: 'Decline, and propose a rotation instead.',
+        effects: { reputation: 2, family: 3 },
+        outcome:
+          'The founder blinks, then agrees the rotation is fairer. Someone else becomes the client favourite. You keep your mornings and wonder, occasionally, what they cost.',
+      },
+    ],
+  },
+  {
+    id: 'ch2_sheet_person',
+    chapter: 1,
+    kind: 'decision',
+    title: 'YOU ARE NOW THE SHEET PERSON',
+    condition: { flag: 'excel_learned' },
+    base: `Word spread that you can make Excel sing, and now every report in the department lands on your desk "since you are so quick". You have become infrastructure. Infrastructure does not get promoted; it gets depended on. There are two ways to play a monopoly.`,
+    options: [
+      {
+        id: 'teach',
+        label: 'Automate it, template it, teach the team.',
+        effects: { skills: 8, reputation: 5, burnout: 3 },
+        outcome:
+          'Your templates outlive your tenure on that desk. The manager starts introducing you as "the one who fixed reporting", which is a sentence promotions can attach to.',
+      },
+      {
+        id: 'hoard',
+        label: 'Keep the formulas to yourself. Leverage is leverage.',
+        effects: { skills: 3, reputation: -4, network: -3 },
+        outcome:
+          'For a year you are irreplaceable, which is another word for stuck. The team routes around you eventually. Monopolies age badly in open offices.',
+      },
+    ],
+  },
+  {
+    id: 'ch2_second_laptop_hours',
+    chapter: 1,
+    kind: 'decision',
+    title: 'THE SIDE CLIENT WANTS DAYLIGHT',
+    condition: { flag: 'moonlighted' },
+    base: `The ₹35,000 side client is thrilled with your work, which is the problem. They want calls at 3 p.m., revisions by "EOD", and have started saying "our team" in emails. Your actual employer's HR just circulated a memo about dual employment with the word "termination" in bold.`,
+    options: [
+      {
+        id: 'wind_down',
+        label: 'Wind it down. The memo is not bluffing.',
+        effects: { savings: -3, burnout: -6 },
+        outcome:
+          'The client is gracious, the extra income stops, and your evenings return like a tide. The cupboard laptop goes cold. Relief has a slightly boring taste.',
+      },
+      {
+        id: 'juggle',
+        label: 'Juggle harder. Lunch hours exist for a reason.',
+        effects: { savings: 5, burnout: 9, family: -4 },
+        outcome:
+          'You become a person with two phones and one story per phone. The money stacks. Somewhere in a shared drive, an invoice with your name on it waits patiently for the future.',
+      },
+    ],
+  },
+  {
+    id: 'ch2_local_restless',
+    chapter: 1,
+    kind: 'decision',
+    title: 'THE BATCHMATE ON THE OTHER SIDE',
+    pivotal: true,
+    condition: { flag: 'settled_local' },
+    base: `A batchmate who took the Bangalore leap posts a team photo from an office with a slide in it. Then he DMs you: "we are hiring, I can refer, but you would have to move". The local job is warm and known. Your desk has a plant on it now. The plant is doing better than your resume.`,
+    options: [
+      {
+        id: 'jump',
+        label: 'Take the referral. The plant will survive without you.',
+        effects: { salary: { mult: 1.25 }, network: 8, family: -8 },
+        setFlags: ['moved_metro'],
+        outcome:
+          'Your mother packs pickle jars like you are going to war. The metro is loud, expensive, and completely indifferent to you, which turns out to be a kind of freedom.',
+      },
+      {
+        id: 'stay',
+        label: 'Stay. Roots are a strategy too, if you choose them.',
+        effects: { family: 6, reputation: 2 },
+        setFlags: ['stayed_rooted'],
+        outcome:
+          'You reply "not right now, but keep me in mind" and mean half of it. Sunday lunch happens at the family table. The plant gets a bigger pot.',
+      },
+    ],
+  },
 ]

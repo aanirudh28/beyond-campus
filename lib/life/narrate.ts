@@ -72,6 +72,7 @@ const FLAG_LINES: Record<string, Fragment> = {
   demoted_survived: { line: 'The sideways seat after the Correction still stings, and still pays.', minChapter: 4 },
   moonlighted: { line: 'The second laptop stays in the cupboard: ₹35,000 a month, and a secret with a shelf life.' },
   second_engine: { line: 'The side consulting practice hums after dinner. Two engines now.', minChapter: 4 },
+  crisis_leader: { line: 'The people you carried through the winter remember it. That kind of ledger never needs auditing.', minChapter: 4 },
   side_biz: { line: 'The cousin’s shop sells across three states now. You built that on weekends.' },
   angel_cheque: { line: 'Your ₹5 lakh rides on a batchmate’s startup. You check their traction like weather.' },
   mission_track: { line: 'The impact lane pays less and reads better in the mirror.' },

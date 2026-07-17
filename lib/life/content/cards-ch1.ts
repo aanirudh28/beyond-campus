@@ -441,4 +441,103 @@ export const CARDS_CH1: Card[] = [
       },
     ],
   },
+
+  // ---- arc cards: these exist only because of a choice made earlier ----
+  {
+    id: 'ch1_exam_hall',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THREE MONTHS INTO THE SYLLABUS',
+    condition: { flag: 'exam_track' },
+    base: `Three months of reasoning puzzles and your mock scores have parked themselves mid-table. Two lakh people are writing this exam for four thousand seats. Meanwhile a walk-in drive for management trainees is happening Saturday, two bus routes away. Your father has already told the colony you are preparing.`,
+    options: [
+      {
+        id: 'commit',
+        label: 'Double down. Mid-table at month three means nothing.',
+        effects: { family: 4, skills: -2, burnout: 5 },
+        outcome:
+          'You cancel everything that is not the syllabus. The house arranges itself around your timetable, quietly proud, quietly watching.',
+      },
+      {
+        id: 'walkin',
+        label: 'Slip out Saturday. Keep the exam as the official story.',
+        effects: { network: 6, family: -6 },
+        setFlags: ['backed_self'],
+        outcome:
+          'You tell them it is a friend’s errand. The interviewer likes your spreadsheet answer. Living two versions of yourself has a cost, and also, sometimes, a payoff.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_referral_interview',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE FORWARDED CV RINGS BACK',
+    condition: { flag: 'dm_courage' },
+    base: `The alum was not being polite. HR calls: first round tomorrow, 11 a.m., thirty minutes. Your internal exams are also tomorrow, 10 to 1, and the professor taking attendance is the one who already calls you "the absent entrepreneur". A referral interview slot, once moved, has a way of never coming back.`,
+    options: [
+      {
+        id: 'stairwell',
+        label: 'Take the call from the library stairwell at 11.',
+        effects: { skills: 4, reputation: 5, burnout: 4 },
+        outcome:
+          'You whisper your way through a case question next to a fire extinguisher. The interviewer laughs at the echo and asks the follow-up anyway. You make round two. The exam gets a supplementary date.',
+      },
+      {
+        id: 'reschedule',
+        label: 'Ask HR to move it. Exams are exams.',
+        effects: { family: 4, network: -3, burnout: 2 },
+        outcome:
+          'HR says "of course" in the tone that means probably not. The slot dissolves into next quarter. Your mother is relieved about the exam. The alum never mentions it again.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_pivot_proof',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE TEST YOU PREPARED FOR',
+    condition: { flag: 'excel_learned' },
+    base: `The screening test opens and there it is: build a pivot table, find the leaking region. Six months ago this would have ended you. Today it is a formality. Then your hostel mate pings from two rows back: "bro share screen for 5 min, my placement depends on this". The invigilator is on his phone.`,
+    options: [
+      {
+        id: 'refuse',
+        label: 'Mute him. Finish your own test clean.',
+        effects: { reputation: 4, network: -3 },
+        outcome:
+          'He does not talk to you for a month. Your score lands in the top decile, and it is entirely, provably yours. Some prices are just visible earlier than others.',
+      },
+      {
+        id: 'help',
+        label: 'Share the screen. Five minutes, one friend.',
+        effects: { network: 5, reputation: -5 },
+        outcome:
+          'He clears it and buys you dinner. Two years later he tells the story at a party as a joke, with your name in it, in front of someone from that company.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_hold_the_line',
+    chapter: 0,
+    kind: 'decision',
+    title: 'MONTH TWO OF THE SILENCE',
+    condition: { flag: 'held_out' },
+    base: `Sixty days since you declined the offer. The inbox is a desert. At your cousin's wedding an uncle asks, loudly, near the buffet, "beta, anything yet?" Your batch WhatsApp celebrates someone's joining bonus. The bet you made needs either doubling or folding, and the wedding season has opinions about both.`,
+    options: [
+      {
+        id: 'spray',
+        label: 'Fold. Apply to sixty portals this week.',
+        effects: { burnout: 8, skills: -2, network: 2 },
+        outcome:
+          'Volume feels like motion. Three auto-rejections arrive before breakfast for a month. Something eventually bites, though it looks a lot like the offer you declined.',
+      },
+      {
+        id: 'system',
+        label: 'Hold. Ten targeted companies, one alum each, every week.',
+        effects: { skills: 4, burnout: 4, family: -4 },
+        outcome:
+          'You build a tracker instead of a panic. Week five, a reply. Week seven, a shortlist. The uncle at the next wedding gets a company name he has actually heard of.',
+      },
+    ],
+  },
 ]

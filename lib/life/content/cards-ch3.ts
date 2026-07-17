@@ -467,4 +467,103 @@ export const CARDS_CH3: Card[] = [
       },
     ],
   },
+
+  // ---- arc cards: these exist only because of a choice made earlier ----
+  {
+    id: 'ch3_posting_orders',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE POSTING ORDERS',
+    condition: { flag: 'govt_settled' },
+    base: `The bank's letter arrives with a district you have to look up on a map: 400 km away, a branch with eleven staff and one working AC. The alternative is a written request for a hometown posting, which everyone files and which works exactly often enough to keep hope administratively alive.`,
+    options: [
+      {
+        id: 'go',
+        label: 'Take the far posting. Rural credit is where officers get made.',
+        effects: { savings: 4, family: -8, reputation: 5 },
+        outcome:
+          'You learn lending by looking farmers in the eye. The quarters are spartan, the work is real, and your confidential report starts using the word "promising".',
+      },
+      {
+        id: 'request',
+        label: 'File the hometown request. Some maps are non-negotiable.',
+        effects: { family: 8, reputation: -3 },
+        outcome:
+          'Eight months and one well-placed phone call later, you are behind a counter twenty minutes from home. The ambitious batch calls it settling. Your grandmother calls it Tuesday lunch.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_bschool_placement',
+    chapter: 2,
+    kind: 'decision',
+    title: 'DAY ZERO, SECOND TIME AROUND',
+    pivotal: true,
+    condition: { flag: 'mba_done' },
+    base: `B-school placement week, and this time you are inside the room you once read about. Two offers: a consulting firm famous for weekends that do not exist, at nearly double, or an FMCG leadership rotation with a town posting and a boss who mentions "sustainable pace" unironically. The loan EMI watches you decide.`,
+    options: [
+      {
+        id: 'consulting',
+        label: 'Consulting. The EMI wants the bigger number.',
+        effects: { salary: { mult: 1.35 }, burnout: 12, skills: 6 },
+        outcome:
+          'The work is brutal and the learning curve is vertical. You see six industries in two years and your own bed roughly as often. The EMI, at least, stops feeling heavy.',
+      },
+      {
+        id: 'fmcg',
+        label: 'FMCG rotation. Build slower, live somewhere.',
+        effects: { salary: { mult: 1.15 }, family: 5, burnout: 2, skills: 4 },
+        outcome:
+          'You learn distribution in mandis and general trade in the heat. The consulting batch out-earns you for now. You out-sleep them by roughly a decade.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_founder_shadow',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE LIST WITH ONE NAME ON IT',
+    condition: { flag: 'startup_leap' },
+    base: `Series A diligence wants costs down, and the founder slides the list across: one name, the junior you hired and trained. "You brought them in, you should do it. Investors are watching how we handle this." Employee six duties were never written down, but apparently they include this.`,
+    options: [
+      {
+        id: 'do_it',
+        label: 'Do it yourself, kindly, with two months of runway.',
+        effects: { reputation: -2, skills: 4, burnout: 6 },
+        outcome:
+          'You give them notice, a reference letter, and three intros. They land somewhere better inside a month and never quite look at you the same way. Neither do you.',
+      },
+      {
+        id: 'push_back',
+        label: 'Push back. Cut marketing spend, keep the person.',
+        effects: { reputation: 5, network: -3, burnout: 3 },
+        outcome:
+          'The founder is annoyed for a week, then quietly relieved someone in the room has a spine. The junior never finds out how close it came. The investors get their number a quarter late.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_shop_scale',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE DISTRIBUTOR CALLS THE SHOP',
+    condition: { flag: 'side_biz' },
+    base: `The cousin's shop you put online is now doing numbers a regional distributor has noticed. He offers exclusivity for three districts if you can double the catalogue in a quarter. The cousin is ecstatic. Your weekends, already mortgaged, would need to file for bankruptcy.`,
+    options: [
+      {
+        id: 'scale',
+        label: 'Take the deal. Build the catalogue at night.',
+        effects: { savings: 6, burnout: 8, family: -3 },
+        outcome:
+          'Three districts, two phones, one exhausted person doing product photography at midnight. The shop’s turnover crosses the family’s old annual income. Something real is growing here.',
+      },
+      {
+        id: 'handover',
+        label: 'Hand the playbook to the cousin. Advisor, not operator.',
+        effects: { family: 5, savings: 1, burnout: -3 },
+        outcome:
+          'You write the SOPs, train his brother-in-law on the ads, and step back to a Sunday phone call. The shop grows slower and stays theirs. Your name stays on the origin story.',
+      },
+    ],
+  },
 ]

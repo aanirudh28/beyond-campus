@@ -376,4 +376,79 @@ export const CARDS_CH6: Card[] = [
       },
     ],
   },
+
+  // ---- arc cards: these exist only because of a choice made earlier ----
+  {
+    id: 'ch6_vrs_window',
+    chapter: 5,
+    kind: 'decision',
+    title: 'THE VRS CIRCULAR',
+    condition: { flag: 'govt_settled' },
+    base: `The bank announces a voluntary retirement scheme, and for the first time the safe path has an exit door with a number on it. A fintech that lends to the same farmers you spent decades approving wants you as an advisor, "someone who knows how credit actually works outside a deck". The pension is eleven years away. The offer expires Friday.`,
+    options: [
+      {
+        id: 'take_vrs',
+        label: 'Take the VRS. Twenty years of judgment, finally priced.',
+        effects: { salary: { mult: 1.2 }, skills: 6, reputation: 4, burnout: 3 },
+        outcome:
+          'The branch gives you a farewell with marigold garlands and a plaque. At the fintech, engineers half your age ask what defaults smell like before they happen. You know. It turns out that is rare.',
+      },
+      {
+        id: 'pension_line',
+        label: 'Serve to pension. You did not come this far for a gamble.',
+        effects: { family: 5, burnout: -4 },
+        outcome:
+          'The circular expires, the ledger continues. Batch-mates who left send LinkedIn updates from glass offices. You send your daughter to college on a salary that has never once been late.',
+      },
+    ],
+  },
+  {
+    id: 'ch6_after_the_sale',
+    chapter: 5,
+    kind: 'decision',
+    title: 'THE FIRST MONDAY AFTER',
+    condition: { flag: 'sold_company' },
+    base: `The wire cleared, the earn-out is signed, and Monday 9 a.m. arrives with no standup, no payroll, no fires. You have bought back your mornings and they sit there, enormous and unstructured. Two ex-founder friends went two ways from this exact spot: one built a portfolio of first cheques and mentees, one perfected his golf swing and his restlessness.`,
+    options: [
+      {
+        id: 'first_cheques',
+        label: 'Become the person who backed you when nobody would.',
+        effects: { network: 5, reputation: 4, savings: -5 },
+        setFlags: ['gives_back'],
+        outcome:
+          'Your first cheque goes to a 24-year-old with a tile-shop accent and a working prototype. The mornings fill with other people’s beginnings, which turn out to be the best use of an ending.',
+      },
+      {
+        id: 'drift',
+        label: 'Rest first. You have earned an unscheduled year.',
+        effects: { burnout: -8, family: 4, skills: -4 },
+        outcome:
+          'Six months of slow breakfasts and long drives. The restlessness arrives on schedule around month seven. You now understand why exited founders all look slightly haunted at weddings.',
+      },
+    ],
+  },
+  {
+    id: 'ch6_scar_check',
+    chapter: 5,
+    kind: 'decision',
+    title: 'THE BACKGROUND CHECK, FINAL ROUND',
+    condition: { flag: 'career_scar' },
+    base: `The CXO offer is one signature away, and the email says "standard background verification, 2-3 weeks". You know what is in the file: the moonlighting invoice from a decade ago, already surfaced once. Verification firms find what has been found before. The only choice left is who tells the story first.`,
+    options: [
+      {
+        id: 'preempt',
+        label: 'Tell them yourself, today, before the report does.',
+        effects: { reputation: 6, burnout: 3 },
+        outcome:
+          'A ten-minute call you rehearsed for two hours. The CHRO listens, asks one question, and says "we hire adults, not archives". The offer stands, and this time the file is closed by your own hand.',
+      },
+      {
+        id: 'hope',
+        label: 'Say nothing. Maybe this firm checks less.',
+        effects: { reputation: -6, burnout: 6 },
+        outcome:
+          'Week two, the report lands and the silence changes temperature. The offer survives, barely, with a clause in it now. Trust, once itemised, is never quite trust again.',
+      },
+    ],
+  },
 ]

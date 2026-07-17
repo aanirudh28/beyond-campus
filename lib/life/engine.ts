@@ -90,31 +90,64 @@ export function checkCondition(cond: Condition | undefined, state: GameState): b
   return true
 }
 
-// Deal the cards for the chapter the state is currently in.
-// Deterministic given state at chapter entry: conditions are evaluated now,
-// selection order comes only from the chapter's seeded stream.
+// Deal the chapter as seen from the CURRENT state: the cards already
+// answered this chapter (in order), then a reactive plan for the remaining
+// slots. Conditions are re-evaluated on every deal, so each choice can
+// change what the rest of the chapter asks — and arc cards (flag-gated
+// continuations of something you chose) jump the queue ahead of generic
+// cards. Deterministic given (seed, profile, history): the priority order
+// is one seeded shuffle per chapter, and re-dealing after each choice
+// always reproduces the same answered prefix from history.
 export function dealChapter(state: GameState): Card[] {
   const meta = CHAPTERS[state.chapter]
   const pool = ALL_CARDS[state.chapter]
   const rng = chapterRng(state.seed, state.chapter)
+  const order = seededShuffle(pool, rng)
 
-  const decisions = pool.filter((c) => c.kind === 'decision' && checkCondition(c.condition, state))
-  const dealtDecisions = seededShuffle(decisions, rng).slice(0, meta.decisions)
+  const seq: Card[] = []
+  const used = new Set<string>()
+  for (const rec of state.history) {
+    if (rec.c !== state.chapter) continue
+    const card = pool.find((c) => c.id === rec.cardId)
+    if (!card) break
+    seq.push(card)
+    used.add(card.id)
+  }
 
-  const forced = pool.filter(
-    (c) => c.kind === 'event' && c.forced && checkCondition(c.condition, state),
-  )
-  const optional = pool.filter(
-    (c) => c.kind === 'event' && !c.forced && checkCondition(c.condition, state),
-  )
-  const dealtEvents = [...forced, ...seededShuffle(optional, rng)].slice(0, meta.events)
+  const total = meta.decisions + meta.events
+  let events = seq.filter((c) => c.kind === 'event').length
+  // Events land at the same stable positions as before: 2, 5, 8...
+  const eventSlot = (i: number) => Math.min(2 + i * 3, meta.decisions + i)
 
-  // Interleave events into the decision flow at stable positions.
-  const cards = dealtDecisions.slice()
-  dealtEvents.forEach((ev, i) => {
-    cards.splice(Math.min(2 + i * 3, cards.length), 0, ev)
-  })
-  return cards
+  const pick = (kind: Card['kind']): Card | undefined => {
+    const cands = order.filter(
+      (c) => c.kind === kind && !used.has(c.id) && checkCondition(c.condition, state),
+    )
+    if (kind === 'event') {
+      const forced = cands.find((c) => c.forced)
+      if (forced) return forced
+    }
+    // A card that exists because of a flag you set is always more yours
+    // than a generic one: consequences chase their choices.
+    return cands.find((c) => c.condition?.flag !== undefined) ?? cands[0]
+  }
+
+  while (seq.length < total) {
+    const wantEvent = events < meta.events && seq.length >= eventSlot(events)
+    const card = wantEvent ? (pick('event') ?? pick('decision')) : (pick('decision') ?? pick('event'))
+    if (!card) break
+    if (card.kind === 'event') events++
+    used.add(card.id)
+    seq.push(card)
+  }
+  return seq
+}
+
+// How many cards of the current chapter the state has already answered.
+export function answeredInChapter(state: GameState): number {
+  let n = 0
+  for (const rec of state.history) if (rec.c === state.chapter) n++
+  return n
 }
 
 function applyEffects(stats: Stats, option: CardOption): Stats {
@@ -203,7 +236,8 @@ export function ageAtCard(chapter: number, cardIndex: number, cardCount: number)
 export class ReplayError extends Error {}
 
 // Rebuild state up to the entry of targetChapter from (seed, profile, choices).
-// Throws ReplayError on any tampering or drift.
+// Re-deals after every choice, exactly like play. Throws ReplayError on any
+// tampering or drift.
 export function replayToChapter(
   seed: number,
   profile: Profile,
@@ -213,8 +247,11 @@ export function replayToChapter(
   let state = createInitialState(profile, seed)
   let i = 0
   for (let ch = 0; ch < targetChapter; ch++) {
-    const cards = dealChapter(state)
-    for (const card of cards) {
+    for (;;) {
+      const cards = dealChapter(state)
+      const idx = answeredInChapter(state)
+      if (idx >= cards.length) break
+      const card = cards[idx]
       const choice = choices[i++]
       if (!choice || choice.c !== ch || choice.cardId !== card.id) {
         throw new ReplayError(`choice ${i - 1} does not match dealt card ${card.id}`)
@@ -287,8 +324,11 @@ export function simulateGhost(
   let takenLabel = ''
   let otherLabel = ''
   for (let ch = 0; ch < CHAPTERS.length; ch++) {
-    const cards = dealChapter(state)
-    for (const card of cards) {
+    for (;;) {
+      const cards = dealChapter(state)
+      const idx = answeredInChapter(state)
+      if (idx >= cards.length) break
+      const card = cards[idx]
       let option: CardOption
       if (card.id === fork.cardId) {
         const taken = card.options.find((o) => o.id === fork.optionId)
@@ -342,9 +382,11 @@ export function disciplinedOption(card: Card): CardOption {
 export function simulateDisciplined(seed: number, profile: Profile): GameState {
   let state = createInitialState(profile, seed)
   for (let ch = 0; ch < CHAPTERS.length; ch++) {
-    const cards = dealChapter(state)
-    for (const card of cards) {
-      state = applyChoice(state, card, disciplinedOption(card))
+    for (;;) {
+      const cards = dealChapter(state)
+      const idx = answeredInChapter(state)
+      if (idx >= cards.length) break
+      state = applyChoice(state, cards[idx], disciplinedOption(cards[idx]))
     }
     state = advanceChapter(state)
   }

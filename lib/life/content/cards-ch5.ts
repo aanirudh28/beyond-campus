@@ -450,4 +450,80 @@ export const CARDS_CH5: Card[] = [
       },
     ],
   },
+
+  // ---- arc cards: these exist only because of a choice made earlier ----
+  {
+    id: 'ch5_founder_winter',
+    chapter: 4,
+    kind: 'decision',
+    title: 'THE CORRECTION REACHES YOUR INVOICES',
+    pivotal: true,
+    condition: { flag: 'own_business' },
+    base: `Two of your three anchor clients pause "all discretionary spend" in the same fortnight. The company has six salaries, four months of runway, and a founder whose own house runs on the same bank account. Every founder WhatsApp group is suddenly a support group. The spreadsheet has one tab called "options" and none of them are painless.`,
+    options: [
+      {
+        id: 'carry_them',
+        label: 'Keep all six. Fund payroll from your own savings.',
+        effects: { savings: -15, reputation: 8, burnout: 8 },
+        setFlags: ['crisis_leader'],
+        outcome:
+          'You sell the mutual funds you swore were untouchable. Nobody is laid off. Years later, people who were in that room describe you to strangers with a word you cannot repeat without blushing.',
+      },
+      {
+        id: 'cut_to_three',
+        label: 'Cut to three. The company must outlive the winter.',
+        effects: { savings: 2, reputation: -6, burnout: 6 },
+        outcome:
+          'Three hard conversations on a Friday. The company survives, leaner and quieter. The three who stayed work like people who have seen the trapdoor. So do you.',
+      },
+    ],
+  },
+  {
+    id: 'ch5_channel_collapse',
+    chapter: 4,
+    kind: 'decision',
+    title: 'THE ALGORITHM CHANGES ITS MIND',
+    condition: { flag: 'creator_track' },
+    base: `The platform where you built your audience changes its algorithm and your reach drops 90 percent overnight. Ten years of weekly posts, and the distribution was rented the whole time. The audience still exists somewhere behind the feed. The question is whether you go find them or let the lease quietly end.`,
+    options: [
+      {
+        id: 'own_list',
+        label: 'Build the email list. Move the audience somewhere you own.',
+        effects: { network: 6, skills: 4, burnout: 4 },
+        outcome:
+          'One in twenty follows you to the newsletter, and they turn out to be the twenty that mattered. Owned distribution grows slower and cannot be taken away by a product manager in California.',
+      },
+      {
+        id: 'let_fade',
+        label: 'Let it fade. It was a chapter, not the book.',
+        effects: { burnout: -4, network: -6, family: 3 },
+        outcome:
+          'The weekly writing habit dissolves into evenings that belong to you again. Occasionally someone says "you used to write, right?" in the past tense, and it lands somewhere between compliment and eulogy.',
+      },
+    ],
+  },
+  {
+    id: 'ch5_weekday_batch',
+    chapter: 4,
+    kind: 'decision',
+    title: 'THE CLASSROOM ASKS FOR MORE',
+    condition: { flag: 'gives_back' },
+    base: `The Saturday classroom worked too well. Three students cleared interviews this season, word reached the next town, and now there is a waitlist and a request: a weekday evening batch for final-years who cannot wait for the weekend. Your calendar looks at you. The waitlist looks at you harder.`,
+    options: [
+      {
+        id: 'take_batch',
+        label: 'Take the Tuesday batch too. The waitlist is real people.',
+        effects: { reputation: 6, burnout: 6, family: -4 },
+        outcome:
+          'Tuesday 7 p.m. becomes sacred in a different way than Saturday. The season after, seven students clear. Your name starts appearing in other people’s origin stories at a rate you cannot track.',
+      },
+      {
+        id: 'hold_saturday',
+        label: 'Protect the Saturday. One deep batch beats two thin ones.',
+        effects: { burnout: -2, reputation: 2 },
+        outcome:
+          'You train two of your first students to run the Tuesday batch instead. It is not the same, and it is also how classrooms outlive teachers. The waitlist moves, just not through you.',
+      },
+    ],
+  },
 ]

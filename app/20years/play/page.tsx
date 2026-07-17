@@ -5,6 +5,7 @@ import type { Card, ChoiceRecord, GameState, Profile } from '@/lib/life/types'
 import {
   advanceChapter,
   ageAtCard,
+  answeredInChapter,
   applyChoice,
   buildLifeReport,
   createInitialState,
@@ -102,25 +103,26 @@ function recordDiscovery(endingId: string): { discovered: number; endingIsNew: b
 
 const emptySubscribe = () => () => {}
 
-// Walk the saved choices back through the deterministic deal. Any drift
-// (content changed, tampering) returns null and the save is discarded.
+// Walk the saved choices back through the deterministic deal, re-dealing
+// after every choice exactly like live play. Any drift (content changed,
+// tampering) returns null and the save is discarded.
 function rebuildFromSave(saved: SavedRun): { state: GameState; cards: Card[]; cardIndex: number } | null {
   let state = createInitialState(saved.profile, saved.seed)
   let i = 0
   while (state.chapter < CHAPTERS.length) {
     const cards = dealChapter(state)
-    let idx = 0
-    for (; idx < cards.length; idx++) {
-      const h = saved.history[i]
-      if (!h || h.cardId !== cards[idx].id) break
-      const option = cards[idx].options.find((o) => o.id === h.optionId)
-      if (!option) return null
-      state = applyChoice(state, cards[idx], option)
-      i++
+    const idx = answeredInChapter(state)
+    if (idx >= cards.length) {
+      state = advanceChapter(state)
+      continue
     }
-    if (i < saved.history.length && idx < cards.length && saved.history[i].cardId !== cards[idx].id) return null
-    if (idx < cards.length) return { state, cards, cardIndex: idx }
-    state = advanceChapter(state)
+    const h = saved.history[i]
+    if (!h) return { state, cards, cardIndex: idx } // resume point
+    if (h.cardId !== cards[idx].id) return null
+    const option = cards[idx].options.find((o) => o.id === h.optionId)
+    if (!option) return null
+    state = applyChoice(state, cards[idx], option)
+    i++
   }
   return null // save covers a finished run
 }
@@ -375,9 +377,14 @@ export default function PlayPage() {
     let next = applyChoice(state, card, option)
     trackLife('card_answered', { cardId: card.id, optionId: option.id, chapter: state.chapter })
     abandonRef.current = { chapter: state.chapter, cardsAnswered: next.history.length }
-    if (cardIndex + 1 < cards.length) {
+    // Re-deal with the new state: the choice just made can reshape what
+    // the rest of the chapter asks (arc cards jump the queue).
+    const redealt = dealChapter(next)
+    const idx = answeredInChapter(next)
+    if (idx < redealt.length) {
       setState(next)
-      setCardIndex(cardIndex + 1)
+      setCards(redealt)
+      setCardIndex(idx)
       persist(next)
       window.scrollTo(0, 0)
       return

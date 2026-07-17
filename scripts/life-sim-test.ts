@@ -61,8 +61,12 @@ function playRandom(seed: number, profile: Profile, pick: () => number) {
   let state = createInitialState(profile, seed)
   const choices: ChoiceRecord[] = []
   for (let ch = 0; ch < CHAPTERS.length; ch++) {
-    const cards = dealChapter(state)
-    for (const card of cards) {
+    // Re-deal after every choice, exactly like live play.
+    for (;;) {
+      const cards = dealChapter(state)
+      const idx = choices.filter((c) => c.c === ch).length
+      if (idx >= cards.length) break
+      const card = cards[idx]
       const option = card.options[Math.floor(pick() * card.options.length)]
       choices.push({ c: ch, cardId: card.id, optionId: option.id })
       state = applyChoice(state, card, option)
