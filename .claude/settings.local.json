@@ -124,7 +124,24 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" -L \"https://www.beyond-campus.in/admin/apti\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" -X POST \"https://www.beyond-campus.in/api/admin/apti\" -H \"Content-Type: application/json\" -d '{\"password\":\"x\",\"action\":\"overview\"}')",
       "Bash(SUPABASE_SERVICE_ROLE_KEY=dummy RAZORPAY_KEY_ID=dummy RAZORPAY_KEY_SECRET=dummy RESEND_API_KEY=dummy NEXT_PUBLIC_RAZORPAY_KEY_ID=dummy CRON_SECRET=dummy npx tsc --noEmit)",
-      "Bash(curl -s \"https://www.beyond-campus.in/practice\" -L)"
+      "Bash(curl -s \"https://www.beyond-campus.in/practice\" -L)",
+      "Bash(git fetch *)",
+      "Bash(xargs -d ' ' npx eslint)",
+      "Bash(SUPABASE_SERVICE_ROLE_KEY=dummy RAZORPAY_KEY_ID=dummy RAZORPAY_KEY_SECRET=dummy RESEND_API_KEY=dummy NEXT_PUBLIC_RAZORPAY_KEY_ID=dummy CRON_SECRET=dummy npm run dev)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/aptitude)",
+      "Bash(powershell -Command 'Get-Process -Name node -ErrorAction SilentlyContinue | Where-Object {\\(Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue | Where-Object LocalPort -eq 3000\\)} | Stop-Process -Force')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/aptitude --max-time 3)",
+      "Bash(npx tsx *)",
+      "Skill(artifact-design)",
+      "Artifact",
+      "WebFetch(domain:www.dataslayer.ai)",
+      "WebFetch(domain:expertlinked.in)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:adityamallah.medium.com)",
+      "WebFetch(domain:www.justinwelsh.me)",
+      "WebFetch(domain:dsmn8.com)",
+      "WebFetch(domain:miraflow.ai)",
+      "WebFetch(domain:claude.ai)"
     ]
   }
 }
