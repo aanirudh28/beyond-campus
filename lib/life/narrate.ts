@@ -117,7 +117,11 @@ function statLines(state: GameState): { urgent: string[]; mild: string[] } {
   else if (s.burnout >= 55) mild.push('The tiredness has stopped being weekly and started being ambient.')
   if (s.savings < 0) urgent.push('The loan balance hums under every option below.')
   if (s.salary === 0 && state.chapter >= 1)
-    urgent.push('Off payroll. Every month costs, and nothing comes in.')
+    urgent.push(
+      state.flags['own_business']
+        ? 'The company pays everyone except you, for now. Founders eat last.'
+        : 'Off payroll. Every month costs, and nothing comes in.',
+    )
   if (s.savings >= 100) mild.push('The portfolio crossed a crore a while back. Nobody at work knows.')
   if (s.family <= 30) mild.push('Home calls less often now. When it does, the conversations are short.')
   if (s.network >= 75 && state.chapter >= 3)

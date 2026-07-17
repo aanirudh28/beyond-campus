@@ -12,7 +12,7 @@ export const CARDS_CH5: Card[] = [
     forced: true,
     title: 'THE CORRECTION OF 2039',
     pivotal: true,
-    condition: { minStat: { skills: 60 } },
+    condition: { minStat: { skills: 60 }, notFlag: 'own_business' },
     base: `It arrives the way corrections do, slowly and then all at once. Funding freezes, hiring stops, and the AI systems that were "assistants" last year are quietly doing the work of entire teams this year. Your company cuts 20 percent. You are not on the list. You are in the room where the list is made.`,
     options: [
       {
@@ -39,7 +39,7 @@ export const CARDS_CH5: Card[] = [
     forced: true,
     title: 'THE CORRECTION OF 2039',
     pivotal: true,
-    condition: { maxStat: { skills: 59 } },
+    condition: { maxStat: { skills: 59 }, notFlag: 'own_business' },
     base: `It arrives the way corrections do, slowly and then all at once. Funding freezes, hiring stops, and the AI systems that were "assistants" last year are quietly doing the work your role used to justify. The restructure email has a meeting invite attached. Your name is in the subject line.`,
     options: [
       {
@@ -142,7 +142,7 @@ export const CARDS_CH5: Card[] = [
     kind: 'decision',
     title: 'THE SECOND ENGINE',
     base: `The correction taught everyone the same lesson: one income is one point of failure. A consulting side practice in your niche could add ₹8-10 lakhs a year. It would also colonise the last unclaimed evenings of your week.`,
-    condition: { minStat: { skills: 55 } },
+    condition: { minStat: { skills: 55 }, notFlag: 'own_business' },
     options: [
       {
         id: 'build',

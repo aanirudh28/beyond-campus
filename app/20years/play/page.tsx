@@ -428,6 +428,7 @@ export default function PlayPage() {
           batchmate && batchmate.beats[finishedChapter]
             ? { name: batchmate.name, line: batchmate.beats[finishedChapter] }
             : null,
+        founder: next.flags['own_business'] === true,
       })
       setPhase('montage')
       window.scrollTo(0, 0)

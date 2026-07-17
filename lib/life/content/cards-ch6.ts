@@ -11,7 +11,7 @@ export const CARDS_CH6: Card[] = [
     title: 'THE LAST CLIMB',
     pivotal: true,
     base: `The CXO track is finally, plausibly, yours. Two more years of airport lounges, dinner meetings that eat dinners, and politics played at a level where everyone is good at it. Or you could hold this altitude, do excellent work, and be home by seven. Both are victories. Only one gets a press release.`,
-    condition: { minStat: { reputation: 55 } },
+    condition: { minStat: { reputation: 55 }, notFlag: 'own_business' },
     options: [
       {
         id: 'push',
@@ -237,6 +237,7 @@ export const CARDS_CH6: Card[] = [
     chapter: 5,
     kind: 'decision',
     title: 'THE 28-YEAR-OLD WHO COSTS HALF',
+    condition: { notFlag: 'own_business' },
     base: `There is a 28-year-old in the org who does 80 percent of your job at 40 percent of your cost, and everyone can do that arithmetic, including you. The two moves on the board are old as guilds: hoard what only you know, or teach her everything and bet you can keep becoming the thing the org cannot yet name.`,
     options: [
       {

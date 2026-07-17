@@ -36,6 +36,7 @@ export const CARDS_CH4: Card[] = [
     kind: 'decision',
     title: 'THE MANAGER FORK',
     pivotal: true,
+    condition: { notFlag: 'own_business' },
     base: `The promotion memo offers two ladders. Manage a team of six, own their appraisals, their fights, their resignations. Or go deeper as a senior individual contributor, the person who solves what others cannot. The company pretends both are equal. The org chart does not.`,
     options: [
       {
@@ -96,7 +97,7 @@ export const CARDS_CH4: Card[] = [
     title: 'THE DUBAI CALL',
     pivotal: true,
     base: `A Gulf offer lands: 1.6 times your package, tax-free, relocation paid. The money would reset your family's financial story in five years. It would also put you a flight away from every festival, every emergency, every ordinary Sunday that makes a family a family.`,
-    condition: { minStat: { skills: 50 } },
+    condition: { minStat: { skills: 50 }, notFlag: 'own_business' },
     options: [
       {
         id: 'go',
@@ -147,6 +148,7 @@ export const CARDS_CH4: Card[] = [
     chapter: 3,
     kind: 'decision',
     title: 'THE PERMANENT DESK AT HOME',
+    condition: { notFlag: 'own_business' },
     base: `The company makes remote-forever official. You could move back near your parents, work from a room with actual sunlight, and never eat a cafeteria thali again. The unwritten fine print: promotions have a way of finding the people the leadership physically bumps into. Presence is a currency. So are Sunday lunches.`,
     options: [
       {
@@ -171,6 +173,7 @@ export const CARDS_CH4: Card[] = [
     chapter: 3,
     kind: 'decision',
     title: 'THE REORG KNIFE-FIGHT',
+    condition: { notFlag: 'own_business' },
     base: `A reorg is coming and two VPs are recruiting foot soldiers. Yours pulls you aside: "I need to know you are with me." The other side is quietly winning. Company politics at this altitude is not optional, and neutrality, everyone knows, is also a side, usually the losing one.`,
     options: [
       {

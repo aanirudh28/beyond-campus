@@ -23,6 +23,7 @@ export interface MontageData {
   after: Stats
   enteringChapter: number // 1-5, the chapter about to begin
   batchmate?: { name: string; line: string } | null // the rival's years, passing in parallel
+  founder?: boolean // own_business: the salary line is an owner's draw, not an appraisal
 }
 
 function ledgerLines(d: MontageData): string[] {
@@ -30,11 +31,17 @@ function ledgerLines(d: MontageData): string[] {
   const { before, after } = d
   const salaryFrom = before.salary
   const salaryTo = after.salary
-  if (salaryFrom > 0 && salaryTo > 0 && Math.abs(salaryTo - salaryFrom) >= 0.3) {
+  if (d.founder && salaryFrom === 0 && salaryTo > 0) {
+    lines.push(`The company starts paying you back: an owner’s draw of ₹${salaryTo.toFixed(1)} LPA.`)
+  } else if (salaryFrom > 0 && salaryTo > 0 && Math.abs(salaryTo - salaryFrom) >= 0.3) {
     lines.push(
-      salaryTo > salaryFrom
-        ? `The appraisal cycles do their quiet work. ₹${salaryFrom.toFixed(1)} → ₹${salaryTo.toFixed(1)} LPA.`
-        : `The paycheck shrinks to ₹${salaryTo.toFixed(1)} LPA. Nobody calls it a demotion out loud.`,
+      d.founder
+        ? salaryTo > salaryFrom
+          ? `The business compounds. ₹${salaryFrom.toFixed(1)} → ₹${salaryTo.toFixed(1)} LPA of owner’s draw.`
+          : `The draw thins to ₹${salaryTo.toFixed(1)} LPA. Founders eat last.`
+        : salaryTo > salaryFrom
+          ? `The appraisal cycles do their quiet work. ₹${salaryFrom.toFixed(1)} → ₹${salaryTo.toFixed(1)} LPA.`
+          : `The paycheck shrinks to ₹${salaryTo.toFixed(1)} LPA. Nobody calls it a demotion out loud.`,
     )
   }
   const savingsDelta = after.savings - before.savings

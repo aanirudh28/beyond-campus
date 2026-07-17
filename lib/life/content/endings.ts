@@ -1,4 +1,4 @@
-import type { Ending } from '../types'
+﻿import type { Ending } from '../types'
 
 // Ordered most-specific to most-generic. First match wins.
 // selectEnding falls through to 'the_open_road', which matches everything.
@@ -24,7 +24,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'The business did not make it. You did. Everyone who watched you build, fail, and stand back up wants you on their team, and they are willing to pay for the scar tissue.',
     baselineRarity: 5,
-    match: { allFlags: ['own_business'], maxSavings: 15 },
+    match: { allFlags: ['own_business'], maxSavings: 25 },
   },
   {
     id: 'the_founder',
@@ -34,7 +34,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'You quit the salary, survived the invoices, and built a thing that works. Not unicorn-famous. Something rarer: profitable, yours, and still standing at 45.',
     baselineRarity: 4,
-    match: { allFlags: ['own_business'], minSavings: 35 },
+    match: { allFlags: ['own_business'], minSavings: 75 },
   },
   {
     id: 'the_exit',
@@ -64,7 +64,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'You took everything the big cities taught you and planted it where you began. Your town has your fingerprints on it now, and your Sundays have a courtyard.',
     baselineRarity: 6,
-    match: { allFlags: ['hometown_builder'], minStat: { family: 70 }, minSavings: 55 },
+    match: { allFlags: ['hometown_builder'], minStat: { family: 75 }, minSavings: 85 },
   },
   {
     id: 'the_golden_handcuffs',
@@ -74,7 +74,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'The package is spectacular and so is the emptiness around it. You bought everything except the Tuesday evenings, and those turned out to be the expensive part.',
     baselineRarity: 4,
-    match: { minSalary: 45, maxStat: { family: 40 }, minStat: { burnout: 45 } },
+    match: { minSalary: 40, maxStat: { family: 40 }, minStat: { burnout: 45 } },
   },
   {
     id: 'the_burnout',
@@ -84,7 +84,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'You treated your body like a rental car and the lease came due. The career survived. What it ran on did not, and no appraisal cycle gives that back.',
     baselineRarity: 5,
-    match: { minStat: { burnout: 80 } },
+    match: { minStat: { burnout: 78 } },
   },
   {
     id: 'the_emi_horizon',
@@ -94,7 +94,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'The flat is beautiful and it owns you. Every risk you could not take, every leap you could not make, arrived on the 5th of the month wearing the same polite face.',
     baselineRarity: 4,
-    match: { allFlags: ['bought_flat_peak'], maxSavings: 32 },
+    match: { allFlags: ['bought_flat_peak'], maxSavings: 38 },
   },
   {
     id: 'the_screenshot_investor',
@@ -104,7 +104,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'The market taught you at full price, more than once, and the tuition came out of your future. The colleagues with the boring SIPs never posted screenshots. They did not need to.',
     baselineRarity: 3,
-    match: { allFlags: ['fno_burn'], maxSavings: 30 },
+    match: { allFlags: ['fno_burn'], maxSavings: 45 },
   },
   {
     id: 'the_ghost_of_linkedin',
@@ -114,7 +114,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'Ten thousand followers, four hundred connections, and a skill set that stopped compounding a decade ago. The audience showed up. The offers checked the work first.',
     baselineRarity: 3,
-    match: { minStat: { network: 60 }, maxStat: { skills: 52 } },
+    match: { minStat: { network: 60 }, maxStat: { skills: 55 } },
   },
   {
     id: 'the_machine_left_behind',
@@ -144,7 +144,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'It was never bad enough to leave, so you never left. Twenty years of a job that fit like a warm chair, and a market value that quietly stopped being consulted.',
     baselineRarity: 5,
-    match: { maxSalary: 24, maxStat: { skills: 55 } },
+    match: { maxSalary: 27, maxStat: { skills: 58 } },
   },
   {
     id: 'married_to_the_work',
@@ -164,7 +164,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'You walked in through the research door nobody told your batch about, and then you kept walking. Your analysis now shapes decisions in rooms your college never dreamed of.',
     baselineRarity: 5,
-    match: { allFlags: ['mbb_research_track'], minStat: { skills: 72 } },
+    match: { allFlags: ['mbb_research_track'], minStat: { skills: 80, reputation: 55 } },
   },
   {
     id: 'the_board_whisperer',
@@ -174,7 +174,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'Twenty years of monthly messages to one good mentor turned into the cheapest, longest, most valuable investment of your career. Relationships compounded harder than money.',
     baselineRarity: 5,
-    match: { allFlags: ['board_seat'], minStat: { reputation: 60 } },
+    match: { allFlags: ['board_seat'], minStat: { reputation: 70 } },
   },
   {
     id: 'the_corner_office',
@@ -184,7 +184,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'You made the final climb and the title landed. The view from the top floor is real, the air is thin, and you earned every metre of the altitude.',
     baselineRarity: 4,
-    match: { allFlags: ['cxo_push'], minStat: { reputation: 65 } },
+    match: { allFlags: ['cxo_push'], minStat: { reputation: 72 } },
   },
   {
     id: 'the_phoenix',
@@ -224,7 +224,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'You converted twenty years of scar tissue into a syllabus. Your students walk into interviews carrying frameworks with your fingerprints on them.',
     baselineRarity: 4,
-    match: { allFlags: ['second_innings'] },
+    match: { allFlags: ['second_innings'], minStat: { skills: 68 } },
   },
   {
     id: 'the_door_opener',
@@ -327,7 +327,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'No famous wins, no famous wounds. You kept a family fed, a roof standing, and a career respectable through two decades that flattened plenty of louder people. Underrated. Deeply.',
     baselineRarity: 5,
-    match: { minSalary: 15, minStat: { family: 45 } },
+    match: { minSalary: 18, minStat: { family: 55 } },
   },
   {
     id: 'the_open_road',

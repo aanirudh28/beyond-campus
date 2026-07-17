@@ -204,7 +204,13 @@ export function advanceChapter(state: GameState): GameState {
     stats.salary = round1(state.flags['exam_track'] ? 4.8 : 3.2 + rng() * 1.2)
   }
 
-  if (stats.salary > 0) {
+  if (state.flags['own_business']) {
+    // Founder economics: the company pays a survival draw first, then
+    // compounds harder, and swings wider, than any appraisal cycle. The
+    // upside beats every salary; the downside is real. That is the trade.
+    if (stats.salary === 0) stats.salary = round1(3 + rng() * 3)
+    else stats.salary = round1(stats.salary * Math.pow(0.95 + rng() * 0.35, years))
+  } else if (stats.salary > 0) {
     const appraisal = Math.pow(1.05 + rng() * 0.04, years)
     stats.salary = round1(stats.salary * appraisal)
   }
