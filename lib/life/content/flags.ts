@@ -83,6 +83,10 @@ export const FLAGS: Record<string, FlagDef> = {
   moonlighted: { desc: 'Ran the secret second laptop for ₹35,000 a month' },
   career_scar: { desc: 'The old moonlighting invoice surfaced in a background check', narrative: true },
   side_hustle: { desc: 'Took freelance cash over course nights', narrative: true },
+  night_owl_years: { desc: 'Owned the US-client night window for the ₹2 LPA premium' },
+  shop_empire: { desc: 'Scaled the cousin’s shop into a three-district distribution business' },
+  owned_audience: { desc: 'Moved the audience to an owned email list after the algorithm turned' },
+  sold_shop: { desc: 'Sold the three-district shop network to the Mumbai rollup' },
 
   // ---- money ----
   invested_early: { desc: 'Started the boring SIP with the first bonus' },

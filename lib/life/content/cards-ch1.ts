@@ -79,6 +79,14 @@ export const CARDS_CH1: Card[] = [
         outcome:
           'Two more months of silence test you. Then a mid-size firm with a real training program says yes. The wait was a bet, and this time it paid.',
       },
+      {
+        id: 'negotiate',
+        label: 'Counter: ₹3.8 LPA and a joining date after results.',
+        effects: { salary: 3.8, reputation: 3, family: -10, burnout: 7 },
+        setFlags: ['took_early_job', 'moved_metro'],
+        outcome:
+          'Your voice shakes on the call and they say yes anyway, because nobody else asked. You join two weeks later at a number you chose. The lesson outlasts the job: everything is a conversation.',
+      },
     ],
   },
   {

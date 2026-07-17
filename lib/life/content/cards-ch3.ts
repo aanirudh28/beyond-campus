@@ -106,6 +106,13 @@ export const CARDS_CH3: Card[] = [
         outcome:
           'Some people wait. This one, after eight months, stops waiting. You get very good at working late.',
       },
+      {
+        id: 'long_distance',
+        label: 'Propose the middle path: together, two cities, two years.',
+        effects: { family: 4, burnout: 6, network: 2 },
+        outcome:
+          'Video calls at 11 p.m., tickets booked six weeks out, a shared calendar with two colours. It holds, barely, on scheduling software and stubbornness. Some middles are bridges. Some are just long.',
+      },
     ],
   },
   {
@@ -543,6 +550,31 @@ export const CARDS_CH3: Card[] = [
     ],
   },
   {
+    id: 'ch3_night_owl_bill',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE CLOCK PRESENTS ITS BILL',
+    condition: { flag: 'night_owl_years' },
+    base: `Two years of Eastern Standard Time. You fell asleep at your cousin's engagement, upright, mid-conversation, and the video is in three family groups. The US client loves you enough to offer a choice: lead the new daytime pod at a small haircut, or keep the night window and its premium. Your mother has stopped asking. That is worse than asking.`,
+    options: [
+      {
+        id: 'day_pod',
+        label: 'Take the day pod. Rejoin the timezone you live in.',
+        effects: { salary: -1, burnout: -8, family: 6 },
+        outcome:
+          'Sunlight, dinners, a body that stops feeling borrowed. The premium goes to whoever says yes next. You stop doing the maths on it after a few months, mostly.',
+      },
+      {
+        id: 'keep_night',
+        label: 'Keep the night. The corpus is compounding.',
+        effects: { salary: 2, burnout: 9, family: -5 },
+        setFlags: ['health_deferred'],
+        outcome:
+          'The account grows on schedule. So does something quieter. You put the annual health check "after this quarter" and the quarter, as always, agrees to wait.',
+      },
+    ],
+  },
+  {
     id: 'ch3_shop_scale',
     chapter: 2,
     kind: 'decision',
@@ -554,6 +586,7 @@ export const CARDS_CH3: Card[] = [
         id: 'scale',
         label: 'Take the deal. Build the catalogue at night.',
         effects: { savings: 6, burnout: 8, family: -3 },
+        setFlags: ['shop_empire'],
         outcome:
           'Three districts, two phones, one exhausted person doing product photography at midnight. The shop’s turnover crosses the family’s old annual income. Something real is growing here.',
       },

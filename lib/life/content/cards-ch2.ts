@@ -467,6 +467,7 @@ export const CARDS_CH2: Card[] = [
         id: 'own_it',
         label: 'Take the night. Sleep is a rookie metric.',
         effects: { salary: 2, burnout: 10, family: -5, reputation: 4 },
+        setFlags: ['night_owl_years'],
         outcome:
           'You learn more about clients in six months of 2 a.m. calls than most learn in three years. Breakfast becomes a meal you eat alone at 4 p.m.',
       },

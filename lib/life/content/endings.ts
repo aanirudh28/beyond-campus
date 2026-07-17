@@ -14,7 +14,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'While everyone else hid from the worst market in a generation, you bought it. The correction that broke a thousand careers quietly built your fortune.',
     baselineRarity: 5,
-    match: { allFlags: ['bought_dip'], minSavings: 120 },
+    match: { allFlags: ['bought_dip'], minSavings: 140 },
   },
   {
     id: 'the_beautiful_failure',
@@ -45,6 +45,16 @@ export const ENDINGS: Ending[] = [
       'Employee six, a pay cut everyone mocked, and years of doing five jobs badly. Then the term sheet landed and finished the argument. The risk was the resume.',
     baselineRarity: 2,
     match: { allFlags: ['exit_money'], minSavings: 105 },
+  },
+  {
+    id: 'the_dukaan_empire',
+    name: 'The Dukaan Empire',
+    emoji: '🏪',
+    tone: 'weird',
+    blurb:
+      'It started as a cousin’s shop and a weekend favour. It ended as a three-district distribution network with a Mumbai term sheet. The MBAs studied case studies. You became one.',
+    baselineRarity: 2,
+    match: { allFlags: ['sold_shop'], minSavings: 45 },
   },
   {
     id: 'the_hometown_king',
@@ -84,7 +94,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'The flat is beautiful and it owns you. Every risk you could not take, every leap you could not make, arrived on the 5th of the month wearing the same polite face.',
     baselineRarity: 4,
-    match: { allFlags: ['bought_flat_peak'], maxSavings: 25 },
+    match: { allFlags: ['bought_flat_peak'], maxSavings: 32 },
   },
   {
     id: 'the_screenshot_investor',
@@ -104,7 +114,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'Ten thousand followers, four hundred connections, and a skill set that stopped compounding a decade ago. The audience showed up. The offers checked the work first.',
     baselineRarity: 3,
-    match: { minStat: { network: 60 }, maxStat: { skills: 48 } },
+    match: { minStat: { network: 60 }, maxStat: { skills: 52 } },
   },
   {
     id: 'the_machine_left_behind',
@@ -114,7 +124,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'You bet that experience alone would hold the line, and the line moved. Judgment without the new tools got priced like vinyl: admired by collectors, ignored by the market.',
     baselineRarity: 4,
-    match: { allFlags: ['ai_resisted'], maxSalary: 24 },
+    match: { allFlags: ['ai_resisted'], maxSalary: 28 },
   },
   {
     id: 'the_perpetual_student',
@@ -197,6 +207,16 @@ export const ENDINGS: Ending[] = [
     match: { allFlags: ['went_abroad'], minSavings: 50 },
   },
   {
+    id: 'the_sandwich_generation',
+    name: 'The Sandwich Generation',
+    emoji: '🫓',
+    tone: 'weird',
+    blurb:
+      'Parents on one side, a child on the other, and you in the middle holding both. No award exists for this. It is the most common heroism in India, and you did it without dropping either.',
+    baselineRarity: 4,
+    match: { allFlags: ['parents_secured', 'kid'], minStat: { family: 50 } },
+  },
+  {
     id: 'the_professor_of_practice',
     name: 'The Professor of Practice',
     emoji: '🎓',
@@ -275,16 +295,6 @@ export const ENDINGS: Ending[] = [
       'You spent two decades renting other people’s distribution, then built your own at an age everyone called too late. Now rooms you have never entered quote you inside them.',
     baselineRarity: 3,
     match: { allFlags: ['one_person_channel'], minStat: { network: 70 } },
-  },
-  {
-    id: 'the_sandwich_generation',
-    name: 'The Sandwich Generation',
-    emoji: '🫓',
-    tone: 'weird',
-    blurb:
-      'Parents on one side, a child on the other, and you in the middle holding both. No award exists for this. It is the most common heroism in India, and you did it without dropping either.',
-    baselineRarity: 4,
-    match: { allFlags: ['parents_secured', 'kid'], minStat: { family: 55 } },
   },
   {
     id: 'the_people_bank',

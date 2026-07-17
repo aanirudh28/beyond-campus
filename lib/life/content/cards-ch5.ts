@@ -490,6 +490,7 @@ export const CARDS_CH5: Card[] = [
         id: 'own_list',
         label: 'Build the email list. Move the audience somewhere you own.',
         effects: { network: 6, skills: 4, burnout: 4 },
+        setFlags: ['owned_audience'],
         outcome:
           'One in twenty follows you to the newsletter, and they turn out to be the twenty that mattered. Owned distribution grows slower and cannot be taken away by a product manager in California.',
       },

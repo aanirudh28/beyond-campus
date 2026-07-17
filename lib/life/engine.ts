@@ -114,7 +114,17 @@ export function dealChapter(state: GameState): Card[] {
     used.add(card.id)
   }
 
-  const total = meta.decisions + meta.events
+  // Bonus slot: arc cards earn extra room, one per chapter. A life whose
+  // choices keep triggering consequences gets a LONGER chapter, not fewer
+  // generic cards. Counted over arcs already dealt plus arcs currently
+  // eligible, so the total is stable across re-deals.
+  const isArc = (c: Card) => c.condition?.flag !== undefined
+  const arcsDealt = seq.filter(isArc).length
+  const arcsWaiting = pool.filter(
+    (c) => isArc(c) && !used.has(c.id) && checkCondition(c.condition, state),
+  ).length
+  const bonus = Math.min(1, arcsDealt + arcsWaiting)
+  const total = meta.decisions + meta.events + bonus
   let events = seq.filter((c) => c.kind === 'event').length
   // Events land at the same stable positions as before: 2, 5, 8...
   const eventSlot = (i: number) => Math.min(2 + i * 3, meta.decisions + i)
@@ -199,7 +209,9 @@ export function advanceChapter(state: GameState): GameState {
     stats.salary = round1(stats.salary * appraisal)
   }
   stats.savings = round1(stats.savings + stats.salary * years * 0.2)
-  stats.burnout = clamp(stats.burnout - 4, 0, 100)
+  // Chapters run longer since the bonus arc slots, so the between-chapter
+  // recovery is one point deeper to keep the burnout economy balanced.
+  stats.burnout = clamp(stats.burnout - 5, 0, 100)
 
   // Track the burnout ceiling for endings before the decay era hides it.
   const flags = state.flags

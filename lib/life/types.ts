@@ -83,7 +83,7 @@ export interface Card {
   pivotal?: boolean // feeds the epilogue digest
   condition?: Condition
   forced?: boolean // events only: always included (e.g. the Correction)
-  options: CardOption[] // 2 for decisions, 1-2 for events
+  options: CardOption[] // 2-3 for decisions, 1-2 for events
 }
 
 export interface ChapterMeta {

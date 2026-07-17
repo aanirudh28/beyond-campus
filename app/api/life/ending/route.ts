@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const body = await req.json()
     const runId = verifyRunToken(body?.token)
     if (!runId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    if (!Array.isArray(body?.choices) || body.choices.length > 45) {
+    if (!Array.isArray(body?.choices) || body.choices.length > 60) {
       return NextResponse.json({ error: 'Invalid run' }, { status: 400 })
     }
 

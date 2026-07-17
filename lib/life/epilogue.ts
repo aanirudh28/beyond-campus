@@ -36,6 +36,11 @@ const ENDING_PROSE: Record<string, EndingProse> = {
       'At 45 you remember the exact font of the term sheet. Employee six, the pay cut your uncle called foolish, the five jobs you did badly for years. The wire hit on a Tuesday morning and you went to the same tapri for chai, because where else would you go.',
     oneLiner: 'They mocked the pay cut for nine years. Then the term sheet landed.',
   },
+  the_dukaan_empire: {
+    opening:
+      'At 45 the rollup’s CEO still calls you before every small-town expansion, because you are the only person on the cap table who has sat in the shop at 6 a.m. waiting for the distributor’s truck. It began as a weekend favour to a cousin. Favours, compounded weekly for twenty years, turn out to be a business model.',
+    oneLiner: 'Started as my cousin’s shop. Ended with a Mumbai term sheet.',
+  },
   the_hometown_king: {
     opening:
       'At 45 your morning walk crosses three things that exist because you came back: the office, the coaching room above the bank, the Sunday market stall run by your first hire. The metro taught you the trade. The town gave it a surname.',

@@ -47,7 +47,9 @@ export function deriveIdentityFacts(state: GameState): string[] {
   if (f['bought_flat_peak']) facts.push('EMI life')
   else if (f['invested_early']) facts.push('SIP running')
   if (f['moonlighted'] && !f['career_scar']) facts.push('Second laptop')
-  if (f['side_biz']) facts.push('Shop partner')
+  if (f['sold_shop']) facts.push('Sold the shop network')
+  else if (f['shop_empire']) facts.push('Three-district shop')
+  else if (f['side_biz']) facts.push('Shop partner')
   if (f['creator_track'] || f['one_person_channel']) facts.push('Posts weekly')
   if (f['gives_back']) facts.push('Saturday classroom')
 

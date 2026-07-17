@@ -169,20 +169,23 @@ export default function DecisionCard({
         </div>
       ) : (
         <div>
-          {/* The road not taken dims and recedes before the consequence lands. */}
-          {card.options.length > 1 && (
-            <div
-              style={{
-                fontSize: 13,
-                color: 'var(--muted-2)',
-                textDecoration: 'line-through',
-                marginBottom: 12,
-                animation: 'lifeFadeDim 0.35s ease both',
-              }}
-            >
-              {card.options.find((o) => o.id !== picked.id)?.label}
-            </div>
-          )}
+          {/* The roads not taken dim and recede before the consequence lands. */}
+          {card.options
+            .filter((o) => o.id !== picked.id)
+            .map((o) => (
+              <div
+                key={o.id}
+                style={{
+                  fontSize: 13,
+                  color: 'var(--muted-2)',
+                  textDecoration: 'line-through',
+                  marginBottom: 12,
+                  animation: 'lifeFadeDim 0.35s ease both',
+                }}
+              >
+                {o.label}
+              </div>
+            ))}
           <div
             style={{
               padding: '16px 18px',

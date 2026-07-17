@@ -379,6 +379,32 @@ export const CARDS_CH6: Card[] = [
 
   // ---- arc cards: these exist only because of a choice made earlier ----
   {
+    id: 'ch6_shop_exit',
+    chapter: 5,
+    kind: 'decision',
+    title: 'THE ROLLUP COMES FOR THE SHOP',
+    pivotal: true,
+    condition: { flag: 'shop_empire' },
+    base: `A Mumbai-funded distribution rollup has been buying networks like the one you and your cousin built, and now a term sheet is on the shop counter, next to the same steel dabba of chai that was there in year one. The number would change both families permanently. The cousin says "you decide, it was always your play". It was never only yours.`,
+    options: [
+      {
+        id: 'sell',
+        label: 'Sell. Twenty years of weekends, finally priced.',
+        effects: { savings: 18, family: -4, reputation: 4 },
+        setFlags: ['sold_shop'],
+        outcome:
+          'The signing happens in a lawyer’s office that smells of new paint. The cousin cries, then buys a Fortuner. The rollup’s CEO starts calling you before every tier-3 expansion, because spreadsheets cannot smell a market.',
+      },
+      {
+        id: 'keep_family',
+        label: 'Refuse. Some things are infrastructure, not inventory.',
+        effects: { family: 9, savings: 2 },
+        outcome:
+          'The term sheet goes back signed with a polite no. The shop stays the place where nephews learn to work and the colony buys on trust. Some returns never touch a bank account.',
+      },
+    ],
+  },
+  {
     id: 'ch6_vrs_window',
     chapter: 5,
     kind: 'decision',
@@ -424,6 +450,31 @@ export const CARDS_CH6: Card[] = [
         effects: { burnout: -8, family: 4, skills: -4 },
         outcome:
           'Six months of slow breakfasts and long drives. The restlessness arrives on schedule around month seven. You now understand why exited founders all look slightly haunted at weddings.',
+      },
+    ],
+  },
+  {
+    id: 'ch6_ev_book_deal',
+    chapter: 5,
+    kind: 'event',
+    title: 'THE PUBLISHER IN THE INBOX',
+    condition: { flag: 'owned_audience' },
+    base: `An editor at a serious publishing house has, it turns out, been reading your newsletter for three years. The email is short: "There is a book in what you write about work and small-town ambition. Nobody has written it honestly yet. Eighteen months, and we will not let you write a bad one."`,
+    options: [
+      {
+        id: 'write_it',
+        label: 'Write it. Eighteen months of Sunday mornings.',
+        effects: { reputation: 6, network: 4, burnout: 4 },
+        setFlags: ['one_person_channel'],
+        outcome:
+          'The book takes twenty-two months, because books do. It sells modestly and travels immodestly: colleges you have never visited teach a chapter of your Sundays.',
+      },
+      {
+        id: 'decline_book',
+        label: 'Decline. The newsletter is the book, one Sunday at a time.',
+        effects: { burnout: -2 },
+        outcome:
+          'You write back with genuine thanks and keep the weekly rhythm. Somewhere out there the unwritten book sits on a shelf of its own, spine uncracked, patient.',
       },
     ],
   },

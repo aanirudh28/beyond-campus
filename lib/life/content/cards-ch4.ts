@@ -80,6 +80,13 @@ export const CARDS_CH4: Card[] = [
         outcome:
           'Relatives ask about it at every function. Your money, meanwhile, stays deployable, and deployable money is what career risks are made of.',
       },
+      {
+        id: 'hometown_house',
+        label: 'Buy in the hometown instead. ₹28 lakhs, parents live in it.',
+        effects: { savings: -8, family: 8, reputation: 1 },
+        outcome:
+          'The registry office smells of old paper and your father cannot stop smiling. "It is not an investment," the broker keeps warning. He is right. It is a different asset class entirely.',
+      },
     ],
   },
   {
