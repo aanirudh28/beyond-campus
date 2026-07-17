@@ -37,6 +37,13 @@ export interface EndingResult {
     mySavings: number
     won: boolean
   }
+  batchmate?: {
+    name: string
+    endingName: string
+    emoji: string
+    savings: number
+    ahead: boolean
+  }
 }
 
 const TONE_COLOR: Record<Ending['tone'], string> = {
@@ -300,6 +307,45 @@ export default function EndingScreen({
             {result.headToHead.won
               ? 'Same cards, same luck, better ledger. Their scoreboard already knows.'
               : 'The original keeps the crown, for now. Same life, one more attempt?'}
+          </p>
+        </div>
+      )}
+
+      {result.batchmate && (
+        <div
+          className="bc-card"
+          style={{
+            padding: '22px 20px',
+            marginBottom: 30,
+            border: '1px solid rgba(255,255,255,0.14)',
+            animation: 'lifeFadeUp 0.6s ease both',
+            animationDelay: '1.5s',
+          }}
+        >
+          <div className="mono-label" style={{ marginBottom: 12 }}>
+            🎓 {result.batchmate.name.toUpperCase()} FROM YOUR SECTION · SAME MARKET, DIFFERENT CHOICES
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 8, alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: 26 }}>{ending.emoji}</div>
+              <div style={{ fontFamily: 'var(--serif)', fontSize: 17 }}>You</div>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--blue-soft)' }}>
+                ₹{Math.round(stats.savings)}L
+              </div>
+            </div>
+            <div className="mono-label">VS</div>
+            <div>
+              <div style={{ fontSize: 26 }}>{result.batchmate.emoji}</div>
+              <div style={{ fontFamily: 'var(--serif)', fontSize: 17 }}>{result.batchmate.name}</div>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted)' }}>
+                ₹{result.batchmate.savings}L · {result.batchmate.endingName}
+              </div>
+            </div>
+          </div>
+          <p style={{ fontSize: 13.5, color: 'var(--muted)', margin: '14px 0 0', lineHeight: 1.55 }}>
+            {result.batchmate.ahead
+              ? `Twenty years of the same market, and your ledger finished ahead. ${result.batchmate.name} would never admit to checking. They checked.`
+              : `${result.batchmate.name} finished ahead on money. The reunion will mention it once, politely, forever.`}
           </p>
         </div>
       )}

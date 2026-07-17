@@ -17,6 +17,7 @@ import { CHAPTERS } from '../lib/life/content/chapters'
 import { ENDINGS, getEnding } from '../lib/life/content/endings'
 import { narrateCard } from '../lib/life/narrate'
 import { composeEpilogue } from '../lib/life/epilogue'
+import { simulateBatchmate } from '../lib/life/batchmate'
 import { mulberry32 } from '../lib/life/rng'
 import type { Profile } from '../lib/life/types'
 
@@ -71,6 +72,25 @@ for (let run = 0; run < 2000; run++) {
   if (epilogue.includes('—')) fail(`${ending.id}: em dash in epilogue`)
   if (!oneLiner || oneLiner.length > 160) fail(`${ending.id}: bad one-liner ${oneLiner}`)
   if (composeEpilogue(state, ending).epilogue !== epilogue) fail('non-deterministic epilogue')
+}
+
+// The batchmate: deterministic, complete, no template leaks.
+for (let seed = 1; seed <= 300; seed++) {
+  const profile: Profile = {
+    stream: STREAMS[seed % 3],
+    city: CITIES[seed % 9 > 5 ? 2 : seed % 9 > 2 ? 1 : 0],
+    ambition: AMBITIONS[seed % 27 > 17 ? 2 : seed % 27 > 8 ? 1 : 0],
+  }
+  const bm = simulateBatchmate(seed * 104729, profile)
+  if (bm.beats.length !== CHAPTERS.length - 1) fail(`batchmate seed ${seed}: ${bm.beats.length} beats`)
+  for (const beat of bm.beats) {
+    if (beat.includes('{name}') || beat.includes('undefined')) fail(`batchmate leak: ${beat}`)
+    if (beat.includes('—')) fail(`em dash in batchmate beat: ${beat}`)
+    if (!beat.includes(bm.name)) fail(`beat missing the batchmate's name: ${beat}`)
+  }
+  if (!ENDINGS.some((e) => e.id === bm.endingId)) fail(`batchmate invalid ending ${bm.endingId}`)
+  const again = simulateBatchmate(seed * 104729, profile)
+  if (JSON.stringify(again) !== JSON.stringify(bm)) fail(`batchmate non-deterministic at seed ${seed}`)
 }
 
 // Every ending must have authored prose, not just the blurb fallback.

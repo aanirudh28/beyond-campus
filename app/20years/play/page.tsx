@@ -17,6 +17,7 @@ import { deriveIdentityFacts } from '@/lib/life/identity'
 import { buildDiary } from '@/lib/life/diary'
 import { narrateCard } from '@/lib/life/narrate'
 import { composeEpilogue } from '@/lib/life/epilogue'
+import { simulateBatchmate } from '@/lib/life/batchmate'
 import LifeSoFar from '@/app/components/life/LifeSoFar'
 import { flushBeacon, setLifeRunId, trackLife } from '@/lib/life/track'
 import { CHAPTERS, CONTENT_VERSION } from '@/lib/life/content/chapters'
@@ -162,6 +163,13 @@ export default function PlayPage() {
     runId: null,
     token: null,
   })
+  // The batchmate lives their whole life the moment yours begins: pure
+  // function of (seed, profile), never re-rolled by your choices.
+  const batchmate = useMemo(
+    () => (state ? simulateBatchmate(state.seed, state.profile) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [state?.seed, state?.profile],
+  )
   // External snapshots (URL + localStorage) read without effects, so the
   // server render stays empty and the client render is authoritative.
   const search = useSyncExternalStore(
@@ -311,10 +319,21 @@ export default function PlayPage() {
         : Promise.resolve(null)
     const parent = await parentPromise
     const originalSavings = Math.round(Number(parent?.stats?.savings) || 0)
+    const bmEnding = batchmate ? getEnding(batchmate.endingId) : null
     const extras = {
       trail: finalState.trail,
       ghosts: buildGhostSummaries(finalState),
       diary: buildDiary(finalState.history),
+      batchmate:
+        batchmate && bmEnding
+          ? {
+              name: batchmate.name,
+              endingName: bmEnding.name,
+              emoji: bmEnding.emoji,
+              savings: Math.round(batchmate.finalStats.savings),
+              ahead: finalState.stats.savings >= batchmate.finalStats.savings,
+            }
+          : undefined,
       challengeUrl: `https://www.beyond-campus.in/20years/play?l=${lifeParam}${runId ? `&c=${runId}` : ''}`,
       headToHead: parent?.ending
         ? {
@@ -405,6 +424,10 @@ export default function PlayPage() {
         before,
         after: next.stats,
         enteringChapter: next.chapter,
+        batchmate:
+          batchmate && batchmate.beats[finishedChapter]
+            ? { name: batchmate.name, line: batchmate.beats[finishedChapter] }
+            : null,
       })
       setPhase('montage')
       window.scrollTo(0, 0)
