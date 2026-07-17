@@ -5,11 +5,9 @@ import { chapterHue } from './chapterTheme'
 
 export default function ChapterIntro({
   meta,
-  ready,
   onBegin,
 }: {
   meta: ChapterMeta
-  ready: boolean
   onBegin: () => void
 }) {
   const hue = chapterHue(meta.index)
@@ -67,16 +65,14 @@ export default function ChapterIntro({
       <button
         className="btn-primary"
         onClick={onBegin}
-        disabled={!ready}
         style={{
-          opacity: ready ? 1 : 0.55,
           minWidth: 200,
           justifyContent: 'center',
           animation: 'lifeFadeUp 0.5s ease both',
           animationDelay: '0.85s',
         }}
       >
-        <span>{ready ? 'Live it' : 'The years are loading…'}</span>
+        <span>Live it</span>
       </button>
     </div>
   )

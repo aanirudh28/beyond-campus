@@ -141,7 +141,9 @@
       "WebFetch(domain:www.justinwelsh.me)",
       "WebFetch(domain:dsmn8.com)",
       "WebFetch(domain:miraflow.ai)",
-      "WebFetch(domain:claude.ai)"
+      "WebFetch(domain:claude.ai)",
+      "PowerShell(npx tsx scripts/life-sim-test.ts --ci)",
+      "PowerShell(npx eslint lib/life/narrate.ts lib/life/epilogue.ts scripts/authored-content-test.ts app/20years/play/page.tsx app/components/life/DecisionCard.tsx app/components/life/ChapterIntro.tsx app/api/life/ending/route.ts)"
     ]
   }
 }

@@ -5,7 +5,7 @@ import { buildLifeReport, replayRun, ReplayError, selectEnding } from '@/lib/lif
 import { getEnding } from '@/lib/life/content/endings'
 import { CONTENT_VERSION } from '@/lib/life/content/chapters'
 import { buildGhostSummaries } from '@/lib/life/ghosts'
-import { fallbackEpilogue, writeEpilogue } from '@/lib/life/ai'
+import { composeEpilogue } from '@/lib/life/epilogue'
 import { endingRarity } from '@/lib/life/rarity'
 import { logLifeEvents } from '@/lib/life/log-events'
 
@@ -47,16 +47,8 @@ export async function POST(req: Request) {
     const ending = getEnding(endingId)
     const report = buildLifeReport(finalState)
 
-    // Epilogue AI call, budget-gated; authored fallback keeps this route alive.
-    let prose = fallbackEpilogue(ending)
-    const { data: allowed } = await svc.rpc('life_consume_ai_call', { run: runId })
-    if (allowed) {
-      const written = await writeEpilogue(finalState, ending)
-      if (written) prose = written
-      else await logLifeEvents(svc, runId, [{ n: 'ai_fallback', p: { callType: 'epilogue', reason: 'error' } }])
-    } else {
-      await logLifeEvents(svc, runId, [{ n: 'ai_fallback', p: { callType: 'epilogue', reason: 'budget' } }])
-    }
+    // Fully authored epilogue: deterministic, instant, costs nothing.
+    const prose = composeEpilogue(finalState, ending)
 
     // Stored-render (doc 04 §3): persist everything the public page needs,
     // so old share links never re-simulate and never degrade.

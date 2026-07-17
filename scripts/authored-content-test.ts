@@ -1,0 +1,89 @@
+// Smoke suite for the authored (zero-AI) narration + epilogue composers.
+// Run: npx tsx scripts/authored-content-test.ts
+// Checks: determinism, no template leaks (undefined/NaN), no em dashes
+// (voice rule), 4-paragraph epilogues, authored prose for every ending,
+// and that continuity actually appears on a healthy share of cards.
+
+import { readFileSync } from 'fs'
+import { join } from 'path'
+import {
+  advanceChapter,
+  applyChoice,
+  createInitialState,
+  dealChapter,
+  selectEnding,
+} from '../lib/life/engine'
+import { CHAPTERS } from '../lib/life/content/chapters'
+import { ENDINGS, getEnding } from '../lib/life/content/endings'
+import { narrateCard } from '../lib/life/narrate'
+import { composeEpilogue } from '../lib/life/epilogue'
+import { mulberry32 } from '../lib/life/rng'
+import type { Profile } from '../lib/life/types'
+
+const STREAMS = ['bba', 'bcom', 'other'] as const
+const CITIES = ['metro', 'tier2', 'tier3'] as const
+const AMBITIONS = ['money', 'stability', 'impact'] as const
+
+let fails = 0
+const fail = (msg: string) => {
+  fails++
+  if (fails <= 20) console.error('FAIL:', msg)
+}
+
+const endingsSeen = new Set<string>()
+let continuityShown = 0
+let cardsSeen = 0
+const distinctLines = new Set<string>()
+
+for (let run = 0; run < 2000; run++) {
+  const rng = mulberry32(run * 7919 + 13)
+  const profile: Profile = {
+    stream: STREAMS[run % 3],
+    city: CITIES[Math.floor(run / 3) % 3],
+    ambition: AMBITIONS[Math.floor(run / 9) % 3],
+  }
+  let state = createInitialState(profile, (run * 2654435761) % 2 ** 31)
+  for (let ch = 0; ch < CHAPTERS.length; ch++) {
+    const cards = dealChapter(state)
+    for (const card of cards) {
+      cardsSeen++
+      const line = narrateCard(card, state)
+      if (line !== undefined) {
+        continuityShown++
+        if (typeof line !== 'string' || line.length < 20 || line.length > 200)
+          fail(`bad continuity on ${card.id}: ${JSON.stringify(line)}`)
+        if (line.includes('—')) fail(`em dash in continuity: ${line}`)
+        if (line.includes('undefined')) fail(`undefined leaked: ${line}`)
+        distinctLines.add(line)
+        if (narrateCard(card, state) !== line) fail(`non-deterministic narration on ${card.id}`)
+      }
+      const option = card.options[Math.floor(rng() * card.options.length)]
+      state = applyChoice(state, card, option)
+    }
+    state = advanceChapter(state)
+  }
+  const ending = getEnding(selectEnding(state))
+  endingsSeen.add(ending.id)
+  const { epilogue, oneLiner } = composeEpilogue(state, ending)
+  const paras = epilogue.split('\n\n')
+  if (paras.length !== 4) fail(`${ending.id}: ${paras.length} paragraphs`)
+  if (epilogue.includes('undefined') || epilogue.includes('NaN')) fail(`${ending.id}: leak in epilogue`)
+  if (epilogue.includes('—')) fail(`${ending.id}: em dash in epilogue`)
+  if (!oneLiner || oneLiner.length > 160) fail(`${ending.id}: bad one-liner ${oneLiner}`)
+  if (composeEpilogue(state, ending).epilogue !== epilogue) fail('non-deterministic epilogue')
+}
+
+// Every ending must have authored prose, not just the blurb fallback.
+const src = readFileSync(join(__dirname, '../lib/life/epilogue.ts'), 'utf8')
+for (const e of ENDINGS) {
+  if (!src.includes(`${e.id}:`)) fail(`ending ${e.id} missing authored prose`)
+}
+
+const coverage = (continuityShown / cardsSeen) * 100
+if (coverage < 60) fail(`continuity coverage only ${coverage.toFixed(1)}%`)
+
+console.log(`runs: 2000, endings reached: ${endingsSeen.size}/${ENDINGS.length}`)
+console.log(`continuity coverage: ${coverage.toFixed(1)}% of cards`)
+console.log(`distinct continuity lines seen: ${distinctLines.size}`)
+console.log(fails === 0 ? 'ALL CHECKS PASSED' : `${fails} FAILURES`)
+process.exit(fails === 0 ? 0 : 1)

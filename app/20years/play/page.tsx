@@ -14,6 +14,8 @@ import {
 import { buildGhostSummaries } from '@/lib/life/ghosts'
 import { deriveIdentityFacts } from '@/lib/life/identity'
 import { buildDiary } from '@/lib/life/diary'
+import { narrateCard } from '@/lib/life/narrate'
+import { composeEpilogue } from '@/lib/life/epilogue'
 import LifeSoFar from '@/app/components/life/LifeSoFar'
 import { flushBeacon, setLifeRunId, trackLife } from '@/lib/life/track'
 import { CHAPTERS, CONTENT_VERSION } from '@/lib/life/content/chapters'
@@ -158,8 +160,6 @@ export default function PlayPage() {
     runId: null,
     token: null,
   })
-  const [narrations, setNarrations] = useState<Record<number, Record<string, string>>>({})
-  const [sceneReady, setSceneReady] = useState<Record<number, boolean>>({})
   // External snapshots (URL + localStorage) read without effects, so the
   // server render stays empty and the client render is authoritative.
   const search = useSyncExternalStore(
@@ -223,44 +223,8 @@ export default function PlayPage() {
     setState(rebuilt.state)
     setCards(rebuilt.cards)
     setCardIndex(rebuilt.cardIndex)
-    setNarrations({})
-    setSceneReady({})
-    fetchScene(rebuilt.state.chapter, saved.history)
     setPhase(rebuilt.cardIndex === 0 ? 'intro' : 'cards')
     window.scrollTo(0, 0)
-  }
-
-  async function fetchScene(chapter: number, choices: ChoiceRecord[]) {
-    const { token } = runRef.current
-    if (!token) {
-      setSceneReady((r) => ({ ...r, [chapter]: true }))
-      return
-    }
-    // One retry (doc 05 §8); each attempt gets its own short window so the
-    // chapter screen never blocks long. Authored base text is the floor.
-    const attempt = async (timeoutMs: number): Promise<Record<string, string> | null> => {
-      const controller = new AbortController()
-      const timer = setTimeout(() => controller.abort(), timeoutMs)
-      try {
-        const res = await fetch('/api/life/scene', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, chapter, choices }),
-          signal: controller.signal,
-        })
-        if (!res.ok) return null
-        const data = await res.json()
-        const narrations = data?.narrations ?? {}
-        return Object.keys(narrations).length ? narrations : null
-      } catch {
-        return null
-      } finally {
-        clearTimeout(timer)
-      }
-    }
-    const narrations = (await attempt(5000)) ?? (await attempt(3500)) ?? {}
-    setNarrations((n) => ({ ...n, [chapter]: narrations }))
-    setSceneReady((r) => ({ ...r, [chapter]: true }))
   }
 
   const abandonRef = useRef<{ chapter: number; cardsAnswered: number } | null>(null)
@@ -315,9 +279,6 @@ export default function PlayPage() {
     setState(initial)
     setCards(dealChapter(initial))
     setCardIndex(0)
-    setNarrations({})
-    setSceneReady({})
-    fetchScene(0, [])
     setPhase('intro')
     setStarting(false)
     window.scrollTo(0, 0)
@@ -392,11 +353,12 @@ export default function PlayPage() {
     }
     // Offline / degraded: the deterministic engine can conclude the life alone.
     const ending = getEnding(selectEnding(finalState))
+    const prose = composeEpilogue(finalState, ending)
     setResult({
       runId: null,
       ending,
-      epilogue: `${ending.blurb}\n\nTwenty years, thirty-odd choices, one ledger. The simulation ends here. The real version starts wherever you are sitting right now, and it plays for keeps.`,
-      oneLiner: ending.blurb.split('. ')[0] + '.',
+      epilogue: prose.epilogue,
+      oneLiner: prose.oneLiner,
       rarity: ending.baselineRarity,
       stats: finalState.stats,
       report: buildLifeReport(finalState),
@@ -429,9 +391,7 @@ export default function PlayPage() {
       setCards(dealChapter(next))
       setCardIndex(0)
       persist(next)
-      fetchScene(next.chapter, next.history)
-      // The years between chapters used to pass invisibly — now they get
-      // a beat. The montage also absorbs the AI scene-loading wait.
+      // The years between chapters used to pass invisibly — now they get a beat.
       setMontage({
         fromYear: CHAPTERS[finishedChapter].yearFrom,
         toYear: CHAPTERS[next.chapter].yearFrom,
@@ -457,8 +417,6 @@ export default function PlayPage() {
     abandonRef.current = null
     setLifeRunId(null)
     runRef.current = { runId: null, token: null }
-    setNarrations({})
-    setSceneReady({})
     clearSave()
     setSaveDismissed(true)
     try {
@@ -723,7 +681,6 @@ export default function PlayPage() {
       {phase === 'intro' && state && (
         <ChapterIntro
           meta={meta}
-          ready={sceneReady[state.chapter] === true}
           onBegin={() => {
             setPhase('cards')
             window.scrollTo(0, 0)
@@ -742,7 +699,7 @@ export default function PlayPage() {
           <DecisionCard
             key={cards[cardIndex].id}
             card={cards[cardIndex]}
-            narration={narrations[state.chapter]?.[cards[cardIndex].id]}
+            continuity={narrateCard(cards[cardIndex], state)}
             age={pos?.age ?? meta.ageFrom}
             year={pos?.year ?? meta.yearFrom}
             onResolved={onResolved}

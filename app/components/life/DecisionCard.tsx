@@ -41,13 +41,13 @@ function deltaChips(option: CardOption) {
 
 export default function DecisionCard({
   card,
-  narration,
+  continuity,
   age,
   year,
   onResolved,
 }: {
   card: Card
-  narration?: string
+  continuity?: string
   age: number
   year: number
   onResolved: (option: CardOption) => void
@@ -103,6 +103,23 @@ export default function DecisionCard({
         </span>
       </div>
 
+      {/* The life you are carrying, in one line, before the scene begins. */}
+      {continuity && (
+        <p
+          style={{
+            fontSize: 14.5,
+            lineHeight: 1.6,
+            color: 'rgba(255,255,255,0.6)',
+            fontStyle: 'italic',
+            fontFamily: 'var(--serif)',
+            margin: '0 0 14px',
+            animation: 'lifeFadeUp 0.5s ease both',
+          }}
+        >
+          {continuity}
+        </p>
+      )}
+
       <p
         style={{
           fontSize: 16.5,
@@ -110,9 +127,10 @@ export default function DecisionCard({
           color: 'rgba(255,255,255,0.88)',
           margin: '0 0 24px',
           animation: 'lifeFadeUp 0.5s ease both',
+          animationDelay: continuity ? '0.15s' : undefined,
         }}
       >
-        {narration || card.base}
+        {card.base}
       </p>
 
       {!picked ? (
