@@ -12,6 +12,7 @@ import { trackLife } from '@/lib/life/track'
 import type { GhostSummary } from '@/lib/life/ghosts'
 import type { DiaryChapter } from '@/lib/life/diary'
 import type { NearMissResult } from '@/lib/life/nearmiss'
+import type { Seat } from '@/lib/life/table'
 
 export type GhostView = GhostSummary
 
@@ -46,6 +47,7 @@ export interface EndingResult {
     ahead: boolean
   }
   nearMisses?: NearMissResult
+  table?: Seat[]
 }
 
 const TONE_COLOR: Record<Ending['tone'], string> = {
@@ -431,6 +433,65 @@ export default function EndingScreen({
           </p>
         ))}
       </div>
+
+      {result.table && result.table.length > 0 && (
+        <div
+          className="bc-card"
+          style={{
+            padding: '22px 20px',
+            marginBottom: 30,
+            textAlign: 'left',
+            animation: 'lifeFadeUp 0.7s ease both',
+            animationDelay: '1.8s',
+          }}
+        >
+          <div className="mono-label" style={{ marginBottom: 16 }}>
+            🍽 THE TABLE AT 36 · WHO IS THERE
+          </div>
+          {result.table.map((seat) => (
+            <div
+              key={seat.label}
+              style={{
+                display: 'flex',
+                gap: 12,
+                marginBottom: 13,
+                opacity: seat.present ? 1 : 0.65,
+              }}
+            >
+              <span style={{ fontSize: 19, filter: seat.present ? 'none' : 'grayscale(1)' }}>
+                {seat.emoji}
+              </span>
+              <div>
+                <div
+                  style={{
+                    fontFamily: 'var(--serif)',
+                    fontSize: 15.5,
+                    color: seat.present ? 'var(--fg)' : 'var(--muted)',
+                  }}
+                >
+                  {seat.label}
+                  {!seat.present && (
+                    <span
+                      style={{
+                        fontFamily: 'var(--mono)',
+                        fontSize: 9,
+                        letterSpacing: 1.5,
+                        color: '#FF8F8F',
+                        marginLeft: 8,
+                      }}
+                    >
+                      EMPTY CHAIR
+                    </span>
+                  )}
+                </div>
+                <div style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--muted)', marginTop: 2 }}>
+                  {seat.line}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {trail && (
         <div style={{ animation: 'lifeFadeUp 0.7s ease both', animationDelay: '1.9s' }}>

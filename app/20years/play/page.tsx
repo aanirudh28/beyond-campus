@@ -22,6 +22,7 @@ import { deriveOrigin } from '@/lib/life/origins'
 import { MARKET_LABEL, marketHeadline, marketPhase } from '@/lib/life/market'
 import { nearMissEndings } from '@/lib/life/nearmiss'
 import { recordPastLife } from '@/lib/life/lives'
+import { buildTable } from '@/lib/life/table'
 import LifeSoFar from '@/app/components/life/LifeSoFar'
 import { flushBeacon, setLifeRunId, trackLife } from '@/lib/life/track'
 import { CHAPTERS, CONTENT_VERSION } from '@/lib/life/content/chapters'
@@ -334,6 +335,7 @@ export default function PlayPage() {
     const bmEnding = batchmate ? getEnding(batchmate.endingId) : null
     const extras = {
       nearMisses: nearMissEndings(finalState, selectEnding(finalState)),
+      table: buildTable(finalState, batchmate?.name ?? null),
       trail: finalState.trail,
       ghosts: buildGhostSummaries(finalState),
       diary: buildDiary(finalState.history),

@@ -19,6 +19,7 @@ import { narrateCard } from '../lib/life/narrate'
 import { composeEpilogue } from '../lib/life/epilogue'
 import { simulateBatchmate } from '../lib/life/batchmate'
 import { nearMissEndings } from '../lib/life/nearmiss'
+import { buildTable } from '../lib/life/table'
 import { mulberry32 } from '../lib/life/rng'
 import type { Profile } from '../lib/life/types'
 
@@ -93,6 +94,18 @@ for (let run = 0; run < 2000; run++) {
   }
   if (JSON.stringify(nearMissEndings(state, ending.id)) !== JSON.stringify(nm))
     fail('non-deterministic near-miss')
+
+  // The table: always set, parents always seated, at most two empty chairs.
+  const table = buildTable(state, 'Priya')
+  if (table.length < 2 || table.length > 7) fail(`table has ${table.length} seats`)
+  const absences = table.filter((s) => !s.present).length
+  if (absences > 2) fail(`${absences} empty chairs`)
+  for (const seat of table) {
+    if (!seat.line || seat.line.includes('undefined') || seat.line.includes('—'))
+      fail(`bad seat line: ${seat.line}`)
+  }
+  if (JSON.stringify(buildTable(state, 'Priya')) !== JSON.stringify(table))
+    fail('non-deterministic table')
 }
 
 // The batchmate: deterministic, complete, no template leaks.
