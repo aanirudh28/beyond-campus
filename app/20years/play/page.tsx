@@ -21,6 +21,7 @@ import { simulateBatchmate } from '@/lib/life/batchmate'
 import { deriveOrigin } from '@/lib/life/origins'
 import { MARKET_LABEL, marketHeadline, marketPhase } from '@/lib/life/market'
 import { nearMissEndings } from '@/lib/life/nearmiss'
+import { recordPastLife } from '@/lib/life/lives'
 import LifeSoFar from '@/app/components/life/LifeSoFar'
 import { flushBeacon, setLifeRunId, trackLife } from '@/lib/life/track'
 import { CHAPTERS, CONTENT_VERSION } from '@/lib/life/content/chapters'
@@ -302,6 +303,13 @@ export default function PlayPage() {
     setPhase('finale')
     window.scrollTo(0, 0)
     clearSave()
+    // This life joins the museum: ending, ledger, and the hand dealt.
+    recordPastLife({
+      e: selectEnding(finalState),
+      s: Math.round(finalState.stats.savings),
+      o: deriveOrigin(finalState.seed).id,
+      ts: Date.now(),
+    })
     // The reveal is theater: even if the API answers instantly, hold the
     // weighing-of-the-ledger beat before showing the ending.
     const t0 = Date.now()

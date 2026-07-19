@@ -119,6 +119,7 @@ export interface Ending {
   emoji: string
   tone: 'good' | 'bad' | 'weird'
   blurb: string // 2 sentences, authored; shown on card, OG image, and AI fallback
+  hint: string // spoiler-safe scent for the locked collection card: shape, not mechanics
   baselineRarity: number // authored prior %, used until real N is meaningful
   match: EndingMatch
 }

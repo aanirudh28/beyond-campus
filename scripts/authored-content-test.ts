@@ -118,6 +118,9 @@ for (let seed = 1; seed <= 300; seed++) {
 const src = readFileSync(join(__dirname, '../lib/life/epilogue.ts'), 'utf8')
 for (const e of ENDINGS) {
   if (!src.includes(`${e.id}:`)) fail(`ending ${e.id} missing authored prose`)
+  // And a locked-collection hint: short, evocative, voice-clean.
+  if (!e.hint || e.hint.length < 8 || e.hint.length > 70) fail(`${e.id}: bad hint "${e.hint}"`)
+  if (e.hint.includes('—')) fail(`${e.id}: em dash in hint`)
 }
 
 // Continuity is deliberately selective: every pivotal moment carries it,

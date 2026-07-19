@@ -3,7 +3,9 @@
 import { useMemo, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { SiteFooter, SiteNav } from '@/app/components/SiteChrome'
-import { ENDINGS } from '@/lib/life/content/endings'
+import { ENDINGS, getEnding } from '@/lib/life/content/endings'
+import { ORIGINS } from '@/lib/life/origins'
+import { parsePastLives, readPastLivesRaw } from '@/lib/life/lives'
 
 // The ending collection: every life this device has lived, and the
 // silhouettes of the ones still out there. Pure localStorage, no account.
@@ -32,8 +34,14 @@ export default function CollectionPage() {
       return new Set<string>()
     }
   }, [raw])
+  const livesRaw = useSyncExternalStore(emptySubscribe, readPastLivesRaw, () => '[]')
+  const lives = useMemo(() => parsePastLives(livesRaw), [livesRaw])
 
   const found = ENDINGS.filter((e) => discovered.has(e.id)).length
+  const rarest = ENDINGS.filter((e) => discovered.has(e.id)).reduce(
+    (min, e) => Math.min(min, e.baselineRarity),
+    100,
+  )
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg)' }}>
@@ -84,6 +92,64 @@ export default function CollectionPage() {
           />
         </div>
 
+        {lives.length > 0 && (
+          <div style={{ maxWidth: 560, margin: '0 auto 48px' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 26,
+                marginBottom: 22,
+                fontFamily: 'var(--mono)',
+                fontSize: 10.5,
+                letterSpacing: 1.5,
+                color: 'var(--muted)',
+              }}
+            >
+              <span>{lives.length} {lives.length === 1 ? 'LIFE' : 'LIVES'} LIVED</span>
+              <span>{found} OF {ENDINGS.length} FOUND</span>
+              {found > 0 && <span>RAREST ~{rarest}%</span>}
+            </div>
+            <div className="mono-label" style={{ marginBottom: 12 }}>
+              YOUR LIVES, MOST RECENT FIRST
+            </div>
+            {lives
+              .slice(-12)
+              .reverse()
+              .map((life, i) => {
+                const ending = getEnding(life.e)
+                const origin = ORIGINS.find((o) => o.id === life.o)
+                return (
+                  <div
+                    key={`${life.ts}-${i}`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      gap: 10,
+                      padding: '9px 2px',
+                      borderBottom: '1px solid rgba(255,255,255,0.07)',
+                    }}
+                  >
+                    <span style={{ fontSize: 17 }}>{ending.emoji}</span>
+                    <span style={{ fontFamily: 'var(--serif)', fontSize: 15.5 }}>{ending.name}</span>
+                    <span
+                      style={{
+                        marginLeft: 'auto',
+                        fontFamily: 'var(--mono)',
+                        fontSize: 10,
+                        letterSpacing: 1,
+                        color: 'var(--muted-2)',
+                        textAlign: 'right',
+                      }}
+                    >
+                      {life.s < 0 ? '-' : ''}₹{Math.abs(life.s)}L{origin ? ` · ${origin.identity.toUpperCase()}` : ''}
+                    </span>
+                  </div>
+                )
+              })}
+          </div>
+        )}
+
         <div
           style={{
             display: 'grid',
@@ -129,10 +195,21 @@ export default function CollectionPage() {
                   {TONE_LABEL[ending.tone]}
                 </div>
                 <p style={{ fontSize: 12.5, lineHeight: 1.55, color: 'var(--muted)', margin: 0 }}>
-                  {got
-                    ? ending.blurb.split('. ')[0] + '.'
-                    : `Still unlived. Around ${ending.baselineRarity}% of players find this one.`}
+                  {got ? ending.blurb.split('. ')[0] + '.' : ending.hint}
                 </p>
+                {!got && (
+                  <div
+                    style={{
+                      fontFamily: 'var(--mono)',
+                      fontSize: 8.5,
+                      letterSpacing: 1.5,
+                      color: 'var(--muted-2)',
+                      marginTop: 8,
+                    }}
+                  >
+                    ~{ending.baselineRarity}% OF PLAYERS FIND IT
+                  </div>
+                )}
               </div>
             )
           })}
