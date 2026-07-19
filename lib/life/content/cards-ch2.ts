@@ -1,6 +1,6 @@
-import type { Card } from '../types'
+﻿import type { Card } from '../types'
 
-// Chapter 2 · THE GRIND · Age 23-26 · 2028-2031
+// Chapter 2 · THE GRIND · Age 23-25 · 2028-2030
 // First job reality: switches, managers, money habits, the metro question.
 
 export const CARDS_CH2: Card[] = [
@@ -86,7 +86,7 @@ export const CARDS_CH2: Card[] = [
     chapter: 1,
     kind: 'decision',
     title: 'YOUR SLIDE, HIS VOICE',
-    base: `In the quarterly review, a senior presents your analysis with the pronoun swapped. "So I dug into the churn data..." Your manager nods along. You have thirty seconds to decide what kind of colleague you are going to be for the next twenty years.`,
+    base: `In the quarterly review, a senior presents your analysis with the pronoun swapped. "So I dug into the churn data..." Your manager nods along. You have thirty seconds to decide what kind of colleague you are going to be for the next fifteen years.`,
     options: [
       {
         id: 'speak',
@@ -138,7 +138,7 @@ export const CARDS_CH2: Card[] = [
     chapter: 1,
     kind: 'decision',
     title: 'THE FIRST REAL BONUS',
-    base: `₹1.1 lakh lands in your account, the first money that is not already spoken for. The phone in your pocket is two generations old and everyone at work has noticed. An index fund SIP calculator is open in another tab, showing what this becomes in twenty years.`,
+    base: `₹1.1 lakh lands in your account, the first money that is not already spoken for. The phone in your pocket is two generations old and everyone at work has noticed. An index fund SIP calculator is open in another tab, showing what this becomes in fifteen years.`,
     options: [
       {
         id: 'invest',

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { forwardRef } from 'react'
 import type { Ending, Stats } from '@/lib/life/types'
@@ -50,7 +50,7 @@ const ShareCard = forwardRef<
             marginBottom: 70,
           }}
         >
-          20 YEARS IN 60 MINUTES
+          15 YEARS IN 60 MINUTES
         </div>
         <div style={{ fontSize: 150, lineHeight: 1, marginBottom: 40 }}>{ending.emoji}</div>
         <div
@@ -126,7 +126,7 @@ const ShareCard = forwardRef<
             color: 'rgba(255,255,255,0.4)',
           }}
         >
-          PLAY YOUR 20 YEARS · beyond-campus.in/20years
+          PLAY YOUR 15 YEARS · beyond-campus.in/20years
         </div>
       </div>
     </div>

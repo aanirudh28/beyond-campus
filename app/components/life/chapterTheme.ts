@@ -1,5 +1,5 @@
-// One hue per chapter: the screen ages with the player, dawn blue at 21
-// through warm gold at 45. Used by the play page's ambient layer, chapter
+﻿// One hue per chapter: the screen ages with the player, dawn blue at 21
+// through warm gold at 36. Used by the play page's ambient layer, chapter
 // intros, and the montage. Display-only.
 export const CHAPTER_HUES: { glow: string; accent: string }[] = [
   { glow: 'rgba(79, 124, 255, 0.16)', accent: '#7AB7FF' }, // 1 THE HUNT — dawn blue

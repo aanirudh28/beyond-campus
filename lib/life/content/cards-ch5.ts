@@ -1,6 +1,6 @@
-import type { Card } from '../types'
+﻿import type { Card } from '../types'
 
-// Chapter 5 · THE CORRECTION · Age 33-38 · 2038-2043
+// Chapter 5 · THE CORRECTION · Age 30-33 · 2035-2038
 // The downturn plus the AI wave. Who compounds through it, who gets compounded.
 
 export const CARDS_CH5: Card[] = [
@@ -10,7 +10,7 @@ export const CARDS_CH5: Card[] = [
     chapter: 4,
     kind: 'event',
     forced: true,
-    title: 'THE CORRECTION OF 2039',
+    title: 'THE CORRECTION OF 2036',
     pivotal: true,
     condition: { minStat: { skills: 60 }, notFlag: 'own_business' },
     base: `It arrives the way corrections do, slowly and then all at once. Funding freezes, hiring stops, and the AI systems that were "assistants" last year are quietly doing the work of entire teams this year. Your company cuts 20 percent. You are not on the list. You are in the room where the list is made.`,
@@ -37,7 +37,7 @@ export const CARDS_CH5: Card[] = [
     chapter: 4,
     kind: 'event',
     forced: true,
-    title: 'THE CORRECTION OF 2039',
+    title: 'THE CORRECTION OF 2036',
     pivotal: true,
     condition: { maxStat: { skills: 59 }, notFlag: 'own_business' },
     base: `It arrives the way corrections do, slowly and then all at once. Funding freezes, hiring stops, and the AI systems that were "assistants" last year are quietly doing the work your role used to justify. The restructure email has a meeting invite attached. Your name is in the subject line.`,
@@ -301,7 +301,7 @@ export const CARDS_CH5: Card[] = [
         label: 'Wheel her out. The paperwork already worked.',
         effects: { family: 8, burnout: -4, savings: -1 },
         outcome:
-          'The scariest week of the year produces a bill you barely feel. Past-you, filling forms at 31, turns out to have been the richest person in the family.',
+          'The scariest week of the year produces a bill you barely feel. Past-you, filling forms at 28, turns out to have been the richest person in the family.',
       },
     ],
   },

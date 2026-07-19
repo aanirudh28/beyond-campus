@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { serviceClient } from '@/lib/tracker'
 import { issueRunToken } from '@/lib/life/token'
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       .gte('created_at', dayAgo)
     if ((count || 0) >= DAILY_IP_CAP) {
       return NextResponse.json(
-        { error: 'Daily limit reached. The next twenty years can wait until tomorrow.' },
+        { error: 'Daily limit reached. The next fifteen years can wait until tomorrow.' },
         { status: 429 },
       )
     }

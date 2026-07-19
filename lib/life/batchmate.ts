@@ -1,4 +1,4 @@
-import type { Profile, Stats } from './types'
+﻿import type { Profile, Stats } from './types'
 import {
   advanceChapter,
   answeredInChapter,
@@ -11,7 +11,7 @@ import { CHAPTERS } from './content/chapters'
 import { mulberry32 } from './rng'
 
 // The Batchmate: a named rival from your section who lives their own
-// twenty years alongside yours. Same seed, same market, their own choices
+// fifteen years alongside yours. Same seed, same market, their own choices
 // (a seeded random walk through the same deck logic). Fully deterministic,
 // zero AI, computed client-side and never stored. They surface in the
 // between-chapter montages and get a final verdict on the ending screen.

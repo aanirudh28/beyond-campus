@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -79,13 +79,13 @@ const STEPS = [
   },
   {
     no: '02',
-    title: 'Make 35 choices across 20 years',
-    desc: 'The bank exam your father wants. The 40 percent switch offer. The wedding budget. The 2039 correction. Every choice compounds: salary, savings, skills, burnout, family.',
+    title: 'Make 40 choices across 15 years',
+    desc: 'The bank exam your father wants. The 40 percent switch offer. The wedding budget. The 2036 correction. Every choice compounds: salary, savings, skills, burnout, family.',
   },
   {
     no: '03',
-    title: 'Meet your ending at 45',
-    desc: 'One of 32 endings, with a rarity score, a written epilogue of your life, a graph of your two decades, and a Life Report showing exactly which choices decided it and what to do about them now, at 21.',
+    title: 'Meet your ending at 36',
+    desc: 'One of 33 endings, with a rarity score, a written epilogue of your life, a graph of your fifteen years, and a Life Report showing exactly which choices decided it and what to do about them now, at 21.',
   },
 ]
 
@@ -137,7 +137,7 @@ export default function TwentyYearsLanding() {
               margin: '0 auto 36px',
             }}
           >
-            You, final year, 21. Thirty-five choices later you are 45, and the simulation hands you
+            You, final year, 21. Forty-odd choices later you are 36, and the simulation hands you
             your life: the salary, the savings, the Sundays, and the name of your ending. Then it
             shows you which choices decided everything, while you are still young enough to change
             them.
@@ -306,12 +306,12 @@ export default function TwentyYearsLanding() {
             data-reveal
             style={{ fontSize: 16.5, lineHeight: 1.8, color: 'rgba(255,255,255,0.85)', marginBottom: 40 }}
           >
-            The simulation compresses those twenty years into twenty minutes, so the lesson arrives
+            The simulation compresses those fifteen years into twenty minutes, so the lesson arrives
             while it is still cheap. Play it twice. Your second life will be smarter than your
             first. So will your real one.
           </p>
           <Link href="/20years/play" className="btn-primary" data-reveal style={{ textDecoration: 'none' }}>
-            <span>Meet your 45-year-old self →</span>
+            <span>Meet your 36-year-old self →</span>
           </Link>
         </div>
       </section>

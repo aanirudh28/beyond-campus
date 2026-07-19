@@ -1,4 +1,4 @@
-import type { Card, GameState } from './types'
+﻿import type { Card, GameState } from './types'
 import { ALL_CARDS } from './content/chapters'
 
 // Deterministic scene continuity: the line above each card that proves the
@@ -46,10 +46,10 @@ const FLAG_LINES: Record<string, Fragment> = {
   one_person_channel: { line: 'The newsletter is yours alone: no algorithm, no landlord.', minChapter: 5 },
   gives_back: { line: 'Saturday mornings belong to a classroom of kids from towns like yours.', minChapter: 4 },
   legacy_giver: { line: 'The scholarship cohort carries your fingerprints into rooms you never entered.', minChapter: 5 },
-  board_seat: { line: 'The twenty-year mentor thread has a board seat at the end of it now.', minChapter: 5 },
+  board_seat: { line: 'The fifteen-year mentor thread has a board seat at the end of it now.', minChapter: 5 },
 
   // career moves
-  switched_early: { line: 'The 40 percent switch at 25 reset your base, and every appraisal since has paid on it.' },
+  switched_early: { line: 'The 40 percent switch at 24 reset your base, and every appraisal since has paid on it.' },
   loyal_arc: { line: 'You stayed when the batch jumped. The lead track was the reward, and the risk.' },
   moved_metro: { line: 'The metro owns your weekdays. Home happens on a festival calendar.' },
   stayed_rooted: { line: 'Your parents are twenty minutes away. You chose that, and you remember choosing it.' },
@@ -68,7 +68,7 @@ const FLAG_LINES: Record<string, Fragment> = {
   cxo_push: { line: 'The top floor is visibly close now. So is what the climb charges.', minChapter: 4 },
   chose_enough: { line: 'You stopped climbing on purpose. The evenings came back first.', minChapter: 4 },
   second_innings: { line: 'The syllabus you teach is made from your own scar tissue.', minChapter: 5 },
-  laid_off_once: { line: 'The 2039 list had your name on it once. You negotiated out and kept the story.', minChapter: 4 },
+  laid_off_once: { line: 'The 2036 list had your name on it once. You negotiated out and kept the story.', minChapter: 4 },
   demoted_survived: { line: 'The sideways seat after the Correction still stings, and still pays.', minChapter: 4 },
   moonlighted: { line: 'The second laptop stays in the cupboard: ₹35,000 a month, and a secret with a shelf life.' },
   second_engine: { line: 'The side consulting practice hums after dinner. Two engines now.', minChapter: 4 },

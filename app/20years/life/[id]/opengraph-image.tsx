@@ -1,8 +1,8 @@
-import { ImageResponse } from 'next/og'
+﻿import { ImageResponse } from 'next/og'
 import { createClient } from '@supabase/supabase-js'
 import { getEnding } from '@/lib/life/content/endings'
 
-export const alt = '20 Years in 60 Minutes — a career life-simulator by Beyond Campus'
+export const alt = '15 Years in 60 Minutes — a career life-simulator by Beyond Campus'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -11,7 +11,7 @@ export const contentType = 'image/png'
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   let endingName = 'Which ending will you get?'
   let emoji = '⏳'
-  let rarityLine = '35 CHOICES · 32 ENDINGS · 20 YEARS'
+  let rarityLine = '40 CHOICES · 33 ENDINGS · 15 YEARS'
 
   try {
     const { id } = await params
@@ -29,7 +29,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
         const ending = getEnding(run.ending_id)
         endingName = ending.name
         emoji = ending.emoji
-        rarityLine = 'SOMEONE LIVED 20 YEARS AND GOT THIS ENDING'
+        rarityLine = 'SOMEONE LIVED 15 YEARS AND GOT THIS ENDING'
       }
     }
   } catch {
@@ -73,7 +73,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
             marginBottom: 40,
           }}
         >
-          20 YEARS IN 60 MINUTES
+          15 YEARS IN 60 MINUTES
         </div>
         <div style={{ display: 'flex', fontSize: 96, marginBottom: 24 }}>{emoji}</div>
         <div

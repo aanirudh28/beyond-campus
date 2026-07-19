@@ -1,6 +1,6 @@
-import type { Card } from '../types'
+﻿import type { Card } from '../types'
 
-// Chapter 6 · THE LEDGER · Age 38-45 · 2043-2050
+// Chapter 6 · THE LEDGER · Age 33-36 · 2038-2041
 // The final accounting: what was it all for, and who did you become.
 
 export const CARDS_CH6: Card[] = [
@@ -70,7 +70,7 @@ export const CARDS_CH6: Card[] = [
         effects: { savings: -6, reputation: 10, family: 6, burnout: -4 },
         setFlags: ['legacy_giver'],
         outcome:
-          'The first batch calls it by your name without asking you. Twenty years of grinding, and this line item is the one your kids bring up at school.',
+          'The first batch calls it by your name without asking you. Fifteen years of grinding, and this line item is the one your kids bring up at school.',
       },
       {
         id: 'not_yet',
@@ -112,7 +112,7 @@ export const CARDS_CH6: Card[] = [
     chapter: 5,
     kind: 'decision',
     title: 'THE SECOND INNINGS',
-    base: `Twenty years into one industry, a genuine fork: a respected institute wants you to design and run their new practical business program. Half the salary, triple the meaning, your accumulated scar tissue converted into curriculum. The corporate ladder still has rungs left, if you want them.`,
+    base: `Fifteen years into one industry, a genuine fork: a respected institute wants you to design and run their new practical business program. Half the salary, triple the meaning, your accumulated scar tissue converted into curriculum. The corporate ladder still has rungs left, if you want them.`,
     condition: { minStat: { skills: 60 } },
     options: [
       {
@@ -163,7 +163,7 @@ export const CARDS_CH6: Card[] = [
     kind: 'decision',
     title: 'THE CHANNEL WITH YOUR NAME ON IT',
     condition: { minStat: { reputation: 60 } },
-    base: `Twenty years of scars and playbooks are sitting in your head, monetisable and mortal. A weekly channel, a newsletter, maybe the book your industry keeps not writing. Building an audience at 40 feels faintly ridiculous. So did cold-messaging an alum at 21.`,
+    base: `Fifteen years of scars and playbooks are sitting in your head, monetisable and mortal. A weekly channel, a newsletter, maybe the book your industry keeps not writing. Building an audience at 34 feels faintly ridiculous. So did cold-messaging an alum at 21.`,
     options: [
       {
         id: 'publish',
@@ -314,7 +314,7 @@ export const CARDS_CH6: Card[] = [
     chapter: 5,
     kind: 'event',
     title: 'THE EMPTY CHAIR',
-    base: `Your father does not see the end of this chapter. It is peaceful, and it is still the heaviest thing that has ever happened to you. In the drawer of his desk you find a folder with every newspaper cutting about your industry from twenty years, annotated in his handwriting. He was keeping up. He never once said so.`,
+    base: `Your father does not see the end of this chapter. It is peaceful, and it is still the heaviest thing that has ever happened to you. In the drawer of his desk you find a folder with every newspaper cutting about your industry from fifteen years, annotated in his handwriting. He was keeping up. He never once said so.`,
     options: [
       {
         id: 'carry_it',
@@ -347,7 +347,7 @@ export const CARDS_CH6: Card[] = [
     chapter: 5,
     kind: 'event',
     title: 'THE THREAD THAT HELD',
-    base: `Your first manager, the one you never stopped messaging, calls. He is chairing a board now and they need someone exactly like you for an advisor seat. "Twenty years of monthly messages," he laughs, "cheapest retainer I ever paid." Old threads, it turns out, are load-bearing.`,
+    base: `Your first manager, the one you never stopped messaging, calls. He is chairing a board now and they need someone exactly like you for an advisor seat. "Fifteen years of monthly messages," he laughs, "cheapest retainer I ever paid." Old threads, it turns out, are load-bearing.`,
     condition: { flag: 'mentor_kept' },
     options: [
       {
@@ -373,7 +373,7 @@ export const CARDS_CH6: Card[] = [
         label: 'Write the post your 33-year-old self needed.',
         effects: { reputation: 6, network: 5 },
         outcome:
-          'It travels further than anything you have written. The comment that stays with you is from a scared 24-year-old asking if it is too late. You reply: it was not too late for me at 33.',
+          'It travels further than anything you have written. The comment that stays with you is from a scared 24-year-old asking if it is too late. You reply: it was not too late for me at 31.',
       },
     ],
   },
@@ -390,7 +390,7 @@ export const CARDS_CH6: Card[] = [
     options: [
       {
         id: 'sell',
-        label: 'Sell. Twenty years of weekends, finally priced.',
+        label: 'Sell. Fifteen years of weekends, finally priced.',
         effects: { savings: 18, family: -4, reputation: 4 },
         setFlags: ['sold_shop'],
         outcome:
@@ -411,14 +411,14 @@ export const CARDS_CH6: Card[] = [
     kind: 'decision',
     title: 'THE VRS CIRCULAR',
     condition: { flag: 'govt_settled' },
-    base: `The bank announces a voluntary retirement scheme, and for the first time the safe path has an exit door with a number on it. A fintech that lends to the same farmers you spent decades approving wants you as an advisor, "someone who knows how credit actually works outside a deck". The pension is eleven years away. The offer expires Friday.`,
+    base: `The bank announces a voluntary retirement scheme, and for the first time the safe path has an exit door with a number on it. A fintech that lends to the same farmers you spent decades approving wants you as an advisor, "someone who knows how credit actually works outside a deck". The pension is decades away. The offer expires Friday.`,
     options: [
       {
         id: 'take_vrs',
-        label: 'Take the VRS. Twenty years of judgment, finally priced.',
+        label: 'Take the VRS. Fifteen years of judgment, finally priced.',
         effects: { salary: { mult: 1.2 }, skills: 6, reputation: 4, burnout: 3 },
         outcome:
-          'The branch gives you a farewell with marigold garlands and a plaque. At the fintech, engineers half your age ask what defaults smell like before they happen. You know. It turns out that is rare.',
+          'The branch gives you a farewell with marigold garlands and a plaque. At the fintech, engineers a decade younger ask what defaults smell like before they happen. You know. It turns out that is rare.',
       },
       {
         id: 'pension_line',

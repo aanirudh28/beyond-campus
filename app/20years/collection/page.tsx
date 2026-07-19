@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useSyncExternalStore } from 'react'
 import Link from 'next/link'
@@ -59,7 +59,7 @@ export default function CollectionPage() {
           }}
         >
           {found === 0
-            ? 'No endings yet. Your first twenty years are waiting.'
+            ? 'No endings yet. Your first fifteen years are waiting.'
             : found < ENDINGS.length
               ? 'The dimmed cards are lives this device has not lived yet. Different choices find them.'
               : 'All of them. Every single life. Frame this page.'}

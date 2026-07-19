@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { use, useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -67,7 +67,7 @@ export default function LifeResultPage({ params }: { params: Promise<{ id: strin
         {run && (
           <>
             <div className="mono-label" style={{ marginBottom: 22 }}>
-              SOMEONE LIVED 20 YEARS AND GOT
+              SOMEONE LIVED 15 YEARS AND GOT
             </div>
             <div style={{ fontSize: 68, lineHeight: 1, marginBottom: 14 }}>{run.ending.emoji}</div>
             <h1
@@ -236,7 +236,7 @@ export default function LifeResultPage({ params }: { params: Promise<{ id: strin
                 Your 20 years will go differently<em style={{ color: 'var(--blue-soft)' }}>.</em>
               </h2>
               <p style={{ fontSize: 14.5, color: 'var(--muted)', lineHeight: 1.7, margin: '0 0 20px' }}>
-                35 choices. 32 endings. 15 minutes. Free, no signup, and the ending is yours to
+                40 choices. 33 endings. 15 minutes. Free, no signup, and the ending is yours to
                 earn or avoid.
               </p>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>

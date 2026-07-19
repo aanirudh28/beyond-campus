@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import type { Card, ChoiceRecord, GameState, Profile } from '@/lib/life/types'
@@ -504,7 +504,7 @@ export default function PlayPage() {
       `}</style>
 
       {/* The screen ages with the player: a low ambient glow whose color
-          shifts each chapter, dawn blue at 21 through warm gold at 45. */}
+          shifts each chapter, dawn blue at 21 through warm gold at 36. */}
       {state && phase !== 'coldopen' && (
         <div
           aria-hidden
@@ -555,7 +555,7 @@ export default function PlayPage() {
           }}
         >
           <div className="mono-label" style={{ marginBottom: 18 }}>
-            20 YEARS IN 60 MINUTES
+            15 YEARS IN 60 MINUTES
           </div>
 
           {challenge && (
@@ -649,7 +649,7 @@ export default function PlayPage() {
             <em style={{ color: 'var(--blue-soft)' }}>who are you at 21?</em>
           </h1>
           <p style={{ fontSize: 15.5, color: 'var(--muted)', lineHeight: 1.7, margin: '0 0 40px' }}>
-            Three questions. Then the next twenty years of your career happen to you, one choice at
+            Three questions. Then the next fifteen years of your career happen to you, one choice at
             a time.
           </p>
 
@@ -747,7 +747,7 @@ export default function PlayPage() {
 
 // Pure theater before the reveal: the ending is already decided, but the
 // ledger deserves a moment of suspense — names flicker past like a slot
-// machine deciding what to call your twenty years.
+// machine deciding what to call your fifteen years.
 function FinaleTheater({ choiceCount }: { choiceCount: number }) {
   const [nameIdx, setNameIdx] = useState(0)
   // A deterministic spread of names — the wheel is theater, not chance.
@@ -781,7 +781,7 @@ function FinaleTheater({ choiceCount }: { choiceCount: number }) {
       }}
     >
       <div className="mono-label" style={{ marginBottom: 20, animation: 'lifeFadeUp 0.5s ease both' }}>
-        2050
+        2041
       </div>
       <h2
         style={{
@@ -792,7 +792,7 @@ function FinaleTheater({ choiceCount }: { choiceCount: number }) {
           animationDelay: '0.3s',
         }}
       >
-        Twenty years. {choiceCount} choices.
+        Fifteen years. {choiceCount} choices.
       </h2>
       <p
         style={{

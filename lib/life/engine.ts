@@ -195,7 +195,7 @@ export function applyChoice(state: GameState, card: Card, option: CardOption): G
 // Uses its own seeded stream so it never collides with card-selection draws.
 export function advanceChapter(state: GameState): GameState {
   const meta = CHAPTERS[state.chapter]
-  const years = meta.ageTo - meta.ageFrom
+  const years = meta.growthYears
   const rng = mulberry32((state.seed ^ ((state.chapter + 1) * 0x85ebca6b)) >>> 0)
   const stats = { ...state.stats }
 

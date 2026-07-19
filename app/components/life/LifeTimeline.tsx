@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import type { TrailPoint } from '@/lib/life/types'
 
@@ -117,7 +117,7 @@ export default function LifeTimeline({ trail }: { trail: TrailPoint[] }) {
   return (
     <div className="bc-card" style={{ padding: '18px 16px 10px', marginBottom: 28, textAlign: 'left' }}>
       <div className="mono-label" style={{ marginBottom: 12 }}>
-        THE LIFE GRAPH · AGE 21 → 45
+        THE LIFE GRAPH · AGE 21 → 36
       </div>
       <Panel
         label="NET WORTH"

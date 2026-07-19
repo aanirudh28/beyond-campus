@@ -1,4 +1,4 @@
-// The flag registry (doc 03 §5). Every flag name that appears anywhere in
+﻿// The flag registry (doc 03 §5). Every flag name that appears anywhere in
 // the content graph (setFlags, card conditions, ending matchers, report
 // rules) MUST have an entry here — the harness fails on unregistered names,
 // on flags read but never set, and on non-narrative flags set but never read.
@@ -45,7 +45,7 @@ export const FLAGS: Record<string, FlagDef> = {
   creator_spark: { desc: 'The 1 a.m. rejection post travelled; kept writing weekly' },
   creator_track: { desc: 'Published weekly and became findable' },
   creator_paid: { desc: 'First paid brand collaboration on the audience', narrative: true },
-  one_person_channel: { desc: 'Built the owned channel/newsletter at 40' },
+  one_person_channel: { desc: 'Built the owned channel/newsletter at 34' },
   kingmaker: { desc: 'Gave the one senior seat to the protégé and meant it', narrative: true },
   gives_back: { desc: 'Took the Saturday classroom for students from towns like yours' },
   legacy_giver: { desc: 'Funded and mentored the scholarship cohort' },
@@ -54,7 +54,7 @@ export const FLAGS: Record<string, FlagDef> = {
   knows_worth: { desc: 'Researched real market rate after the headhunter call', narrative: true },
 
   // ---- career moves ----
-  switched_early: { desc: 'Took the 40 percent switch at 25', narrative: true },
+  switched_early: { desc: 'Took the 40 percent switch at 24', narrative: true },
   loyal_arc: { desc: 'Stayed for the lead track instead of the 40 percent switch', narrative: true },
   moved_metro: { desc: 'Moved to the metro where the action is' },
   stayed_rooted: { desc: 'Chose to stay close to home, on purpose' },
@@ -76,8 +76,8 @@ export const FLAGS: Record<string, FlagDef> = {
   chose_enough: { desc: 'Held altitude on purpose; redefined winning' },
   second_engine: { desc: 'Built the consulting side practice after the Correction', narrative: true },
   second_innings: { desc: 'Took the institute role; converted scars to syllabus' },
-  crisis_leader: { desc: 'Spent capital saving people during the 2039 cut', narrative: true },
-  laid_off_once: { desc: 'Was on the 2039 list; negotiated out with severance' },
+  crisis_leader: { desc: 'Spent capital saving people during the 2036 cut', narrative: true },
+  laid_off_once: { desc: 'Was on the 2036 list; negotiated out with severance' },
   demoted_survived: { desc: 'Survived the Correction in a sideways seat' },
   correction_winner: { desc: 'The reskilling bet paid: acquihired upward in the recovery', narrative: true },
   moonlighted: { desc: 'Ran the secret second laptop for ₹35,000 a month' },
@@ -107,7 +107,7 @@ export const FLAGS: Record<string, FlagDef> = {
   provider_guilt: { desc: 'Stayed away and sent money, systems, and weekend flights', narrative: true },
   showed_up: { desc: 'Front row at the recital; the deputy took the review' },
   the_folder: { desc: 'Kept the father’s annotated clippings folder going', narrative: true },
-  health_fixed: { desc: 'Paid the body’s first invoice on time at 31', narrative: true },
+  health_fixed: { desc: 'Paid the body’s first invoice on time at 28', narrative: true },
   health_deferred: { desc: 'Marked the body’s first invoice "after this quarter"' },
   health_rebuilt: { desc: 'Rebuilt everything around health after the airport scare' },
   reset_taken: { desc: 'Took the three-month sabbatical and repaired the machine', narrative: true },

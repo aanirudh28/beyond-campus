@@ -32,7 +32,7 @@ export const ENDINGS: Ending[] = [
     emoji: '🚀',
     tone: 'good',
     blurb:
-      'You quit the salary, survived the invoices, and built a thing that works. Not unicorn-famous. Something rarer: profitable, yours, and still standing at 45.',
+      'You quit the salary, survived the invoices, and built a thing that works. Not unicorn-famous. Something rarer: profitable, yours, and still standing at 36.',
     baselineRarity: 4,
     match: { allFlags: ['own_business'], minSavings: 75 },
   },
@@ -112,7 +112,7 @@ export const ENDINGS: Ending[] = [
     emoji: '👻',
     tone: 'bad',
     blurb:
-      'Ten thousand followers, four hundred connections, and a skill set that stopped compounding a decade ago. The audience showed up. The offers checked the work first.',
+      'Ten thousand followers, four hundred connections, and a skill set that stopped compounding years ago. The audience showed up. The offers checked the work first.',
     baselineRarity: 3,
     match: { minStat: { network: 60 }, maxStat: { skills: 55 } },
   },
@@ -142,7 +142,7 @@ export const ENDINGS: Ending[] = [
     emoji: '🛋️',
     tone: 'bad',
     blurb:
-      'It was never bad enough to leave, so you never left. Twenty years of a job that fit like a warm chair, and a market value that quietly stopped being consulted.',
+      'It was never bad enough to leave, so you never left. Fifteen years of a job that fit like a warm chair, and a market value that quietly stopped being consulted.',
     baselineRarity: 5,
     match: { maxSalary: 27, maxStat: { skills: 58 } },
   },
@@ -172,7 +172,7 @@ export const ENDINGS: Ending[] = [
     emoji: '🪑',
     tone: 'good',
     blurb:
-      'Twenty years of monthly messages to one good mentor turned into the cheapest, longest, most valuable investment of your career. Relationships compounded harder than money.',
+      'Fifteen years of monthly messages to one good mentor turned into the cheapest, longest, most valuable investment of your career. Relationships compounded harder than money.',
     baselineRarity: 5,
     match: { allFlags: ['board_seat'], minStat: { reputation: 70 } },
   },
@@ -222,7 +222,7 @@ export const ENDINGS: Ending[] = [
     emoji: '🎓',
     tone: 'good',
     blurb:
-      'You converted twenty years of scar tissue into a syllabus. Your students walk into interviews carrying frameworks with your fingerprints on them.',
+      'You converted fifteen years of scar tissue into a syllabus. Your students walk into interviews carrying frameworks with your fingerprints on them.',
     baselineRarity: 4,
     match: { allFlags: ['second_innings'], minStat: { skills: 68 } },
   },
@@ -282,7 +282,7 @@ export const ENDINGS: Ending[] = [
     emoji: '🌳',
     tone: 'good',
     blurb:
-      'You never left, and it was a choice, not a failure to launch. Every family emergency for two decades found you already there. Some careers are measured in presence.',
+      'You never left, and it was a choice, not a failure to launch. Every family emergency for fifteen years found you already there. Some careers are measured in presence.',
     baselineRarity: 4,
     match: { allFlags: ['stayed_rooted'], minStat: { family: 65 } },
   },
@@ -292,7 +292,7 @@ export const ENDINGS: Ending[] = [
     emoji: '📡',
     tone: 'weird',
     blurb:
-      'You spent two decades renting other people’s distribution, then built your own at an age everyone called too late. Now rooms you have never entered quote you inside them.',
+      'You spent fifteen years renting other people’s distribution, then built your own at an age everyone called too late. Now rooms you have never entered quote you inside them.',
     baselineRarity: 3,
     match: { allFlags: ['one_person_channel'], minStat: { network: 70 } },
   },
@@ -302,7 +302,7 @@ export const ENDINGS: Ending[] = [
     emoji: '🤝',
     tone: 'good',
     blurb:
-      'You spent twenty years depositing into people: the intern you shielded, the mentor you kept, the students you taught. The dividends arrive daily now, in a currency that never inflates.',
+      'You spent fifteen years depositing into people: the intern you shielded, the mentor you kept, the students you taught. The dividends arrive daily now, in a currency that never inflates.',
     baselineRarity: 4,
     match: {
       anyFlags: ['team_shield', 'gives_back', 'mentor_kept'],
@@ -325,7 +325,7 @@ export const ENDINGS: Ending[] = [
     emoji: '🧭',
     tone: 'weird',
     blurb:
-      'No famous wins, no famous wounds. You kept a family fed, a roof standing, and a career respectable through two decades that flattened plenty of louder people. Underrated. Deeply.',
+      'No famous wins, no famous wounds. You kept a family fed, a roof standing, and a career respectable through fifteen years that flattened plenty of louder people. Underrated. Deeply.',
     baselineRarity: 5,
     match: { minSalary: 18, minStat: { family: 55 } },
   },
@@ -335,7 +335,7 @@ export const ENDINGS: Ending[] = [
     emoji: '🛣️',
     tone: 'weird',
     blurb:
-      'Your twenty years refused every template, which is exactly why no template saw you coming. The story is unfinished, and unfinished is another word for still yours.',
+      'Your fifteen years refused every template, which is exactly why no template saw you coming. The story is unfinished, and unfinished is another word for still yours.',
     baselineRarity: 4,
     match: {},
   },

@@ -1,6 +1,6 @@
-import type { Card } from '../types'
+﻿import type { Card } from '../types'
 
-// Chapter 4 · THE WEIGHT · Age 29-33 · 2034-2038
+// Chapter 4 · THE WEIGHT · Age 27-30 · 2032-2035
 // Management, marriage math, EMIs, abroad, the business itch, the body's first invoice.
 
 export const CARDS_CH4: Card[] = [

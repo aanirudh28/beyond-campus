@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import type { Ending, LifeReportItem, Stats, TrailPoint } from '@/lib/life/types'
@@ -125,8 +125,8 @@ export default function EndingScreen({
   function shareWhatsApp() {
     trackLife('share_clicked', { channel: 'whatsapp' })
     const msg = shareUrl
-      ? `I just lived the next 20 years of my career in 20 minutes and ended up as *${ending.name}* ${ending.emoji} Only ${rarity}% of players get this ending. What will yours be? ${shareUrl}`
-      : `I just lived the next 20 years of my career in 20 minutes and ended up as *${ending.name}* ${ending.emoji} Play yours: https://www.beyond-campus.in/20years`
+      ? `I just lived the next 15 years of my career in 20 minutes and ended up as *${ending.name}* ${ending.emoji} Only ${rarity}% of players get this ending. What will yours be? ${shareUrl}`
+      : `I just lived the next 15 years of my career in 20 minutes and ended up as *${ending.name}* ${ending.emoji} Play yours: https://www.beyond-campus.in/20years`
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
@@ -134,7 +134,7 @@ export default function EndingScreen({
     if (!challengeUrl) return
     trackLife('challenge_created')
     trackLife('share_clicked', { channel: 'challenge' })
-    const msg = `I lived a whole 20-year career and got *${ending.name}* ${ending.emoji} Now live MY EXACT life: same cards, same twists, your choices. Beat my ending: ${challengeUrl}`
+    const msg = `I lived a whole 15-year career and got *${ending.name}* ${ending.emoji} Now live MY EXACT life: same cards, same twists, your choices. Beat my ending: ${challengeUrl}`
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
@@ -195,7 +195,7 @@ export default function EndingScreen({
         className="mono-label"
         style={{ marginBottom: 24, animation: 'lifeFadeUp 0.5s ease both' }}
       >
-        THE LEDGER CLOSES · AGE 45 · 2050
+        THE LEDGER CLOSES · AGE 36 · 2041
       </div>
       <div
         style={{
@@ -344,7 +344,7 @@ export default function EndingScreen({
           </div>
           <p style={{ fontSize: 13.5, color: 'var(--muted)', margin: '14px 0 0', lineHeight: 1.55 }}>
             {result.batchmate.ahead
-              ? `Twenty years of the same market, and your ledger finished ahead. ${result.batchmate.name} would never admit to checking. They checked.`
+              ? `Fifteen years of the same market, and your ledger finished ahead. ${result.batchmate.name} would never admit to checking. They checked.`
               : `${result.batchmate.name} finished ahead on money. The reunion will mention it once, politely, forever.`}
           </p>
         </div>

@@ -1,6 +1,6 @@
-import type { Card } from '../types'
+﻿import type { Card } from '../types'
 
-// Chapter 3 · THE FORK · Age 26-29 · 2031-2034
+// Chapter 3 · THE FORK · Age 25-27 · 2030-2032
 // The decade-defining forks: MBA, startups, love, parents, the brand of you.
 
 export const CARDS_CH3: Card[] = [

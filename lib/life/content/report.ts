@@ -1,4 +1,4 @@
-import type { GameState, LifeReportItem } from '../types'
+﻿import type { GameState, LifeReportItem } from '../types'
 
 // The Life Report v2 (doc 09 §3): sliding-doors moments from the simulation
 // mapped to real actions the player can take NOW, at 21. This is the
@@ -31,7 +31,7 @@ const RULES: ReportRule[] = [
     kind: 'reckoning',
     when: (s) => s.flags['moonlighted'] === true,
     item: {
-      moment: 'The second laptop at 25 seemed free. The background check at 35 disagreed.',
+      moment: 'The second laptop at 24 seemed free. The background check at 31 disagreed.',
       lesson: 'Integrity compounds exactly like money, and its drawdowns arrive years after the withdrawal.',
       action: 'Decide your non-negotiables before anyone offers you ₹35,000 to bend one. Write them down this week.',
       cta: { label: 'Build a career that survives audits', href: utm('/guides', 'moonlight_scar') },
@@ -75,7 +75,7 @@ const RULES: ReportRule[] = [
     kind: 'reckoning',
     when: (s) => (s.flags['health_deferred'] === true || s.stats.burnout >= 70) && !s.flags['health_rebuilt'],
     item: {
-      moment: 'The body sent its first invoice at 31 and you marked it "after this quarter".',
+      moment: 'The body sent its first invoice at 28 and you marked it "after this quarter".',
       lesson: 'Burnout compounded like an EMI in your run. Careers are decided at 7 p.m., and yours had nothing left by then.',
       action: 'Sleep and one hour of movement are career infrastructure, not rewards. Install them at 21 when they are cheap.',
       cta: { label: 'Build a sustainable routine', href: utm('/guides', 'body_invoice') },
@@ -166,7 +166,7 @@ const RULES: ReportRule[] = [
     when: (s) => !s.flags['invested_early'],
     item: {
       moment: 'The first bonus went to a phone. The SIP calculator tab stayed closed.',
-      lesson: 'By 45, the friends who started boring SIPs at 23 had a second engine you never built. Time in the market was the whole trick.',
+      lesson: 'By 36, the friends who started boring SIPs at 23 had a second engine you never built. Time in the market was the whole trick.',
       action: 'Whatever your first salary is, automate 10 percent before you can feel it. Start the habit before the money is big.',
       cta: { label: 'Get placed first, invest second', href: utm('/resources/resume-roast', 'sip_gap') },
     },
@@ -198,7 +198,7 @@ const RULES: ReportRule[] = [
     kind: 'gap',
     when: (s) => !s.flags['creator_track'] && !s.flags['creator_spark'] && !s.flags['one_person_channel'],
     item: {
-      moment: 'You knew things for twenty years. The internet never found out.',
+      moment: 'You knew things for fifteen years. The internet never found out.',
       lesson: 'In your run, every opportunity had to be hunted because none could find you. Distribution is an asset, and you never opened the account.',
       action: 'One honest post a week about what you are learning. Most will do nothing. Every fifth one brings a conversation money cannot buy.',
       cta: { label: 'See what travels on LinkedIn', href: utm('/resources/linkedin-scripts', 'voice_gap') },
@@ -244,7 +244,7 @@ const RULES: ReportRule[] = [
     kind: 'honor',
     when: (s) => s.flags['mentor_kept'] === true,
     item: {
-      moment: 'Two lines a month to one good manager became, twenty years later, a board seat.',
+      moment: 'Two lines a month to one good manager became, fifteen years later, a board seat.',
       lesson: 'Cheapest retainer you ever paid. Relationships were the only asset class in your run that never crashed.',
       action: 'Start the practice now, at 21, with whoever teaches you generously. Compounding needs decades, and you have them.',
       cta: { label: 'Learn referral-first hunting', href: utm('/resources/linkedin-scripts', 'thread_honor') },

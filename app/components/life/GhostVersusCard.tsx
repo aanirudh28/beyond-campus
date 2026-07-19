@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { forwardRef } from 'react'
 import type { Ending, Stats } from '@/lib/life/types'
@@ -102,7 +102,7 @@ const GhostVersusCard = forwardRef<
             color: 'rgba(255,255,255,0.45)',
           }}
         >
-          20 YEARS · THE MULTIVERSE VERDICT
+          15 YEARS · THE MULTIVERSE VERDICT
         </div>
 
         {block(

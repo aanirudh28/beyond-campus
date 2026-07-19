@@ -1,4 +1,4 @@
-// 20 Years in 60 Minutes — shared types for the deterministic life engine.
+﻿// 15 Years in 60 Minutes (route /20years) — shared types for the deterministic life engine.
 // The economy is authored TypeScript; AI only decorates narration. Keep every
 // gameplay-relevant number in this content graph, never in prompts.
 
@@ -93,6 +93,10 @@ export interface ChapterMeta {
   ageTo: number
   yearFrom: number
   yearTo: number
+  // Economic compounding span. Display time is compressed (21→36) but the
+  // economy still compounds on these spans, so a hot 15-year career pays
+  // like the old 24-year one. Changing these re-tunes every ending.
+  growthYears: number
   intro: string // chapter transition screen text
   decisions: number // how many decision cards to deal
   events: number // how many pool events to deal
