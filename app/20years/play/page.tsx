@@ -20,6 +20,7 @@ import { composeEpilogue } from '@/lib/life/epilogue'
 import { simulateBatchmate } from '@/lib/life/batchmate'
 import { deriveOrigin } from '@/lib/life/origins'
 import { MARKET_LABEL, marketHeadline, marketPhase } from '@/lib/life/market'
+import { nearMissEndings } from '@/lib/life/nearmiss'
 import LifeSoFar from '@/app/components/life/LifeSoFar'
 import { flushBeacon, setLifeRunId, trackLife } from '@/lib/life/track'
 import { CHAPTERS, CONTENT_VERSION } from '@/lib/life/content/chapters'
@@ -324,6 +325,7 @@ export default function PlayPage() {
     const originalSavings = Math.round(Number(parent?.stats?.savings) || 0)
     const bmEnding = batchmate ? getEnding(batchmate.endingId) : null
     const extras = {
+      nearMisses: nearMissEndings(finalState, selectEnding(finalState)),
       trail: finalState.trail,
       ghosts: buildGhostSummaries(finalState),
       diary: buildDiary(finalState.history),

@@ -2,6 +2,8 @@
 
 import type { GameState } from '@/lib/life/types'
 import type { DiaryChapter } from '@/lib/life/diary'
+import { selectEnding } from '@/lib/life/engine'
+import { getEnding } from '@/lib/life/content/endings'
 import { chapterHue } from './chapterTheme'
 
 // The "Your Life So Far" sheet: tap the stat bar mid-run and see the life
@@ -110,6 +112,33 @@ export default function LifeSoFar({
             </div>
           </div>
         </div>
+
+        {state.chapter >= 3 &&
+          (() => {
+            // The compass: run the real ending matcher on the life as it
+            // stands. Precisely true, and precisely changeable.
+            const heading = getEnding(selectEnding(state))
+            return (
+              <div
+                style={{
+                  padding: '12px 14px',
+                  border: '1px solid rgba(255,198,92,0.3)',
+                  borderRadius: 12,
+                  marginBottom: 22,
+                }}
+              >
+                <div className="mono-label" style={{ fontSize: 9, color: 'var(--muted-2)', marginBottom: 5 }}>
+                  IF THE YEARS STOPPED TODAY
+                </div>
+                <div style={{ fontFamily: 'var(--serif)', fontSize: 16, color: 'var(--fg)' }}>
+                  {heading.emoji} {heading.name}
+                </div>
+                <div style={{ fontSize: 11.5, color: 'var(--muted-2)', marginTop: 4 }}>
+                  The remaining years can still change this.
+                </div>
+              </div>
+            )
+          })()}
 
         <div className="mono-label" style={{ marginBottom: 12 }}>
           THE DIARY

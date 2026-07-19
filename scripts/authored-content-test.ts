@@ -18,6 +18,7 @@ import { ENDINGS, getEnding } from '../lib/life/content/endings'
 import { narrateCard } from '../lib/life/narrate'
 import { composeEpilogue } from '../lib/life/epilogue'
 import { simulateBatchmate } from '../lib/life/batchmate'
+import { nearMissEndings } from '../lib/life/nearmiss'
 import { mulberry32 } from '../lib/life/rng'
 import type { Profile } from '../lib/life/types'
 
@@ -36,6 +37,7 @@ let continuityShown = 0
 let cardsSeen = 0
 let pivotalSeen = 0
 let pivotalCovered = 0
+let runsWithDoors = 0
 const distinctLines = new Set<string>()
 
 for (let run = 0; run < 2000; run++) {
@@ -78,6 +80,19 @@ for (let run = 0; run < 2000; run++) {
   if (epilogue.includes('—')) fail(`${ending.id}: em dash in epilogue`)
   if (!oneLiner || oneLiner.length > 160) fail(`${ending.id}: bad one-liner ${oneLiner}`)
   if (composeEpilogue(state, ending).epilogue !== epilogue) fail('non-deterministic epilogue')
+
+  // Near-miss doors: bounded, sane, deterministic, never the achieved ending.
+  const nm = nearMissEndings(state, ending.id)
+  if (nm.doors.length > 2) fail(`${ending.id}: ${nm.doors.length} doors`)
+  runsWithDoors += nm.doors.length > 0 || nm.closeCall ? 1 : 0
+  for (const miss of [...nm.doors, ...(nm.closeCall ? [nm.closeCall] : [])]) {
+    if (miss.endingId === ending.id) fail('near-miss equals achieved ending')
+    if (!miss.gap || miss.gap.includes('undefined') || miss.gap.includes('NaN') || miss.gap.length > 90)
+      fail(`bad near-miss gap: ${miss.gap}`)
+    if (miss.gap.includes('—')) fail(`em dash in near-miss gap: ${miss.gap}`)
+  }
+  if (JSON.stringify(nearMissEndings(state, ending.id)) !== JSON.stringify(nm))
+    fail('non-deterministic near-miss')
 }
 
 // The batchmate: deterministic, complete, no template leaks.
@@ -113,6 +128,7 @@ if (coverage > 75) fail(`continuity coverage ${coverage.toFixed(1)}% — too noi
 
 console.log(`runs: 2000, endings reached: ${endingsSeen.size}/${ENDINGS.length}`)
 console.log(`continuity: 100% of pivotal cards, ${coverage.toFixed(1)}% overall`)
+console.log(`near-miss doors shown on ${((runsWithDoors / 2000) * 100).toFixed(0)}% of runs`)
 console.log(`distinct continuity lines seen: ${distinctLines.size}`)
 console.log(fails === 0 ? 'ALL CHECKS PASSED' : `${fails} FAILURES`)
 process.exit(fails === 0 ? 0 : 1)

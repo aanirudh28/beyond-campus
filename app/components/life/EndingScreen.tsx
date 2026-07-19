@@ -11,6 +11,7 @@ import { chapterHue } from './chapterTheme'
 import { trackLife } from '@/lib/life/track'
 import type { GhostSummary } from '@/lib/life/ghosts'
 import type { DiaryChapter } from '@/lib/life/diary'
+import type { NearMissResult } from '@/lib/life/nearmiss'
 
 export type GhostView = GhostSummary
 
@@ -44,6 +45,7 @@ export interface EndingResult {
     savings: number
     ahead: boolean
   }
+  nearMisses?: NearMissResult
 }
 
 const TONE_COLOR: Record<Ending['tone'], string> = {
@@ -346,6 +348,63 @@ export default function EndingScreen({
             {result.batchmate.ahead
               ? `Fifteen years of the same market, and your ledger finished ahead. ${result.batchmate.name} would never admit to checking. They checked.`
               : `${result.batchmate.name} finished ahead on money. The reunion will mention it once, politely, forever.`}
+          </p>
+        </div>
+      )}
+
+      {result.nearMisses && (result.nearMisses.doors.length > 0 || result.nearMisses.closeCall) && (
+        <div
+          className="bc-card"
+          style={{
+            padding: '22px 20px',
+            marginBottom: 30,
+            textAlign: 'left',
+            animation: 'lifeFadeUp 0.6s ease both',
+            animationDelay: '1.6s',
+          }}
+        >
+          {result.nearMisses.doors.length > 0 && (
+            <>
+              <div className="mono-label" style={{ marginBottom: 14 }}>
+                🚪 THE DOORS YOU BRUSHED PAST
+              </div>
+              {result.nearMisses.doors.map((d) => (
+                <div key={d.endingId} style={{ display: 'flex', gap: 12, alignItems: 'baseline', marginBottom: 10 }}>
+                  <span style={{ fontSize: 20 }}>{d.emoji}</span>
+                  <div>
+                    <div style={{ fontFamily: 'var(--serif)', fontSize: 16.5 }}>{d.name}</div>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 10.5, letterSpacing: 1, color: 'var(--muted)', marginTop: 2 }}>
+                      {d.gap.toUpperCase()}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+          {result.nearMisses.closeCall && (
+            <div
+              style={{
+                marginTop: result.nearMisses.doors.length ? 14 : 0,
+                paddingTop: result.nearMisses.doors.length ? 14 : 0,
+                borderTop: result.nearMisses.doors.length ? '1px solid rgba(255,255,255,0.1)' : 'none',
+              }}
+            >
+              <div className="mono-label" style={{ marginBottom: 8, color: '#FF8F8F' }}>
+                THE CLOSE CALL
+              </div>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'baseline' }}>
+                <span style={{ fontSize: 20 }}>{result.nearMisses.closeCall.emoji}</span>
+                <div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 16.5 }}>{result.nearMisses.closeCall.name}</div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 10.5, letterSpacing: 1, color: 'var(--muted)', marginTop: 2 }}>
+                    {result.nearMisses.closeCall.gap.toUpperCase()} · YOU WALKED PAST IT
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          <p style={{ fontSize: 12.5, color: 'var(--muted-2)', margin: '14px 0 0', lineHeight: 1.5 }}>
+            Every gap here is exact, computed from your final ledger. Different choices open different doors.
           </p>
         </div>
       )}
