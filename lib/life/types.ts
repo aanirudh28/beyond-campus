@@ -64,6 +64,7 @@ export interface Condition {
   ambition?: Profile['ambition']
   city?: Profile['city']
   stream?: Profile['stream']
+  market?: 'boom' | 'steady' | 'squeeze' | 'crash' | 'rebound' // this chapter's weather
 }
 
 export interface CardOption {

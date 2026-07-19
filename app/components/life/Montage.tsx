@@ -24,6 +24,7 @@ export interface MontageData {
   enteringChapter: number // 1-5, the chapter about to begin
   batchmate?: { name: string; line: string } | null // the rival's years, passing in parallel
   founder?: boolean // own_business: the salary line is an owner's draw, not an appraisal
+  marketLine?: string | null // the weather headline for the years about to begin
 }
 
 function ledgerLines(d: MontageData): string[] {
@@ -78,7 +79,10 @@ function useYearRoll(from: number, to: number, ms = 1200) {
 
 export default function Montage({ data, onDone }: { data: MontageData; onDone: () => void }) {
   const year = useYearRoll(data.fromYear, data.toYear)
-  const lines = useRef(ledgerLines(data)).current
+  const lines = useRef([
+    ...(data.marketLine ? [data.marketLine] : []),
+    ...ledgerLines(data),
+  ]).current
   const flavor = TRANSITIONS[data.enteringChapter]
   const hue = chapterHue(data.enteringChapter)
   const done = useRef(false)

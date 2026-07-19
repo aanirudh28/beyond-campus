@@ -19,6 +19,7 @@ import { narrateCard } from '@/lib/life/narrate'
 import { composeEpilogue } from '@/lib/life/epilogue'
 import { simulateBatchmate } from '@/lib/life/batchmate'
 import { deriveOrigin } from '@/lib/life/origins'
+import { MARKET_LABEL, marketHeadline, marketPhase } from '@/lib/life/market'
 import LifeSoFar from '@/app/components/life/LifeSoFar'
 import { flushBeacon, setLifeRunId, trackLife } from '@/lib/life/track'
 import { CHAPTERS, CONTENT_VERSION } from '@/lib/life/content/chapters'
@@ -430,6 +431,7 @@ export default function PlayPage() {
             ? { name: batchmate.name, line: batchmate.beats[finishedChapter] }
             : null,
         founder: next.flags['own_business'] === true,
+        marketLine: marketHeadline(next.seed, next.chapter),
       })
       setPhase('montage')
       window.scrollTo(0, 0)
@@ -572,7 +574,7 @@ export default function PlayPage() {
                 ⚔ CHALLENGE RUN
               </span>
               <p style={{ fontSize: 14, color: 'var(--muted)', margin: '8px 0 0', lineHeight: 1.6 }}>
-                A friend sent you their exact life: same cards, same twists, same luck. Only the
+                A friend sent you their exact life: same cards, same market, same luck. Only the
                 choices are yours. Beat their ending.
               </p>
               <input
@@ -780,6 +782,7 @@ export default function PlayPage() {
       {phase === 'intro' && state && (
         <ChapterIntro
           meta={meta}
+          marketLabel={MARKET_LABEL[marketPhase(state.seed, state.chapter)]}
           onBegin={() => {
             setPhase('cards')
             window.scrollTo(0, 0)

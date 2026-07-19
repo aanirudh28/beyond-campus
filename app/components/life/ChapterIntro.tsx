@@ -5,9 +5,11 @@ import { chapterHue } from './chapterTheme'
 
 export default function ChapterIntro({
   meta,
+  marketLabel,
   onBegin,
 }: {
   meta: ChapterMeta
+  marketLabel?: string
   onBegin: () => void
 }) {
   const hue = chapterHue(meta.index)
@@ -31,6 +33,7 @@ export default function ChapterIntro({
       >
         CHAPTER {meta.index + 1} OF 6 · AGE {meta.ageFrom}–{meta.ageTo} · {meta.yearFrom}–
         {meta.yearTo}
+        {marketLabel ? ` · ${marketLabel}` : ''}
       </div>
       <h2
         style={{

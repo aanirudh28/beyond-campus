@@ -1,5 +1,6 @@
 ﻿import type { Card, GameState } from './types'
 import { ALL_CARDS } from './content/chapters'
+import { marketPhase, type MarketPhase } from './market'
 
 // Deterministic scene continuity: the line above each card that proves the
 // game remembers who you are. Zero AI. Candidates come from the life you are
@@ -137,6 +138,15 @@ function statLines(state: GameState): { urgent: string[]; mild: string[] } {
   return { urgent, mild }
 }
 
+// The weather outside the window: ambient market texture, low priority.
+const WEATHER_LINES: Record<MarketPhase, string> = {
+  boom: 'Everyone around you is suddenly a genius. It is that kind of market.',
+  steady: 'The market is doing nothing dramatic, which suits the patient fine.',
+  squeeze: 'The market is tight, and everyone pretends not to check the layoff trackers.',
+  crash: 'The floors are quiet this year. Every meeting has one empty chair in it.',
+  rebound: 'The recovery is on. The patient are quietly starting to get paid.',
+}
+
 // Chapter-1 texture before any flags exist: who you are at 21.
 function profileLines(state: GameState): string[] {
   const lines: string[] = []
@@ -200,6 +210,7 @@ export function narrateCard(card: Card, state: GameState): string | undefined {
 
   candidates.push(...mild)
   if (state.chapter === 0) candidates.push(...profileLines(state))
+  candidates.push(WEATHER_LINES[marketPhase(state.seed, state.chapter)])
   if (!candidates.length) return undefined
 
   // Rotate among the strongest few so a chapter's cards surface different

@@ -582,4 +582,56 @@ export const CARDS_CH2: Card[] = [
       },
     ],
   },
+
+  // ---- market weather cards: the economy you are living through ----
+  {
+    id: 'ch2_mkt_tips_group',
+    chapter: 1,
+    kind: 'decision',
+    title: 'THE CHAI GROUP BECOMES A TIPS GROUP',
+    condition: { market: 'boom' },
+    base: `The market has been going up long enough that the office chai group is now a stock-tips group. A colleague doubled his money in three weeks and has become unbearable and possibly right. Your salary account has ₹80,000 doing nothing. Everyone is a genius right now. That is usually the tell.`,
+    options: [
+      {
+        id: 'quiet_sip',
+        label: 'Start a boring index SIP. Ignore the geniuses.',
+        effects: { savings: 2, reputation: 2 },
+        setFlags: ['invested_early'],
+        outcome:
+          'You automate the money and mute the group. Your returns will never be a story at chai. That is the entire strategy, and it only looks slow from the inside of a boom.',
+      },
+      {
+        id: 'ride_tips',
+        label: 'Ride the tips. The water is obviously warm.',
+        effects: { savings: 4, burnout: 4 },
+        setFlags: ['fno_burn'],
+        outcome:
+          'The first three trades work, which is the most expensive thing that can happen to a beginner. You are now emotionally load-bearing on stocks you cannot explain.',
+      },
+    ],
+  },
+  {
+    id: 'ch2_mkt_joining_freeze',
+    chapter: 1,
+    kind: 'event',
+    title: 'THE OFFER GOES QUIET',
+    condition: { market: 'squeeze' },
+    base: `The switch you had lined up goes quiet, then formal: "joining deferred by two quarters due to business conditions." The offer letter is real, the start date is fiction, and the resignation you almost submitted is still in drafts. The squeeze does not care about your plans.`,
+    options: [
+      {
+        id: 'hold_both',
+        label: 'Stay put, keep the deferred offer warm.',
+        effects: { burnout: 5, family: -2 },
+        outcome:
+          'Two quarters of working one job while emotionally living in another. The offer eventually lands, smaller than promised. You take the lesson: in a squeeze, signed means started.',
+      },
+      {
+        id: 'walk_away',
+        label: 'Release it. Recommit fully where you stand.',
+        effects: { reputation: 4, skills: 3 },
+        outcome:
+          'You email a polite withdrawal and stop refreshing. Your current manager notices the recommitment without knowing its cause. When the market thaws, you negotiate from strength, not from waiting.',
+      },
+    ],
+  },
 ]

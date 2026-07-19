@@ -14,7 +14,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'While everyone else hid from the worst market in a generation, you bought it. The correction that broke a thousand careers quietly built your fortune.',
     baselineRarity: 5,
-    match: { allFlags: ['bought_dip'], minSavings: 140 },
+    match: { allFlags: ['bought_dip'], minSavings: 200 },
   },
   {
     id: 'the_beautiful_failure',
@@ -44,7 +44,7 @@ export const ENDINGS: Ending[] = [
     blurb:
       'Employee six, a pay cut everyone mocked, and years of doing five jobs badly. Then the term sheet landed and finished the argument. The risk was the resume.',
     baselineRarity: 2,
-    match: { allFlags: ['exit_money'], minSavings: 105 },
+    match: { allFlags: ['exit_money'], minSavings: 125 },
   },
   {
     id: 'the_dukaan_empire',

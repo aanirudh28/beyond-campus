@@ -13,6 +13,7 @@ import { chapterRng, mulberry32, seededShuffle } from './rng'
 import { ALL_CARDS, CHAPTERS } from './content/chapters'
 import { ENDINGS } from './content/endings'
 import { deriveOrigin } from './origins'
+import { DIP_REBOUND_BONUS, MARKET_RETURN, SALARY_TILT, isInvested, marketPhase } from './market'
 export { buildLifeReport } from './content/report'
 
 // Pure, deterministic engine. Same (seed, profile, choices) always produces
@@ -84,6 +85,7 @@ export function checkCondition(cond: Condition | undefined, state: GameState): b
   if (cond.ambition && state.profile.ambition !== cond.ambition) return false
   if (cond.city && state.profile.city !== cond.city) return false
   if (cond.stream && state.profile.stream !== cond.stream) return false
+  if (cond.market && marketPhase(state.seed, state.chapter) !== cond.market) return false
   if (cond.minStat) {
     for (const [k, v] of Object.entries(cond.minStat)) {
       if (state.stats[k as keyof Stats] < (v as number)) return false
@@ -222,6 +224,20 @@ export function advanceChapter(state: GameState): GameState {
     stats.salary = round1(stats.salary * appraisal)
   }
   stats.savings = round1(stats.savings + stats.salary * years * 0.2)
+
+  // Market weather: the chapter's economy compounds the ledger. Invested
+  // money rides the cycle, idle cash earns FD rates, dip-buyers get extra
+  // beta in the recovery, and salaries tilt gently with the years.
+  const phase = marketPhase(state.seed, state.chapter)
+  if (stats.savings > 0) {
+    let rate = isInvested(state) ? MARKET_RETURN[phase].invested : MARKET_RETURN[phase].idle
+    if (state.flags['bought_dip'] && phase === 'rebound') rate += DIP_REBOUND_BONUS
+    stats.savings = round1(stats.savings * Math.pow(1 + rate, years))
+  }
+  if (stats.salary > 0 && SALARY_TILT[phase] !== 0) {
+    stats.salary = round1(stats.salary * Math.pow(1 + SALARY_TILT[phase], years))
+  }
+
   // Chapters run longer since the bonus arc slots, so the between-chapter
   // recovery is one point deeper to keep the burnout economy balanced.
   stats.burnout = clamp(stats.burnout - 5, 0, 100)

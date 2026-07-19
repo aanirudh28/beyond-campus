@@ -674,4 +674,54 @@ export const CARDS_CH3: Card[] = [
       },
     ],
   },
+
+  // ---- market weather cards: the economy you are living through ----
+  {
+    id: 'ch3_mkt_froth_offer',
+    chapter: 2,
+    kind: 'decision',
+    title: 'FORTY PERCENT ABOVE MARKET',
+    condition: { market: 'boom' },
+    base: `A funded startup offers you forty percent above market for a role with a title nobody can define. The recruiter uses the word "rocketship" without irony. In this weather, money is falling from a great height. The only question booms ever ask: is this a career move or a market move?`,
+    options: [
+      {
+        id: 'take_froth',
+        label: 'Take it. Booms are for harvesting.',
+        effects: { salary: { mult: 1.4 }, burnout: 8, reputation: -2 },
+        outcome:
+          'The salary is real and lands monthly. The business model is a slide. You bank aggressively and keep the resume warm, because you have read how this weather usually ends.',
+      },
+      {
+        id: 'hold_course',
+        label: 'Decline. Compounding beats harvesting.',
+        effects: { skills: 5, reputation: 4 },
+        outcome:
+          'The recruiter is stunned. Eighteen months later that rocketship is a case study, and the people who stayed anywhere are suddenly the stable ones. Booms pay some people in salary and others in lessons.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_mkt_frozen_band',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE FROZEN APPRAISAL',
+    condition: { market: 'squeeze' },
+    base: `The appraisal email is a masterpiece of nothing: "compensation bands frozen this cycle due to macro conditions." Your rating is the highest on the team. The freeze applies to everyone equally, which is exactly what makes it unequal. HR has attached a wellness webinar.`,
+    options: [
+      {
+        id: 'ask_anyway',
+        label: 'Ask anyway. Freezes have exceptions; find yours.',
+        effects: { salary: 1.5, reputation: 3, burnout: 3 },
+        outcome:
+          'You bring receipts, not feelings, to a meeting nobody wanted. A "market correction adjustment" appears in your next letter. Freezes, it turns out, are policies, and policies have doors.',
+      },
+      {
+        id: 'absorb_it',
+        label: 'Absorb it. Everyone is taking the hit.',
+        effects: { family: 2, burnout: 2 },
+        outcome:
+          'You take the freeze quietly, like the team. The loyalty is noted in a spreadsheet nobody will ever open. The squeeze passes. The habit of not asking takes longer.',
+      },
+    ],
+  },
 ]

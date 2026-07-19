@@ -503,4 +503,31 @@ export const CARDS_CH6: Card[] = [
       },
     ],
   },
+
+  // ---- market weather cards: the economy you are living through ----
+  {
+    id: 'ch6_mkt_redeploy',
+    chapter: 5,
+    kind: 'decision',
+    title: 'THE RECOVERY IS HIRING',
+    condition: { market: 'rebound', minStat: { savings: 20 } },
+    base: `The recovery is visibly on: good companies at fair prices, good people back in circulation, the fear premium still baked into everything. The cash you kept safe through the crash is now a choice again. Money made in recoveries is quiet money, and the window for quiet money never announces itself.`,
+    options: [
+      {
+        id: 'deploy_recovery',
+        label: 'Deploy into the recovery, systematically.',
+        effects: { savings: 5, burnout: 2 },
+        setFlags: ['invested_early'],
+        outcome:
+          'You ladder the cash in over six months, boringly, on a schedule. No screenshots, no genius. Just the oldest arbitrage there is: patience, priced right after everyone else ran out of it.',
+      },
+      {
+        id: 'stay_safe',
+        label: 'Stay in cash. The crash taught you fear for a reason.',
+        effects: { family: 3, burnout: -3 },
+        outcome:
+          'The money sleeps in deposits and so do you. The recovery compounds for other people. Safety is a real return; the exact rate only becomes visible later, and you have chosen not to look.',
+      },
+    ],
+  },
 ]

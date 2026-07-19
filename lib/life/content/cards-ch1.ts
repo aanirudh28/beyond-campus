@@ -673,4 +673,31 @@ export const CARDS_CH1: Card[] = [
       },
     ],
   },
+
+  // ---- market weather cards: the economy you graduated into ----
+  {
+    id: 'ch1_mkt_placement_winter',
+    chapter: 0,
+    kind: 'decision',
+    title: 'GRADUATING INTO A SQUEEZE',
+    condition: { market: 'squeeze' },
+    base: `Your batch graduated into a tightening market, which nobody consulted you about. Companies that took twelve people last year are taking three. Seniors one year up got offers your batch will not see. The timing is not your fault. The response to it is entirely yours.`,
+    options: [
+      {
+        id: 'lower_anchor',
+        label: 'Take what exists. A squeeze salary beats no salary.',
+        effects: { salary: 2.6, burnout: 4, reputation: -2 },
+        setFlags: ['took_early_job'],
+        outcome:
+          'You sign for less than last year’s batch and start compounding anyway. Markets recover faster than gaps on resumes do. It is not fair. It is just true.',
+      },
+      {
+        id: 'upskill_wait',
+        label: 'Use the winter: certifications, projects, patience.',
+        effects: { skills: 7, savings: -1, family: -3 },
+        outcome:
+          'While the market sulks, you build. When hiring thaws, you interview as a sharper candidate than the squeeze ever met. The bet is that the thaw comes before the rent does.',
+      },
+    ],
+  },
 ]
