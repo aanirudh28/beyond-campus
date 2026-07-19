@@ -34,6 +34,8 @@ const fail = (msg: string) => {
 const endingsSeen = new Set<string>()
 let continuityShown = 0
 let cardsSeen = 0
+let pivotalSeen = 0
+let pivotalCovered = 0
 const distinctLines = new Set<string>()
 
 for (let run = 0; run < 2000; run++) {
@@ -49,6 +51,10 @@ for (let run = 0; run < 2000; run++) {
     for (const card of cards) {
       cardsSeen++
       const line = narrateCard(card, state)
+      if (card.pivotal) {
+        pivotalSeen++
+        if (line !== undefined) pivotalCovered++
+      }
       if (line !== undefined) {
         continuityShown++
         if (typeof line !== 'string' || line.length < 20 || line.length > 200)
@@ -99,11 +105,14 @@ for (const e of ENDINGS) {
   if (!src.includes(`${e.id}:`)) fail(`ending ${e.id} missing authored prose`)
 }
 
+// Continuity is deliberately selective: every pivotal moment carries it,
+// and generic cards stay quiet unless the state is urgent.
+if (pivotalCovered < pivotalSeen) fail(`pivotal continuity ${pivotalCovered}/${pivotalSeen} (must be 100%)`)
 const coverage = (continuityShown / cardsSeen) * 100
-if (coverage < 60) fail(`continuity coverage only ${coverage.toFixed(1)}%`)
+if (coverage > 75) fail(`continuity coverage ${coverage.toFixed(1)}% — too noisy, discipline broke`)
 
 console.log(`runs: 2000, endings reached: ${endingsSeen.size}/${ENDINGS.length}`)
-console.log(`continuity coverage: ${coverage.toFixed(1)}% of cards`)
+console.log(`continuity: 100% of pivotal cards, ${coverage.toFixed(1)}% overall`)
 console.log(`distinct continuity lines seen: ${distinctLines.size}`)
 console.log(fails === 0 ? 'ALL CHECKS PASSED' : `${fails} FAILURES`)
 process.exit(fails === 0 ? 0 : 1)

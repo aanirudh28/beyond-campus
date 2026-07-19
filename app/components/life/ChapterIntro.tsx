@@ -6,10 +6,12 @@ import { chapterHue } from './chapterTheme'
 export default function ChapterIntro({
   meta,
   marketLabel,
+  origin,
   onBegin,
 }: {
   meta: ChapterMeta
   marketLabel?: string
+  origin?: { name: string; blurb: string } // chapter 1 only: the dealt hand
   onBegin: () => void
 }) {
   const hue = chapterHue(meta.index)
@@ -65,6 +67,26 @@ export default function ChapterIntro({
       >
         {meta.intro}
       </p>
+      {origin && (
+        <div
+          className="bc-card"
+          style={{
+            padding: '16px 18px',
+            margin: '0 0 30px',
+            maxWidth: 440,
+            border: '1px solid rgba(123,97,255,0.4)',
+            animation: 'lifeFadeUp 0.6s ease both',
+            animationDelay: '0.7s',
+          }}
+        >
+          <div className="mono-label" style={{ color: 'var(--blue-soft)', marginBottom: 8 }}>
+            THE HAND YOU WERE DEALT · {origin.name.toUpperCase()}
+          </div>
+          <p style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.65, margin: 0 }}>
+            {origin.blurb}
+          </p>
+        </div>
+      )}
       <button
         className="btn-primary"
         onClick={onBegin}

@@ -31,7 +31,7 @@ import Montage, { type MontageData } from '@/app/components/life/Montage'
 import EndingScreen, { type EndingResult } from '@/app/components/life/EndingScreen'
 import { chapterHue } from '@/app/components/life/chapterTheme'
 
-type Phase = 'coldopen' | 'origin' | 'intro' | 'cards' | 'montage' | 'finale' | 'ending'
+type Phase = 'coldopen' | 'intro' | 'cards' | 'montage' | 'finale' | 'ending'
 
 const SAVE_KEY = 'bc20_run'
 const SAVE_TTL_MS = 24 * 60 * 60 * 1000
@@ -287,11 +287,12 @@ export default function PlayPage() {
     trackLife('profile_completed', { ...profile })
     bindAbandonBeacon()
     abandonRef.current = { chapter: 0, cardsAnswered: 0 }
+    displayRef.current = { chapter: -1, age: 0, year: 0, len: 1 }
     const initial = createInitialState(profile, seed)
     setState(initial)
     setCards(dealChapter(initial))
     setCardIndex(0)
-    setPhase('origin')
+    setPhase('intro')
     setStarting(false)
     window.scrollTo(0, 0)
   }
@@ -449,6 +450,7 @@ export default function PlayPage() {
     setResult(null)
     setLifeOpen(false)
     abandonRef.current = null
+    displayRef.current = { chapter: -1, age: 0, year: 0, len: 1 }
     setLifeRunId(null)
     runRef.current = { runId: null, token: null }
     clearSave()
@@ -475,7 +477,24 @@ export default function PlayPage() {
   })
 
   const meta = state ? CHAPTERS[Math.min(state.chapter, CHAPTERS.length - 1)] : CHAPTERS[0]
-  const pos = state ? ageAtCard(Math.min(state.chapter, 5), cardIndex, cards.length || 1) : null
+  // Precision: the bonus-slot dealer can grow cards.length mid-chapter,
+  // which would make interpolated age/year tick BACKWARDS and the card
+  // counter shrink. Displayed time only ever moves forward, and the
+  // chapter length shown is the largest this chapter has reached.
+  const displayRef = useRef({ chapter: -1, age: 0, year: 0, len: 1 })
+  let pos: { age: number; year: number } | null = null
+  let chapterLen = cards.length || 1
+  if (state) {
+    const raw = ageAtCard(Math.min(state.chapter, 5), cardIndex, cards.length || 1)
+    const d = displayRef.current
+    if (d.chapter === state.chapter) {
+      pos = { age: Math.max(raw.age, d.age), year: Math.max(raw.year, d.year) }
+      chapterLen = Math.max(cards.length || 1, d.len)
+    } else {
+      pos = raw
+    }
+    displayRef.current = { chapter: state.chapter, age: pos.age, year: pos.year, len: chapterLen }
+  }
 
   return (
     <main className="life-run" style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg)' }}>
@@ -712,77 +731,11 @@ export default function PlayPage() {
         />
       )}
 
-      {phase === 'origin' && state && (
-        <div
-          style={{
-            minHeight: '70vh',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            padding: '40px 24px',
-            maxWidth: 560,
-            margin: '0 auto',
-          }}
-        >
-          <div className="mono-label" style={{ marginBottom: 18, animation: 'lifeFadeUp 0.5s ease both' }}>
-            BEFORE ANY CHOOSING · THE HAND YOU WERE DEALT
-          </div>
-          <h2
-            style={{
-              fontFamily: 'var(--serif)',
-              fontSize: 'clamp(34px, 8vw, 48px)',
-              letterSpacing: -1,
-              lineHeight: 1.1,
-              margin: '0 0 18px',
-              animation: 'lifeFadeUp 0.6s cubic-bezier(0.22,1,0.36,1) both',
-              animationDelay: '0.3s',
-            }}
-          >
-            {deriveOrigin(state.seed).name}
-          </h2>
-          <p
-            style={{
-              fontSize: 16,
-              lineHeight: 1.7,
-              color: 'var(--muted)',
-              margin: '0 0 22px',
-              maxWidth: 440,
-              animation: 'lifeFadeUp 0.6s ease both',
-              animationDelay: '0.6s',
-            }}
-          >
-            {deriveOrigin(state.seed).blurb}
-          </p>
-          <p
-            style={{
-              fontSize: 12.5,
-              color: 'var(--muted-2)',
-              margin: '0 0 30px',
-              animation: 'lifeFadeUp 0.6s ease both',
-              animationDelay: '0.9s',
-            }}
-          >
-            You did not choose this. Nobody does. Anyone who lives this exact seed carries the same hand.
-          </p>
-          <button
-            className="btn-primary"
-            style={{ minWidth: 200, justifyContent: 'center', animation: 'lifeFadeUp 0.5s ease both', animationDelay: '1.1s' }}
-            onClick={() => {
-              setPhase('intro')
-              window.scrollTo(0, 0)
-            }}
-          >
-            <span>Carry it →</span>
-          </button>
-        </div>
-      )}
-
       {phase === 'intro' && state && (
         <ChapterIntro
           meta={meta}
           marketLabel={MARKET_LABEL[marketPhase(state.seed, state.chapter)]}
+          origin={state.chapter === 0 ? deriveOrigin(state.seed) : undefined}
           onBegin={() => {
             setPhase('cards')
             window.scrollTo(0, 0)
@@ -796,7 +749,7 @@ export default function PlayPage() {
             className="mono-label"
             style={{ textAlign: 'center', marginBottom: 16, fontSize: 10 }}
           >
-            CHAPTER {state.chapter + 1} · {meta.title} · {cardIndex + 1} / {cards.length}
+            CHAPTER {state.chapter + 1} · {meta.title} · {cardIndex + 1} / {chapterLen}
           </div>
           <DecisionCard
             key={cards[cardIndex].id}

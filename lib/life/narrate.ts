@@ -196,6 +196,10 @@ function hash(str: string, seed: number): number {
 
 export function narrateCard(card: Card, state: GameState): string | undefined {
   const { urgent, mild } = statLines(state)
+  // Precision over volume: the game speaks when it matters. Urgent states
+  // always surface; otherwise only pivotal moments carry a continuity
+  // line, so it lands as weight instead of wallpaper.
+  if (!urgent.length && !card.pivotal) return undefined
   const candidates: string[] = [...urgent]
 
   for (const flag of flagsByRecency(state)) {

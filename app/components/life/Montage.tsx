@@ -5,16 +5,10 @@ import type { Stats } from '@/lib/life/types'
 import { chapterHue } from './chapterTheme'
 
 // The years between chapters used to pass invisibly — appraisals, savings,
-// wear and tear all applied off-screen. The montage shows the ledger.
+// wear and tear all applied off-screen. The montage shows the ledger,
+// tightly: one market headline, at most two ledger lines, the batchmate.
+// The chapter intro right after carries the mood; no duplication here.
 // Display copy only: nothing here touches the content graph or engine.
-
-const TRANSITIONS: Record<number, string> = {
-  1: 'The offer letters stop feeling like miracles. Rent does not.',
-  2: 'Batchmates start getting engaged, promoted, or both. The clock gets louder.',
-  3: 'Your back has started sending invoices. So have your parents’ doctors.',
-  4: 'The market turns. Somewhere, a spreadsheet decides who stays.',
-  5: 'The years move faster now. Sundays matter more than salaries.',
-}
 
 export interface MontageData {
   fromYear: number
@@ -56,7 +50,7 @@ function ledgerLines(d: MontageData): string[] {
   else if (burnDelta <= -4) lines.push('Some rest finds you, for once.')
   const famDelta = after.family - before.family
   if (famDelta <= -4) lines.push('The calls home get shorter.')
-  return lines.slice(0, 3)
+  return lines.slice(0, 2)
 }
 
 function useYearRoll(from: number, to: number, ms = 1200) {
@@ -83,7 +77,6 @@ export default function Montage({ data, onDone }: { data: MontageData; onDone: (
     ...(data.marketLine ? [data.marketLine] : []),
     ...ledgerLines(data),
   ]).current
-  const flavor = TRANSITIONS[data.enteringChapter]
   const hue = chapterHue(data.enteringChapter)
   const done = useRef(false)
 
@@ -95,8 +88,7 @@ export default function Montage({ data, onDone }: { data: MontageData; onDone: (
 
   // Auto-advance ~1.2s after the last line has landed.
   useEffect(() => {
-    const total =
-      1400 + (lines.length + (flavor ? 1 : 0) + (data.batchmate ? 1 : 0)) * 550 + 1400
+    const total = 1400 + (lines.length + (data.batchmate ? 1 : 0)) * 550 + 1200
     const t = setTimeout(finish, total)
     return () => clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -151,22 +143,6 @@ export default function Montage({ data, onDone }: { data: MontageData; onDone: (
             {line}
           </p>
         ))}
-        {flavor && (
-          <p
-            style={{
-              fontSize: 15.5,
-              lineHeight: 1.6,
-              color: 'rgba(255,255,255,0.85)',
-              fontStyle: 'italic',
-              fontFamily: 'var(--serif)',
-              margin: '6px 0 0',
-              animation: 'lifeFadeUp 0.55s ease both',
-              animationDelay: `${1.3 + lines.length * 0.55}s`,
-            }}
-          >
-            {flavor}
-          </p>
-        )}
         {data.batchmate && (
           <div
             style={{
@@ -174,7 +150,7 @@ export default function Montage({ data, onDone }: { data: MontageData; onDone: (
               paddingTop: 14,
               borderTop: '1px solid rgba(255,255,255,0.1)',
               animation: 'lifeFadeUp 0.55s ease both',
-              animationDelay: `${1.3 + (lines.length + (flavor ? 1 : 0)) * 0.55}s`,
+              animationDelay: `${1.3 + lines.length * 0.55}s`,
             }}
           >
             <div className="mono-label" style={{ fontSize: 9.5, marginBottom: 8, color: 'var(--muted-2)' }}>
