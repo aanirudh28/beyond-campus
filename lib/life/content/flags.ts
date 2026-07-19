@@ -142,4 +142,8 @@ export const FLAGS: Record<string, FlagDef> = {
   origin_topper: { desc: 'ORIGIN: college topper, expectation arrived before opportunity (dealt from the seed)' },
   origin_english: { desc: 'ORIGIN: English arrived years after the ideas (dealt from the seed)' },
   origin_hustler: { desc: 'ORIGIN: already earning small money in college (dealt from the seed)' },
+  origin_legacy_cushion: { desc: 'LEGACY ORIGIN: second generation, parent finished with a real corpus' },
+  origin_legacy_rebuild: { desc: 'LEGACY ORIGIN: second generation, parent finished thin; the family remembers why' },
+  origin_legacy_echo: { desc: 'LEGACY ORIGIN: second generation, parent’s name enters rooms first' },
+  second_generation: { desc: 'This life was raised by a completed run (engine-set on legacy starts)', narrative: true },
 }

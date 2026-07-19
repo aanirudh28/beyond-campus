@@ -26,6 +26,9 @@ const FLAG_LINES: Record<string, Fragment> = {
   origin_topper: { line: 'The rank still travels ahead of you into rooms. Some days a door, some days a debt.' },
   origin_english: { line: 'Your ideas still arrive a beat before their English. The gap closes word by word.' },
   origin_hustler: { line: 'You have never once had exactly one source of income. Old habit.' },
+  origin_legacy_cushion: { line: 'The net under you is real. So is the question of what you would be without it.' },
+  origin_legacy_rebuild: { line: 'You audit every offer twice: what it pays, and how it dies. Family training.' },
+  origin_legacy_echo: { line: 'The surname enters the room first. You are still negotiating the seating.' },
 
   // identity & early tracks
   exam_track: { line: 'The reasoning workbook sits half solved on your desk, next to the cold emails you stopped sending.' },

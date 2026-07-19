@@ -7,6 +7,7 @@ import { CONTENT_VERSION } from '@/lib/life/content/chapters'
 import { buildGhostSummaries } from '@/lib/life/ghosts'
 import { composeEpilogue } from '@/lib/life/epilogue'
 import { endingRarity } from '@/lib/life/rarity'
+import { isInheritance } from '@/lib/life/legacy'
 import { logLifeEvents } from '@/lib/life/log-events'
 
 export const runtime = 'nodejs'
@@ -24,18 +25,38 @@ export async function POST(req: Request) {
     }
 
     const svc = serviceClient()
-    const { data: run } = await svc
-      .from('life_runs')
-      .select('seed, profile, completed_at')
-      .eq('id', runId)
-      .single()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let run: any = null
+    {
+      const res = await svc
+        .from('life_runs')
+        .select('seed, profile, completed_at, inheritance')
+        .eq('id', runId)
+        .single()
+      run = res.data
+      if (res.error) {
+        // inheritance column not pasted yet: select without it.
+        const fallback = await svc
+          .from('life_runs')
+          .select('seed, profile, completed_at')
+          .eq('id', runId)
+          .single()
+        run = fallback.data
+      }
+    }
     if (!run) return NextResponse.json({ error: 'Run not found' }, { status: 404 })
     if (run.completed_at) return NextResponse.json({ error: 'Already completed' }, { status: 409 })
 
-    // Never trust client-computed stats: rebuild the whole life server-side.
+    // Never trust client-computed stats: rebuild the whole life server-side,
+    // with the stored inheritance for second-generation runs.
     let finalState
     try {
-      finalState = replayRun(run.seed, run.profile, body.choices)
+      finalState = replayRun(
+        run.seed,
+        run.profile,
+        body.choices,
+        isInheritance(run.inheritance) ? run.inheritance : undefined,
+      )
     } catch (e) {
       if (e instanceof ReplayError) {
         return NextResponse.json({ error: 'Invalid run' }, { status: 400 })

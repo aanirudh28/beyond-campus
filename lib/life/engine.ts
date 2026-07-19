@@ -13,6 +13,7 @@ import { chapterRng, mulberry32, seededShuffle } from './rng'
 import { ALL_CARDS, CHAPTERS } from './content/chapters'
 import { ENDINGS } from './content/endings'
 import { deriveOrigin } from './origins'
+import { LEGACY_BY_ID, type Inheritance } from './legacy'
 import { DIP_REBOUND_BONUS, MARKET_RETURN, SALARY_TILT, isInvested, marketPhase } from './market'
 export { buildLifeReport } from './content/report'
 
@@ -22,7 +23,11 @@ export { buildLifeReport } from './content/report'
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
 const round1 = (v: number) => Math.round(v * 10) / 10
 
-export function createInitialState(profile: Profile, seed: number): GameState {
+export function createInitialState(
+  profile: Profile,
+  seed: number,
+  inheritance?: Inheritance,
+): GameState {
   const stats: Stats = {
     salary: 0,
     savings: 0.3,
@@ -51,20 +56,24 @@ export function createInitialState(profile: Profile, seed: number): GameState {
     stats.reputation += 5
     stats.skills += 5
   }
-  // The hand you were dealt: the origin bends the starting stats and sets
-  // its flag, which the reactive dealer treats as an arc trigger.
-  const origin = deriveOrigin(seed)
+  // The hand you were dealt: seed-drawn for first lives, converted from
+  // the parent's ledger for second-generation runs. Either way the origin
+  // bends the starting stats and sets its flag for the reactive dealer.
+  const origin = inheritance ? LEGACY_BY_ID[inheritance.o] : deriveOrigin(seed)
   for (const [k, v] of Object.entries(origin.effects)) {
     stats[k as keyof Stats] += v as number
   }
   return {
     seed,
     profile,
+    ...(inheritance ? { inheritance } : {}),
     chapter: 0,
     age: CHAPTERS[0].ageFrom,
     year: CHAPTERS[0].yearFrom,
     stats,
-    flags: { [origin.flag]: true },
+    flags: inheritance
+      ? { [origin.flag]: true, second_generation: true }
+      : { [origin.flag]: true },
     history: [],
     trail: [
       {
@@ -284,8 +293,9 @@ export function replayToChapter(
   profile: Profile,
   choices: ChoiceRecord[],
   targetChapter: number,
+  inheritance?: Inheritance,
 ): { state: GameState; consumed: number } {
-  let state = createInitialState(profile, seed)
+  let state = createInitialState(profile, seed, inheritance)
   let i = 0
   for (let ch = 0; ch < targetChapter; ch++) {
     for (;;) {
@@ -307,8 +317,13 @@ export function replayToChapter(
 }
 
 // Server-side validator: rebuild the whole run. Every choice must be consumed.
-export function replayRun(seed: number, profile: Profile, choices: ChoiceRecord[]): GameState {
-  const { state, consumed } = replayToChapter(seed, profile, choices, CHAPTERS.length)
+export function replayRun(
+  seed: number,
+  profile: Profile,
+  choices: ChoiceRecord[],
+  inheritance?: Inheritance,
+): GameState {
+  const { state, consumed } = replayToChapter(seed, profile, choices, CHAPTERS.length, inheritance)
   if (consumed !== choices.length) throw new ReplayError('extra choices beyond the dealt cards')
   return state
 }
@@ -355,13 +370,14 @@ export function simulateGhost(
   profile: Profile,
   choices: ChoiceRecord[],
   forkIndex: number,
+  inheritance?: Inheritance,
 ): GhostResult | null {
   const fork = choices[forkIndex]
   if (!fork) return null
   const chosenByCard = new Map(choices.map((c) => [c.cardId, c.optionId]))
   const ghostRng = mulberry32((seed ^ 0xc0ffee) >>> 0)
 
-  let state = createInitialState(profile, seed)
+  let state = createInitialState(profile, seed, inheritance)
   let takenLabel = ''
   let otherLabel = ''
   for (let ch = 0; ch < CHAPTERS.length; ch++) {
@@ -420,8 +436,12 @@ export function disciplinedOption(card: Card): CardOption {
 }
 
 // The disciplined ghost: same seed, same luck, every choice the long game.
-export function simulateDisciplined(seed: number, profile: Profile): GameState {
-  let state = createInitialState(profile, seed)
+export function simulateDisciplined(
+  seed: number,
+  profile: Profile,
+  inheritance?: Inheritance,
+): GameState {
+  let state = createInitialState(profile, seed, inheritance)
   for (let ch = 0; ch < CHAPTERS.length; ch++) {
     for (;;) {
       const cards = dealChapter(state)

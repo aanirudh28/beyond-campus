@@ -37,6 +37,9 @@ export interface TrailPoint {
 export interface GameState {
   seed: number
   profile: Profile
+  // Second-generation runs only: the parent's converted ledger. Must be
+  // supplied to every replay of this run or the starting state diverges.
+  inheritance?: { o: 'legacy_cushion' | 'legacy_rebuild' | 'legacy_echo'; pe: string }
   chapter: number // 0-5
   age: number // display age at current point
   year: number // display year

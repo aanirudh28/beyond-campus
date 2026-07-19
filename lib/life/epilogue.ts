@@ -2,6 +2,7 @@
 import { ALL_CARDS, CHAPTERS } from './content/chapters'
 import { buildLifeReport } from './content/report'
 import { ORIGINS } from './origins'
+import { LEGACY_ORIGINS } from './legacy'
 
 // The authored epilogue: four paragraphs, fully deterministic, zero AI.
 //   1. An opening scene at 36, written per ending.
@@ -259,7 +260,7 @@ export function composeEpilogue(
   const prose = ENDING_PROSE[ending.id]
   const opening = prose?.opening ?? ending.blurb
 
-  const origin = ORIGINS.find((o) => state.flags[o.flag])
+  const origin = [...ORIGINS, ...LEGACY_ORIGINS].find((o) => state.flags[o.flag])
   const started = origin ? ` You started at 21 with ${origin.epiloguePhrase}.` : ''
   const choices = definingChoices(state)
   const choicesPara = choices.length

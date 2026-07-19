@@ -821,6 +821,11 @@ export default function EndingScreen({
         <button style={btnGhost} onClick={onReplay}>
           ↺ Live a different life
         </button>
+        {runId && (
+          <a href={`/20years/play?legacy=${runId}`} style={{ ...btnGhost, textDecoration: 'none' }}>
+            👶 Raise the second generation
+          </a>
+        )}
         <a
           href="/resources/resume-roast"
           className="btn-primary"

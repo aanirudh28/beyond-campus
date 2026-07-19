@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { SiteFooter, SiteNav } from '@/app/components/SiteChrome'
 import { ENDINGS, getEnding } from '@/lib/life/content/endings'
 import { ORIGINS } from '@/lib/life/origins'
+import { LEGACY_ORIGINS } from '@/lib/life/legacy'
 import { parsePastLives, readPastLivesRaw } from '@/lib/life/lives'
 
 // The ending collection: every life this device has lived, and the
@@ -118,7 +119,7 @@ export default function CollectionPage() {
               .reverse()
               .map((life, i) => {
                 const ending = getEnding(life.e)
-                const origin = ORIGINS.find((o) => o.id === life.o)
+                const origin = [...ORIGINS, ...LEGACY_ORIGINS].find((o) => o.id === life.o)
                 return (
                   <div
                     key={`${life.ts}-${i}`}

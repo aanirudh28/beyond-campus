@@ -115,10 +115,48 @@ for (let i = 0; i < RUNS; i++) {
   profileStats.set(key, ps)
 }
 
+// Second-generation runs: same engine, inherited start. Verify determinism
+// and replay-identity with an inheritance in play.
+let legacyFailure: string | null = null
+const LEGACY_IDS = ['legacy_cushion', 'legacy_rebuild', 'legacy_echo'] as const
+for (let i = 0; i < 300 && !legacyFailure; i++) {
+  const pick = mulberry32(i * 104729 + 7)
+  const profile: Profile = {
+    stream: STREAMS[i % 3],
+    city: CITIES[Math.floor(i / 3) % 3],
+    ambition: AMBITIONS[Math.floor(i / 9) % 3],
+  }
+  const seed = (i * 48271 + 11) % 2 ** 31
+  const inheritance = { o: LEGACY_IDS[i % 3], pe: 'the_founder' }
+  let state = createInitialState(profile, seed, inheritance)
+  const choices: ChoiceRecord[] = []
+  for (let ch = 0; ch < CHAPTERS.length; ch++) {
+    for (;;) {
+      const cards = dealChapter(state)
+      const idx = choices.filter((c) => c.c === ch).length
+      if (idx >= cards.length) break
+      const card = cards[idx]
+      const option = card.options[Math.floor(pick() * card.options.length)]
+      choices.push({ c: ch, cardId: card.id, optionId: option.id })
+      state = applyChoice(state, card, option)
+      assertSane(state, `legacy ${card.id}`)
+    }
+    state = advanceChapter(state)
+  }
+  const replayed = replayRun(seed, profile, choices, inheritance)
+  if (JSON.stringify(replayed) !== JSON.stringify(state)) {
+    legacyFailure = `legacy run ${i} did not replay byte-identically`
+  }
+  if (!state.flags[`origin_${inheritance.o}`] || !state.flags['second_generation']) {
+    legacyFailure = `legacy run ${i} missing origin/second_generation flags`
+  }
+}
+
 // ---------- checks ----------
 
 // 1. replay-identity
 check('replay-identity', !replayFailure, replayFailure ?? `${RUNS} runs replay byte-identically`)
+check('legacy-replay', !legacyFailure, legacyFailure ?? '300 second-generation runs replay byte-identically')
 
 // 2. stat-sanity
 check('stat-sanity', !statSanityError, statSanityError ?? 'all states within clamps, no NaN')
@@ -183,6 +221,10 @@ const setNames = new Set<string>([
   'origin_topper',
   'origin_english',
   'origin_hustler',
+  'origin_legacy_cushion',
+  'origin_legacy_rebuild',
+  'origin_legacy_echo',
+  'second_generation',
 ])
 const readNames = new Set<string>()
 for (const card of allCards) {

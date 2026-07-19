@@ -18,7 +18,8 @@ import { buildDiary } from '@/lib/life/diary'
 import { narrateCard } from '@/lib/life/narrate'
 import { composeEpilogue } from '@/lib/life/epilogue'
 import { simulateBatchmate } from '@/lib/life/batchmate'
-import { deriveOrigin } from '@/lib/life/origins'
+import { ORIGINS, deriveOrigin } from '@/lib/life/origins'
+import { LEGACY_ORIGINS, isInheritance, type Inheritance } from '@/lib/life/legacy'
 import { MARKET_LABEL, marketHeadline, marketPhase } from '@/lib/life/market'
 import { nearMissEndings } from '@/lib/life/nearmiss'
 import { recordPastLife } from '@/lib/life/lives'
@@ -47,6 +48,7 @@ interface SavedRun {
   token: string | null
   history: ChoiceRecord[]
   ts: number
+  i?: Inheritance // second-generation runs: required to rebuild the start
 }
 
 function parseSaveRaw(raw: string): SavedRun | null {
@@ -56,6 +58,7 @@ function parseSaveRaw(raw: string): SavedRun | null {
     if (saved.v !== CONTENT_VERSION) return null
     if (Date.now() - saved.ts > SAVE_TTL_MS) return null
     if (!saved.history?.length || !saved.profile || typeof saved.seed !== 'number') return null
+    if (saved.i !== undefined && !isInheritance(saved.i)) return null
     return saved
   } catch {
     return null
@@ -113,7 +116,7 @@ const emptySubscribe = () => () => {}
 // after every choice exactly like live play. Any drift (content changed,
 // tampering) returns null and the save is discarded.
 function rebuildFromSave(saved: SavedRun): { state: GameState; cards: Card[]; cardIndex: number } | null {
-  let state = createInitialState(saved.profile, saved.seed)
+  let state = createInitialState(saved.profile, saved.seed, saved.i)
   let i = 0
   while (state.chapter < CHAPTERS.length) {
     const cards = dealChapter(state)
@@ -194,6 +197,13 @@ export default function PlayPage() {
     () => '',
   )
   const challenge = useMemo(() => parseChallengeParam(search), [search])
+  // Second generation: ?legacy=<runId> raises a new life from a completed
+  // one. Ignored when a challenge link is present (a life has one lineage).
+  const legacyId = useMemo(() => {
+    if (challenge) return null
+    const id = new URLSearchParams(search).get('legacy')
+    return id && /^[0-9a-f-]{36}$/i.test(id) ? id : null
+  }, [search, challenge])
   const [saveDismissed, setSaveDismissed] = useState(false)
   const resumable = useMemo(
     () => (challenge || saveDismissed || phase !== 'coldopen' ? null : parseSaveRaw(savedRaw)),
@@ -210,6 +220,7 @@ export default function PlayPage() {
         token: runRef.current.token,
         history: next.history,
         ts: Date.now(),
+        ...(next.inheritance ? { i: next.inheritance } : {}),
       }
       localStorage.setItem(SAVE_KEY, JSON.stringify(saved))
     } catch {}
@@ -266,6 +277,7 @@ export default function PlayPage() {
       ? challenge.profile
       : { stream: stream!, city: city!, ambition: ambition! }
     let seed = challenge ? challenge.seed : Math.floor(Math.random() * 2 ** 31)
+    let inheritance: Inheritance | undefined
     try {
       const res = await fetch('/api/life/start', {
         method: 'POST',
@@ -273,13 +285,16 @@ export default function PlayPage() {
         body: JSON.stringify(
           challenge
             ? { profile, seed, parentRunId: challenge.parentRunId, name: scoreName }
-            : { profile },
+            : legacyId
+              ? { profile, legacyRunId: legacyId }
+              : { profile },
         ),
       })
       if (res.ok) {
         const data = await res.json()
         seed = data.seed
         runRef.current = { runId: data.runId, token: data.token }
+        if (isInheritance(data.inheritance)) inheritance = data.inheritance
       } else {
         runRef.current = { runId: null, token: null }
       }
@@ -291,7 +306,7 @@ export default function PlayPage() {
     bindAbandonBeacon()
     abandonRef.current = { chapter: 0, cardsAnswered: 0 }
     displayRef.current = { chapter: -1, age: 0, year: 0, len: 1 }
-    const initial = createInitialState(profile, seed)
+    const initial = createInitialState(profile, seed, inheritance)
     setState(initial)
     setCards(dealChapter(initial))
     setCardIndex(0)
@@ -308,7 +323,9 @@ export default function PlayPage() {
     recordPastLife({
       e: selectEnding(finalState),
       s: Math.round(finalState.stats.savings),
-      o: deriveOrigin(finalState.seed).id,
+      o:
+        [...ORIGINS, ...LEGACY_ORIGINS].find((o) => finalState.flags[o.flag])?.id ??
+        deriveOrigin(finalState.seed).id,
       ts: Date.now(),
     })
     // The reveal is theater: even if the API answers instantly, hold the
@@ -631,6 +648,25 @@ export default function PlayPage() {
             </div>
           )}
 
+          {legacyId && (
+            <div
+              className="bc-card"
+              style={{
+                padding: '14px 18px',
+                marginBottom: 26,
+                border: '1px solid rgba(123,97,255,0.45)',
+              }}
+            >
+              <span className="mono-label" style={{ color: 'var(--blue-soft)' }}>
+                👶 SECOND GENERATION
+              </span>
+              <p style={{ fontSize: 14, color: 'var(--muted)', margin: '8px 0 0', lineHeight: 1.6 }}>
+                A completed life raises this one. The hand you are dealt will not be random: it is
+                their final ledger, converted. Their fifteen years become your starting line.
+              </p>
+            </div>
+          )}
+
           {!challenge && resumable && (
             <div
               className="bc-card"
@@ -747,7 +783,11 @@ export default function PlayPage() {
         <ChapterIntro
           meta={meta}
           marketLabel={MARKET_LABEL[marketPhase(state.seed, state.chapter)]}
-          origin={state.chapter === 0 ? deriveOrigin(state.seed) : undefined}
+          origin={
+            state.chapter === 0
+              ? [...ORIGINS, ...LEGACY_ORIGINS].find((o) => state.flags[o.flag])
+              : undefined
+          }
           onBegin={() => {
             setPhase('cards')
             window.scrollTo(0, 0)

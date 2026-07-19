@@ -164,3 +164,9 @@ create or replace view life_ai_fallbacks as
 --    delete from life_events where created_at < now() - interval '12 months';
 -- 2) AI cache sweep (keep 60 days):
 --    delete from life_ai_cache where created_at < now() - interval '60 days';
+
+-- ---- v3: the Second Generation (paste before deploying the legacy update) ----
+-- A completed run can raise the next one. The child's dealt hand is the
+-- parent's ledger, converted; stored here so the anti-cheat replay
+-- reconstructs the exact same starting state.
+alter table life_runs add column if not exists inheritance jsonb;

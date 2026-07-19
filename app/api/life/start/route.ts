@@ -3,6 +3,8 @@ import crypto from 'crypto'
 import { serviceClient } from '@/lib/tracker'
 import { issueRunToken } from '@/lib/life/token'
 import { logLifeEvents } from '@/lib/life/log-events'
+import { deriveInheritance, type Inheritance } from '@/lib/life/legacy'
+import { getEnding } from '@/lib/life/content/endings'
 
 export const runtime = 'nodejs'
 
@@ -62,6 +64,26 @@ export async function POST(req: Request) {
         ? body.name.replace(/[^\p{L}\p{N} .'-]/gu, '').trim().slice(0, 24)
         : ''
 
+    // Second generation: a completed run raises this one. The parent's
+    // ledger converts to the child's dealt hand, deterministically, and is
+    // stored on the row so the anti-cheat replay reconstructs it exactly.
+    let inheritance: Inheritance | null = null
+    const legacyRunId =
+      typeof body?.legacyRunId === 'string' && /^[0-9a-f-]{36}$/i.test(body.legacyRunId)
+        ? body.legacyRunId
+        : null
+    if (legacyRunId) {
+      const { data: parent } = await svc
+        .from('life_runs')
+        .select('ending_id, final_stats, completed_at')
+        .eq('id', legacyRunId)
+        .single()
+      if (parent?.completed_at && parent.ending_id && parent.final_stats) {
+        const parentEnding = getEnding(parent.ending_id)
+        inheritance = deriveInheritance(parent.final_stats, parentEnding.tone, parent.ending_id)
+      }
+    }
+
     const row = {
       seed,
       profile: {
@@ -72,13 +94,16 @@ export async function POST(req: Request) {
       },
       ip_hash: ipHash,
     }
-    let { data, error } = await svc
-      .from('life_runs')
-      .insert(parentRunId ? { ...row, parent_run_id: parentRunId } : row)
-      .select('id')
-      .single()
-    if (error && parentRunId) {
-      // parent_run_id column not pasted yet: start the run without lineage.
+    const lineage = parentRunId ?? legacyRunId
+    const fullRow = {
+      ...row,
+      ...(lineage ? { parent_run_id: lineage } : {}),
+      ...(inheritance ? { inheritance } : {}),
+    }
+    let { data, error } = await svc.from('life_runs').insert(fullRow).select('id').single()
+    if (error && (lineage || inheritance)) {
+      // Lineage/inheritance columns not pasted yet: degrade to a plain run.
+      inheritance = null
       ;({ data, error } = await svc.from('life_runs').insert(row).select('id').single())
     }
     if (error || !data) {
@@ -87,13 +112,18 @@ export async function POST(req: Request) {
 
     await logLifeEvents(svc, data.id, [
       // Explicit fields only: the scoreboard name never enters analytics.
-      { n: 'run_started', p: { stream: p.stream, city: p.city, ambition: p.ambition, seeded, hasParent: !!parentRunId } },
+      { n: 'run_started', p: { stream: p.stream, city: p.city, ambition: p.ambition, seeded, hasParent: !!parentRunId, secondGen: !!inheritance } },
       ...(parentRunId
         ? [{ n: 'challenge_accepted' as const, p: { parent_run_id: parentRunId } }]
         : []),
     ])
 
-    return NextResponse.json({ runId: data.id, seed, token: issueRunToken(data.id) })
+    return NextResponse.json({
+      runId: data.id,
+      seed,
+      token: issueRunToken(data.id),
+      ...(inheritance ? { inheritance } : {}),
+    })
   } catch {
     return NextResponse.json({ error: 'Could not start the run' }, { status: 500 })
   }

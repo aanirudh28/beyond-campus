@@ -32,7 +32,13 @@ export function buildGhostSummaries(finalState: GameState): GhostSummary[] {
   const selfEnding = selectEnding(finalState)
 
   for (const fi of ghostForkIndices(finalState.history)) {
-    const ghost = simulateGhost(finalState.seed, finalState.profile, finalState.history, fi)
+    const ghost = simulateGhost(
+      finalState.seed,
+      finalState.profile,
+      finalState.history,
+      fi,
+      finalState.inheritance,
+    )
     if (!ghost) continue
     const delta = Math.round(ghost.stats.savings - finalState.stats.savings)
     if (ghost.endingId === selfEnding && Math.abs(delta) < 5) continue // the road converged
@@ -53,7 +59,7 @@ export function buildGhostSummaries(finalState: GameState): GhostSummary[] {
   }
 
   // The disciplined ghost: same seed, same luck, zero indulgence.
-  const disciplined = simulateDisciplined(finalState.seed, finalState.profile)
+  const disciplined = simulateDisciplined(finalState.seed, finalState.profile, finalState.inheritance)
   const dEndingId = selectEnding(disciplined)
   const dDelta = Math.round(disciplined.stats.savings - finalState.stats.savings)
   if (dEndingId !== selfEnding || Math.abs(dDelta) >= 5) {

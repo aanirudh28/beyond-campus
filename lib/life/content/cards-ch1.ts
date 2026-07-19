@@ -700,4 +700,79 @@ export const CARDS_CH1: Card[] = [
       },
     ],
   },
+
+  // ---- second-generation cards: the inheritance, playing itself out ----
+  {
+    id: 'ch1_lg_net_visible',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE NET EVERYONE CAN SEE',
+    condition: { flag: 'origin_legacy_cushion' },
+    base: `Your flatmate eats dal chawal for the last week of every month, and both of you know you never will. The net under you is real, and it changes the questions people ask: would you have taken that risk without it? Would you take a real one now, precisely because falling is survivable?`,
+    options: [
+      {
+        id: 'use_net',
+        label: 'Use it deliberately: take the riskier, better path.',
+        effects: { skills: 5, reputation: 3, family: -3 },
+        outcome:
+          'You pick the harder internship over the safer stipend, because you can. Privilege spent on growth is the only version of it that compounds into something yours.',
+      },
+      {
+        id: 'prove_clean',
+        label: 'Refuse it quietly. Prove you can stand without it.',
+        effects: { skills: 3, burnout: 5, family: 3 },
+        outcome:
+          'You live on your own stipend to the rupee and tell nobody about the net. It is a little theatrical. It also builds a spine the net could never have given you.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_lg_lessons_ledger',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE LEDGER YOU DID NOT SIGN',
+    condition: { flag: 'origin_legacy_rebuild' },
+    base: `You watched a correction eat your parent's best years from a front-row seat at the dinner table. Now every offer you evaluate gets audited twice: once for what it pays, once for how it dies. Your batch calls you paranoid. Your batch did not grow up reading the same ledger.`,
+    options: [
+      {
+        id: 'armor_up',
+        label: 'Let the lesson lead: emergency fund before anything.',
+        effects: { savings: 3, burnout: 2, network: -2 },
+        setFlags: ['runway_built'],
+        outcome:
+          'Six months of runway before your first festival bonus. It is not fear, you tell yourself, it is memory with a plan. Both things are true.',
+      },
+      {
+        id: 'refuse_fear',
+        label: 'Refuse the fear. Their crash is not your forecast.',
+        effects: { skills: 4, reputation: 3, family: -4 },
+        outcome:
+          'You take the bolder path your parent never could afford to. At dinner they say nothing, and pack you extra pickle, which in this house means both worry and blessing.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_lg_the_comparison',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE COMPARISON COURSE',
+    condition: { flag: 'origin_legacy_echo' },
+    base: `An interviewer looks at your surname, then at you, and asks the question you have answered your whole life: "so, following in the footsteps?" Whatever you say next becomes your positioning for years. The name opens this door. It also stands in it.`,
+    options: [
+      {
+        id: 'own_lane',
+        label: 'Claim a different lane, politely and permanently.',
+        effects: { reputation: 4, network: -3, burnout: 2 },
+        outcome:
+          'You say "different mountain, same work ethic" and watch them recalibrate. Building beside a monument means every brick of yours gets counted twice. You have chosen to be counted.',
+      },
+      {
+        id: 'use_name',
+        label: 'Use the name. Doors are doors.',
+        effects: { network: 6, reputation: -2 },
+        outcome:
+          'The name gets you the meeting, the second meeting, the internship. Somewhere in year three you will need to become the reason people stay in the room. You know this. The door is still open.',
+      },
+    ],
+  },
 ]
