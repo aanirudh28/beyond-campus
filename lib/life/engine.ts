@@ -12,6 +12,7 @@ import type {
 import { chapterRng, mulberry32, seededShuffle } from './rng'
 import { ALL_CARDS, CHAPTERS } from './content/chapters'
 import { ENDINGS } from './content/endings'
+import { deriveOrigin } from './origins'
 export { buildLifeReport } from './content/report'
 
 // Pure, deterministic engine. Same (seed, profile, choices) always produces
@@ -49,6 +50,12 @@ export function createInitialState(profile: Profile, seed: number): GameState {
     stats.reputation += 5
     stats.skills += 5
   }
+  // The hand you were dealt: the origin bends the starting stats and sets
+  // its flag, which the reactive dealer treats as an arc trigger.
+  const origin = deriveOrigin(seed)
+  for (const [k, v] of Object.entries(origin.effects)) {
+    stats[k as keyof Stats] += v as number
+  }
   return {
     seed,
     profile,
@@ -56,7 +63,7 @@ export function createInitialState(profile: Profile, seed: number): GameState {
     age: CHAPTERS[0].ageFrom,
     year: CHAPTERS[0].yearFrom,
     stats,
-    flags: {},
+    flags: { [origin.flag]: true },
     history: [],
     trail: [
       {

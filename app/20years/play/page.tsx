@@ -18,6 +18,7 @@ import { buildDiary } from '@/lib/life/diary'
 import { narrateCard } from '@/lib/life/narrate'
 import { composeEpilogue } from '@/lib/life/epilogue'
 import { simulateBatchmate } from '@/lib/life/batchmate'
+import { deriveOrigin } from '@/lib/life/origins'
 import LifeSoFar from '@/app/components/life/LifeSoFar'
 import { flushBeacon, setLifeRunId, trackLife } from '@/lib/life/track'
 import { CHAPTERS, CONTENT_VERSION } from '@/lib/life/content/chapters'
@@ -29,7 +30,7 @@ import Montage, { type MontageData } from '@/app/components/life/Montage'
 import EndingScreen, { type EndingResult } from '@/app/components/life/EndingScreen'
 import { chapterHue } from '@/app/components/life/chapterTheme'
 
-type Phase = 'coldopen' | 'intro' | 'cards' | 'montage' | 'finale' | 'ending'
+type Phase = 'coldopen' | 'origin' | 'intro' | 'cards' | 'montage' | 'finale' | 'ending'
 
 const SAVE_KEY = 'bc20_run'
 const SAVE_TTL_MS = 24 * 60 * 60 * 1000
@@ -289,7 +290,7 @@ export default function PlayPage() {
     setState(initial)
     setCards(dealChapter(initial))
     setCardIndex(0)
-    setPhase('intro')
+    setPhase('origin')
     setStarting(false)
     window.scrollTo(0, 0)
   }
@@ -707,6 +708,73 @@ export default function PlayPage() {
             window.scrollTo(0, 0)
           }}
         />
+      )}
+
+      {phase === 'origin' && state && (
+        <div
+          style={{
+            minHeight: '70vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            padding: '40px 24px',
+            maxWidth: 560,
+            margin: '0 auto',
+          }}
+        >
+          <div className="mono-label" style={{ marginBottom: 18, animation: 'lifeFadeUp 0.5s ease both' }}>
+            BEFORE ANY CHOOSING · THE HAND YOU WERE DEALT
+          </div>
+          <h2
+            style={{
+              fontFamily: 'var(--serif)',
+              fontSize: 'clamp(34px, 8vw, 48px)',
+              letterSpacing: -1,
+              lineHeight: 1.1,
+              margin: '0 0 18px',
+              animation: 'lifeFadeUp 0.6s cubic-bezier(0.22,1,0.36,1) both',
+              animationDelay: '0.3s',
+            }}
+          >
+            {deriveOrigin(state.seed).name}
+          </h2>
+          <p
+            style={{
+              fontSize: 16,
+              lineHeight: 1.7,
+              color: 'var(--muted)',
+              margin: '0 0 22px',
+              maxWidth: 440,
+              animation: 'lifeFadeUp 0.6s ease both',
+              animationDelay: '0.6s',
+            }}
+          >
+            {deriveOrigin(state.seed).blurb}
+          </p>
+          <p
+            style={{
+              fontSize: 12.5,
+              color: 'var(--muted-2)',
+              margin: '0 0 30px',
+              animation: 'lifeFadeUp 0.6s ease both',
+              animationDelay: '0.9s',
+            }}
+          >
+            You did not choose this. Nobody does. Anyone who lives this exact seed carries the same hand.
+          </p>
+          <button
+            className="btn-primary"
+            style={{ minWidth: 200, justifyContent: 'center', animation: 'lifeFadeUp 0.5s ease both', animationDelay: '1.1s' }}
+            onClick={() => {
+              setPhase('intro')
+              window.scrollTo(0, 0)
+            }}
+          >
+            <span>Carry it →</span>
+          </button>
+        </div>
       )}
 
       {phase === 'intro' && state && (

@@ -555,4 +555,31 @@ export const CARDS_CH2: Card[] = [
       },
     ],
   },
+
+  // ---- origin cards: the hand you were dealt, playing itself out ----
+  {
+    id: 'ch2_og_shop_call',
+    chapter: 1,
+    kind: 'decision',
+    title: 'THE SHOP NEEDS HANDS',
+    condition: { flag: 'origin_shop_family' },
+    base: `Your father's knee surgery lands in wedding season, the shop's biggest quarter. Your mother is managing the counter, the suppliers, and her worry, in that order. You are two hours away with a job. The shop has run for twenty-two years. It has never once run short-handed.`,
+    options: [
+      {
+        id: 'take_orders_online',
+        label: 'Take over: put the shop online, run orders after work.',
+        effects: { family: 6, burnout: 5 },
+        setFlags: ['side_biz'],
+        outcome:
+          'You build a WhatsApp catalogue in one weekend and the shop discovers delivery. Your father recovers to find his ledger has a dashboard. He pretends to disapprove for exactly one week.',
+      },
+      {
+        id: 'fund_helper',
+        label: 'Hire a helper with your salary. Presence by proxy.',
+        effects: { savings: -3, family: 3 },
+        outcome:
+          'The boy you hire is good, and the money is real help. On the phone your mother says "beta, it is handled" in the voice that means something else was wanted. The quarter survives.',
+      },
+    ],
+  },
 ]

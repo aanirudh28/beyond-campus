@@ -538,4 +538,55 @@ export const CARDS_CH4: Card[] = [
       },
     ],
   },
+
+  // ---- origin cards: the hand you were dealt, playing itself out ----
+  {
+    id: 'ch4_og_last_emi',
+    chapter: 3,
+    kind: 'decision',
+    title: 'THE LAST EMI',
+    condition: { flag: 'origin_loan' },
+    base: `A notification you have waited years for: education loan, final instalment, paid. ₹11,400 a month of your life is suddenly yours again. The bank sends a no-dues certificate and, with impressive nerve, a pre-approved personal loan offer. The question is what the freed-up money becomes next.`,
+    options: [
+      {
+        id: 'the_trip',
+        label: 'The trip you never took. Close the chapter properly.',
+        effects: { savings: -3, burnout: -8, family: 5 },
+        outcome:
+          'Ten days in the mountains you postponed at 21. You frame the no-dues certificate as a joke and then, quietly, do not take it down. Some debts deserve a funeral.',
+      },
+      {
+        id: 'emi_to_sip',
+        label: 'Same amount, same date, into a SIP. The habit is the asset.',
+        effects: { savings: 4 },
+        setFlags: ['invested_early'],
+        outcome:
+          'The 5th of the month keeps its standing instruction, pointed the other way now. You never feel the money leave, which was the whole trick the loan taught you, used in reverse.',
+      },
+    ],
+  },
+  {
+    id: 'ch4_og_ordinary_at_last',
+    chapter: 3,
+    kind: 'decision',
+    title: 'AVERAGE AT LAST',
+    condition: { flag: 'origin_topper' },
+    base: `The mid-year calibration lands you squarely in the middle of the curve: meets expectations. For the first time since class 8, you are officially ordinary. Two desks away, someone who never topped anything just shipped the quarter's best work. The rank was a head start, and the race has caught up.`,
+    options: [
+      {
+        id: 'rebuild_identity',
+        label: 'Let the rank go. Rebuild on the work itself.',
+        effects: { burnout: -8, skills: 5 },
+        outcome:
+          'The exhausting invisible audience finally files out. Freed from defending a number, you get curious again, which was the thing the number originally measured.',
+      },
+      {
+        id: 'chase_curve',
+        label: 'Unacceptable. Claw back the top of the curve.',
+        effects: { salary: { mult: 1.1 }, burnout: 8, family: -4 },
+        outcome:
+          'You get the rating back the way it is always gotten back: with evenings. The certificate says exceeds expectations. Whose expectations was never on the form.',
+      },
+    ],
+  },
 ]

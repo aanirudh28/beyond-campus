@@ -49,6 +49,17 @@ const RULES: ReportRule[] = [
     },
   },
   {
+    id: 'topper_debt',
+    kind: 'reckoning',
+    when: (s) => s.flags['origin_topper'] === true && s.stats.burnout >= 60,
+    item: {
+      moment: 'The rank opened your first doors, then quietly became a debt you serviced with sleep.',
+      lesson: 'Your run spent years defending a number instead of using the curiosity it once measured. Expectation is not fuel. It only burns like it.',
+      action: 'Separate your worth from your last scorecard now, at 21, while the stakes are small. Pick one thing to be a beginner at this month, publicly.',
+      cta: { label: 'Build on skill, not rank', href: utm('/guides', 'topper_debt') },
+    },
+  },
+  {
     id: 'fno_tuition',
     kind: 'reckoning',
     when: (s) => s.flags['fno_burn'] === true,
@@ -303,6 +314,17 @@ const RULES: ReportRule[] = [
       lesson: 'Your run proves the unfashionable math: presence is the only investment where the entire return is the principal.',
       action: 'Write down, now, which rows you will never give up a seat in. Decisions made in advance survive offer letters.',
       cta: { label: 'Talk it through with a strategist', href: utm('/book', 'anchor_honor') },
+    },
+  },
+  {
+    id: 'first_gen_built',
+    kind: 'honor',
+    when: (s) => s.flags['origin_first_gen'] === true && s.stats.network >= 60,
+    item: {
+      moment: 'You started with a network of zero inherited contacts and ended with one that answers at midnight.',
+      lesson: 'Everything others were handed at birth, your run built by hand in fifteen years: proof it is buildable, on any starting balance.',
+      action: 'Your network starts at zero today, and that is fine. Two honest messages a week to people whose work you actually read. That is the entire machine.',
+      cta: { label: 'Steal the outreach scripts', href: utm('/resources/linkedin-scripts', 'first_gen_built') },
     },
   },
   {

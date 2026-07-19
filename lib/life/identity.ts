@@ -53,6 +53,14 @@ export function deriveIdentityFacts(state: GameState): string[] {
   if (f['creator_track'] || f['one_person_channel']) facts.push('Posts weekly')
   if (f['gives_back']) facts.push('Saturday classroom')
 
+  // The hand you were dealt
+  if (f['origin_first_gen']) facts.push('First-gen')
+  if (f['origin_loan']) facts.push('Loan-funded degree')
+  if (f['origin_shop_family'] && !f['side_biz'] && !f['shop_empire']) facts.push('Shop at home')
+  if (f['origin_topper']) facts.push('The topper')
+  if (f['origin_english'] && !f['fluent_speaker']) facts.push('English came late')
+  if (f['origin_hustler']) facts.push('College hustler')
+
   // How you are
   if (state.stats.burnout >= 70) facts.push('Running on fumes')
   else if (f['health_rebuilt'] || f['reset_taken']) facts.push('Repaired')

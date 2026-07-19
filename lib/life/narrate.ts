@@ -18,6 +18,14 @@ interface Fragment {
 }
 
 const FLAG_LINES: Record<string, Fragment> = {
+  // origins: the hand you were dealt
+  origin_first_gen: { line: 'Nobody at home can explain this world to you. You are the explanation now.' },
+  origin_loan: { line: 'You have known the exact date of the next EMI since you were 21.' },
+  origin_shop_family: { line: 'The shop at home keeps a counter with your name on it, just in case.' },
+  origin_topper: { line: 'The rank still travels ahead of you into rooms. Some days a door, some days a debt.' },
+  origin_english: { line: 'Your ideas still arrive a beat before their English. The gap closes word by word.' },
+  origin_hustler: { line: 'You have never once had exactly one source of income. Old habit.' },
+
   // identity & early tracks
   exam_track: { line: 'The reasoning workbook sits half solved on your desk, next to the cold emails you stopped sending.' },
   backed_self: { line: 'The tracker spreadsheet from that dinner table argument is still open in a tab. It has grown rows since.' },

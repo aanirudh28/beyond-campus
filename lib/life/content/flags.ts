@@ -136,4 +136,10 @@ export const FLAGS: Record<string, FlagDef> = {
 
   // ---- engine-owned ----
   burnout_peaked: { desc: 'Burnout crossed 85 at some chapter end (set by the engine; constitutional for the Burnout ending)' },
+  origin_first_gen: { desc: 'ORIGIN: first-generation graduate (dealt from the seed at birth)' },
+  origin_loan: { desc: 'ORIGIN: ₹6 lakh education loan already ticking (dealt from the seed)' },
+  origin_shop_family: { desc: 'ORIGIN: family shop with a counter reserved for you (dealt from the seed)' },
+  origin_topper: { desc: 'ORIGIN: college topper, expectation arrived before opportunity (dealt from the seed)' },
+  origin_english: { desc: 'ORIGIN: English arrived years after the ideas (dealt from the seed)' },
+  origin_hustler: { desc: 'ORIGIN: already earning small money in college (dealt from the seed)' },
 }

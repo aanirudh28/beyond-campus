@@ -527,4 +527,32 @@ export const CARDS_CH5: Card[] = [
       },
     ],
   },
+
+  // ---- origin cards: the hand you were dealt, playing itself out ----
+  {
+    id: 'ch5_og_counter_keys',
+    chapter: 4,
+    kind: 'decision',
+    title: 'THE KEYS TO THE COUNTER',
+    pivotal: true,
+    condition: { flag: 'origin_shop_family' },
+    base: `Your father, without ceremony, slides the shop keys across the same counter you did homework under. "It should stay in the family. Or it should not. You decide, you are the one who understands the new world." The shop fed everyone you love for decades. It is asking one question: is it your past or your future?`,
+    options: [
+      {
+        id: 'take_keys',
+        label: 'Take the keys. Run it evenings, modernise it slowly.',
+        effects: { family: 8, burnout: 7 },
+        setFlags: ['side_biz'],
+        outcome:
+          'The shop gets a card machine, a delivery tie-up, and a Sunday inventory system run from your laptop. Your father comes by daily "just to sit". The counter holds three generations of fingerprints now.',
+      },
+      {
+        id: 'decline_fund',
+        label: 'Decline the keys. Fund its next avatar instead.',
+        effects: { savings: -5, family: 3, network: 2 },
+        outcome:
+          'A trusted cousin takes the counter with your capital behind him and your systems around him. Your father grieves it for a season and then notices the shop is thriving. Both true, both forever.',
+      },
+    ],
+  },
 ]

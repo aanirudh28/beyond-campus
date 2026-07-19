@@ -548,4 +548,129 @@ export const CARDS_CH1: Card[] = [
       },
     ],
   },
+
+  // ---- origin cards: the hand you were dealt, playing itself out ----
+  {
+    id: 'ch1_og_form_filler',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE COLONY’S FORM FILLER',
+    condition: { flag: 'origin_first_gen' },
+    base: `Because you are the one with the degree, you are now the colony's official form-filler: pension papers, scholarship portals, a neighbour's insurance claim. It eats your evenings in twenty-minute pieces. It also means every family in three lanes knows your name and says it warmly.`,
+    options: [
+      {
+        id: 'keep_helping',
+        label: 'Keep the door open. This is also a network.',
+        effects: { network: 6, burnout: 3, family: 3 },
+        outcome:
+          'The sweet shop uncle whose GST forms you filed has a nephew in an HR team. Nothing about your network is inherited, and all of it answers your calls.',
+      },
+      {
+        id: 'boundaries',
+        label: 'Tuesdays only. The job hunt needs the evenings.',
+        effects: { skills: 4, family: -4 },
+        outcome:
+          'Two aunties are offended on principle. Your application count doubles. The colony adjusts, the way colonies do, and keeps a shorter list of favours.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_og_moratorium',
+    chapter: 0,
+    kind: 'decision',
+    title: 'SIX MONTHS TO THE FIRST EMI',
+    condition: { flag: 'origin_loan' },
+    base: `The education loan moratorium ends six months after graduation, employed or not. ₹11,400 a month, the bank does not do feelings. A 7 a.m. tuition batch would cover most of it. So would taking literally any offer that comes first, which is exactly how the loan wants you to think.`,
+    options: [
+      {
+        id: 'tuition',
+        label: 'Take the 7 a.m. batches. Buy the search some time.',
+        effects: { savings: 3, burnout: 6 },
+        setFlags: ['loan_fighter'],
+        outcome:
+          'Teaching class 11 accounts at dawn pays the EMI and, unexpectedly, teaches you to explain things under pressure. Interviewers notice that muscle without knowing where it came from.',
+      },
+      {
+        id: 'restructure',
+        label: 'Restructure with the bank. Hunt with a clear head.',
+        effects: { skills: 4, savings: -2 },
+        outcome:
+          'One awkward branch visit converts panic into a payment plan. The search gets your full brain. The interest meter, patient as ever, keeps counting.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_og_public_rejection',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE TOPPER GETS A NO',
+    condition: { flag: 'origin_topper' },
+    base: `The company that came to campus rejected you and selected two backbenchers, and by evening the whole college knows. Your professor looks personally betrayed. The rank that opened every door so far has just discovered a door it cannot open, publicly, with an audience.`,
+    options: [
+      {
+        id: 'hide',
+        label: 'Say nothing. Toppers do not explain.',
+        effects: { burnout: 7, family: -3 },
+        outcome:
+          'The silence protects the reputation and corrodes the sleep. The rank becomes a thing you defend instead of a thing you use.',
+      },
+      {
+        id: 'post_it',
+        label: 'Write about it honestly, rank and rejection both.',
+        effects: { reputation: 5, network: 5 },
+        setFlags: ['creator_spark'],
+        outcome:
+          'The post travels beyond the college by midnight. Strangers reply with their own rejections. It turns out the most shareable thing a topper can publish is a failure.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_og_gd_language',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE GD IS A HOME GAME FOR SOMEONE ELSE',
+    condition: { flag: 'origin_english' },
+    base: `In the group discussion, a boy from a city school says less than you know in better English than you have, and the moderator writes something down. Your ideas arrive complete and leave untranslated. There is a 7 a.m. practice circle that fixes exactly this, and there is your pride.`,
+    options: [
+      {
+        id: 'circle',
+        label: 'Join the circle. Pay the English tax early.',
+        effects: { skills: 4, burnout: 4 },
+        setFlags: ['english_grind'],
+        outcome:
+          'Three months of stumbling in front of strangers at dawn. Then one morning you hear yourself disagree with someone, fluently, and forget to be surprised.',
+      },
+      {
+        id: 'written_lane',
+        label: 'Compete where you are strong: written work, portfolios.',
+        effects: { skills: 5, network: -4 },
+        outcome:
+          'Your case submissions start winning what your GDs keep losing. It is a real lane. It is also a narrower one, and you know which rooms you are avoiding.',
+      },
+    ],
+  },
+  {
+    id: 'ch1_og_page_or_placement',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE PAGE THAT PAYS',
+    condition: { flag: 'origin_hustler' },
+    base: `The meme page you run clears ₹15,000 a month in promotions, which is more than some job offers on campus. Placement season wants your full attention. The page wants tonight's post. Everyone advising you to shut it down has a salary. Everyone telling you to scale it has never had one.`,
+    options: [
+      {
+        id: 'run_both',
+        label: 'Run both. Sleep is negotiable, income is not.',
+        effects: { savings: 3, burnout: 7 },
+        outcome:
+          'You interview by day and schedule posts by night. The bank balance grows either way, which quietly changes how you sit in interviews: like someone with options.',
+      },
+      {
+        id: 'pause_page',
+        label: 'Pause the page. Hunt with everything.',
+        effects: { skills: 3, family: 3, burnout: -2 },
+        outcome:
+          'The followers drift, the sleep returns, the applications sharpen. The page sits in drafts like a folded shop shutter. You could reopen it. That thought is worth something.',
+      },
+    ],
+  },
 ]

@@ -599,4 +599,79 @@ export const CARDS_CH3: Card[] = [
       },
     ],
   },
+
+  // ---- origin cards: the hand you were dealt, playing itself out ----
+  {
+    id: 'ch3_og_translator',
+    chapter: 2,
+    kind: 'decision',
+    title: 'EXPLAINING THE PROMOTION',
+    condition: { flag: 'origin_first_gen' },
+    base: `You got promoted, and at dinner your father asks, carefully, what it is that you actually do. The last three explanations did not land. He tells the colony you "work on computers". A cousin who is a bank clerk gets asked for career advice meant for you. The gap is not affection. It is vocabulary.`,
+    options: [
+      {
+        id: 'office_day',
+        label: 'Bring him to the office. Show, do not translate.',
+        effects: { family: 8, reputation: 2, burnout: 2 },
+        outcome:
+          'He sits at your desk, drinks the machine coffee, watches a client call through glass. On the train home he says nothing for an hour, then: "your grandfather would not have believed the chair." Vocabulary solved.',
+      },
+      {
+        id: 'stop_translating',
+        label: 'Stop explaining. Let the salary speak eventually.',
+        effects: { family: -5, skills: 2 },
+        outcome:
+          'The dinners get easier and thinner at the same time. He learns your designation from a neighbour whose son found your LinkedIn. Some silences are efficient. None of them are free.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_og_townhall_mic',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE MIC AT THE TOWN HALL',
+    condition: { flag: 'origin_english' },
+    base: `Your analysis is the centrepiece of the quarterly town hall, and someone has to present it to two hundred people. Your manager offers you the mic with a look that says he has noticed you avoiding exactly this. The fluent colleague who usually presents your work is already reaching for the clicker.`,
+    options: [
+      {
+        id: 'take_mic',
+        label: 'Take the mic. Your work, your voice, your accent.',
+        effects: { reputation: 7, burnout: 4 },
+        setFlags: ['fluent_speaker'],
+        outcome:
+          'You rehearse until the sentences stop being English and become yours. On stage, the accent survives and stops mattering by slide three. Afterwards a VP asks a question directly to you. That routing is permanent.',
+      },
+      {
+        id: 'pass_clicker',
+        label: 'Let the colleague present. The work speaks, right?',
+        effects: { reputation: -5, burnout: -2 },
+        outcome:
+          'The presentation goes beautifully. The congratulations go to the presenter. You learn, at full price, that work does not speak. Speakers speak.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_og_accidental_agency',
+    chapter: 2,
+    kind: 'decision',
+    title: 'AN AGENCY, ACCIDENTALLY',
+    condition: { flag: 'origin_hustler' },
+    base: `The old clients never really went away, and now two of them want retainers: proper money, proper invoices, proper GST. You have accidentally become an agency with one employee who also has a full-time job. Registering it makes it real. Folding it makes it a story you used to tell.`,
+    options: [
+      {
+        id: 'register',
+        label: 'Register the agency. Make the side real.',
+        effects: { savings: 6, burnout: 8, skills: 3 },
+        outcome:
+          'A CA cousin sets up the proprietorship for a dinner. The retainers clear on the 1st, both of them. You are now a person with a current account and two lives, and both are growing.',
+      },
+      {
+        id: 'fold_it',
+        label: 'Fold it. One life, done properly.',
+        effects: { skills: 5, burnout: -3 },
+        outcome:
+          'You hand the clients to a junior from your college and keep the goodwill. The single thread gets your whole attention and shows it. Somewhere a version of you runs an agency. This version sleeps.',
+      },
+    ],
+  },
 ]

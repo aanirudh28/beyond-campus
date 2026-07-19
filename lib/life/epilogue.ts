@@ -1,6 +1,7 @@
 ﻿import type { Ending, GameState } from './types'
 import { ALL_CARDS, CHAPTERS } from './content/chapters'
 import { buildLifeReport } from './content/report'
+import { ORIGINS } from './origins'
 
 // The authored epilogue: four paragraphs, fully deterministic, zero AI.
 //   1. An opening scene at 36, written per ending.
@@ -258,10 +259,12 @@ export function composeEpilogue(
   const prose = ENDING_PROSE[ending.id]
   const opening = prose?.opening ?? ending.blurb
 
+  const origin = ORIGINS.find((o) => state.flags[o.flag])
+  const started = origin ? ` You started at 21 with ${origin.epiloguePhrase}.` : ''
   const choices = definingChoices(state)
   const choicesPara = choices.length
-    ? `It did not turn on one dramatic day. It turned on the ordinary ones. ${choices.join('. ')}. None of them felt like the big one at the time. They never do.`
-    : 'It did not turn on one dramatic day. It turned on thirty-odd ordinary ones, none of which felt like the big one at the time. They never do.'
+    ? `It did not turn on one dramatic day.${started} It turned on the ordinary ones. ${choices.join('. ')}. None of them felt like the big one at the time. They never do.`
+    : `It did not turn on one dramatic day.${started} It turned on forty-odd ordinary ones, none of which felt like the big one at the time. They never do.`
 
   const ledgerPara = `${moneyPhrase(state)} ${bodyAndHomePhrase(state)}`
 

@@ -174,7 +174,16 @@ check(
 
 // 6. orphan-flags (doc 03 §5)
 const allCards: Card[] = ALL_CARDS.flat()
-const setNames = new Set<string>(['burnout_peaked']) // engine-set
+// Engine-set flags: the burnout constitutional plus the six dealt origins.
+const setNames = new Set<string>([
+  'burnout_peaked',
+  'origin_first_gen',
+  'origin_loan',
+  'origin_shop_family',
+  'origin_topper',
+  'origin_english',
+  'origin_hustler',
+])
 const readNames = new Set<string>()
 for (const card of allCards) {
   for (const opt of card.options) for (const f of opt.setFlags ?? []) setNames.add(f)
