@@ -1,6 +1,7 @@
 ﻿import type { Card, GameState } from './types'
 import { ALL_CARDS } from './content/chapters'
 import { marketPhase, type MarketPhase } from './market'
+import { answeredInChapter, applyChoice, dealChapter, replayToChapter } from './engine'
 
 // Deterministic scene continuity: the line above each card that proves the
 // game remembers who you are. Zero AI. Candidates come from the life you are
@@ -201,14 +202,10 @@ function hash(str: string, seed: number): number {
   return h
 }
 
-export function narrateCard(card: Card, state: GameState): string | undefined {
+// The distinct continuity lines available for THIS card, most relevant first.
+function candidatesFor(card: Card, state: GameState): string[] {
   const { urgent, mild } = statLines(state)
-  // Precision over volume: the game speaks when it matters. Urgent states
-  // always surface; otherwise only pivotal moments carry a continuity
-  // line, so it lands as weight instead of wallpaper.
-  if (!urgent.length && !card.pivotal) return undefined
   const candidates: string[] = [...urgent]
-
   for (const flag of flagsByRecency(state)) {
     const frag = FLAG_LINES[flag]
     if (!frag) continue
@@ -218,14 +215,57 @@ export function narrateCard(card: Card, state: GameState): string | undefined {
     if (card.options.some((o) => o.setFlags?.includes(flag))) continue
     candidates.push(frag.line)
   }
-
   candidates.push(...mild)
   if (state.chapter === 0) candidates.push(...profileLines(state))
   candidates.push(WEATHER_LINES[marketPhase(state.seed, state.chapter)])
-  if (!candidates.length) return undefined
+  return [...new Set(candidates)]
+}
 
-  // Rotate among the strongest few so a chapter's cards surface different
-  // facts of the same life.
-  const window = Math.min(candidates.length, 4)
-  return candidates[hash(card.id, state.seed) % window]
+// Pick a line for this card that has NOT already been shown this chapter.
+// If every available line is used up, stay silent rather than repeat: a
+// continuity line only earns its place when it says something new.
+function chooseLine(card: Card, state: GameState, used: Set<string>): string | undefined {
+  const { urgent } = statLines(state)
+  // Precision over volume: only urgent states or pivotal moments speak.
+  if (!urgent.length && !card.pivotal) return undefined
+  const uniq = candidatesFor(card, state)
+  if (!uniq.length) return undefined
+  const offset = hash(`c${state.chapter}`, state.seed) % uniq.length
+  for (let k = 0; k < uniq.length; k++) {
+    const line = uniq[(offset + k) % uniq.length]
+    if (!used.has(line)) return line
+  }
+  return undefined
+}
+
+// Replay the current chapter to learn which lines earlier cards already
+// showed, so no fact is echoed twice in one chapter. Deterministic and
+// pure; falls back to no-dedup if the history cannot be rebuilt.
+function usedLinesThisChapter(state: GameState): Set<string> {
+  const used = new Set<string>()
+  const priorCount = answeredInChapter(state)
+  if (priorCount === 0) return used
+  let s: GameState
+  try {
+    s = replayToChapter(state.seed, state.profile, state.history, state.chapter, state.inheritance).state
+  } catch {
+    return used
+  }
+  const chapterChoices = state.history.filter((h) => h.c === state.chapter)
+  for (let k = 0; k < priorCount; k++) {
+    const cards = dealChapter(s)
+    const idx = answeredInChapter(s)
+    if (idx >= cards.length) break
+    const c = cards[idx]
+    const line = chooseLine(c, s, used)
+    if (line) used.add(line)
+    const opt = c.options.find((o) => o.id === chapterChoices[k]?.optionId)
+    if (!opt) break
+    s = applyChoice(s, c, opt)
+  }
+  return used
+}
+
+export function narrateCard(card: Card, state: GameState): string | undefined {
+  return chooseLine(card, state, usedLinesThisChapter(state))
 }
