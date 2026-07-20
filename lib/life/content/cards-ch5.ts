@@ -555,4 +555,30 @@ export const CARDS_CH5: Card[] = [
       },
     ],
   },
+
+  // ---- second-generation exclusive: the parent has survived a crash before ----
+  {
+    id: 'ch5_lg_they_saw_this',
+    chapter: 4,
+    kind: 'decision',
+    title: 'THEY HAVE SEEN THIS BEFORE',
+    condition: { flag: 'second_generation' },
+    base: `The correction hits, and for once your parent is the calmest person you know. They lived through their own crash fifteen years ago and carry its lessons in their body. Their advice is specific, unfashionable, and delivered with the certainty of someone who paid full price for it. Your own instincts say something slightly different.`,
+    options: [
+      {
+        id: 'their_playbook',
+        label: 'Run their playbook. They paid for this knowledge.',
+        effects: { savings: 4, reputation: 3, family: 5 },
+        outcome:
+          'You do the boring, proven thing your parent swears by. It works, the way it worked for them, and the phone call where you admit as much is one they will replay for years.',
+      },
+      {
+        id: 'own_read',
+        label: 'Trust your own read of a new machine.',
+        effects: { skills: 6, savings: 2, family: -3 },
+        outcome:
+          'The world is not identical to theirs; the machines are new. You back your own judgment, and it mostly holds. You have learned the thing their generation had to learn too: nobody hands you the manual for your own crash.',
+      },
+    ],
+  },
 ]

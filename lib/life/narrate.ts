@@ -29,6 +29,10 @@ const FLAG_LINES: Record<string, Fragment> = {
   origin_legacy_cushion: { line: 'The net under you is real. So is the question of what you would be without it.' },
   origin_legacy_rebuild: { line: 'You audit every offer twice: what it pays, and how it dies. Family training.' },
   origin_legacy_echo: { line: 'The surname enters the room first. You are still negotiating the seating.' },
+  family_business: { line: 'You run what your parent built now. Bigger, yes. Yours is the longer argument.', minChapter: 3 },
+  built_independent: { line: 'You never touched the net. Everything here, you carried up yourself.', minChapter: 3 },
+  family_restored: { line: 'The house is back in the family name. Your parent still checks the deed some mornings.', minChapter: 3 },
+  own_name: { line: 'Out here the surname means nothing. Your first name is doing all the work now.', minChapter: 3 },
 
   // identity & early tracks
   exam_track: { line: 'The reasoning workbook sits half solved on your desk, next to the cold emails you stopped sending.' },

@@ -634,4 +634,30 @@ export const CARDS_CH2: Card[] = [
       },
     ],
   },
+
+  // ---- second-generation exclusive: the parent is a character now ----
+  {
+    id: 'ch2_lg_the_call',
+    chapter: 1,
+    kind: 'decision',
+    title: 'THE ADVICE YOU DID NOT ASK FOR',
+    condition: { flag: 'second_generation' },
+    base: `Your parent calls at 10 p.m. with career advice shaped entirely by the fifteen years they lived. Some of it is gold. Some of it is a detailed map of a country that no longer exists. They mean every word, and they are watching, quietly, to see whether you listen.`,
+    options: [
+      {
+        id: 'listen',
+        label: 'Take the wisdom, filter the outdated parts.',
+        effects: { skills: 5, family: 5, network: 2 },
+        outcome:
+          'You keep the pattern-recognition and gently drop the specifics. They feel heard, which was half the point, and you are sharper for it, which was the other half.',
+      },
+      {
+        id: 'own_way',
+        label: 'Thank them, then do it entirely your own way.',
+        effects: { reputation: 4, family: -5, burnout: 2 },
+        outcome:
+          'You build without the manual. A few of their warnings you will rediscover the expensive way. The independence costs a handful of dinners and buys something you cannot name yet.',
+      },
+    ],
+  },
 ]

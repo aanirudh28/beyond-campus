@@ -56,7 +56,11 @@ export function deriveIdentityFacts(state: GameState): string[] {
   // The hand you were dealt
   if (f['origin_legacy_cushion']) facts.push('The safety net')
   if (f['origin_legacy_rebuild']) facts.push('The rebuild')
-  if (f['origin_legacy_echo']) facts.push('The echo')
+  if (f['origin_legacy_echo'] && !f['own_name']) facts.push('The echo')
+  if (f['family_business']) facts.push('Runs the family firm')
+  if (f['built_independent']) facts.push('Built it alone')
+  if (f['family_restored']) facts.push('Bought the house back')
+  if (f['own_name']) facts.push('Out of the shadow')
   if (f['origin_first_gen']) facts.push('First-gen')
   if (f['origin_loan']) facts.push('Loan-funded degree')
   if (f['origin_shop_family'] && !f['side_biz'] && !f['shop_empire']) facts.push('Shop at home')

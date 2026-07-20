@@ -724,4 +724,85 @@ export const CARDS_CH3: Card[] = [
       },
     ],
   },
+
+  // ---- second-generation exclusive: the fork the inheritance was building toward ----
+  {
+    id: 'ch3_lg_join_or_build',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE CHAIR THEY KEPT WARM',
+    pivotal: true,
+    condition: { flag: 'origin_legacy_cushion' },
+    base: `The wealth your parent built has a shape: a business, a portfolio, a network, and a chair in it with your name discreetly on the back. Stepping in is a head start most people would kill for, and a lifetime of being "the child who inherited." Building your own means starting from zero on purpose, with a safety net you swore you would never touch.`,
+    options: [
+      {
+        id: 'join',
+        label: 'Step into what they built. Compound it.',
+        effects: { salary: { mult: 1.3 }, savings: 8, network: 8, reputation: -4 },
+        setFlags: ['family_business'],
+        outcome:
+          'You take the chair and grow the thing threefold in five years. Every profile of you still leads with the surname. You made it bigger. Whether you made it yours is a question for later, quieter dinners.',
+      },
+      {
+        id: 'build_own',
+        label: 'Refuse the chair. Start from zero.',
+        effects: { skills: 12, reputation: 8, savings: -6, burnout: 8 },
+        setFlags: ['built_independent'],
+        outcome:
+          'You turn down the head start and build something small and entirely your own. It is harder than it ever needed to be. That was the point, and on the good days it is worth every rupee you left on their table.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_lg_restore',
+    chapter: 2,
+    kind: 'decision',
+    title: 'BUYING BACK THE HOUSE',
+    pivotal: true,
+    condition: { flag: 'origin_legacy_rebuild' },
+    base: `The house your family lost in your parent's thin years is back on the market. Buying it costs most of your savings and years of your momentum, and it puts a roof your parent has quietly grieved back over their head. It is not an investment. It is a debt of a different kind, the kind that never appears on a statement.`,
+    options: [
+      {
+        id: 'buy_back',
+        label: 'Buy it back. Some ledgers are not financial.',
+        effects: { savings: -16, family: 16, reputation: 4 },
+        setFlags: ['family_restored'],
+        outcome:
+          'You hand your parent the keys and watch fifteen years of quiet shame leave their shoulders in a single afternoon. Your net worth takes the hit. Your name on that deed turns out to be worth more than the number ever was.',
+      },
+      {
+        id: 'move_forward',
+        label: 'Let it go. Build forward, not backward.',
+        effects: { savings: 6, family: -8, skills: 4 },
+        outcome:
+          'You choose your trajectory over the restoration. It is the correct financial call, and it sits in your chest at every family function. Forward is a direction. It is not always a comfort.',
+      },
+    ],
+  },
+  {
+    id: 'ch3_lg_out_of_shadow',
+    chapter: 2,
+    kind: 'decision',
+    title: 'A NAME OF YOUR OWN',
+    pivotal: true,
+    condition: { flag: 'origin_legacy_echo' },
+    base: `An opening appears in a different city, a different field, where nobody has ever heard of your parent. Lower pay, no network, no shortcut, and no shadow. Or you stay where the name opens every door, and accept that every door will always have been opened by it.`,
+    options: [
+      {
+        id: 'go_own',
+        label: 'Leave the shadow. Build a name that is yours.',
+        effects: { skills: 12, reputation: 10, salary: { mult: 0.85 }, network: -6 },
+        setFlags: ['own_name'],
+        outcome:
+          'You move to where the surname means nothing and spend five years making your first name mean something. The pay cut is real. The first time a stranger praises your work without knowing whose child you are, you understand exactly what you bought.',
+      },
+      {
+        id: 'use_shadow',
+        label: 'Stay. Doors that open are still doors.',
+        effects: { salary: { mult: 1.25 }, network: 8, reputation: -4 },
+        outcome:
+          'You compound the name into a genuinely successful run: comfortable, lucrative, and, in the quiet moments, borrowed. You will spend a while working out which parts of it were actually you.',
+      },
+    ],
+  },
 ]

@@ -589,4 +589,30 @@ export const CARDS_CH4: Card[] = [
       },
     ],
   },
+
+  // ---- second-generation exclusive: the parent ages ----
+  {
+    id: 'ch4_lg_parent_second_act',
+    chapter: 3,
+    kind: 'decision',
+    title: 'YOUR PARENT STARTS OVER',
+    condition: { flag: 'second_generation' },
+    base: `At an age when most people coast, your parent announces a reinvention: a small venture, a return to study, a dream deferred for fifteen years while they raised you. They are asking, not quite for money, but for your belief, and a little money. You are in your own heaviest building years.`,
+    options: [
+      {
+        id: 'back_them',
+        label: 'Back the reinvention. They earned a second act.',
+        effects: { savings: -6, family: 12, burnout: 3 },
+        outcome:
+          'You fund the first year and show up to the launch. It may not work. But your parent spent fifteen years betting on you, and you have just told them, in the only language that counts, that the account runs both ways.',
+      },
+      {
+        id: 'gentle_no',
+        label: 'Gently steer them toward something safer.',
+        effects: { savings: 2, family: -6 },
+        outcome:
+          'You talk them into the sensible version, which is smaller and sadder and far more likely to survive. They agree. Something between you goes a little quiet, and you both decide not to name it.',
+      },
+    ],
+  },
 ]

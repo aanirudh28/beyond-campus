@@ -530,4 +530,31 @@ export const CARDS_CH6: Card[] = [
       },
     ],
   },
+
+  // ---- second-generation exclusive: the comparison finally resolves ----
+  {
+    id: 'ch6_lg_the_measure',
+    chapter: 5,
+    kind: 'decision',
+    title: 'THE MEASURE OF A LIFE',
+    pivotal: true,
+    condition: { flag: 'second_generation' },
+    base: `Somewhere around now the arithmetic finishes: you have either exceeded the life your parent built or fallen short of it, and you both quietly know which. At a dinner that is ostensibly about nothing, the comparison sits at the table like an uninvited guest. How you hold it is the last thing this inheritance will ever ask of you.`,
+    options: [
+      {
+        id: 'grace',
+        label: 'Hold it with grace, whichever way it fell.',
+        effects: { family: 12, reputation: 4, burnout: -4 },
+        outcome:
+          'You let the comparison be a conversation instead of a scoreboard. Whether you rose above them or not, you thank them out loud, specifically, and watch fifteen years of quiet wondering finally settle. That is the inheritance, at last, spent well.',
+      },
+      {
+        id: 'prove',
+        label: 'Let the numbers speak. You earned yours.',
+        effects: { reputation: 6, family: -8, burnout: 4 },
+        outcome:
+          'You let the results make the argument. If you won it is a cold kind of winning, and if you did not it is a long kind of quiet. A number was always going to be an incomplete way to weigh this, and now you know it in your body.',
+      },
+    ],
+  },
 ]

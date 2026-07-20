@@ -146,4 +146,8 @@ export const FLAGS: Record<string, FlagDef> = {
   origin_legacy_rebuild: { desc: 'LEGACY ORIGIN: second generation, parent finished thin; the family remembers why' },
   origin_legacy_echo: { desc: 'LEGACY ORIGIN: second generation, parent’s name enters rooms first' },
   second_generation: { desc: 'This life was raised by a completed run (engine-set on legacy starts)', narrative: true },
+  family_business: { desc: 'GEN-2: took the chair in the parent’s enterprise and compounded it', narrative: true },
+  built_independent: { desc: 'GEN-2: refused the inherited head start and built from zero', narrative: true },
+  family_restored: { desc: 'GEN-2: bought back what the parent’s thin years cost the family', narrative: true },
+  own_name: { desc: 'GEN-2: left the shadow and built a name in a place the surname meant nothing', narrative: true },
 }

@@ -119,6 +119,7 @@ for (let i = 0; i < RUNS; i++) {
 // and replay-identity with an inheritance in play.
 let legacyFailure: string | null = null
 const LEGACY_IDS = ['legacy_cushion', 'legacy_rebuild', 'legacy_echo'] as const
+const gen2CardsSeen = new Set<string>()
 for (let i = 0; i < 300 && !legacyFailure; i++) {
   const pick = mulberry32(i * 104729 + 7)
   const profile: Profile = {
@@ -138,6 +139,7 @@ for (let i = 0; i < 300 && !legacyFailure; i++) {
       const card = cards[idx]
       const option = card.options[Math.floor(pick() * card.options.length)]
       choices.push({ c: ch, cardId: card.id, optionId: option.id })
+      if (card.id.includes('_lg_')) gen2CardsSeen.add(card.id)
       state = applyChoice(state, card, option)
       assertSane(state, `legacy ${card.id}`)
     }
@@ -150,6 +152,12 @@ for (let i = 0; i < 300 && !legacyFailure; i++) {
   if (!state.flags[`origin_${inheritance.o}`] || !state.flags['second_generation']) {
     legacyFailure = `legacy run ${i} missing origin/second_generation flags`
   }
+}
+// Every authored gen-2 exclusive card must be reachable in second-gen runs.
+const gen2Authored = ALL_CARDS.flat().filter((c) => c.id.includes('_lg_')).map((c) => c.id)
+const gen2Missing = gen2Authored.filter((id) => !gen2CardsSeen.has(id))
+if (!legacyFailure && gen2Missing.length) {
+  legacyFailure = `gen-2 cards never dealt in 300 runs: ${gen2Missing.join(', ')}`
 }
 
 // ---------- checks ----------
