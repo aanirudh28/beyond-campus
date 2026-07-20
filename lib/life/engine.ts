@@ -217,9 +217,21 @@ export function advanceChapter(state: GameState): GameState {
   const rng = mulberry32((state.seed ^ ((state.chapter + 1) * 0x85ebca6b)) >>> 0)
   const stats = { ...state.stats }
 
-  // Everyone is employed somehow by 23. If no job card fired, land a baseline role.
+  // The first job, for anyone who held out rather than grabbing the first
+  // thing. It is NOT a flat number: a hunt run well — real skills, a real
+  // network, a reputation built on proof — lands a genuinely better role
+  // than a passive application queue ever could. Off-campus, done right,
+  // can beat the campus median, which is the whole premise.
   if (state.chapter === 0 && stats.salary === 0) {
-    stats.salary = round1(state.flags['exam_track'] ? 4.8 : 3.2 + rng() * 1.2)
+    if (state.flags['elite_first_job']) {
+      stats.salary = round1(9 + rng() * 2.5) // the unconventional win: consulting / finance / FO
+    } else if (state.flags['exam_track']) {
+      stats.salary = 4.8
+    } else {
+      const signal = stats.skills + stats.network + stats.reputation
+      const scaled = 3.2 + rng() * 1.0 + Math.max(0, signal - 95) * 0.09
+      stats.salary = round1(Math.min(scaled, 8.5))
+    }
   }
 
   const phase = marketPhase(state.seed, state.chapter)

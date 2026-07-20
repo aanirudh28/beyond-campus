@@ -39,6 +39,7 @@ const FLAG_LINES: Record<string, Fragment> = {
   exam_track: { line: 'The reasoning workbook sits half solved on your desk, next to the cold emails you stopped sending.' },
   backed_self: { line: 'The tracker spreadsheet from that dinner table argument is still open in a tab. It has grown rows since.' },
   took_early_job: { line: 'Home is 1,400 km away now, a voice-note rhythm you answer late at night.' },
+  elite_first_job: { line: 'You started where the campus toppers assumed you needed campus. The DMs asking how never fully stopped.' },
   held_out: { line: 'You still remember the two silent months after you said no to the first offer, and what a bet feels like.' },
   settled_local: { line: 'The local office knows your chai order. The industry does not know your name yet.' },
   govt_settled: { line: 'The posting letter is framed in the hall at home. The colony finally sends its respect.' },

@@ -20,6 +20,7 @@ export const FLAGS: Record<string, FlagDef> = {
   exam_track: { desc: 'Chose the bank/govt exam path at the family dinner table' },
   backed_self: { desc: 'Refused the safe default and bet on the off-campus hunt', narrative: true },
   took_early_job: { desc: 'Took the first ₹3.2 LPA startup offer instead of waiting' },
+  elite_first_job: { desc: 'Off-campus hunt cracked a premium first role (consulting / finance / Founder’s Office, 9-11 LPA)' },
   held_out: { desc: 'Declined the first offer and waited for a stronger name', narrative: true },
   settled_local: { desc: 'Took the safe local back-office job near home', narrative: true },
   govt_settled: { desc: 'Cleared the bank exam on the final attempt', narrative: true },

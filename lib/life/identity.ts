@@ -23,6 +23,9 @@ export function deriveIdentityFacts(state: GameState): string[] {
   else if (f['stayed_rooted']) facts.push('Home city')
   else facts.push(CITY_HOME[state.profile.city] ?? '')
 
+  // How you started (the rare off-campus win)
+  if (f['elite_first_job']) facts.push('Cracked it off-campus')
+
   // What you are
   if (f['sold_company']) facts.push('Exited founder')
   else if (f['own_business']) facts.push('Founder')

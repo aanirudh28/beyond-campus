@@ -48,7 +48,7 @@ export const ENDINGS: Ending[] = [
       'Employee six, a pay cut everyone mocked, and years of doing five jobs badly. Then the term sheet landed and finished the argument. The risk was the resume.',
     baselineRarity: 2,
     hint: 'Joined something tiny early, and held on.',
-    match: { allFlags: ['exit_money'], minSavings: 125 },
+    match: { allFlags: ['exit_money'], minSavings: 150 },
   },
   {
     id: 'the_dukaan_empire',

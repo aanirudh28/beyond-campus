@@ -61,6 +61,7 @@ export const CARDS_CH1: Card[] = [
     kind: 'decision',
     title: 'THE FIRST OFFER',
     pivotal: true,
+    condition: { notFlag: 'took_early_job' },
     base: `It finally happens. A 40-person startup offers you a BD role. ₹3.2 LPA, six-day weeks, and the office is 1,400 km from home. Your mother asks if it is "a real company." Your group chat says take anything, the market is brutal. A shinier brand might come. Or the season might simply end.`,
     options: [
       {
@@ -446,6 +447,34 @@ export const CARDS_CH1: Card[] = [
         label: 'Enjoy it and go back to applications.',
         effects: { network: 3 },
         outcome: 'A good day. The algorithm forgets you by Friday, as it forgets everyone.',
+      },
+    ],
+  },
+
+  {
+    id: 'ch1_elite_offer',
+    chapter: 0,
+    kind: 'decision',
+    title: 'THE OFFER CAMPUS SAID NEEDED CAMPUS',
+    pivotal: true,
+    condition: { minStat: { skills: 48, network: 38 }, notFlag: 'took_early_job' },
+    base: `The hunt produces something the placement cell never could: a real final-round process at a name that does not usually read tier-2 resumes. A consulting analyst seat, or a Founder's Office role at a funded startup. Eight to eleven LPA, the kind of first job the campus toppers assumed required campus. You built this with cold emails and proof of work, not a placement queue.`,
+    options: [
+      {
+        id: 'consulting',
+        label: 'Take the consulting seat. The grind is the tuition.',
+        effects: { skills: 10, reputation: 8, network: 6, burnout: 10, family: -6 },
+        setFlags: ['elite_first_job', 'took_early_job'],
+        outcome:
+          'You sign for a number your batch WhatsApp refuses to believe. The ones who called off-campus a gamble go quiet, and then slide into your DMs asking exactly how you did it. Momentum, it turns out, is a door you can build with your own hands.',
+      },
+      {
+        id: 'founders_office',
+        label: 'Take the Founder’s Office role. A seat at the table at 22.',
+        effects: { network: 12, reputation: 8, skills: 6, burnout: 6, family: -4 },
+        setFlags: ['elite_first_job', 'took_early_job'],
+        outcome:
+          'At twenty-two you are in the room where the company is actually decided. The pay matches the pedigree jobs and the access dwarfs them. At the reunion, nobody will quite work out how the off-campus kid got there first.',
       },
     ],
   },
