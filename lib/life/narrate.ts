@@ -122,6 +122,10 @@ const FLAG_LINES: Record<string, Fragment> = {
   repaired_us: { line: 'The Sundays are guarded now. The quiet marriage got louder in the good way.', minChapter: 4 },
   hometown_builder: { line: 'Your town has your fingerprints on it now.', minChapter: 4 },
   swallowed_it: { line: 'The stolen-credit meeting still replays on some commutes. You know the sentence you did not say.' },
+  kept_clean: { line: 'You are the one whose numbers nobody re-checks. It took years, and one missed target, to build that.', minChapter: 4 },
+  fudged_numbers: { line: 'The rounded quarter sits in a filing somewhere, patient as an old invoice.', minChapter: 4 },
+  stole_junior_credit: { line: 'The junior whose idea you took still nods politely in the corridor. You both remember exactly.', minChapter: 3 },
+  credited_junior: { line: 'The junior you put on the slide is three levels up now, and still answers your calls first.', minChapter: 4 },
   spoke_up: { line: 'Since the day you calmly took your work back in that review, rooms hesitate before testing you.' },
 }
 

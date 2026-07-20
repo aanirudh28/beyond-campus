@@ -24,6 +24,7 @@ import { MARKET_LABEL, marketHeadline, marketPhase } from '@/lib/life/market'
 import { nearMissEndings } from '@/lib/life/nearmiss'
 import { recordPastLife } from '@/lib/life/lives'
 import { buildTable } from '@/lib/life/table'
+import { buildReckoning } from '@/lib/life/reckoning'
 import LifeSoFar from '@/app/components/life/LifeSoFar'
 import { flushBeacon, setLifeRunId, trackLife } from '@/lib/life/track'
 import { CHAPTERS, CONTENT_VERSION } from '@/lib/life/content/chapters'
@@ -353,6 +354,7 @@ export default function PlayPage() {
     const extras = {
       nearMisses: nearMissEndings(finalState, selectEnding(finalState)),
       table: buildTable(finalState, batchmate?.name ?? null),
+      reckoning: buildReckoning(finalState, getEnding(selectEnding(finalState)).tone),
       trail: finalState.trail,
       ghosts: buildGhostSummaries(finalState),
       diary: buildDiary(finalState.history),

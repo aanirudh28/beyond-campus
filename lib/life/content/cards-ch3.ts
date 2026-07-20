@@ -725,6 +725,33 @@ export const CARDS_CH3: Card[] = [
     ],
   },
 
+  {
+    id: 'ch3_junior_idea',
+    chapter: 2,
+    kind: 'decision',
+    title: 'THE JUNIOR’S IDEA',
+    condition: { minStat: { reputation: 30 } },
+    base: `A junior on your team cracks the insight the whole quarter needed, in a one-line message at 11 p.m. The deck goes to leadership tomorrow with your name on the cover. Nobody would ever know whose line it really was. Promotions have been built on less, and on exactly this.`,
+    options: [
+      {
+        id: 'credit',
+        label: 'Put their name on the slide. Loudly.',
+        effects: { reputation: 6, network: 5, salary: { mult: 0.98 } },
+        setFlags: ['credited_junior'],
+        outcome:
+          'You say "this was Riya’s call" in the room that matters, and watch a career tilt upward. It costs you a sliver of shine. The loyalty it buys never shows up on an appraisal and never stops paying.',
+      },
+      {
+        id: 'take',
+        label: 'Present it as yours. They will get theirs later.',
+        effects: { salary: { mult: 1.08 }, reputation: 3, family: -2 },
+        setFlags: ['stole_junior_credit'],
+        outcome:
+          'The promotion lands. The junior says nothing, and quietly updates their resume. You told yourself "later". Later is a country people rarely get around to visiting.',
+      },
+    ],
+  },
+
   // ---- second-generation exclusive: the fork the inheritance was building toward ----
   {
     id: 'ch3_lg_join_or_build',

@@ -556,6 +556,33 @@ export const CARDS_CH5: Card[] = [
     ],
   },
 
+  {
+    id: 'ch5_the_vouch',
+    chapter: 4,
+    kind: 'decision',
+    title: 'THE VOUCH',
+    condition: { minStat: { network: 45 } },
+    base: `A batchmate you like is raising for a startup you have quietly concluded will not make it. They ask you for one call to an investor who trusts you, on the strength of your name. The call would help them close. Your name is the collateral, and you have read the deck.`,
+    options: [
+      {
+        id: 'honest',
+        label: 'Make the call, but tell the truth you see.',
+        effects: { reputation: 5, network: -3 },
+        setFlags: ['honest_vouch'],
+        outcome:
+          'You make the intro and add, privately, the two risks you would want told about you. The batchmate is hurt, briefly. The investor remembers for years that your word came with the fine print attached. That is what makes a word worth something.',
+      },
+      {
+        id: 'vouch',
+        label: 'Vouch, warmly, no caveats. They are a friend.',
+        effects: { network: 4, reputation: -4 },
+        setFlags: ['false_vouch'],
+        outcome:
+          'You make the warm call and leave the doubts out of it. The round closes. Eighteen months later the startup folds, the investor connects the dots, and your name is worth a little less in the one place it mattered most.',
+      },
+    ],
+  },
+
   // ---- second-generation exclusive: the parent has survived a crash before ----
   {
     id: 'ch5_lg_they_saw_this',

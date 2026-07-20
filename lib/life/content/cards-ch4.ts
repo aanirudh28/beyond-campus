@@ -590,6 +590,33 @@ export const CARDS_CH4: Card[] = [
     ],
   },
 
+  {
+    id: 'ch4_rounded_number',
+    chapter: 3,
+    kind: 'decision',
+    title: 'THE NUMBER THAT COULD BE ROUNDED',
+    pivotal: true,
+    base: `The quarterly number lands just under target, and the gap between "just under" and "just over" is one assumption you could change in a spreadsheet nobody audits closely. Your bonus, your rating, and your manager's promise all sit on the right side of that line. It is not fraud. It is "aggressive optimism", which is what everyone calls it, right up until it is not.`,
+    options: [
+      {
+        id: 'fudge',
+        label: 'Round it up. Everyone does it once.',
+        effects: { salary: { mult: 1.12 }, savings: 3, reputation: -2, burnout: 4 },
+        setFlags: ['fudged_numbers'],
+        outcome:
+          'The number turns green and so does your bonus. It sits fine for years, until a diligence process three jobs later asks a question you cannot fully answer. Integrity compounds exactly like money, and its drawdowns arrive late.',
+      },
+      {
+        id: 'honest',
+        label: 'Report it straight. Miss the target.',
+        effects: { reputation: 8, family: 3, salary: { mult: 0.96 } },
+        setFlags: ['kept_clean'],
+        outcome:
+          'You miss the number and say why, plainly, in a room that wanted a different answer. It costs a bonus and buys a reputation: the person whose numbers nobody ever has to re-check. That reputation outearns the bonus, eventually.',
+      },
+    ],
+  },
+
   // ---- second-generation exclusive: the parent ages ----
   {
     id: 'ch4_lg_parent_second_act',

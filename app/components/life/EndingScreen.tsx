@@ -13,6 +13,7 @@ import type { GhostSummary } from '@/lib/life/ghosts'
 import type { DiaryChapter } from '@/lib/life/diary'
 import type { NearMissResult } from '@/lib/life/nearmiss'
 import type { Seat } from '@/lib/life/table'
+import type { Reckoning } from '@/lib/life/reckoning'
 
 export type GhostView = GhostSummary
 
@@ -48,6 +49,7 @@ export interface EndingResult {
   }
   nearMisses?: NearMissResult
   table?: Seat[]
+  reckoning?: Reckoning
 }
 
 const TONE_COLOR: Record<Ending['tone'], string> = {
@@ -433,6 +435,59 @@ export default function EndingScreen({
           </p>
         ))}
       </div>
+
+      {result.reckoning && (
+        <div
+          className="bc-card"
+          style={{
+            padding: '22px 20px',
+            marginBottom: 30,
+            textAlign: 'left',
+            border: '1px solid rgba(255,255,255,0.14)',
+            animation: 'lifeFadeUp 0.7s ease both',
+            animationDelay: '1.75s',
+          }}
+        >
+          <div className="mono-label" style={{ marginBottom: 12 }}>
+            ⚖ THE PERSON YOU BECAME · UNDERNEATH THE MONEY
+          </div>
+          <p
+            style={{
+              fontFamily: 'var(--serif)',
+              fontSize: 17,
+              lineHeight: 1.55,
+              color: 'var(--fg)',
+              margin: '0 0 16px',
+            }}
+          >
+            {result.reckoning.verdict}
+          </p>
+          {result.reckoning.honored.length > 0 && (
+            <div style={{ marginBottom: result.reckoning.compromised.length ? 12 : 0 }}>
+              <div className="mono-label" style={{ fontSize: 9, color: 'var(--blue-soft)', marginBottom: 6 }}>
+                WHAT YOU HONORED
+              </div>
+              {result.reckoning.honored.map((line) => (
+                <div key={line} style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--muted)', marginBottom: 4 }}>
+                  + {line}
+                </div>
+              ))}
+            </div>
+          )}
+          {result.reckoning.compromised.length > 0 && (
+            <div>
+              <div className="mono-label" style={{ fontSize: 9, color: '#FF8F8F', marginBottom: 6 }}>
+                WHAT IT COST
+              </div>
+              {result.reckoning.compromised.map((line) => (
+                <div key={line} style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--muted)', marginBottom: 4 }}>
+                  − {line}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {result.table && result.table.length > 0 && (
         <div

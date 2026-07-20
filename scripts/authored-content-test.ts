@@ -20,6 +20,7 @@ import { composeEpilogue } from '../lib/life/epilogue'
 import { simulateBatchmate } from '../lib/life/batchmate'
 import { nearMissEndings } from '../lib/life/nearmiss'
 import { buildTable } from '../lib/life/table'
+import { buildReckoning } from '../lib/life/reckoning'
 import { mulberry32 } from '../lib/life/rng'
 import type { Profile } from '../lib/life/types'
 
@@ -106,6 +107,13 @@ for (let run = 0; run < 2000; run++) {
   }
   if (JSON.stringify(buildTable(state, 'Priya')) !== JSON.stringify(table))
     fail('non-deterministic table')
+
+  // The reckoning: always a verdict, bounded lists, deterministic, clean voice.
+  const rk = buildReckoning(state, ending.tone)
+  if (!rk.verdict || rk.verdict.length < 20 || rk.verdict.includes('—')) fail(`bad verdict: ${rk.verdict}`)
+  if (rk.honored.length > 3 || rk.compromised.length > 2) fail('reckoning lists out of bounds')
+  if (JSON.stringify(buildReckoning(state, ending.tone)) !== JSON.stringify(rk))
+    fail('non-deterministic reckoning')
 }
 
 // The batchmate: deterministic, complete, no template leaks.

@@ -114,7 +114,7 @@ export const ENDINGS: Ending[] = [
       'The market taught you at full price, more than once, and the tuition came out of your future. The colleagues with the boring SIPs never posted screenshots. They did not need to.',
     baselineRarity: 3,
     hint: 'Traded on other people’s screenshots.',
-    match: { allFlags: ['fno_burn'], maxSavings: 45 },
+    match: { allFlags: ['fno_burn'], maxSavings: 65 },
   },
   {
     id: 'the_ghost_of_linkedin',

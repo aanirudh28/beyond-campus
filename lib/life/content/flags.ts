@@ -84,6 +84,13 @@ export const FLAGS: Record<string, FlagDef> = {
   moonlighted: { desc: 'Ran the secret second laptop for ₹35,000 a month' },
   career_scar: { desc: 'The old moonlighting invoice surfaced in a background check', narrative: true },
   side_hustle: { desc: 'Took freelance cash over course nights', narrative: true },
+  // ---- the reckoning: character dilemmas (read in lib/life/reckoning.ts) ----
+  credited_junior: { desc: 'Gave a junior public credit for their own breakthrough', narrative: true },
+  stole_junior_credit: { desc: 'Presented a junior’s breakthrough as your own for the promotion', narrative: true },
+  kept_clean: { desc: 'Reported the number straight and missed the target on purpose', narrative: true },
+  fudged_numbers: { desc: 'Rounded the quarter up to turn it green', narrative: true },
+  honest_vouch: { desc: 'Vouched for a friend’s startup with the fine print attached', narrative: true },
+  false_vouch: { desc: 'Vouched warmly, no caveats, for a startup you knew was shaky', narrative: true },
   night_owl_years: { desc: 'Owned the US-client night window for the ₹2 LPA premium' },
   shop_empire: { desc: 'Scaled the cousin’s shop into a three-district distribution business' },
   owned_audience: { desc: 'Moved the audience to an owned email list after the algorithm turned' },
