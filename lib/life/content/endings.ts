@@ -81,7 +81,7 @@ export const ENDINGS: Ending[] = [
       'The package is spectacular and so is the emptiness around it. You bought everything except the Tuesday evenings, and those turned out to be the expensive part.',
     baselineRarity: 4,
     hint: 'Everything money buys, and nothing it does not.',
-    match: { minSalary: 40, maxStat: { family: 40 }, minStat: { burnout: 45 } },
+    match: { minSalary: 38, maxStat: { family: 40 }, minStat: { burnout: 40 } },
   },
   {
     id: 'the_burnout',
@@ -103,7 +103,7 @@ export const ENDINGS: Ending[] = [
       'The flat is beautiful and it owns you. Every risk you could not take, every leap you could not make, arrived on the 5th of the month wearing the same polite face.',
     baselineRarity: 4,
     hint: 'A beautiful flat with very heavy keys.',
-    match: { allFlags: ['bought_flat_peak'], maxSavings: 38 },
+    match: { allFlags: ['bought_flat_peak'], maxSavings: 46 },
   },
   {
     id: 'the_screenshot_investor',
@@ -125,7 +125,7 @@ export const ENDINGS: Ending[] = [
       'Ten thousand followers, four hundred connections, and a skill set that stopped compounding years ago. The audience showed up. The offers checked the work first.',
     baselineRarity: 3,
     hint: 'Loud online, quiet at work.',
-    match: { minStat: { network: 60 }, maxStat: { skills: 55 } },
+    match: { minStat: { network: 58 }, maxStat: { skills: 60 } },
   },
   {
     id: 'the_machine_left_behind',
@@ -158,7 +158,7 @@ export const ENDINGS: Ending[] = [
       'It was never bad enough to leave, so you never left. Fifteen years of a job that fit like a warm chair, and a market value that quietly stopped being consulted.',
     baselineRarity: 5,
     hint: 'Never left the warm chair.',
-    match: { maxSalary: 27, maxStat: { skills: 58 } },
+    match: { maxSalary: 33, maxStat: { skills: 60 } },
   },
   {
     id: 'married_to_the_work',

@@ -247,9 +247,12 @@ export function advanceChapter(state: GameState): GameState {
     stats.salary = round1(stats.salary * Math.pow(1 + SALARY_TILT[phase], years))
   }
 
-  // Chapters run longer since the bonus arc slots, so the between-chapter
-  // recovery is one point deeper to keep the burnout economy balanced.
-  stats.burnout = clamp(stats.burnout - 5, 0, 100)
+  // The body recovers between chapters, and it recovers faster the more
+  // rested you already are: a moderate load bleeds off over the years,
+  // but a sustained red-line does not fully heal on time alone. Keeps
+  // burnout a real risk for grinders without punishing every hard season.
+  const recovery = stats.burnout >= 75 ? 6 : stats.burnout >= 45 ? 9 : 7
+  stats.burnout = clamp(stats.burnout - recovery, 0, 100)
 
   // Track the burnout ceiling for endings before the decay era hides it.
   const flags = state.flags
@@ -342,8 +345,13 @@ function matchesEnding(m: EndingMatch, state: GameState): boolean {
 }
 
 export function selectEnding(state: GameState): string {
-  // The Burnout ending honours the peak, not just the mellowed final number.
-  const probe: GameState = state.flags['burnout_peaked']
+  // The Burnout ending honours the peak, but recovery has to mean something.
+  // If you crossed the red line once yet pulled the final number back down
+  // (the sabbatical, the health rebuild, a real change of pace), the body
+  // healed and you earn the escape. Only a peak you never came back from
+  // still re-inflates for the reckoning.
+  const scarred = state.flags['burnout_peaked'] && state.stats.burnout >= 50
+  const probe: GameState = scarred
     ? { ...state, stats: { ...state.stats, burnout: Math.max(state.stats.burnout, 80) } }
     : state
   for (const e of ENDINGS) {
