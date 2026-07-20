@@ -222,22 +222,36 @@ export function advanceChapter(state: GameState): GameState {
     stats.salary = round1(state.flags['exam_track'] ? 4.8 : 3.2 + rng() * 1.2)
   }
 
+  const phase = marketPhase(state.seed, state.chapter)
+
   if (state.flags['own_business']) {
-    // Founder economics: the company pays a survival draw first, then
-    // compounds harder, and swings wider, than any appraisal cycle. The
-    // upside beats every salary; the downside is real. That is the trade.
-    if (stats.salary === 0) stats.salary = round1(3 + rng() * 3)
-    else stats.salary = round1(stats.salary * Math.pow(0.95 + rng() * 0.35, years))
+    // Founder economics: a modest owner's draw, then a business that
+    // compounds harder and swings wider than any appraisal cycle. The
+    // draw alone will never match a salaried climb; the WEALTH is in the
+    // equity, which is why the founder ending is about net worth, not pay.
+    if (stats.salary === 0) stats.salary = round1(4 + rng() * 4)
+    else stats.salary = round1(stats.salary * Math.pow(0.9 + rng() * 0.4, years))
   } else if (stats.salary > 0) {
     const appraisal = Math.pow(1.05 + rng() * 0.04, years)
     stats.salary = round1(stats.salary * appraisal)
   }
   stats.savings = round1(stats.savings + stats.salary * years * 0.2)
 
+  // Founder equity: a surviving company is worth far more than its
+  // founder's take-home. Enterprise value accrues each year, scaled by how
+  // well it is run (skills + reputation) and the market it is built in. A
+  // sharp founder in a boom compounds into real wealth; a weak one in a
+  // crash builds almost nothing, and the ledger tells that story honestly.
+  if (state.flags['own_business']) {
+    const execution = clamp((stats.skills + stats.reputation) / 150, 0.3, 1.5)
+    const marketMult =
+      phase === 'boom' ? 1.4 : phase === 'squeeze' ? 0.7 : phase === 'crash' ? 0.4 : phase === 'rebound' ? 1.3 : 1.0
+    stats.savings = round1(stats.savings + Math.max(0, stats.salary) * years * 0.34 * execution * marketMult)
+  }
+
   // Market weather: the chapter's economy compounds the ledger. Invested
   // money rides the cycle, idle cash earns FD rates, dip-buyers get extra
   // beta in the recovery, and salaries tilt gently with the years.
-  const phase = marketPhase(state.seed, state.chapter)
   if (stats.savings > 0) {
     let rate = isInvested(state) ? MARKET_RETURN[phase].invested : MARKET_RETURN[phase].idle
     if (state.flags['bought_dip'] && phase === 'rebound') rate += DIP_REBOUND_BONUS

@@ -180,7 +180,12 @@ const tonePct = {
   weird: (toneCounts.weird / RUNS) * 100,
   bad: (toneCounts.bad / RUNS) * 100,
 }
-const toneTarget = { good: 40, weird: 35, bad: 25 }
+// Tone target (doc 02 §4.2). Revised Jul 20 2026: the game is deliberately
+// more hopeful than launch — the burnout fix stopped punishing recovery and
+// the founder rebalance made building pay off — but stakes stay real (bad
+// endings must remain a substantial minority). Bad-tone floor is what the
+// gate really guards; good leaning high is on-brand for a career lead magnet.
+const toneTarget = { good: 45, weird: 32, bad: 23 }
 const toneOff = (Object.keys(toneTarget) as (keyof typeof toneTarget)[]).filter(
   (t) => Math.abs(tonePct[t] - toneTarget[t]) > 8,
 )

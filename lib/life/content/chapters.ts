@@ -8,7 +8,7 @@ import { CARDS_CH6 } from './cards-ch6'
 
 // Bump whenever cards/conditions/engine math change: invalidates saved runs
 // in localStorage, whose dealt decks would no longer replay.
-export const CONTENT_VERSION = 12
+export const CONTENT_VERSION = 13
 
 export const CHAPTERS: ChapterMeta[] = [
   {

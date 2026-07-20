@@ -15,7 +15,7 @@ export const ENDINGS: Ending[] = [
       'While everyone else hid from the worst market in a generation, you bought it. The correction that broke a thousand careers quietly built your fortune.',
     baselineRarity: 5,
     hint: 'Found buying where everyone else was fleeing.',
-    match: { allFlags: ['bought_dip'], minSavings: 200 },
+    match: { allFlags: ['bought_dip'], minSavings: 280 },
   },
   {
     id: 'the_beautiful_failure',
@@ -26,7 +26,7 @@ export const ENDINGS: Ending[] = [
       'The business did not make it. You did. Everyone who watched you build, fail, and stand back up wants you on their team, and they are willing to pay for the scar tissue.',
     baselineRarity: 5,
     hint: 'Built something that died, and outlived it famously.',
-    match: { allFlags: ['own_business'], maxSavings: 25 },
+    match: { allFlags: ['own_business'], maxSavings: 45 },
   },
   {
     id: 'the_founder',
@@ -37,7 +37,7 @@ export const ENDINGS: Ending[] = [
       'You quit the salary, survived the invoices, and built a thing that works. Not unicorn-famous. Something rarer: profitable, yours, and still standing at 36.',
     baselineRarity: 4,
     hint: 'Quit a salary. Kept a company alive.',
-    match: { allFlags: ['own_business'], minSavings: 75 },
+    match: { allFlags: ['own_business'], minSavings: 170 },
   },
   {
     id: 'the_exit',
@@ -70,7 +70,7 @@ export const ENDINGS: Ending[] = [
       'You took everything the big cities taught you and planted it where you began. Your town has your fingerprints on it now, and your Sundays have a courtyard.',
     baselineRarity: 6,
     hint: 'Went back, rich in more than money.',
-    match: { allFlags: ['hometown_builder'], minStat: { family: 75 }, minSavings: 85 },
+    match: { allFlags: ['hometown_builder'], minStat: { family: 75 }, minSavings: 140 },
   },
   {
     id: 'the_golden_handcuffs',
@@ -290,7 +290,7 @@ export const ENDINGS: Ending[] = [
       'No viral posts, no title worth bragging about, and a portfolio that crossed a crore while nobody was watching. Boring money, deployed early, left alone. The oldest trick, executed.',
     baselineRarity: 4,
     hint: 'Boring money, started early, left alone.',
-    match: { minSavings: 90, maxStat: { burnout: 50 } },
+    match: { minSavings: 150, maxStat: { burnout: 50 } },
   },
   {
     id: 'the_settled_one',

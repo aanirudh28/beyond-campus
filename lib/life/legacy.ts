@@ -21,7 +21,7 @@ export const LEGACY_ORIGINS: Origin[] = [
     name: 'The Safety Net',
     blurb:
       'Your parent finished their fifteen years with real money in the bank, and your twenties will never know the particular fear theirs did. The net is real. So is its shadow: nothing you build will ever feel entirely yours to lose.',
-    effects: { savings: 6, network: 4, family: 4, burnout: -2 },
+    effects: { savings: 22, network: 8, family: 4 },
     identity: 'The safety net',
     epiloguePhrase: 'a net your parent wove and a shadow that came with it',
   },
@@ -31,7 +31,7 @@ export const LEGACY_ORIGINS: Origin[] = [
     name: 'The Rebuild',
     blurb:
       'Your parent’s fifteen years ended thinner than they deserved, and the family ledger you inherit has more lessons than lakhs in it. You have watched what the wrong years do to good people. That knowledge is a strange kind of capital.',
-    effects: { savings: -4, family: 6, skills: 3, burnout: 3 },
+    effects: { savings: -4, skills: 10, family: 6, reputation: 3 },
     identity: 'The rebuild',
     epiloguePhrase: 'a thin ledger and a very clear memory of why',
   },
@@ -41,7 +41,7 @@ export const LEGACY_ORIGINS: Origin[] = [
     name: 'The Echo',
     blurb:
       'Your parent’s name travels ahead of yours into every room that matters to you. The comparison arrives with the starters at every family dinner. You are not building from nothing. You are building next to something, which is harder to see clearly.',
-    effects: { reputation: 4, network: 3, burnout: 4 },
+    effects: { reputation: 12, network: 10, burnout: 3 },
     identity: 'The echo',
     epiloguePhrase: 'a name that entered rooms before you did',
   },
