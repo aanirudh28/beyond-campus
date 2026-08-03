@@ -10,7 +10,7 @@ const CASEBOOKS = [
     description: 'The most comprehensive consulting prep resource from IIM-A\'s consulting club. Covers case frameworks, industry primers, and interview strategies.',
     size: '16 MB',
     downloads: 1243,
-    url: 'https://jpznmvkngoeoeprrckiv.supabase.co/storage/v1/object/public/resources/IIMA-Consult-Prep-Book-Case-Book-2025-26.pdf',
+    url: '/api/resources/iima-2025',
   },
   {
     id: 'iimb-2025',
@@ -18,7 +18,7 @@ const CASEBOOKS = [
     description: 'Case studies and frameworks from IIM Bangalore\'s placement cell. Strong focus on strategy, operations, and market entry cases.',
     size: '11 MB',
     downloads: 987,
-    url: 'https://jpznmvkngoeoeprrckiv.supabase.co/storage/v1/object/public/resources/IIM%20B%20Casebook%202025.pdf',
+    url: '/api/resources/iimb-2025',
   },
   {
     id: 'iimc-2025',
@@ -26,7 +26,7 @@ const CASEBOOKS = [
     description: 'Curated cases from IIM Calcutta\'s consulting club — includes live case examples and interviewer notes.',
     size: '7 MB',
     downloads: 876,
-    url: 'https://jpznmvkngoeoeprrckiv.supabase.co/storage/v1/object/public/resources/IIM%20Calcutta%20CaseBook%202025-26.pdf',
+    url: '/api/resources/iimc-2025',
   },
   {
     id: 'iiml-2025',
@@ -34,7 +34,7 @@ const CASEBOOKS = [
     description: 'Practice cases and solved examples from IIM Lucknow. Ideal for students preparing for Big 4 and boutique consulting interviews.',
     size: '5 MB',
     downloads: 743,
-    url: 'https://jpznmvkngoeoeprrckiv.supabase.co/storage/v1/object/public/resources/IIM%20L%20Casebook%202025.pdf',
+    url: '/api/resources/iiml-2025',
   },
   {
     id: 'isb-2025',
@@ -42,7 +42,7 @@ const CASEBOOKS = [
     description: 'Case interviews and frameworks from ISB\'s consulting club. Covers profitability, market sizing, and strategic cases.',
     size: '4 MB',
     downloads: 654,
-    url: 'https://jpznmvkngoeoeprrckiv.supabase.co/storage/v1/object/public/resources/ISB%20Casebook%202025.pdf',
+    url: '/api/resources/isb-2025',
   },
   {
     id: 'bitsom-2024',
@@ -50,7 +50,7 @@ const CASEBOOKS = [
     description: 'Consulting case studies from BITS School of Management — great for students from non-IIM backgrounds targeting consulting roles.',
     size: '4 MB',
     downloads: 521,
-    url: 'https://jpznmvkngoeoeprrckiv.supabase.co/storage/v1/object/public/resources/BITSoM%20Casebook%202023-2024.pdf',
+    url: '/api/resources/bitsom-2024',
   },
   {
     id: 'case-interview-guide',
@@ -58,7 +58,7 @@ const CASEBOOKS = [
     description: 'A structured guide to cracking case interviews — covers frameworks, communication tips, and common mistakes to avoid.',
     size: '12 MB',
     downloads: 432,
-    url: 'https://jpznmvkngoeoeprrckiv.supabase.co/storage/v1/object/public/resources/Case%20Interview%20Guide.pdf',
+    url: '/api/resources/case-interview-guide',
   },
 ]
 
@@ -68,7 +68,7 @@ const GUESTIMATE = {
   description: 'The most comprehensive guestimate resource available — 6 volumes of market sizing problems with structured solutions. Covers FMCG, tech, infrastructure, and consumer sectors. Used by students who cracked consulting roles at Big 4 and boutique firms.',
   size: '5 MB',
   downloads: 1891,
-  url: 'https://jpznmvkngoeoeprrckiv.supabase.co/storage/v1/object/public/resources/SRCC%20Guesstimates-Book-Volume-1-6.pdf',
+  url: '/api/resources/srcc-guestimates',
 }
 
 function CasebookCard({ resource }: { resource: typeof CASEBOOKS[0] }) {
