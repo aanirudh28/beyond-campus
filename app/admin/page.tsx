@@ -129,7 +129,7 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads' | 'tracker' | 'jobs' | 'consulting'>('bookings')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads' | 'tracker' | 'jobs' | 'consulting' | 'apti-users'>('bookings')
 
   // ─── Jobs Engine State ───────────────────────────────────────────────────────
   interface JobRow { id: string; company: string; role: string; location: string | null; job_url: string; jd_summary: string | null; domain: string; status: string; created_at: string }
@@ -172,6 +172,31 @@ export default function AdminPage() {
     recentUsers: { email: string; name: string | null; is_pro: boolean; created_at: string }[]
   } | null>(null)
   const [trackerLoading, setTrackerLoading] = useState(false)
+
+  // ─── Apti user analytics (distinct from /admin/apti, the question console) ───
+  const [aptiStats, setAptiStats] = useState<{
+    totalUsers: number; newUsers7d: number; activatedUsers: number; activeUsers7d: number
+    totalSets: number; sets7d: number; totalAttempts: number; accuracy: number; attempts7d: number
+    onStreak: number; whatsappOptins: number
+    overlap: { aptiTotal: number; trackerTotal: number; both: number; aptiOnly: number; trackerOnly: number }
+    laneBreakdown: Record<string, number>
+    recentUsers: { email: string; lane: string | null; streak: number; topRating: number | null; alsoTracker: boolean; created_at: string }[]
+  } | null>(null)
+  const [aptiUsersLoading, setAptiUsersLoading] = useState(false)
+
+  const fetchAptiUsers = async () => {
+    setAptiUsersLoading(true)
+    try {
+      const res = await fetch('/api/admin/apti-users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: ADMIN_PASSWORD }),
+      })
+      const json = await res.json()
+      if (json.totalUsers !== undefined) setAptiStats(json)
+    } catch {}
+    setAptiUsersLoading(false)
+  }
 
   const fetchTrackerStats = async () => {
     setTrackerLoading(true)
@@ -459,6 +484,7 @@ export default function AdminPage() {
       fetchJobs()
       fetchCasebookStats()
       fetchWeeklyCases()
+      fetchAptiUsers()
     } else {
       setError('Incorrect password')
     }
@@ -591,6 +617,7 @@ export default function AdminPage() {
             { key: 'tracker', label: `🎯 Tracker (${trackerStats?.totalUsers ?? '…'})`, active: activeTab === 'tracker', color: '#7B61FF', bg: 'rgba(123,97,255,0.15)' },
             { key: 'jobs', label: `💼 Jobs (${jobsData?.counts.pending ?? '…'} pending)`, active: activeTab === 'jobs', color: '#00D2FF', bg: 'rgba(0,210,255,0.12)' },
             { key: 'consulting', label: `📚 Casebooks (${casebookStats?.totalLeads ?? '…'} leads)`, active: activeTab === 'consulting', color: '#93BBFF', bg: 'rgba(79,124,255,0.15)' },
+            { key: 'apti-users', label: `🧮 Apti Users (${aptiStats?.totalUsers ?? '…'})`, active: activeTab === 'apti-users', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
           ].map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: tab.active ? tab.color : 'rgba(255,255,255,0.1)', background: tab.active ? tab.bg : 'transparent', color: tab.active ? tab.color : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               {tab.label}
@@ -833,6 +860,126 @@ export default function AdminPage() {
                             </span>
                           </td>
                           <td style={{ padding: '10px 12px', fontSize: 12.5, color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{formatDate(u.created_at)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Apti Users Tab */}
+        {activeTab === 'apti-users' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>Who is actually using <a href="/aptitude" target="_blank" rel="noopener noreferrer" style={{ color: '#f59e0b' }}>Apti</a> — separated from job-tracker users despite the shared login.</span>
+              <button onClick={fetchAptiUsers} style={{ padding: '10px 20px', borderRadius: 100, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: '#f59e0b', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                ↻ Refresh
+              </button>
+            </div>
+            {aptiUsersLoading && !aptiStats ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Loading Apti user stats...</p>
+            ) : !aptiStats ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Could not load. Has the apti schema been run in Supabase?</p>
+            ) : (
+              <>
+                {/* Headline stats */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14, marginBottom: 24 }}>
+                  {[
+                    [String(aptiStats.totalUsers), 'Apti users', `+${aptiStats.newUsers7d} this week`, '#f59e0b'],
+                    [String(aptiStats.activeUsers7d), 'Active (7d)', 'completed a set', '#4F7CFF'],
+                    [String(aptiStats.activatedUsers), 'Activated', aptiStats.totalUsers ? `${Math.round((aptiStats.activatedUsers / aptiStats.totalUsers) * 100)}% did ≥1 set` : '—', '#10b981'],
+                    [String(aptiStats.totalSets), 'Sets done', `+${aptiStats.sets7d} this week`, '#7B61FF'],
+                    [`${aptiStats.accuracy}%`, 'Accuracy', `${aptiStats.totalAttempts.toLocaleString()} attempts`, '#00D2FF'],
+                    [String(aptiStats.onStreak), 'On a streak', `${aptiStats.whatsappOptins} on WhatsApp`, '#ef4444'],
+                  ].map(([num, label, sub, color]) => (
+                    <div key={label} style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '18px 20px' }}>
+                      <div style={{ fontSize: 26, fontWeight: 800, color: color as string }}>{num}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'white', marginTop: 4 }}>{label}</div>
+                      <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{sub}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Shared-login overlap — the "who logged in for what" answer */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginBottom: 24 }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 4 }}>Apti vs Job Tracker — same login, different intent</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 16 }}>Every account matched by user id across both products.</div>
+                  {(() => {
+                    const o = aptiStats.overlap
+                    const total = Math.max(1, o.aptiOnly + o.both + o.trackerOnly)
+                    const seg = [
+                      { label: 'Apti only', n: o.aptiOnly, color: '#f59e0b' },
+                      { label: 'Both', n: o.both, color: '#7B61FF' },
+                      { label: 'Tracker only', n: o.trackerOnly, color: '#4F7CFF' },
+                    ]
+                    return (
+                      <>
+                        <div style={{ display: 'flex', height: 26, borderRadius: 8, overflow: 'hidden', marginBottom: 14 }}>
+                          {seg.map(s => s.n > 0 && (
+                            <div key={s.label} title={`${s.label}: ${s.n}`} style={{ width: `${(s.n / total) * 100}%`, background: s.color, minWidth: 2 }} />
+                          ))}
+                        </div>
+                        <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+                          {seg.map(s => (
+                            <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ width: 12, height: 12, borderRadius: 3, background: s.color, display: 'inline-block' }} />
+                              <span style={{ fontSize: 13, color: 'white', fontWeight: 700 }}>{s.n}</span>
+                              <span style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)' }}>{s.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )
+                  })()}
+                </div>
+
+                {/* Lane breakdown */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginBottom: 24 }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 14 }}>What they&apos;re prepping for (lane)</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {Object.entries(aptiStats.laneBreakdown).map(([lane, n]) => {
+                      const max = Math.max(1, ...Object.values(aptiStats.laneBreakdown))
+                      const labels: Record<string, string> = { big4: 'Big 4', banking: 'Banking', fmcg: 'FMCG', any: 'Any / open', mba: 'MBA', unset: 'Not set' }
+                      return (
+                        <div key={lane} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <span style={{ width: 90, fontSize: 12.5, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>{labels[lane] ?? lane}</span>
+                          <div style={{ flex: 1, height: 16, background: 'rgba(255,255,255,0.04)', borderRadius: 6, overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: `${(n / max) * 100}%`, background: '#f59e0b', borderRadius: 6, minWidth: n > 0 ? 5 : 0 }} />
+                          </div>
+                          <span style={{ width: 40, fontSize: 13, fontWeight: 800, color: 'white', textAlign: 'right' }}>{n}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Recent signups */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, overflowX: 'auto' }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 14 }}>Latest Apti signups</div>
+                  <table>
+                    <thead>
+                      <tr>
+                        {['Email', 'Lane', 'Streak', 'Top rating', 'Also tracker?', 'Joined'].map(h => (
+                          <th key={h} style={{ textAlign: 'left' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {aptiStats.recentUsers.map((u, i) => (
+                        <tr key={`${u.email}-${i}`}>
+                          <td style={{ fontSize: 13, color: 'white', fontWeight: 600 }}>{u.email}</td>
+                          <td style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.55)' }}>{u.lane || '—'}</td>
+                          <td style={{ fontSize: 12.5, color: u.streak > 0 ? '#fcd34d' : 'rgba(255,255,255,0.35)' }}>{u.streak > 0 ? `🔥 ${u.streak}` : '—'}</td>
+                          <td style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.7)' }}>{u.topRating ?? '—'}</td>
+                          <td>
+                            <span style={{ fontSize: 10.5, fontWeight: 800, padding: '3px 9px', borderRadius: 100, background: u.alsoTracker ? 'rgba(79,124,255,0.12)' : 'rgba(255,255,255,0.06)', color: u.alsoTracker ? '#93BBFF' : 'rgba(255,255,255,0.35)' }}>
+                              {u.alsoTracker ? 'BOTH' : 'APTI ONLY'}
+                            </span>
+                          </td>
+                          <td style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.4)' }}>{formatDate(u.created_at)}</td>
                         </tr>
                       ))}
                     </tbody>
