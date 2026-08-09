@@ -129,7 +129,7 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads' | 'tracker' | 'jobs' | 'consulting' | 'apti-users'>('bookings')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads' | 'tracker' | 'jobs' | 'consulting' | 'apti-users' | 'email-health'>('bookings')
 
   // ─── Jobs Engine State ───────────────────────────────────────────────────────
   interface JobRow { id: string; company: string; role: string; location: string | null; job_url: string; jd_summary: string | null; domain: string; status: string; created_at: string }
@@ -172,6 +172,28 @@ export default function AdminPage() {
     recentUsers: { email: string; name: string | null; is_pro: boolean; created_at: string }[]
   } | null>(null)
   const [trackerLoading, setTrackerLoading] = useState(false)
+
+  // ─── Email deliverability (Resend webhook events) ───────────────────────────
+  const [emailHealth, setEmailHealth] = useState<{
+    windowDays: number; sent: number; delivered: number; bounced: number; complained: number; opened: number
+    deliveredPct: number; bouncePct: number; complaintPct: number; openPct: number; configured: boolean
+    problems: { event_type: string; recipient: string | null; subject: string | null; created_at: string }[]
+  } | null>(null)
+  const [emailHealthLoading, setEmailHealthLoading] = useState(false)
+
+  const fetchEmailHealth = async () => {
+    setEmailHealthLoading(true)
+    try {
+      const res = await fetch('/api/admin/email-health', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: ADMIN_PASSWORD }),
+      })
+      const json = await res.json()
+      if (json.sent !== undefined) setEmailHealth(json)
+    } catch {}
+    setEmailHealthLoading(false)
+  }
 
   // ─── Apti user analytics (distinct from /admin/apti, the question console) ───
   const [aptiStats, setAptiStats] = useState<{
@@ -485,6 +507,7 @@ export default function AdminPage() {
       fetchCasebookStats()
       fetchWeeklyCases()
       fetchAptiUsers()
+      fetchEmailHealth()
     } else {
       setError('Incorrect password')
     }
@@ -618,6 +641,7 @@ export default function AdminPage() {
             { key: 'jobs', label: `💼 Jobs (${jobsData?.counts.pending ?? '…'} pending)`, active: activeTab === 'jobs', color: '#00D2FF', bg: 'rgba(0,210,255,0.12)' },
             { key: 'consulting', label: `📚 Casebooks (${casebookStats?.totalLeads ?? '…'} leads)`, active: activeTab === 'consulting', color: '#93BBFF', bg: 'rgba(79,124,255,0.15)' },
             { key: 'apti-users', label: `🧮 Apti Users (${aptiStats?.totalUsers ?? '…'})`, active: activeTab === 'apti-users', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+            { key: 'email-health', label: `📧 Email Health${emailHealth ? ` (${emailHealth.bouncePct}% bounce)` : ''}`, active: activeTab === 'email-health', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
           ].map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: tab.active ? tab.color : 'rgba(255,255,255,0.1)', background: tab.active ? tab.bg : 'transparent', color: tab.active ? tab.color : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               {tab.label}
@@ -864,6 +888,92 @@ export default function AdminPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Email Health Tab */}
+        {activeTab === 'email-health' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>Deliverability across every email (last 30 days), from Resend webhook events.</span>
+              <button onClick={fetchEmailHealth} style={{ padding: '10px 20px', borderRadius: 100, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                ↻ Refresh
+              </button>
+            </div>
+            {emailHealthLoading && !emailHealth ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Loading email health...</p>
+            ) : !emailHealth ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Could not load. Has the email_events SQL been run?</p>
+            ) : !emailHealth.configured ? (
+              <div style={{ background: '#111827', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 16, padding: 24 }}>
+                <div style={{ fontSize: 15, fontWeight: 800, color: '#fcd34d', marginBottom: 10 }}>⚙️ No email events yet — finish setup</div>
+                <ol style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.7)', lineHeight: 1.9, paddingLeft: 18, margin: 0 }}>
+                  <li>Run <code>supabase/email-events-schema.sql</code> in Supabase.</li>
+                  <li>In Resend → Webhooks, add endpoint <code>https://www.beyond-campus.in/api/webhooks/resend</code> for the delivered / bounced / complained / opened events.</li>
+                  <li>Copy that webhook&apos;s signing secret into Vercel as <code>RESEND_WEBHOOK_SECRET</code>, then redeploy.</li>
+                </ol>
+                <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.4)', marginTop: 12, marginBottom: 0 }}>Data appears here from the next email sent after that. Nothing to backfill.</p>
+              </div>
+            ) : (
+              <>
+                {/* Headline rates */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14, marginBottom: 24 }}>
+                  {[
+                    [`${emailHealth.deliveredPct}%`, 'Delivered', `${emailHealth.delivered.toLocaleString()} of ${emailHealth.sent.toLocaleString()} sent`, '#10b981'],
+                    [`${emailHealth.bouncePct}%`, 'Bounced', `${emailHealth.bounced} addresses`, emailHealth.bouncePct >= 5 ? '#ef4444' : emailHealth.bouncePct >= 2 ? '#f59e0b' : '#6ee7b7'],
+                    [`${emailHealth.complaintPct}%`, 'Spam complaints', `${emailHealth.complained} flagged`, emailHealth.complaintPct >= 0.3 ? '#ef4444' : emailHealth.complaintPct >= 0.1 ? '#f59e0b' : '#6ee7b7'],
+                    [`${emailHealth.openPct}%`, 'Opened', 'approx (privacy skews this)', '#4F7CFF'],
+                  ].map(([num, label, sub, color]) => (
+                    <div key={label} style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '18px 20px' }}>
+                      <div style={{ fontSize: 26, fontWeight: 800, color: color as string }}>{num}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'white', marginTop: 4 }}>{label}</div>
+                      <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{sub}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Health read */}
+                <div style={{ background: emailHealth.bouncePct >= 5 || emailHealth.complaintPct >= 0.3 ? 'rgba(239,68,68,0.08)' : 'rgba(16,185,129,0.06)', border: `1px solid ${emailHealth.bouncePct >= 5 || emailHealth.complaintPct >= 0.3 ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.25)'}`, borderRadius: 14, padding: '14px 18px', marginBottom: 24, fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
+                  {emailHealth.complaintPct >= 0.3
+                    ? '🔴 Spam complaints are above 0.3% — mailbox providers will start junking you. Stop mailing cold or unengaged addresses and check your content.'
+                    : emailHealth.bouncePct >= 5
+                    ? '🔴 Bounce rate is above 5% — prune the failing addresses below; high bounces hurt your sender reputation.'
+                    : '🟢 Bounce and complaint rates are in the healthy range (bounce under 2%, complaints under 0.1% is ideal).'}
+                </div>
+
+                {/* Recent problems */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, overflowX: 'auto' }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 14 }}>Recent bounces &amp; complaints</div>
+                  {emailHealth.problems.length === 0 ? (
+                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', margin: 0 }}>None in the last 30 days 🎉</p>
+                  ) : (
+                    <table>
+                      <thead>
+                        <tr>
+                          {['Type', 'Address', 'Subject', 'When'].map(h => (
+                            <th key={h} style={{ textAlign: 'left' }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {emailHealth.problems.map((p, i) => (
+                          <tr key={`${p.recipient}-${i}`}>
+                            <td>
+                              <span style={{ fontSize: 10.5, fontWeight: 800, padding: '3px 9px', borderRadius: 100, background: p.event_type === 'email.complained' ? 'rgba(239,68,68,0.12)' : 'rgba(245,158,11,0.12)', color: p.event_type === 'email.complained' ? '#f87171' : '#fcd34d' }}>
+                                {p.event_type === 'email.complained' ? 'SPAM' : 'BOUNCE'}
+                              </span>
+                            </td>
+                            <td style={{ fontSize: 13, color: 'white', fontWeight: 600 }}>{p.recipient || '—'}</td>
+                            <td style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.5)' }}>{p.subject || '—'}</td>
+                            <td style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.4)' }}>{formatDate(p.created_at)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               </>
             )}
