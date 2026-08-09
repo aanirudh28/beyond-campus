@@ -209,6 +209,49 @@ export default function AdminPage() {
     } catch {}
     setCasebookLoading(false)
   }
+
+  // ─── Weekly cases (the drip the casebook capture promises) ───────────────────
+  interface WeeklyCase { id: string; sort_order: number; title: string; prompt: string; hint: string | null; published: boolean; created_at: string }
+  const [weeklyCases, setWeeklyCases] = useState<WeeklyCase[]>([])
+  const [weeklyCasesLoaded, setWeeklyCasesLoaded] = useState(false)
+  const [newCase, setNewCase] = useState({ title: '', prompt: '', hint: '' })
+  const [caseMsg, setCaseMsg] = useState('')
+  const [caseSaving, setCaseSaving] = useState(false)
+
+  const adminCases = async (payload: Record<string, unknown>) => {
+    const res = await fetch('/api/admin/weekly-cases', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: ADMIN_PASSWORD, ...payload }),
+    })
+    return res.json()
+  }
+
+  const fetchWeeklyCases = async () => {
+    const json = await adminCases({ action: 'list' })
+    if (json.cases) setWeeklyCases(json.cases)
+    setWeeklyCasesLoaded(true)
+  }
+
+  const addWeeklyCase = async () => {
+    if (!newCase.title.trim() || !newCase.prompt.trim()) { setCaseMsg('❌ Title and prompt are required'); return }
+    setCaseSaving(true); setCaseMsg('')
+    const json = await adminCases({ action: 'add', ...newCase })
+    setCaseSaving(false)
+    if (json.error) setCaseMsg(`❌ ${json.error}`)
+    else { setCaseMsg('✓ Case added (unpublished — publish it to start sending)'); setNewCase({ title: '', prompt: '', hint: '' }); fetchWeeklyCases() }
+  }
+
+  const toggleWeeklyCase = async (id: string, published: boolean) => {
+    await adminCases({ action: 'toggle', id, published })
+    fetchWeeklyCases()
+  }
+
+  const deleteWeeklyCase = async (id: string) => {
+    if (!window.confirm('Delete this case permanently? People who already received it are unaffected.')) return
+    await adminCases({ action: 'delete', id })
+    fetchWeeklyCases()
+  }
   const [roasts, setRoasts] = useState<RoastResult[]>([])
   const [roastsLoading, setRoastsLoading] = useState(false)
   const [summerRegs, setSummerRegs] = useState<SummerReg[]>([])
@@ -415,6 +458,7 @@ export default function AdminPage() {
       fetchTrackerStats()
       fetchJobs()
       fetchCasebookStats()
+      fetchWeeklyCases()
     } else {
       setError('Incorrect password')
     }
@@ -881,6 +925,53 @@ export default function AdminPage() {
                 </div>
               </>
             )}
+
+            {/* Weekly case drip — separate table, shown even if the stats above fail to load */}
+            <div style={{ background: '#111827', border: '1px solid rgba(123,97,255,0.2)', borderRadius: 16, padding: 20, marginTop: 24 }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 4 }}>🧩 Weekly case drip</div>
+              <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)', margin: '0 0 16px', lineHeight: 1.6 }}>
+                Published cases send every <strong style={{ color: '#c4b5fd' }}>Wednesday</strong> to people who downloaded a casebook — each person gets the next case they haven&apos;t seen, in order. Add cases here; they start unpublished.
+              </p>
+
+              {/* Add form */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+                <input value={newCase.title} onChange={e => setNewCase(c => ({ ...c, title: e.target.value }))} placeholder="Case title (e.g. 'Market entry: D2C coffee brand')" style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none' }} />
+                <textarea value={newCase.prompt} onChange={e => setNewCase(c => ({ ...c, prompt: e.target.value }))} placeholder="The case prompt — the question the reader should crack. Line breaks are preserved." rows={4} style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6 }} />
+                <input value={newCase.hint} onChange={e => setNewCase(c => ({ ...c, hint: e.target.value }))} placeholder="Framework nudge (optional) — e.g. 'Think market size → competition → entry mode'" style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: 13, outline: 'none' }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <button onClick={addWeeklyCase} disabled={caseSaving} style={{ padding: '10px 20px', borderRadius: 10, background: 'linear-gradient(135deg,#7B61FF,#4F7CFF)', border: 'none', color: 'white', fontSize: 12.5, fontWeight: 700, cursor: caseSaving ? 'wait' : 'pointer' }}>
+                    {caseSaving ? 'Adding…' : '+ Add case'}
+                  </button>
+                  {caseMsg && <span style={{ fontSize: 12.5, color: caseMsg.startsWith('❌') ? '#f87171' : '#6ee7b7' }}>{caseMsg}</span>}
+                </div>
+              </div>
+
+              {/* Case list */}
+              {!weeklyCasesLoaded ? (
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', margin: 0 }}>Loading cases…</p>
+              ) : weeklyCases.length === 0 ? (
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', margin: 0 }}>No cases yet. Add your first above — nothing sends on Wednesday until at least one is published.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {weeklyCases.map(c => (
+                    <div key={c.id} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: '12px 14px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                      <div style={{ fontSize: 12, fontWeight: 800, color: 'rgba(255,255,255,0.3)', flexShrink: 0, paddingTop: 2 }}>#{c.sort_order}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13.5, fontWeight: 700, color: 'white' }}>{c.title}</div>
+                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 3, lineHeight: 1.5, whiteSpace: 'pre-line', maxHeight: 60, overflow: 'hidden' }}>{c.prompt}</div>
+                        {c.hint && <div style={{ fontSize: 11.5, color: '#93BBFF', marginTop: 4 }}>💡 {c.hint}</div>}
+                      </div>
+                      <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                        <button onClick={() => toggleWeeklyCase(c.id, !c.published)} style={{ padding: '6px 12px', borderRadius: 8, fontSize: 11.5, fontWeight: 700, cursor: 'pointer', background: c.published ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.04)', border: `1px solid ${c.published ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.12)'}`, color: c.published ? '#6ee7b7' : 'rgba(255,255,255,0.4)' }}>
+                          {c.published ? '● Live' : 'Draft'}
+                        </button>
+                        <button onClick={() => deleteWeeklyCase(c.id)} style={{ padding: '6px 10px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}>✕</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
 

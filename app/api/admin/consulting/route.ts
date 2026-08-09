@@ -2,22 +2,9 @@ export const runtime = 'nodejs'
 
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { CASEBOOK_NAMES } from '@/lib/casebooks'
 
 const ADMIN_PASSWORD = 'beyondcampus2024'
-
-// Exact resource titles used on /resources/consulting — these are the strings
-// track-download stores in resource_downloads.resource_name and capture-lead
-// stores in leads.resource. Keep in sync with app/resources/consulting/page.tsx.
-const CASEBOOK_NAMES = [
-  'IIM Ahmedabad Consult Prep Book 2025-26',
-  'IIM Bangalore Casebook 2025',
-  'IIM Calcutta Casebook 2025-26',
-  'IIM Lucknow Casebook 2025',
-  'ISB Casebook 2025',
-  'BITSoM Casebook 2023-24',
-  'Case Interview Guide',
-  'SRCC Guestimates Book — Volume 1-6',
-]
 
 export async function POST(req: Request) {
   try {

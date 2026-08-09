@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { serviceClient } from '@/lib/tracker'
 import { emailShell, ctaButton } from '@/lib/nurture'
+import { CASEBOOK_NAMES } from '@/lib/casebooks'
 import { buildWeeklyAutopsy, type WrongHighlight } from '@/lib/apti-weekly'
 import { loadCurriculum, type QuestionPayload } from '@/lib/apti'
 
@@ -359,6 +360,47 @@ export async function GET(req: NextRequest) {
     for (const step of LEAD_STEPS) {
       if (createdAt <= daysAgo(step.afterDays)) await trySend(email, null, step)
     }
+  }
+
+  // ---- Wednesday: weekly consulting case to casebook leads (drip, in order) ----
+  // Each address gets the next published case it hasn't seen yet — so a new lead
+  // starts at case #1 and works through the series one per week. Gating to a
+  // single weekday + trySend's one-per-run rule guarantees at most one/week.
+  if (new Date().getUTCDay() === 3) {
+    try {
+      const { data: cases } = await svc
+        .from('weekly_cases')
+        .select('sort_order, title, prompt, hint')
+        .eq('published', true)
+        .order('sort_order', { ascending: true })
+
+      if (cases && cases.length) {
+        const { data: caseLeads } = await svc
+          .from('leads')
+          .select('email')
+          .in('resource', CASEBOOK_NAMES)
+          .not('email', 'is', null)
+          .limit(5000)
+
+        const audience = new Set((caseLeads || []).map(r => r.email.toLowerCase()))
+        for (const email of audience) {
+          if (sends >= MAX_SENDS_PER_RUN) break
+          const next = cases.find(c => !sent.has(`${email}|weekly_case|${c.sort_order}`))
+          if (!next) continue
+          await trySend(email, null, {
+            sequence: 'weekly_case', step: next.sort_order, afterDays: 0,
+            subject: `This week's case: ${next.title}`,
+            body: () => `
+              <h1 style="font-size: 22px; margin: 0 0 12px;">🧩 This week's case</h1>
+              <p style="color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px;">${next.title}</p>
+              <p style="color: rgba(255,255,255,0.75); font-size: 15px; line-height: 1.7; white-space: pre-line;">${next.prompt}</p>
+              ${next.hint ? `<div style="background: rgba(79,124,255,0.08); border: 1px solid rgba(79,124,255,0.2); border-radius: 12px; padding: 14px 16px; margin: 16px 0;"><p style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.6; margin: 0;"><strong style="color: #93BBFF;">Framework nudge:</strong> ${next.hint}</p></div>` : ''}
+              <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7;">Structure your answer out loud before reaching for a framework — practising the <em>structure</em> is what separates shortlists from rejections.</p>
+              ${ctaButton(`${SITE}/resources/consulting`, 'More casebooks to practise →')}`,
+          })
+        }
+      }
+    } catch { /* weekly case failure must not affect the nurture run */ }
   }
 
   // ---- Monday jobs digest (reuses trySend: optouts, dedupe, caps) ----
