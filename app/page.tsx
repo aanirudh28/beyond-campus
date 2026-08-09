@@ -646,6 +646,27 @@ export default function Home() {
                 Lost? Free 15-min call →
               </button>
             </div>
+
+            {/* Hero quick-links — top free tools, one click from landing, no scrolling required */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 4 }}>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)', letterSpacing: 0.5 }}>Or jump straight in —</span>
+              {[
+                { href: '/aptitude', label: '🧮 Aptitude Practice' },
+                { href: '/job-tracker', label: '🎯 Job Tracker' },
+                { href: '/resources/cold-email-pack', label: '✉️ Cold Email Pack' },
+              ].map(item => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={cta(`hero_quicklink_${item.href.replace(/\//g, '')}`, 'hero')}
+                  style={{ padding: '7px 16px', borderRadius: 100, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: 600, transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(79,124,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(79,124,255,0.4)'; e.currentTarget.style.color = 'white' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)' }}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
           </div>
 
           {/* Where our students got shortlisted */}
