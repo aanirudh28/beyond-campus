@@ -129,7 +129,7 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads' | 'tracker' | 'jobs'>('bookings')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads' | 'tracker' | 'jobs' | 'consulting'>('bookings')
 
   // ─── Jobs Engine State ───────────────────────────────────────────────────────
   interface JobRow { id: string; company: string; role: string; location: string | null; job_url: string; jd_summary: string | null; domain: string; status: string; created_at: string }
@@ -185,6 +185,29 @@ export default function AdminPage() {
       if (json.totalUsers !== undefined) setTrackerStats(json)
     } catch {}
     setTrackerLoading(false)
+  }
+
+  // ─── Consulting Casebook page tracker ────────────────────────────────────────
+  const [casebookStats, setCasebookStats] = useState<{
+    totalDownloads: number; downloads7d: number
+    totalLeads: number; leads7d: number; captureRate: number
+    perResource: { name: string; downloads: number; leads: number }[]
+    recentLeads: { email: string; resource: string; created_at: string }[]
+  } | null>(null)
+  const [casebookLoading, setCasebookLoading] = useState(false)
+
+  const fetchCasebookStats = async () => {
+    setCasebookLoading(true)
+    try {
+      const res = await fetch('/api/admin/consulting', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: ADMIN_PASSWORD }),
+      })
+      const json = await res.json()
+      if (json.totalDownloads !== undefined) setCasebookStats(json)
+    } catch {}
+    setCasebookLoading(false)
   }
   const [roasts, setRoasts] = useState<RoastResult[]>([])
   const [roastsLoading, setRoastsLoading] = useState(false)
@@ -391,6 +414,7 @@ export default function AdminPage() {
       fetchConsultationLeads()
       fetchTrackerStats()
       fetchJobs()
+      fetchCasebookStats()
     } else {
       setError('Incorrect password')
     }
@@ -522,6 +546,7 @@ export default function AdminPage() {
             { key: 'leads', label: `📋 Leads (${consultationLeads.length})`, active: activeTab === 'leads', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
             { key: 'tracker', label: `🎯 Tracker (${trackerStats?.totalUsers ?? '…'})`, active: activeTab === 'tracker', color: '#7B61FF', bg: 'rgba(123,97,255,0.15)' },
             { key: 'jobs', label: `💼 Jobs (${jobsData?.counts.pending ?? '…'} pending)`, active: activeTab === 'jobs', color: '#00D2FF', bg: 'rgba(0,210,255,0.12)' },
+            { key: 'consulting', label: `📚 Casebooks (${casebookStats?.totalLeads ?? '…'} leads)`, active: activeTab === 'consulting', color: '#93BBFF', bg: 'rgba(79,124,255,0.15)' },
           ].map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: tab.active ? tab.color : 'rgba(255,255,255,0.1)', background: tab.active ? tab.bg : 'transparent', color: tab.active ? tab.color : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               {tab.label}
@@ -768,6 +793,91 @@ export default function AdminPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Consulting Casebooks Tab */}
+        {activeTab === 'consulting' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>Funnel for <a href="/resources/consulting" target="_blank" rel="noopener noreferrer" style={{ color: '#93BBFF' }}>/resources/consulting</a> — downloads → captured leads</span>
+              <button onClick={fetchCasebookStats} style={{ padding: '10px 20px', borderRadius: 100, background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)', color: '#93BBFF', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                ↻ Refresh
+              </button>
+            </div>
+            {casebookLoading && !casebookStats ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Loading casebook stats...</p>
+            ) : !casebookStats ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Could not load. Do the <code>resource_downloads</code> and <code>leads</code> tables exist?</p>
+            ) : (
+              <>
+                {/* Headline stats */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14, marginBottom: 24 }}>
+                  {[
+                    [String(casebookStats.totalDownloads), 'Downloads', `+${casebookStats.downloads7d} this week`, '#4F7CFF'],
+                    [String(casebookStats.totalLeads), 'Leads captured', `+${casebookStats.leads7d} this week`, '#10b981'],
+                    [`${casebookStats.captureRate}%`, 'Capture rate', 'leads ÷ downloads', '#7B61FF'],
+                  ].map(([num, label, sub, color]) => (
+                    <div key={label} style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '18px 20px' }}>
+                      <div style={{ fontSize: 26, fontWeight: 800, color: color as string }}>{num}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'white', marginTop: 4 }}>{label}</div>
+                      <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{sub}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Per-resource breakdown */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginBottom: 24, overflowX: 'auto' }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 14 }}>By resource</div>
+                  <table>
+                    <thead>
+                      <tr>
+                        {['Resource', 'Downloads', 'Leads', 'Capture'].map(h => (
+                          <th key={h} style={{ textAlign: h === 'Resource' ? 'left' : 'right' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {casebookStats.perResource.map(r => (
+                        <tr key={r.name}>
+                          <td style={{ fontWeight: 600, color: 'white' }}>{r.name}</td>
+                          <td style={{ textAlign: 'right', color: 'rgba(255,255,255,0.7)' }}>{r.downloads}</td>
+                          <td style={{ textAlign: 'right', color: '#6ee7b7', fontWeight: 700 }}>{r.leads}</td>
+                          <td style={{ textAlign: 'right', color: 'rgba(255,255,255,0.5)' }}>{r.downloads ? `${Math.round((r.leads / r.downloads) * 1000) / 10}%` : '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Recent leads */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, overflowX: 'auto' }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 14 }}>Latest captured leads</div>
+                  {casebookStats.recentLeads.length === 0 ? (
+                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', margin: 0 }}>No leads captured yet.</p>
+                  ) : (
+                    <table>
+                      <thead>
+                        <tr>
+                          {['Email', 'From resource', 'When'].map(h => (
+                            <th key={h} style={{ textAlign: 'left' }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {casebookStats.recentLeads.map((l, i) => (
+                          <tr key={`${l.email}-${i}`}>
+                            <td style={{ fontSize: 13, color: 'white', fontWeight: 600 }}>{l.email}</td>
+                            <td style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.55)' }}>{l.resource}</td>
+                            <td style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.4)' }}>{formatDate(l.created_at)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               </>
             )}
