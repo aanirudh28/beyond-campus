@@ -95,8 +95,11 @@ function LeadCapture({ resource, accent = 'blue' }: { resource: string; accent?:
 
   if (state === 'done') {
     return (
-      <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 10, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', fontSize: 12.5, color: '#6ee7b7', fontWeight: 600, textAlign: 'center' }}>
-        ✓ On its way — check your inbox for the full pack.
+      <div style={{ marginTop: 10, padding: '11px 13px', borderRadius: 10, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', fontSize: 12.5, color: '#6ee7b7', fontWeight: 600, textAlign: 'center', lineHeight: 1.5 }}>
+        ✓ On its way. Check your inbox for the full pack.
+        <span style={{ display: 'block', marginTop: 4, color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>
+          Not there in a minute? Check spam or promotions, and mark it &ldquo;not spam&rdquo; so the weekly cases land too.
+        </span>
       </div>
     )
   }
