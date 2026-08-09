@@ -71,8 +71,65 @@ const GUESTIMATE = {
   url: '/api/resources/srcc-guestimates',
 }
 
+// Soft, optional email capture revealed right after a download — files still open
+// instantly and ungated. Feeds the `leads` table → nurture "Leads sequence".
+function LeadCapture({ resource, accent = 'blue' }: { resource: string; accent?: 'blue' | 'purple' }) {
+  const [email, setEmail] = useState('')
+  const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+  const color = accent === 'purple' ? '#c4b5fd' : '#93BBFF'
+  const border = accent === 'purple' ? 'rgba(123,97,255,0.5)' : 'rgba(79,124,255,0.45)'
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { setState('error'); return }
+    setState('sending')
+    try {
+      const res = await fetch('/api/capture-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, resource }),
+      })
+      setState(res.ok ? 'done' : 'error')
+    } catch { setState('error') }
+  }
+
+  if (state === 'done') {
+    return (
+      <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 10, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', fontSize: 12.5, color: '#6ee7b7', fontWeight: 600, textAlign: 'center' }}>
+        ✓ On its way — check your inbox for the full pack.
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={submit} style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 7 }}>
+      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.4 }}>
+        Want all 8 casebooks + a fresh case emailed weekly?
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <input
+          type="email"
+          value={email}
+          onChange={e => { setEmail(e.target.value); if (state === 'error') setState('idle') }}
+          placeholder="you@email.com"
+          style={{ flex: 1, minWidth: 0, padding: '9px 12px', borderRadius: 100, background: 'rgba(255,255,255,0.04)', border: `1px solid ${state === 'error' ? 'rgba(248,113,113,0.5)' : 'rgba(255,255,255,0.12)'}`, color: 'white', fontSize: 13, fontFamily: "'DM Sans', sans-serif", outline: 'none' }}
+        />
+        <button
+          type="submit"
+          disabled={state === 'sending'}
+          style={{ flexShrink: 0, padding: '9px 16px', borderRadius: 100, background: 'transparent', border: `1.5px solid ${border}`, color, fontWeight: 700, fontSize: 13, cursor: state === 'sending' ? 'wait' : 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {state === 'sending' ? '…' : 'Send →'}
+        </button>
+      </div>
+      {state === 'error' && <div style={{ fontSize: 11, color: '#fca5a5' }}>Enter a valid email address.</div>}
+    </form>
+  )
+}
+
 function CasebookCard({ resource }: { resource: typeof CASEBOOKS[0] }) {
   const [downloading, setDownloading] = useState(false)
+  const [showCapture, setShowCapture] = useState(false)
 
   const handleDownload = async () => {
     setDownloading(true)
@@ -85,6 +142,7 @@ function CasebookCard({ resource }: { resource: typeof CASEBOOKS[0] }) {
     } catch {}
     window.open(resource.url, '_blank')
     setDownloading(false)
+    setShowCapture(true)
   }
 
   return (
@@ -124,7 +182,9 @@ function CasebookCard({ resource }: { resource: typeof CASEBOOKS[0] }) {
         >
           {downloading ? 'Opening...' : 'Download Free →'}
         </button>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: 7 }}>No sign-up required · Opens in new tab</div>
+        {showCapture
+          ? <LeadCapture resource={resource.title} accent="blue" />
+          : <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: 7 }}>No sign-up required · Opens in new tab</div>}
       </div>
     </div>
   )
@@ -132,6 +192,7 @@ function CasebookCard({ resource }: { resource: typeof CASEBOOKS[0] }) {
 
 function GuestimateFeaturedCard() {
   const [downloading, setDownloading] = useState(false)
+  const [showCapture, setShowCapture] = useState(false)
 
   const handleDownload = async () => {
     setDownloading(true)
@@ -144,6 +205,7 @@ function GuestimateFeaturedCard() {
     } catch {}
     window.open(GUESTIMATE.url, '_blank')
     setDownloading(false)
+    setShowCapture(true)
   }
 
   return (
@@ -181,7 +243,9 @@ function GuestimateFeaturedCard() {
       >
         {downloading ? 'Opening...' : 'Download Free →'}
       </button>
-      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: 8 }}>No sign-up required · Opens in new tab</div>
+      {showCapture
+        ? <LeadCapture resource={GUESTIMATE.title} accent="purple" />
+        : <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: 8 }}>No sign-up required · Opens in new tab</div>}
     </div>
   )
 }
@@ -280,10 +344,10 @@ export default function ConsultingResourcesPage() {
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 100, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: 'white', fontWeight: 700, fontSize: 14, boxShadow: '0 0 24px rgba(245,158,11,0.3)' }}>
-              Join Summer Program — ₹699 →
+              Join Summer Program — ₹1,750 →
             </a>
             <a href="/book" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 100, border: '1.5px solid rgba(79,124,255,0.4)', color: '#93BBFF', fontWeight: 700, fontSize: 14 }}>
-              Book a 1:1 Session — ₹299
+              Book a 1:1 Session — ₹549
             </a>
           </div>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', marginTop: 22 }}>
