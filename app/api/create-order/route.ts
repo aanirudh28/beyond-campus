@@ -8,6 +8,7 @@ const PRICES: Record<string, number> = {
   placement_cohort: 2500,
   resource_pack: 299,
   internship_program: 999,
+  read_receipts: 200,
 }
 
 export async function POST(req: Request) {
