@@ -337,17 +337,20 @@ export default function ConsultingResourcesPage() {
         {/* BOTTOM CTA */}
         <div style={{ background: 'linear-gradient(135deg,rgba(79,124,255,0.08),rgba(123,97,255,0.05))', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 24, padding: '40px 36px', textAlign: 'center' }}>
           <h3 style={{ fontSize: 'clamp(20px,3vw,26px)', fontWeight: 800, letterSpacing: -0.5, marginBottom: 12 }}>
-            Resources prepare you. Strategy places you.
+            Casebooks are step one.
           </h3>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, maxWidth: 540, margin: '0 auto 28px' }}>
-            These casebooks teach you the framework. Our Summer Internship Program gets you in front of the right people to actually use it — with a personalized company target list, cold email strategy, and direct introductions.
+            You&apos;ve got the frameworks. Now sharpen the rest — roast your resume in 30 seconds, drill company-style aptitude, and when you&apos;re ready to actually get placed, our 8-week Placement Cohort takes you there with personalized targeting and direct introductions.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/summer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 100, background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: 'white', fontWeight: 700, fontSize: 14, boxShadow: '0 0 24px rgba(245,158,11,0.3)' }}>
-              Join Summer Program — ₹1,750 →
+            <a href="/cohort" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 100, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', color: 'white', fontWeight: 700, fontSize: 14, boxShadow: '0 0 24px rgba(123,97,255,0.3)' }}>
+              Join the Placement Cohort — ₹2,500 →
             </a>
-            <a href="/book" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 100, border: '1.5px solid rgba(79,124,255,0.4)', color: '#93BBFF', fontWeight: 700, fontSize: 14 }}>
-              Book a 1:1 Session — ₹549
+            <a href="/resources/resume-roast" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 100, border: '1.5px solid rgba(79,124,255,0.4)', color: '#93BBFF', fontWeight: 700, fontSize: 14 }}>
+              🔥 Roast my resume — free
+            </a>
+            <a href="/aptitude" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 100, border: '1.5px solid rgba(79,124,255,0.4)', color: '#93BBFF', fontWeight: 700, fontSize: 14 }}>
+              🧮 Practice aptitude — free
             </a>
           </div>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', marginTop: 22 }}>
