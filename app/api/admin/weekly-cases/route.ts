@@ -2,6 +2,8 @@ export const runtime = 'nodejs'
 
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { Resend } from 'resend'
+import { emailShell, weeklyCaseBody, weeklyCaseSubject } from '@/lib/nurture'
 
 const ADMIN_PASSWORD = 'beyondcampus2024'
 
@@ -45,6 +47,25 @@ export async function POST(req: Request) {
     if (action === 'delete') {
       const { error } = await svc.from('weekly_cases').delete().eq('id', body.id)
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ success: true })
+    }
+
+    // Send one case to a single address for a render check. Uses the exact same
+    // template as the Wednesday drip, and does NOT touch nurture_sends, so it
+    // never affects the real dedupe/schedule.
+    if (action === 'test_send') {
+      const email = String(body.email || '').trim().toLowerCase()
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return NextResponse.json({ error: 'Valid email required' }, { status: 400 })
+      const { data: c, error } = await svc.from('weekly_cases').select('title, prompt, hint').eq('id', body.id).single()
+      if (error || !c) return NextResponse.json({ error: error?.message || 'Case not found' }, { status: 404 })
+      const resend = new Resend(process.env.RESEND_API_KEY!)
+      const { error: sendErr } = await resend.emails.send({
+        from: 'Beyond Campus <bookings@beyond-campus.in>',
+        to: email,
+        subject: `[TEST] ${weeklyCaseSubject(c.title)}`,
+        html: emailShell(weeklyCaseBody(c), email),
+      })
+      if (sendErr) return NextResponse.json({ error: String(sendErr) }, { status: 500 })
       return NextResponse.json({ success: true })
     }
 

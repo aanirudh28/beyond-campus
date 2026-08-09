@@ -4,7 +4,7 @@ export const maxDuration = 60
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { serviceClient } from '@/lib/tracker'
-import { emailShell, ctaButton } from '@/lib/nurture'
+import { emailShell, ctaButton, weeklyCaseBody, weeklyCaseSubject } from '@/lib/nurture'
 import { CASEBOOK_NAMES } from '@/lib/casebooks'
 import { buildWeeklyAutopsy, type WrongHighlight } from '@/lib/apti-weekly'
 import { loadCurriculum, type QuestionPayload } from '@/lib/apti'
@@ -389,14 +389,8 @@ export async function GET(req: NextRequest) {
           if (!next) continue
           await trySend(email, null, {
             sequence: 'weekly_case', step: next.sort_order, afterDays: 0,
-            subject: `This week's case: ${next.title}`,
-            body: () => `
-              <h1 style="font-size: 22px; margin: 0 0 12px;">🧩 This week's case</h1>
-              <p style="color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px;">${next.title}</p>
-              <p style="color: rgba(255,255,255,0.75); font-size: 15px; line-height: 1.7; white-space: pre-line;">${next.prompt}</p>
-              ${next.hint ? `<div style="background: rgba(79,124,255,0.08); border: 1px solid rgba(79,124,255,0.2); border-radius: 12px; padding: 14px 16px; margin: 16px 0;"><p style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.6; margin: 0;"><strong style="color: #93BBFF;">Framework nudge:</strong> ${next.hint}</p></div>` : ''}
-              <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7;">Structure your answer out loud before reaching for a framework — practising the <em>structure</em> is what separates shortlists from rejections.</p>
-              ${ctaButton(`${SITE}/resources/consulting`, 'More casebooks to practise →')}`,
+            subject: weeklyCaseSubject(next.title),
+            body: () => weeklyCaseBody(next),
           })
         }
       }
