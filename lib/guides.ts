@@ -2,6 +2,7 @@ import { offCampusInternshipGuide } from '@/content/guides/off-campus-internship
 import { coldEmailToHrGuide } from '@/content/guides/cold-email-to-hr-internship'
 import { consultingWithoutIimGuide } from '@/content/guides/consulting-internship-without-iim'
 import { foundersOfficeGuide } from '@/content/guides/founders-office-roles-freshers'
+import { readYourEmailGuide } from '@/content/guides/how-to-know-if-someone-read-your-email'
 
 /* ----------------------------------------------------------------------------
    Guides are TS modules exporting frontmatter + a markdown body (no fs reads,
@@ -26,6 +27,7 @@ const GUIDES: Guide[] = [
   coldEmailToHrGuide,
   consultingWithoutIimGuide,
   foundersOfficeGuide,
+  readYourEmailGuide,
 ]
 
 export function getAllGuides(): Guide[] {

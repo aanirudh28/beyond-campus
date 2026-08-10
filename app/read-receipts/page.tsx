@@ -5,33 +5,36 @@ import Tool from './Tool'
 const URL = 'https://www.beyond-campus.in/read-receipts'
 
 export const metadata: Metadata = {
-  title: 'Free Email Read Receipts — Know When Your Email Is Opened | Beyond Campus',
+  title: 'Free Email Tracker for Gmail: Know When Your Email Is Opened | Beyond Campus',
   description:
-    'See the exact moment someone opens your email, and how many times. A free email read receipt tracker you paste into Gmail — no extension, no credit card. Perfect for cold emails and job applications.',
+    'A free email tracker for Gmail. See the exact moment someone opens your email and how many times, with no Chrome extension and no credit card. Works on personal Gmail, and the recipient never has to approve. Built for cold emails and job applications.',
   keywords: [
+    'free email tracker',
+    'free email tracker gmail',
+    'email tracker for gmail',
     'email read receipts',
     'free email read receipts',
-    'know when email is opened',
-    'email tracker for gmail',
-    'email open tracker',
+    'know when your email is opened',
+    'gmail read receipts',
     'read receipt gmail',
+    'how to know if someone read your email',
+    'email tracker without extension',
     'free mailtrack alternative',
     'email tracking for cold emails',
     'did they open my email',
-    'email tracker free',
   ],
   alternates: { canonical: URL },
   openGraph: {
-    title: 'Free Email Read Receipts — Know When Your Email Is Opened',
+    title: 'Free Email Tracker for Gmail: Know When Your Email Is Opened',
     description:
-      'See the moment someone opens your email, and how many times. Free, paste into Gmail, no extension needed.',
+      'See the moment someone opens your email and how many times. Free, no extension, works on personal Gmail.',
     url: URL,
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Free Email Read Receipts — Know When Your Email Is Opened',
-    description: 'See the moment someone opens your email, and how many times. Free, no extension needed.',
+    title: 'Free Email Tracker for Gmail: Know When Your Email Is Opened',
+    description: 'See the moment someone opens your email and how many times. Free, no extension needed.',
   },
 }
 
@@ -97,9 +100,9 @@ export default function ReadReceiptsPage() {
         {/* SEO hero (server-rendered, crawlable) */}
         <header>
           <div style={{ display: 'inline-flex', padding: '4px 14px', background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.3)', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#93BBFF', textTransform: 'uppercase', marginBottom: 14 }}>Free · No extension</div>
-          <h1 style={{ fontSize: 'clamp(30px,6vw,46px)', fontWeight: 800, letterSpacing: -1.2, lineHeight: 1.08, marginBottom: 12 }}>Free email read receipts: know when your email is opened</h1>
+          <h1 style={{ fontSize: 'clamp(30px,6vw,46px)', fontWeight: 800, letterSpacing: -1.2, lineHeight: 1.08, marginBottom: 12 }}>Free email tracker for Gmail: know when your email is opened</h1>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, margin: 0 }}>
-            See the exact moment someone opens your email, and how many times they come back to it. Paste it into your own Gmail and send as normal. No Chrome extension, no credit card. Built for cold emails and job applications.
+            See the exact moment someone opens your email, and how many times they come back to it. No Chrome extension, no credit card, and it works on a personal Gmail account, so the recipient never has to approve anything. Built for cold emails and job applications.
           </p>
         </header>
 
@@ -146,6 +149,14 @@ export default function ReadReceiptsPage() {
               </details>
             ))}
           </div>
+        </section>
+
+        {/* Related guide (internal SEO) */}
+        <section>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, margin: 0 }}>
+            New to this? Read the full guide:{' '}
+            <Link href="/guides/how-to-know-if-someone-read-your-email" style={{ color: '#93BBFF', fontWeight: 600 }}>How to know if someone read your email in Gmail →</Link>
+          </p>
         </section>
 
         {/* Cross-links (internal SEO) */}
