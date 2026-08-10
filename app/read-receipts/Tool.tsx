@@ -68,8 +68,9 @@ export default function Tool() {
   const [label, setLabel] = useState('')
   const [subject, setSubject] = useState('')
   const [body, setBody] = useState('')
-  const [copyState, setCopyState] = useState<'idle' | 'working' | 'copied' | 'failed'>('idle')
+  const [copyState, setCopyState] = useState<'idle' | 'working' | 'copied' | 'manual'>('idle')
   const [copiedHtml, setCopiedHtml] = useState('')
+  const [copiedText, setCopiedText] = useState('')
 
   const load = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser()
@@ -121,13 +122,24 @@ export default function Tool() {
       body: JSON.stringify({ label, subject }),
     })
     const data = await res.json()
-    if (!data.trackingId) { setCopyState('failed'); setErr(data.error || 'Could not create the tracked email.'); return }
+    if (!data.trackingId) { setCopyState('idle'); setErr(data.error || 'Could not create the tracked email.'); return }
     const pixel = `<img src="${SITE}/api/rr/pixel/${data.trackingId}" width="1" height="1" style="width:1px;height:1px;border:0;opacity:0" alt="">`
     const html = `<div style="font-family:Arial,sans-serif;font-size:14px;color:#000">${escapeHtml(body).replace(/\n/g, '<br>')}${pixel}</div>`
     setCopiedHtml(html)
+    setCopiedText(body)
+    // Best-effort auto-copy. The await fetch above usually costs us the click
+    // gesture, so this often fails, in which case we show a real Copy button
+    // (copyNow) that copies synchronously on a fresh click.
     const ok = await copyRichHtml(html, body)
-    setCopyState(ok ? 'copied' : 'failed')
+    setCopyState(ok ? 'copied' : 'manual')
     load()
+  }
+
+  // Synchronous copy on a fresh click, with the data already prepared. This is
+  // the reliable path: no await before the clipboard write, so the gesture holds.
+  const copyNow = async () => {
+    const ok = await copyRichHtml(copiedHtml, copiedText)
+    if (ok) setCopyState('copied')
   }
 
   if (phase === 'loading') {
@@ -171,13 +183,21 @@ export default function Tool() {
             Your <strong>email body</strong> is copied (with the invisible tracker). In Gmail: click Compose, <strong>type your own subject line</strong>, paste the body with <strong>Ctrl+V</strong> (⌘+V on Mac), then send. The company and subject you entered here are not part of the email, they just label this row below.
           </div>
         )}
-        {copyState === 'failed' && (
+        {copyState === 'manual' && (
           <div style={{ marginTop: 12 }}>
-            <p style={{ fontSize: 12.5, color: '#fca5a5', marginBottom: 6 }}>Auto-copy was blocked by your browser. Select all of the box below, copy it, and paste into Gmail:</p>
-            <div contentEditable suppressContentEditableWarning style={{ ...inputStyle, minHeight: 80, background: 'white', color: '#000' }} dangerouslySetInnerHTML={{ __html: copiedHtml }} />
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 8, lineHeight: 1.6 }}>Your tracked email is ready. Tap the button to copy it, then paste into Gmail:</p>
+            <button onClick={copyNow} style={{ ...btnPrimary, width: '100%', border: 'none', cursor: 'pointer' }}>📋 Copy tracked email</button>
+            <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.35)', margin: '10px 0 6px' }}>If that still does not copy, tap the box below to select it, then copy manually:</p>
+            <div
+              contentEditable
+              suppressContentEditableWarning
+              onClick={e => { const el = e.currentTarget; const r = document.createRange(); r.selectNodeContents(el); const s = window.getSelection(); s?.removeAllRanges(); s?.addRange(r) }}
+              style={{ ...inputStyle, minHeight: 80, background: 'white', color: '#000' }}
+              dangerouslySetInnerHTML={{ __html: copiedHtml }}
+            />
           </div>
         )}
-        {err && copyState !== 'failed' && <p style={{ color: '#f87171', fontSize: 13, marginTop: 10 }}>{err}</p>}
+        {err && copyState !== 'manual' && <p style={{ color: '#f87171', fontSize: 13, marginTop: 10 }}>{err}</p>}
       </Card>
 
       <Card>
