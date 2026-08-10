@@ -129,7 +129,7 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads' | 'tracker' | 'jobs' | 'consulting' | 'apti-users' | 'email-health'>('bookings')
+  const [activeTab, setActiveTab] = useState<'bookings' | 'students' | 'summer' | 'resources' | 'feed' | 'manual-access' | 'roasts' | 'leads' | 'tracker' | 'jobs' | 'consulting' | 'apti-users' | 'email-health' | 'read-receipts'>('bookings')
 
   // ─── Jobs Engine State ───────────────────────────────────────────────────────
   interface JobRow { id: string; company: string; role: string; location: string | null; job_url: string; jd_summary: string | null; domain: string; status: string; created_at: string }
@@ -172,6 +172,29 @@ export default function AdminPage() {
     recentUsers: { email: string; name: string | null; is_pro: boolean; created_at: string }[]
   } | null>(null)
   const [trackerLoading, setTrackerLoading] = useState(false)
+
+  // ─── Read Receipts activity (the /read-receipts tool) ───────────────────────
+  const [rrStats, setRrStats] = useState<{
+    totalUsers: number; activeUsers7d: number; totalTracked: number; tracked7d: number
+    totalOpens: number; opens7d: number; openRate: number
+    opened: { label: string | null; subject: string | null; owner_email: string | null; opens: number; lastOpened: string; created_at: string }[]
+    topUsers: { email: string | null; tracked: number; opened: number }[]
+  } | null>(null)
+  const [rrLoading, setRrLoading] = useState(false)
+
+  const fetchRrStats = async () => {
+    setRrLoading(true)
+    try {
+      const res = await fetch('/api/admin/read-receipts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: ADMIN_PASSWORD }),
+      })
+      const json = await res.json()
+      if (json.totalTracked !== undefined) setRrStats(json)
+    } catch {}
+    setRrLoading(false)
+  }
 
   // ─── Email deliverability (Resend webhook events) ───────────────────────────
   const [emailHealth, setEmailHealth] = useState<{
@@ -508,6 +531,7 @@ export default function AdminPage() {
       fetchWeeklyCases()
       fetchAptiUsers()
       fetchEmailHealth()
+      fetchRrStats()
     } else {
       setError('Incorrect password')
     }
@@ -642,6 +666,7 @@ export default function AdminPage() {
             { key: 'consulting', label: `📚 Casebooks (${casebookStats?.totalLeads ?? '…'} leads)`, active: activeTab === 'consulting', color: '#93BBFF', bg: 'rgba(79,124,255,0.15)' },
             { key: 'apti-users', label: `🧮 Apti Users (${aptiStats?.totalUsers ?? '…'})`, active: activeTab === 'apti-users', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
             { key: 'email-health', label: `📧 Email Health${emailHealth ? ` (${emailHealth.bouncePct}% bounce)` : ''}`, active: activeTab === 'email-health', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
+            { key: 'read-receipts', label: `📩 Read Receipts (${rrStats?.totalOpens ?? '…'} opens)`, active: activeTab === 'read-receipts', color: '#7B61FF', bg: 'rgba(123,97,255,0.15)' },
           ].map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} style={{ padding: '10px 22px', borderRadius: 100, border: '1px solid', borderColor: tab.active ? tab.color : 'rgba(255,255,255,0.1)', background: tab.active ? tab.bg : 'transparent', color: tab.active ? tab.color : 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               {tab.label}
@@ -888,6 +913,97 @@ export default function AdminPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Read Receipts Tab */}
+        {activeTab === 'read-receipts' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>Live activity on the <a href="/read-receipts" target="_blank" rel="noopener noreferrer" style={{ color: '#c4b5fd' }}>read-receipts</a> tool — emails students are tracking and which ones are getting opened.</span>
+              <button onClick={fetchRrStats} style={{ padding: '10px 20px', borderRadius: 100, background: 'rgba(123,97,255,0.15)', border: '1px solid rgba(123,97,255,0.3)', color: '#c4b5fd', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                ↻ Refresh
+              </button>
+            </div>
+            {rrLoading && !rrStats ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Loading read-receipts activity...</p>
+            ) : !rrStats ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Could not load. Has the read-receipts SQL been run?</p>
+            ) : (
+              <>
+                {/* Headline stats */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14, marginBottom: 24 }}>
+                  {[
+                    [String(rrStats.totalUsers), 'Users', `${rrStats.activeUsers7d} active this week`, '#7B61FF'],
+                    [String(rrStats.totalTracked), 'Emails tracked', `+${rrStats.tracked7d} this week`, '#4F7CFF'],
+                    [String(rrStats.totalOpens), 'Total opens', `+${rrStats.opens7d} this week`, '#6ee7b7'],
+                    [`${rrStats.openRate}%`, 'Open rate', 'emails opened ≥1×', '#f59e0b'],
+                  ].map(([num, label, sub, color]) => (
+                    <div key={label} style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '18px 20px' }}>
+                      <div style={{ fontSize: 26, fontWeight: 800, color: color as string }}>{num}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'white', marginTop: 4 }}>{label}</div>
+                      <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{sub}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Emails being opened */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginBottom: 24, overflowX: 'auto' }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 14 }}>Emails being opened</div>
+                  {rrStats.opened.length === 0 ? (
+                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', margin: 0 }}>No opens recorded yet.</p>
+                  ) : (
+                    <table>
+                      <thead>
+                        <tr>
+                          {['Email', 'User', 'Opens', 'Last opened', 'Sent'].map(h => (
+                            <th key={h} style={{ textAlign: h === 'Opens' ? 'right' : 'left' }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rrStats.opened.map((e, i) => (
+                          <tr key={i}>
+                            <td style={{ fontSize: 13, color: 'white', fontWeight: 600 }}>{e.label || e.subject || 'Untitled'}</td>
+                            <td style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.55)' }}>{e.owner_email || '—'}</td>
+                            <td style={{ fontSize: 13, textAlign: 'right', color: '#6ee7b7', fontWeight: 700 }}>{e.opens}×</td>
+                            <td style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.5)' }}>{formatDate(e.lastOpened)}</td>
+                            <td style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.4)' }}>{formatDate(e.created_at)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+
+                {/* Top users */}
+                <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, overflowX: 'auto' }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 14 }}>Most active users</div>
+                  {rrStats.topUsers.length === 0 ? (
+                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', margin: 0 }}>No users yet.</p>
+                  ) : (
+                    <table>
+                      <thead>
+                        <tr>
+                          {['User', 'Tracked', 'Opened'].map(h => (
+                            <th key={h} style={{ textAlign: h === 'User' ? 'left' : 'right' }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rrStats.topUsers.map((u, i) => (
+                          <tr key={i}>
+                            <td style={{ fontSize: 13, color: 'white', fontWeight: 600 }}>{u.email || '—'}</td>
+                            <td style={{ fontSize: 13, textAlign: 'right', color: 'rgba(255,255,255,0.7)' }}>{u.tracked}</td>
+                            <td style={{ fontSize: 13, textAlign: 'right', color: '#6ee7b7', fontWeight: 700 }}>{u.opened}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               </>
             )}
