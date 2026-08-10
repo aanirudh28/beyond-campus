@@ -17,6 +17,7 @@ export async function POST(req: Request) {
   const { error } = await svc.from('rr_messages').insert({
     user_id: user.id,
     tracking_id: trackingId,
+    owner_email: user.email,
     label: (label ? String(label).slice(0, 200) : null),
     subject: (subject ? String(subject).slice(0, 300) : null),
   })

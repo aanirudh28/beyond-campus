@@ -28,6 +28,45 @@ export function ctaButton(href: string, label: string) {
   return `<a href="${href}" style="display: inline-block; margin-top: 8px; padding: 13px 28px; background: linear-gradient(135deg, #4F7CFF, #7B61FF); color: white; text-decoration: none; border-radius: 100px; font-weight: bold; font-size: 14px;">${label}</a>`
 }
 
+function esc(s: string | null) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+const rrLabel = (label: string | null) => esc(label) || 'your email'
+
+// Read Receipts: instant "just opened" alert (sent from the pixel route).
+export function rrOpenAlertSubject(label: string | null) {
+  return label ? `📬 Opened: ${label}` : '📬 Your email was just opened'
+}
+export function rrOpenAlertBody(label: string | null) {
+  return `
+    <h1 style="font-size: 22px; margin: 0 0 12px;">📬 Just opened</h1>
+    <p style="color: rgba(255,255,255,0.65); font-size: 15px; line-height: 1.7;">Someone just opened <strong style="color: white;">${rrLabel(label)}</strong> for the first time. If they reply, be ready. If they go quiet, you now know the perfect moment to follow up.</p>
+    ${ctaButton(`${SITE}/read-receipts`, 'See when and how often →')}`
+}
+
+// Follow-up nudge: message was opened but is going cold (we track opens, not replies).
+export function rrFollowupSubject(label: string | null) {
+  return label ? `Time to follow up on ${label}?` : 'Time to follow up?'
+}
+export function rrFollowupBody(label: string | null) {
+  return `
+    <h1 style="font-size: 22px; margin: 0 0 12px;">They read it. Now nudge. 👀</h1>
+    <p style="color: rgba(255,255,255,0.65); font-size: 15px; line-height: 1.7;">Your email <strong style="color: white;">${rrLabel(label)}</strong> was opened a few days ago. If you have not heard back yet, a short, polite follow-up now is exactly what gets the reply. One or two lines is enough.</p>
+    ${ctaButton(`${SITE}/read-receipts`, 'Write a tracked follow-up →')}`
+}
+
+// Nudge: message still not opened after a couple of days.
+export function rrUnopenedSubject(label: string | null) {
+  return label ? `${label} still hasn't been opened` : "Your email still hasn't been opened"
+}
+export function rrUnopenedBody(label: string | null) {
+  return `
+    <h1 style="font-size: 22px; margin: 0 0 12px;">Still unopened 🕗</h1>
+    <p style="color: rgba(255,255,255,0.65); font-size: 15px; line-height: 1.7;">Your email <strong style="color: white;">${rrLabel(label)}</strong> has not been opened yet. It might be worth resending with a sharper subject line, or trying a different person at the company. A resend often lands where the first one missed.</p>
+    ${ctaButton(`${SITE}/read-receipts`, 'Send a tracked resend →')}`
+}
+
 export interface WeeklyCaseRow { title: string; prompt: string; hint: string | null }
 
 export function weeklyCaseSubject(title: string) {

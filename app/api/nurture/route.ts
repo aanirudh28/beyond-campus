@@ -4,7 +4,7 @@ export const maxDuration = 60
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { serviceClient } from '@/lib/tracker'
-import { emailShell, ctaButton, weeklyCaseBody, weeklyCaseSubject } from '@/lib/nurture'
+import { emailShell, ctaButton, weeklyCaseBody, weeklyCaseSubject, rrFollowupSubject, rrFollowupBody, rrUnopenedSubject, rrUnopenedBody } from '@/lib/nurture'
 import { CASEBOOK_NAMES } from '@/lib/casebooks'
 import { buildWeeklyAutopsy, type WrongHighlight } from '@/lib/apti-weekly'
 import { loadCurriculum, type QuestionPayload } from '@/lib/apti'
@@ -396,6 +396,53 @@ export async function GET(req: NextRequest) {
       }
     } catch { /* weekly case failure must not affect the nurture run */ }
   }
+
+  // ---- Read Receipts follow-up nudges (daily). We track opens, not replies,
+  // so nudges are framed as "time to follow up?", never "they didn't reply". ----
+  try {
+    const { data: rrCands } = await svc
+      .from('rr_messages')
+      .select('id, tracking_id, label, owner_email, user_id, created_at, opened_nudge_at, unopened_nudge_at')
+      .lte('created_at', daysAgo(2))
+      .or('opened_nudge_at.is.null,unopened_nudge_at.is.null')
+      .not('owner_email', 'is', null)
+      .limit(2000)
+
+    if (rrCands && rrCands.length) {
+      const tids = rrCands.map(m => m.tracking_id)
+      const openSet = new Set<string>()
+      const { data: openRows } = await svc.from('rr_opens').select('tracking_id').in('tracking_id', tids).limit(50000)
+      for (const o of openRows || []) openSet.add(o.tracking_id)
+
+      const followOff = new Set<string>()
+      const { data: prefRows } = await svc.from('rr_prefs').select('user_id, followups').in('user_id', [...new Set(rrCands.map(m => m.user_id))])
+      for (const p of prefRows || []) if (p.followups === false) followOff.add(p.user_id)
+
+      let rrSends = 0
+      for (const m of rrCands) {
+        if (sends >= MAX_SENDS_PER_RUN || rrSends >= 20) break
+        if (Date.now() - runStart > 45_000) break
+        if (followOff.has(m.user_id)) continue
+        const email = (m.owner_email || '').toLowerCase()
+        if (!email || optouts.has(email) || mailedThisRun.has(email)) continue
+
+        const opened = openSet.has(m.tracking_id)
+        const sendNudge = async (subject: string, html: string, col: 'opened_nudge_at' | 'unopened_nudge_at') => {
+          const { error } = await resend.emails.send({ from: 'Beyond Campus <bookings@beyond-campus.in>', to: m.owner_email, subject, html })
+          if (error) return
+          await svc.from('rr_messages').update({ [col]: new Date().toISOString() }).eq('id', m.id)
+          rrSends++; sends++; mailedThisRun.add(email)
+          await new Promise(r => setTimeout(r, 550))
+        }
+
+        if (opened && !m.opened_nudge_at && m.created_at <= daysAgo(3)) {
+          await sendNudge(rrFollowupSubject(m.label), emailShell(rrFollowupBody(m.label), m.owner_email), 'opened_nudge_at')
+        } else if (!opened && !m.unopened_nudge_at) {
+          await sendNudge(rrUnopenedSubject(m.label), emailShell(rrUnopenedBody(m.label), m.owner_email), 'unopened_nudge_at')
+        }
+      }
+    }
+  } catch { /* rr nudges must not affect the nurture run */ }
 
   // ---- Monday jobs digest (reuses trySend: optouts, dedupe, caps) ----
   if (new Date().getUTCDay() === 1) {
