@@ -30,6 +30,7 @@ export async function GET() {
       .from('rr_opens')
       .select('tracking_id, opened_at, client, city')
       .in('tracking_id', ids)
+      .or('event_type.is.null,event_type.eq.open') // genuine opens only (self/bot excluded)
       .order('opened_at', { ascending: false })
       .limit(20000)
     for (const o of opens || []) {

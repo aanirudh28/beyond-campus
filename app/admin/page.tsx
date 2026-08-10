@@ -177,6 +177,8 @@ export default function AdminPage() {
   const [rrStats, setRrStats] = useState<{
     totalUsers: number; activeUsers7d: number; totalTracked: number; tracked7d: number
     totalOpens: number; opens7d: number; openRate: number
+    breakdown: { open: number; self: number; bot: number }
+    byConfidence: { high: number; medium: number; low: number }
     opened: { label: string | null; subject: string | null; owner_email: string | null; opens: number; lastOpened: string; created_at: string }[]
     topUsers: { email: string | null; tracked: number; opened: number }[]
   } | null>(null)
@@ -949,6 +951,32 @@ export default function AdminPage() {
                     </div>
                   ))}
                 </div>
+
+                {/* Request classification breakdown (classify-and-store) */}
+                {rrStats.breakdown && (
+                  <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginBottom: 24 }}>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 4 }}>Every pixel request, classified</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 14 }}>Nothing is dropped now. Only genuine opens are counted above; self and bot loads are recorded but excluded.</div>
+                    <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+                      {[
+                        ['Genuine opens', rrStats.breakdown.open, '#6ee7b7'],
+                        ['Self (sender)', rrStats.breakdown.self, 'rgba(255,255,255,0.5)'],
+                        ['Bots / scanners', rrStats.breakdown.bot, '#f59e0b'],
+                      ].map(([lbl, n, c]) => (
+                        <div key={lbl as string}>
+                          <div style={{ fontSize: 20, fontWeight: 800, color: c as string }}>{n as number}</div>
+                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{lbl as string}</div>
+                        </div>
+                      ))}
+                      <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: 20 }}>
+                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 4 }}>Open confidence</div>
+                        <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.7)' }}>
+                          <span style={{ color: '#6ee7b7', fontWeight: 700 }}>{rrStats.byConfidence.high}</span> high (direct device) · <span style={{ color: '#93BBFF', fontWeight: 700 }}>{rrStats.byConfidence.medium}</span> medium (via proxy)
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Emails being opened */}
                 <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginBottom: 24, overflowX: 'auto' }}>

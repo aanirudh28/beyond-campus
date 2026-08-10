@@ -18,18 +18,31 @@ export async function POST(req: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    const [{ data: msgs }, { data: opens }] = await Promise.all([
+    const [{ data: msgs }, { data: allEvents }] = await Promise.all([
       svc.from('rr_messages').select('tracking_id, label, subject, owner_email, user_id, created_at').order('created_at', { ascending: false }).limit(10000),
-      svc.from('rr_opens').select('tracking_id, opened_at').limit(100000),
+      svc.from('rr_opens').select('tracking_id, opened_at, event_type, confidence').limit(100000),
     ])
 
     const messages = msgs || []
     const sevenAgo = Date.now() - 7 * DAY
 
-    // Tally opens per tracking_id.
+    // Classification breakdown across every recorded request (the point of the
+    // classify-and-store model). Legacy rows (null event_type) count as opens.
+    const isOpen = (t: string | null) => !t || t === 'open'
+    const breakdown = { open: 0, self: 0, bot: 0 }
+    const byConfidence = { high: 0, medium: 0, low: 0 }
+    for (const e of allEvents || []) {
+      if (isOpen(e.event_type)) breakdown.open++
+      else if (e.event_type === 'self') breakdown.self++
+      else if (e.event_type === 'bot') breakdown.bot++
+      if (isOpen(e.event_type) && e.confidence && e.confidence in byConfidence) byConfidence[e.confidence as 'high' | 'medium' | 'low']++
+    }
+
+    // Genuine opens only, for the counts and per-message tally.
+    const opens = (allEvents || []).filter(e => isOpen(e.event_type))
     const byTracking: Record<string, { count: number; last: string }> = {}
     let opens7d = 0
-    for (const o of opens || []) {
+    for (const o of opens) {
       const t = byTracking[o.tracking_id]
       if (!t) byTracking[o.tracking_id] = { count: 1, last: o.opened_at }
       else { t.count++; if (o.opened_at > t.last) t.last = o.opened_at }
@@ -76,9 +89,11 @@ export async function POST(req: Request) {
       activeUsers7d: activeUsers7d.size,
       totalTracked: messages.length,
       tracked7d,
-      totalOpens: (opens || []).length,
+      totalOpens: opens.length,
       opens7d,
       openRate: messages.length ? Math.round((messagesOpened / messages.length) * 1000) / 10 : 0,
+      breakdown,
+      byConfidence,
       opened,
       topUsers,
     })

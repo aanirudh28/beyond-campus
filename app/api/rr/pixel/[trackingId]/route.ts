@@ -62,36 +62,42 @@ export async function GET(req: Request, { params }: { params: Promise<{ tracking
       .eq('tracking_id', trackingId)
       .maybeSingle()
 
-    const ua = req.headers.get('user-agent') || ''
-    const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || req.headers.get('x-real-ip') || ''
+    if (msg) {
+      const ua = req.headers.get('user-agent') || ''
+      const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || req.headers.get('x-real-ip') || ''
+      const { client, proxy, bot } = clientLabel(ua)
 
-    // Skip self-opens: (a) loads in the first 2 minutes after creating, which are
-    // the sender pasting/sending and Gmail auto-loading the pixel at send time
-    // (this is the main false-open source, and it works even through Gmail's
-    // proxy since it is time-based, not IP-based), and (b) any load from the
-    // sender's own IP (non-proxied clients viewing their Sent copy).
-    const isFresh = !msg || Date.now() - new Date(msg.created_at).getTime() <= 120000
-    const isSelfIp = !!(ip && msg?.creator_ip && ip === msg.creator_ip)
+      // Signals for classification:
+      // - fresh: within 2 min of creating = the sender pasting/sending and the
+      //   client auto-loading the pixel at send time (the main false-open source).
+      // - selfIp: same IP as the composer = the sender viewing their Sent copy
+      //   (only catches non-proxied clients).
+      const isFresh = Date.now() - new Date(msg.created_at).getTime() <= 120000
+      const isSelfIp = !!(ip && msg.creator_ip && ip === msg.creator_ip)
 
-    const { client, proxy, bot } = clientLabel(ua)
+      // Classify every request and STORE it labeled, instead of dropping it, so
+      // nothing is lost and the thresholds can be retuned against real data.
+      let eventType: 'open' | 'self' | 'bot'
+      let confidence: 'high' | 'medium' | 'low'
+      if (bot) { eventType = 'bot'; confidence = 'low' }                       // scanner / link-preview crawler
+      else if (isFresh || isSelfIp) { eventType = 'self'; confidence = 'low' } // the sender, not a recipient
+      else if (proxy) { eventType = 'open'; confidence = 'medium' }            // real open via Gmail/Apple proxy, not certain
+      else { eventType = 'open'; confidence = 'high' }                         // direct device load = confident open
 
-    if (msg && !isFresh && !isSelfIp && !bot) {
-      // De-dupe: a single human open often triggers several pixel fetches within
-      // seconds (client render + retries). Collapse loads within 90s into one
-      // open, so the count reflects distinct viewing sessions, not raw fetches.
+      // De-dupe bursts: one human open often triggers several fetches. Skip if an
+      // event of the SAME type for this message landed in the last 90s.
       const { data: recent } = await svc
         .from('rr_opens')
         .select('opened_at')
         .eq('tracking_id', trackingId)
+        .eq('event_type', eventType)
         .order('opened_at', { ascending: false })
         .limit(1)
       const isDupe = !!recent?.[0] && Date.now() - new Date(recent[0].opened_at).getTime() < 90000
 
       if (!isDupe) {
-        const city = (!proxy && ip) ? await cityFromIp(ip) : null
-        await svc.from('rr_opens').insert({ tracking_id: trackingId, user_agent: ua, ip: ip || null, client, city })
-        // Instant email-on-open alert intentionally omitted for now (Resend free-tier
-        // limits at scale, low utility). The dashboard + in-app toast cover it.
+        const city = (eventType === 'open' && !proxy && ip) ? await cityFromIp(ip) : null
+        await svc.from('rr_opens').insert({ tracking_id: trackingId, user_agent: ua, ip: ip || null, client, city, event_type: eventType, confidence })
       }
     }
   } catch {
