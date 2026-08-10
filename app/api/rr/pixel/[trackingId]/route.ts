@@ -61,9 +61,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ tracking
     const ua = req.headers.get('user-agent') || ''
     const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || req.headers.get('x-real-ip') || ''
 
-    // Skip self-opens: (a) the sender's own render in the first 15s after creating,
-    // and (b) any load from the sender's own IP (them viewing their Sent copy).
-    const isFresh = !msg || Date.now() - new Date(msg.created_at).getTime() <= 15000
+    // Skip self-opens: (a) loads in the first 2 minutes after creating, which are
+    // the sender pasting/sending and Gmail auto-loading the pixel at send time
+    // (this is the main false-open source, and it works even through Gmail's
+    // proxy since it is time-based, not IP-based), and (b) any load from the
+    // sender's own IP (non-proxied clients viewing their Sent copy).
+    const isFresh = !msg || Date.now() - new Date(msg.created_at).getTime() <= 120000
     const isSelfIp = !!(ip && msg?.creator_ip && ip === msg.creator_ip)
 
     if (msg && !isFresh && !isSelfIp) {
