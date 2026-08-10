@@ -150,16 +150,25 @@ export default function Tool() {
       )}
 
       <Card>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#93BBFF', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>New tracked email</div>
-        <input value={label} onChange={e => setLabel(e.target.value)} placeholder="Who / which company (only you see this)" style={inputStyle} />
-        <input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Subject (for your reference)" style={{ ...inputStyle, marginTop: 10 }} />
-        <textarea value={body} onChange={e => { setBody(e.target.value); setCopyState('idle') }} placeholder="Write your email here…" rows={9} style={{ ...inputStyle, marginTop: 10, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6 }} />
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#93BBFF', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>New tracked email</div>
+        <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.5)', margin: '0 0 16px', lineHeight: 1.6 }}>
+          Only the <strong style={{ color: 'rgba(255,255,255,0.8)' }}>email body</strong> gets copied. The company and subject fields are labels for your own tracking only, they are never added to the email you send. You will type the real subject in Gmail yourself.
+        </p>
+
+        <label style={fieldLabel}>Company / recipient <span style={muted}>· your tracking only, not sent</span></label>
+        <input value={label} onChange={e => setLabel(e.target.value)} placeholder="e.g. Google, Analyst role" style={inputStyle} />
+
+        <label style={{ ...fieldLabel, marginTop: 12 }}>Subject <span style={muted}>· your tracking only, type the real one in Gmail</span></label>
+        <input value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Application for the summer analyst role" style={inputStyle} />
+
+        <label style={{ ...fieldLabel, marginTop: 12 }}>Email body <span style={muted}>· this is the only part that gets copied</span></label>
+        <textarea value={body} onChange={e => { setBody(e.target.value); setCopyState('idle') }} placeholder="Write your email here…" rows={9} style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6 }} />
         <button onClick={createAndCopy} disabled={copyState === 'working'} style={{ ...btnPrimary, width: '100%', border: 'none', marginTop: 12, cursor: copyState === 'working' ? 'wait' : 'pointer' }}>
           {copyState === 'working' ? 'Preparing…' : copyState === 'copied' ? '✓ Copied. Now paste into Gmail' : '📋 Create & copy tracked email'}
         </button>
         {copyState === 'copied' && (
           <div style={{ marginTop: 12, padding: '12px 14px', borderRadius: 10, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', fontSize: 13, color: '#6ee7b7', lineHeight: 1.6 }}>
-            Open Gmail, click Compose, and paste with <strong>Ctrl+V</strong> (⌘+V on Mac), then send as normal. The tracker is invisible to the recipient. This email now shows below.
+            Your <strong>email body</strong> is copied (with the invisible tracker). In Gmail: click Compose, <strong>type your own subject line</strong>, paste the body with <strong>Ctrl+V</strong> (⌘+V on Mac), then send. The company and subject you entered here are not part of the email, they just label this row below.
           </div>
         )}
         {copyState === 'failed' && (
@@ -258,6 +267,8 @@ function Toggle({ on, onChange, title, sub }: { on: boolean; onChange: (v: boole
 }
 
 const inputStyle: CSSProperties = { width: '100%', padding: '11px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)', color: 'white', fontSize: 14, outline: 'none' }
+const fieldLabel: CSSProperties = { display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.75)', marginBottom: 5 }
+const muted: CSSProperties = { fontWeight: 500, color: 'rgba(255,255,255,0.35)' }
 const btnPrimary: CSSProperties = { display: 'inline-block', textAlign: 'center', padding: '13px 26px', borderRadius: 100, background: 'linear-gradient(135deg,#4F7CFF,#7B61FF)', color: 'white', fontWeight: 700, fontSize: 14, textDecoration: 'none' }
 
 function Card({ children }: { children: ReactNode }) {
