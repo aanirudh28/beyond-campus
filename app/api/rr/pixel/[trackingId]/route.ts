@@ -1,8 +1,6 @@
 export const runtime = 'nodejs'
 
 import { createClient } from '@supabase/supabase-js'
-import { Resend } from 'resend'
-import { emailShell, rrOpenAlertSubject, rrOpenAlertBody } from '@/lib/nurture'
 
 // 1x1 transparent GIF
 const PIXEL = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64')
@@ -56,7 +54,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ tracking
 
     const { data: msg } = await svc
       .from('rr_messages')
-      .select('created_at, first_alert_at, owner_email, label, user_id')
+      .select('created_at')
       .eq('tracking_id', trackingId)
       .maybeSingle()
 
@@ -68,23 +66,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ tracking
       const city = (!proxy && ip) ? await cityFromIp(ip) : null
 
       await svc.from('rr_opens').insert({ tracking_id: trackingId, user_agent: ua, ip: ip || null, client, city })
-
-      // First-open alert (once per message, if the owner has alerts on).
-      if (!msg.first_alert_at && msg.owner_email) {
-        await svc.from('rr_messages').update({ first_alert_at: new Date().toISOString() }).eq('tracking_id', trackingId)
-        try {
-          const { data: pref } = await svc.from('rr_prefs').select('email_alerts').eq('user_id', msg.user_id).maybeSingle()
-          if (!pref || pref.email_alerts !== false) {
-            const resend = new Resend(process.env.RESEND_API_KEY!)
-            await resend.emails.send({
-              from: 'Beyond Campus <bookings@beyond-campus.in>',
-              to: msg.owner_email,
-              subject: rrOpenAlertSubject(msg.label),
-              html: emailShell(rrOpenAlertBody(msg.label), msg.owner_email),
-            })
-          }
-        } catch { /* alert failure must never break the pixel */ }
-      }
+      // Instant email-on-open alert intentionally omitted for now (Resend free-tier
+      // limits at scale, low utility). The dashboard + in-app toast cover it.
     }
   } catch {
     // never let logging break the pixel — the recipient must see nothing

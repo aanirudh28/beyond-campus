@@ -198,8 +198,6 @@ export default function Tool() {
       {/* Preferences */}
       <Card>
         <div style={{ fontSize: 13, fontWeight: 700, color: '#93BBFF', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 12 }}>Notifications</div>
-        <Toggle on={prefs.email_alerts} onChange={v => setPref('email_alerts', v)} title="Email me when an email is opened" sub="Get an instant alert the first time each email is opened." />
-        <div style={{ height: 10 }} />
         <Toggle on={prefs.followups} onChange={v => setPref('followups', v)} title="Follow-up nudges" sub="Reminders when an opened email goes quiet, or an email stays unopened." />
       </Card>
     </div>
