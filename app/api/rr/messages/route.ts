@@ -9,9 +9,7 @@ export async function GET() {
 
   const svc = serviceClient()
 
-  const { data: access } = await svc.from('rr_access').select('user_id').eq('user_id', user.id).maybeSingle()
-  if (!access) return NextResponse.json({ entitled: false, messages: [] })
-
+  // Free for now — no entitlement gate.
   const { data: msgs } = await svc
     .from('rr_messages')
     .select('id, tracking_id, label, subject, created_at')

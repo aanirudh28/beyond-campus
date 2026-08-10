@@ -10,10 +10,7 @@ export async function POST(req: Request) {
 
   const svc = serviceClient()
 
-  // Must have paid.
-  const { data: access } = await svc.from('rr_access').select('user_id').eq('user_id', user.id).maybeSingle()
-  if (!access) return NextResponse.json({ error: 'Not unlocked' }, { status: 402 })
-
+  // Free for now (gaining users). Any logged-in user can create tracked emails.
   const { label, subject } = await req.json().catch(() => ({}))
   const trackingId = crypto.randomBytes(9).toString('base64url')
 

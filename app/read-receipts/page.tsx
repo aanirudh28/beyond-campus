@@ -7,7 +7,6 @@ import { createClient } from '@/lib/supabase/client'
 
 const SITE = 'https://www.beyond-campus.in'
 
-interface RazorpayResponse { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }
 interface TrackedMsg { id: string; label: string | null; subject: string | null; created_at: string; opens: number; lastOpened: string | null }
 
 function escapeHtml(s: string) {
@@ -46,20 +45,10 @@ async function copyRichHtml(html: string, plain: string): Promise<boolean> {
   } catch { return false }
 }
 
-const loadRazorpay = () => new Promise<boolean>((resolve) => {
-  if (window.Razorpay) return resolve(true)
-  const s = document.createElement('script')
-  s.src = 'https://checkout.razorpay.com/v1/checkout.js'
-  s.onload = () => resolve(true); s.onerror = () => resolve(false)
-  document.body.appendChild(s)
-})
-
 export default function ReadReceiptsPage() {
   const supabase = createClient()
-  const [phase, setPhase] = useState<'loading' | 'anon' | 'paywall' | 'ready'>('loading')
-  const [email, setEmail] = useState<string | null>(null)
+  const [phase, setPhase] = useState<'loading' | 'anon' | 'ready'>('loading')
   const [messages, setMessages] = useState<TrackedMsg[]>([])
-  const [buying, setBuying] = useState(false)
   const [err, setErr] = useState('')
 
   // composer
@@ -72,15 +61,10 @@ export default function ReadReceiptsPage() {
   const load = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { setPhase('anon'); return }
-    setEmail(user.email ?? null)
     const res = await fetch('/api/rr/messages')
     const data = await res.json()
-    if (data.entitled) {
-      setMessages(data.messages || [])
-      setPhase('ready')
-    } else {
-      setPhase('paywall')
-    }
+    setMessages(data.messages || [])
+    setPhase('ready')
   }, [supabase])
 
   // load() only setStates after awaits, so this is not a synchronous cascade
@@ -93,36 +77,10 @@ export default function ReadReceiptsPage() {
     const t = setInterval(async () => {
       const res = await fetch('/api/rr/messages')
       const data = await res.json()
-      if (data.entitled) setMessages(data.messages || [])
+      setMessages(data.messages || [])
     }, 15000)
     return () => clearInterval(t)
   }, [phase])
-
-  const buy = async () => {
-    setBuying(true); setErr('')
-    const ok = await loadRazorpay()
-    if (!ok) { setErr('Could not load the payment gateway. Try again.'); setBuying(false); return }
-    const res = await fetch('/api/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ product: 'read_receipts' }) })
-    const { orderId, amount, key } = await res.json()
-    if (!orderId) { setErr('Could not start payment. Try again.'); setBuying(false); return }
-    const options = {
-      key: key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount, currency: 'INR', name: 'Beyond Campus', description: 'Read Receipts (lifetime)',
-      order_id: orderId, prefill: { email: email || '' }, theme: { color: '#4F7CFF' },
-      handler: async (r: RazorpayResponse) => {
-        const v = await fetch('/api/rr/verify-purchase', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId: r.razorpay_order_id, paymentId: r.razorpay_payment_id, signature: r.razorpay_signature }),
-        })
-        const d = await v.json()
-        setBuying(false)
-        if (d.success) load()
-        else setErr('Payment verification failed. Contact us if you were charged.')
-      },
-      modal: { ondismiss: () => setBuying(false) },
-    }
-    new window.Razorpay(options).open()
-  }
 
   const createAndCopy = async () => {
     if (!body.trim()) { setErr('Write your email first.'); return }
@@ -158,30 +116,6 @@ export default function ReadReceiptsPage() {
     )
   }
 
-  if (phase === 'paywall') {
-    return (
-      <Shell>
-        <Hero />
-        <Card>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 6 }}>
-            <span style={{ fontSize: 40, fontWeight: 900, color: 'white', letterSpacing: -1 }}>₹200</span>
-            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>one time, yours forever</span>
-          </div>
-          <ul style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, lineHeight: 2, listStyle: 'none', padding: 0, margin: '14px 0 22px' }}>
-            <li>📬 Know the moment a recruiter opens your email</li>
-            <li>🔁 See how many times they reopened it</li>
-            <li>⏱️ Time your follow-up when interest is hot</li>
-            <li>♾️ Unlimited tracked emails</li>
-          </ul>
-          <button onClick={buy} disabled={buying} style={{ ...btnPrimary, width: '100%', border: 'none', cursor: buying ? 'wait' : 'pointer', fontSize: 15 }}>
-            {buying ? 'Opening payment…' : 'Unlock Read Receipts for ₹200'}
-          </button>
-          {err && <p style={{ color: '#f87171', fontSize: 13, marginTop: 12 }}>{err}</p>}
-        </Card>
-      </Shell>
-    )
-  }
-
   // ready
   return (
     <Shell>
@@ -192,7 +126,7 @@ export default function ReadReceiptsPage() {
         <input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Subject (for your reference)" style={{ ...inputStyle, marginTop: 10 }} />
         <textarea value={body} onChange={e => { setBody(e.target.value); setCopyState('idle') }} placeholder="Write your cold email here…" rows={9} style={{ ...inputStyle, marginTop: 10, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6 }} />
         <button onClick={createAndCopy} disabled={copyState === 'working'} style={{ ...btnPrimary, width: '100%', border: 'none', marginTop: 12, cursor: copyState === 'working' ? 'wait' : 'pointer' }}>
-          {copyState === 'working' ? 'Preparing…' : copyState === 'copied' ? '✓ Copied — now paste into Gmail' : '📋 Create & copy tracked email'}
+          {copyState === 'working' ? 'Preparing…' : copyState === 'copied' ? '✓ Copied. Now paste into Gmail' : '📋 Create & copy tracked email'}
         </button>
         {copyState === 'copied' && (
           <div style={{ marginTop: 12, padding: '12px 14px', borderRadius: 10, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', fontSize: 13, color: '#6ee7b7', lineHeight: 1.6 }}>
@@ -236,10 +170,6 @@ export default function ReadReceiptsPage() {
           </div>
         )}
       </Card>
-
-      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center', lineHeight: 1.6, maxWidth: 520, margin: '4px auto 0' }}>
-        A heads-up on accuracy: some mail apps (like Apple Mail) auto-load images, which can show an open the recipient did not make; a few block images, which can miss a real open. This is true of every read-receipt tool.
-      </p>
     </Shell>
   )
 }
