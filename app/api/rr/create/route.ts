@@ -14,10 +14,15 @@ export async function POST(req: Request) {
   const { label, subject } = await req.json().catch(() => ({}))
   const trackingId = crypto.randomBytes(9).toString('base64url')
 
+  // The composer's own IP — used to suppress the sender's own opens (viewing
+  // their Sent copy) so those don't get counted as recipient opens.
+  const creatorIp = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || req.headers.get('x-real-ip') || null
+
   const { error } = await svc.from('rr_messages').insert({
     user_id: user.id,
     tracking_id: trackingId,
     owner_email: user.email,
+    creator_ip: creatorIp,
     label: (label ? String(label).slice(0, 200) : null),
     subject: (subject ? String(subject).slice(0, 300) : null),
   })

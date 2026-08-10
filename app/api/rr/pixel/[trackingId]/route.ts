@@ -54,14 +54,19 @@ export async function GET(req: Request, { params }: { params: Promise<{ tracking
 
     const { data: msg } = await svc
       .from('rr_messages')
-      .select('created_at')
+      .select('created_at, creator_ip')
       .eq('tracking_id', trackingId)
       .maybeSingle()
 
-    // Ignore the sender's own render in the first 15s after creating the email.
-    if (msg && Date.now() - new Date(msg.created_at).getTime() > 15000) {
-      const ua = req.headers.get('user-agent') || ''
-      const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || req.headers.get('x-real-ip') || ''
+    const ua = req.headers.get('user-agent') || ''
+    const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || req.headers.get('x-real-ip') || ''
+
+    // Skip self-opens: (a) the sender's own render in the first 15s after creating,
+    // and (b) any load from the sender's own IP (them viewing their Sent copy).
+    const isFresh = !msg || Date.now() - new Date(msg.created_at).getTime() <= 15000
+    const isSelfIp = !!(ip && msg?.creator_ip && ip === msg.creator_ip)
+
+    if (msg && !isFresh && !isSelfIp) {
       const { client, proxy } = clientLabel(ua)
       const city = (!proxy && ip) ? await cityFromIp(ip) : null
 
