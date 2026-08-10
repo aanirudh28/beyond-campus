@@ -653,6 +653,7 @@ export default function Home() {
               {[
                 { href: '/aptitude', label: '🧮 Aptitude Practice' },
                 { href: '/job-tracker', label: '🎯 Job Tracker' },
+                { href: '/read-receipts', label: '📬 Email Read Receipts' },
                 { href: '/resources/cold-email-pack', label: '✉️ Cold Email Pack' },
               ].map(item => (
                 <a
