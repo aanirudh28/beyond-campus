@@ -10,6 +10,129 @@ const supabase = createClient(
 
 const ADMIN_PASSWORD = 'beyondcampus2024'
 
+// ─── Daily casebook activity chart ───────────────────────────────────────────
+// Two series on ONE axis (both are events/day, so no second scale). Leads are a
+// subset of downloads, so the lead bar is overlaid in front of the download bar
+// rather than grouped beside it — the visible gap between the two IS the capture
+// rate. Palette validated for CVD: #4F7CFF vs #047857 is ΔE 25.0 deutan /
+// 12.9 tritan against this surface.
+type DailyPoint = { date: string; downloads: number; leads: number }
+
+const CHART_SURFACE = '#111827'
+const SERIES = { downloads: '#4F7CFF', leads: '#047857' }
+const Y_AXIS_W = 30
+const AXIS_GAP = 10
+
+function DailyActivityChart({ data }: { data: DailyPoint[] }) {
+  const [hover, setHover] = useState<number | null>(null)
+  const [showTable, setShowTable] = useState(false)
+
+  if (!data?.length) {
+    return <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', margin: 0 }}>No activity in the last 30 days.</p>
+  }
+
+  const max = Math.max(1, ...data.map(d => d.downloads))
+  // Round the axis up to something legible rather than to the raw peak.
+  const step = max <= 10 ? 2 : max <= 50 ? 10 : max <= 200 ? 50 : 100
+  const top = Math.ceil(max / step) * step
+  const totals = data.reduce((a, d) => ({ downloads: a.downloads + d.downloads, leads: a.leads + d.leads }), { downloads: 0, leads: 0 })
+
+  const dayLabel = (iso: string) =>
+    new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'UTC' })
+
+  return (
+    <div>
+      {/* Legend — identity is never carried by colour alone, so each swatch is labelled */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 14, flexWrap: 'wrap' }}>
+        {([['downloads', 'Downloads', totals.downloads], ['leads', 'Emails captured', totals.leads]] as const).map(([k, label, tot]) => (
+          <span key={k} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
+            <span style={{ width: 10, height: 10, borderRadius: 3, background: SERIES[k], flexShrink: 0 }} />
+            {label} <strong style={{ color: 'white' }}>{tot.toLocaleString('en-IN')}</strong>
+          </span>
+        ))}
+        <button
+          onClick={() => setShowTable(v => !v)}
+          style={{ marginLeft: 'auto', padding: '5px 12px', borderRadius: 100, background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)', fontSize: 11.5, cursor: 'pointer' }}
+        >
+          {showTable ? 'Show chart' : 'Show table'}
+        </button>
+      </div>
+
+      {showTable ? (
+        <div style={{ maxHeight: 260, overflowY: 'auto' }}>
+          <table>
+            <thead>
+              <tr>{['Day', 'Downloads', 'Emails'].map(h => <th key={h} style={{ textAlign: h === 'Day' ? 'left' : 'right' }}>{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {[...data].reverse().map(d => (
+                <tr key={d.date}>
+                  <td style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.7)' }}>{dayLabel(d.date)}</td>
+                  <td style={{ fontSize: 12.5, textAlign: 'right', color: 'white', fontWeight: 600 }}>{d.downloads}</td>
+                  <td style={{ fontSize: 12.5, textAlign: 'right', color: '#6ee7b7', fontWeight: 600 }}>{d.leads}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <>
+          <div style={{ display: 'flex', gap: AXIS_GAP }}>
+            {/* y-axis */}
+            {/* fixed width so the x-axis row below lines up no matter how wide the numbers get */}
+            <div style={{ width: Y_AXIS_W, flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: 170, fontSize: 10.5, color: 'rgba(255,255,255,0.3)', textAlign: 'right' }}>
+              <span>{top}</span><span>{top / 2}</span><span>0</span>
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0, position: 'relative', height: 170 }}>
+              {/* recessive gridlines */}
+              {[0, 0.5, 1].map(f => (
+                <div key={f} style={{ position: 'absolute', left: 0, right: 0, top: `${f * 100}%`, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+              ))}
+
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', gap: 2 }}>
+                {data.map((d, i) => (
+                  <div
+                    key={d.date}
+                    onMouseEnter={() => setHover(i)}
+                    onMouseLeave={() => setHover(null)}
+                    style={{ flex: 1, minWidth: 0, height: '100%', position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', cursor: 'default', background: hover === i ? 'rgba(255,255,255,0.04)' : 'transparent' }}
+                  >
+                    {/* downloads */}
+                    <div style={{ width: '100%', height: `${(d.downloads / top) * 100}%`, minHeight: d.downloads ? 2 : 0, background: SERIES.downloads, borderRadius: '4px 4px 0 0', opacity: hover === null || hover === i ? 1 : 0.5, transition: 'opacity .12s' }} />
+                    {/* leads, overlaid — 2px surface ring keeps it readable on top of the bar behind it */}
+                    {d.leads > 0 && (
+                      <div style={{ position: 'absolute', bottom: 0, width: '56%', height: `${(d.leads / top) * 100}%`, minHeight: 2, background: SERIES.leads, borderRadius: '4px 4px 0 0', boxShadow: `0 0 0 2px ${CHART_SURFACE}`, opacity: hover === null || hover === i ? 1 : 0.5, transition: 'opacity .12s' }} />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* tooltip */}
+              {hover !== null && (
+                <div style={{ position: 'absolute', bottom: '100%', marginBottom: 8, left: `${((hover + 0.5) / data.length) * 100}%`, transform: `translateX(${hover > data.length * 0.7 ? '-90%' : hover < data.length * 0.3 ? '-10%' : '-50%'})`, background: '#0B0B0F', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 10, padding: '8px 11px', fontSize: 12, whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 5, boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+                  <div style={{ color: 'white', fontWeight: 700, marginBottom: 4 }}>{dayLabel(data[hover].date)}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.65)' }}>{data[hover].downloads} downloads</div>
+                  <div style={{ color: 'rgba(255,255,255,0.65)' }}>{data[hover].leads} emails captured</div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* x-axis: every 7th day, so labels never collide */}
+          <div style={{ display: 'flex', gap: 2, marginTop: 7, paddingLeft: Y_AXIS_W + AXIS_GAP }}>
+            {data.map((d, i) => (
+              <div key={d.date} style={{ flex: 1, minWidth: 0, fontSize: 10, color: 'rgba(255,255,255,0.3)', textAlign: 'center', whiteSpace: 'nowrap' }}>
+                {i % 7 === 0 || i === data.length - 1 ? dayLabel(d.date) : ''}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 type Booking = {
   id: string
   name: string
@@ -265,6 +388,7 @@ export default function AdminPage() {
     totalLeads: number; leads7d: number; captureRate: number
     perResource: { name: string; downloads: number; leads: number }[]
     recentLeads: { email: string; resource: string; created_at: string }[]
+    daily: DailyPoint[]
   } | null>(null)
   const [casebookLoading, setCasebookLoading] = useState(false)
 
@@ -1272,6 +1396,13 @@ export default function AdminPage() {
                       <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{sub}</div>
                     </div>
                   ))}
+                </div>
+
+                {/* Daily activity */}
+                <div style={{ background: CHART_SURFACE, border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginBottom: 24 }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: 'white', marginBottom: 2 }}>Daily activity — last 30 days</div>
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', margin: '0 0 16px' }}>Bucketed by IST day. The gap between the two bars is the capture rate.</p>
+                  <DailyActivityChart data={casebookStats.daily} />
                 </div>
 
                 {/* Per-resource breakdown */}

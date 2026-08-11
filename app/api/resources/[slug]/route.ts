@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { CASEBOOK_ALIASES } from '@/lib/casebooks'
 
 // Public R2 bucket base — files served from here, but visitors only ever see
 // beyond-campus.in/api/resources/<slug> links. Swap this one constant if the
@@ -46,7 +47,9 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params
-  const resource = RESOURCES[slug]
+  // Accept both the descriptive public slug (iim-bangalore-casebook-2025, via
+  // the /casebooks/*.pdf rewrite) and the short internal one (iimb-2025).
+  const resource = RESOURCES[CASEBOOK_ALIASES[slug] ?? slug]
 
   if (!resource) {
     return NextResponse.json({ error: 'Resource not found' }, { status: 404 })

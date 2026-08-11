@@ -4,6 +4,7 @@ import { getAllGuides } from '@/lib/guides'
 import { getPublicTopics, getSeoQuestionSlugs } from '@/lib/apti-public'
 import { COMPANIES } from '@/lib/apti-companies'
 import { VENDORS } from '@/lib/apti-vendors'
+import { CASEBOOKS, casebookPath } from '@/lib/casebooks'
 
 export const revalidate = 3600 // refresh hourly so newly published jobs appear without a redeploy
 
@@ -44,6 +45,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency,
     priority,
   }))
+
+  // Casebook PDFs. Google indexes PDFs as standalone results and these are the
+  // highest-intent files on the site, so they get listed in their own right
+  // rather than hiding behind /resources/consulting.
+  for (const c of CASEBOOKS) {
+    entries.push({ url: `${BASE}${casebookPath(c.slug)}`, changeFrequency: 'yearly', priority: 0.7 })
+  }
 
   for (const g of getAllGuides()) {
     entries.push({
