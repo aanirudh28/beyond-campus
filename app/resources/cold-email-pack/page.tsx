@@ -597,6 +597,20 @@ export default function ColdEmailPackPage() {
         </div>
       </div>
 
+      {/* Next step — the tool that pairs with these templates. Also the strongest
+          internal link into /read-receipts: same topic, same moment in the job hunt. */}
+      <section style={{ borderTop: '1px solid rgba(255,255,255,0.07)', padding: '48px 24px 0' }}>
+        <div style={{ maxWidth: 600, margin: '0 auto', background: 'rgba(79,124,255,0.06)', border: '1px solid rgba(79,124,255,0.2)', borderRadius: 18, padding: '26px 28px' }}>
+          <div style={{ fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 8 }}>📬 Sent it. Now did they read it?</div>
+          <p style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.75, marginBottom: 18 }}>
+            Our free <strong style={{ color: 'white' }}>email tracker</strong> shows the exact moment a recruiter opens your cold email, and how many times they came back to it. No Chrome extension, works with your own Gmail. Knowing they opened it three times changes how you follow up.
+          </p>
+          <a href="/read-receipts" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 22px', borderRadius: 100, border: '1.5px solid rgba(79,124,255,0.45)', color: '#93BBFF', fontWeight: 700, fontSize: 14 }}>
+            Track my emails free →
+          </a>
+        </div>
+      </section>
+
       {/* BOTTOM CTA */}
       <section style={{ borderTop: '1px solid rgba(255,255,255,0.07)', padding: '64px 24px 80px', textAlign: 'center' }}>
         <div style={{ maxWidth: 600, margin: '0 auto' }}>

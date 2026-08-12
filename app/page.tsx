@@ -494,6 +494,7 @@ export default function Home() {
                   { href: '/resources/resume-builder', label: '📄 Resume Builder', badge: 'free', badgeStyle: { color: '#6ee7b7' } },
                   { href: '/resources/career-toolkit', label: '🛠️ Career Toolkit', badge: '15 roles', badgeStyle: { color: '#6ee7b7' } },
                   { href: '/resources/cold-email-pack', label: '✉️ Cold Email Pack', badge: '50 templates', badgeStyle: { color: '#93BBFF' } },
+                  { href: '/read-receipts', label: '📬 Email Tracker', badge: 'free', badgeStyle: { color: '#93BBFF' } },
                   { href: '/resources/linkedin-scripts', label: '💬 LinkedIn Scripts', badge: '20 scripts', badgeStyle: { color: '#7dd3fc' } },
                 ].map(item => (
                   <a key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, padding: '10px 12px', borderRadius: 10, color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, transition: 'background 0.15s' }}
@@ -653,7 +654,7 @@ export default function Home() {
               {[
                 { href: '/aptitude', label: '🧮 Aptitude Practice' },
                 { href: '/job-tracker', label: '🎯 Job Tracker' },
-                { href: '/read-receipts', label: '📬 Email Read Receipts' },
+                { href: '/read-receipts', label: '📬 Email Tracker' },
                 { href: '/resources/cold-email-pack', label: '✉️ Cold Email Pack' },
               ].map(item => (
                 <a
@@ -956,8 +957,9 @@ export default function Home() {
               { span: 'b2', index: '06', icon: '✉️', title: 'Cold Email Pack', badge: '50 TEMPLATES', badgeColor: '#93BBFF', desc: 'The exact emails our students used to get real replies from hiring managers.', href: '/resources/cold-email-pack', cta: 'Steal the templates →' },
               { span: 'b2', index: '07', icon: '💬', title: 'LinkedIn Scripts', badge: '20 SCRIPTS', badgeColor: '#7dd3fc', desc: 'Word-for-word DMs that turn strangers into referrals — without sounding desperate.', href: '/resources/linkedin-scripts', cta: 'Get the scripts →' },
               { span: 'b2', index: '08', icon: '🛠️', title: 'Career Toolkit', badge: '15 ROLES', badgeColor: '#fbbf24', desc: 'Role-by-role guides for consulting, finance, marketing, BD, ops and Founder’s Office.', href: '/resources/career-toolkit', cta: 'Browse toolkits →' },
-              { span: 'b2', index: '09', icon: '📚', title: 'Career Guides', badge: 'FREE', badgeColor: '#a78bfa', desc: 'The complete off-campus playbooks: cold emails that get replies, consulting without an IIM, Founder\'s Office roles.', href: '/guides', cta: 'Read the guides →' },
-              { span: 'b2', index: '10', icon: '⏳', title: '20 Years in 60 Minutes', badge: 'JUST DROPPED', badgeColor: '#f0abfc', desc: 'A career life-simulator. Live from final year to 45 in 35 choices and meet one of 32 endings. Which one are you headed for?', href: '/20years', cta: 'Live my 20 years →' },
+              { span: 'b2', index: '09', icon: '📬', title: 'Email Tracker', badge: 'FREE', badgeColor: '#93BBFF', desc: 'Know the moment a recruiter opens your email, and how many times they came back to it. No extension, works with your Gmail.', href: '/read-receipts', cta: 'Track my emails →' },
+              { span: 'b2', index: '10', icon: '📚', title: 'Career Guides', badge: 'FREE', badgeColor: '#a78bfa', desc: 'The complete off-campus playbooks: cold emails that get replies, consulting without an IIM, Founder\'s Office roles.', href: '/guides', cta: 'Read the guides →' },
+              { span: 'b2', index: '11', icon: '⏳', title: '20 Years in 60 Minutes', badge: 'JUST DROPPED', badgeColor: '#f0abfc', desc: 'A career life-simulator. Live from final year to 45 in 35 choices and meet one of 32 endings. Which one are you headed for?', href: '/20years', cta: 'Live my 20 years →' },
             ].map((tool, i) => (
               <a key={tool.title} href={tool.href} className={`tool-card ${tool.span}`} data-reveal data-index={tool.index} style={{ transitionDelay: `${0.16 + i * 0.06}s`, color: 'inherit', padding: '28px 26px' }} onClick={cta(tool.title, 'free_tools')}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -1377,6 +1379,7 @@ export default function Home() {
             { label: 'Career Guides', href: '/guides' },
             { label: 'Free Resume Roast', href: '/resources/resume-roast' },
             { label: 'Job Tracker', href: '/job-tracker' },
+            { label: 'Free Email Tracker', href: '/read-receipts' },
             { label: 'Aptitude Practice', href: '/aptitude' },
             { label: 'Consulting Casebooks', href: '/resources/consulting' },
             { label: 'Student Results', href: '/results' },

@@ -274,6 +274,33 @@ export default function FreePage() {
             </div>
           </div>
 
+          {/* Card 0b: Email Tracker — completely free */}
+          <div className="resource-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', color: '#6ee7b7' }}>
+                  FREE
+                </span>
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, color: 'rgba(255,255,255,0.3)' }}>No extension needed</span>
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 8 }}>📬 Email Tracker</div>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 16 }}>
+              Know the exact moment a recruiter opens your cold email or job application, and how many times they came back to it. Compose here, paste into Gmail, send as normal.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
+              {['Open Alerts', 'Open Counts', 'No Extension', 'Works with Gmail'].map(tag => (
+                <span key={tag} style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, background: 'rgba(79,124,255,0.08)', border: '1px solid rgba(79,124,255,0.2)', color: '#93BBFF', fontWeight: 600 }}>{tag}</span>
+              ))}
+            </div>
+            <a href="/read-receipts" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 0', borderRadius: 12, background: 'linear-gradient(135deg,rgba(79,124,255,0.2),rgba(123,97,255,0.15))', border: '1.5px solid rgba(79,124,255,0.4)', color: '#93BBFF', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
+              Track My Emails →
+            </a>
+            <div style={{ textAlign: 'center', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>
+              Completely free · No sign-up · Unlimited emails
+            </div>
+          </div>
+
           {/* Card 0c: Excel Interview Prep — completely free */}
           <div className="resource-card">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 18 }}>
