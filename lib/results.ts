@@ -56,6 +56,7 @@ export const RESULTS: StudentResult[] = [
     company: 'Plum',
     companyLogo: '/logos/plum.png',
     logoH: 26,
+    role: 'Marketing Executive',
     alsoOffers: 'Snabbit, Nykaa',
     badge: '3 OFFERS',
     domain: 'other',
@@ -101,7 +102,6 @@ export const RESULTS: StudentResult[] = [
     linkedin: 'https://www.linkedin.com/in/susmita-b-022439277/',
     domain: 'finance',
   },
-  // ── Roles still to confirm with the founder; left off rather than guessed. ──
   {
     slug: 'aman',
     name: 'Aman Sharma',
@@ -119,7 +119,17 @@ export const RESULTS: StudentResult[] = [
     company: 'IAC',
     companyLogo: '/logos/iac.png',
     logoH: 30,
+    role: 'Associate, Trade and Investment',
     domain: 'other',
+  },
+  {
+    slug: 'rohil',
+    name: 'Rohil',
+    photo: '/results/rohil.webp',
+    company: 'S&P Global',
+    companyLogo: '/logos/snp-global.png',
+    logoH: 20,
+    domain: 'finance',
   },
   {
     slug: 'vani',
@@ -128,7 +138,17 @@ export const RESULTS: StudentResult[] = [
     company: 'Pocket FM',
     companyLogo: '/logos/pocket-fm.png',
     logoH: 34,
+    role: 'Program Manager',
     domain: 'other',
+  },
+  {
+    slug: 'lakshay',
+    name: 'Lakshay Bansal',
+    photo: '/results/lakshay.webp',
+    company: 'Snabbit',
+    companyLogo: '/logos/snabbit.png',
+    logoH: 18,
+    domain: 'operations',
   },
   {
     slug: 'tulsi',
@@ -137,6 +157,7 @@ export const RESULTS: StudentResult[] = [
     company: 'MyGate',
     companyLogo: '/logos/mygate.png',
     logoH: 24,
+    // role still to confirm with the founder — left off rather than guessed
     domain: 'other',
   },
   {
@@ -146,6 +167,7 @@ export const RESULTS: StudentResult[] = [
     company: 'District by Zomato',
     companyLogo: '/logos/district.png',
     logoH: 30,
+    role: 'Central Ad Ops Analyst',
     domain: 'other',
   },
   {
