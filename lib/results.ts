@@ -129,6 +129,7 @@ export const RESULTS: StudentResult[] = [
     company: 'S&P Global',
     companyLogo: '/logos/snp-global.png',
     logoH: 20,
+    role: 'FinOps',
     domain: 'finance',
   },
   {
@@ -148,6 +149,7 @@ export const RESULTS: StudentResult[] = [
     company: 'Snabbit',
     companyLogo: '/logos/snabbit.png',
     logoH: 18,
+    role: 'Program Management',
     domain: 'operations',
   },
   {
@@ -157,7 +159,7 @@ export const RESULTS: StudentResult[] = [
     company: 'MyGate',
     companyLogo: '/logos/mygate.png',
     logoH: 24,
-    // role still to confirm with the founder — left off rather than guessed
+    role: 'Account Manager',
     domain: 'other',
   },
   {
@@ -177,6 +179,7 @@ export const RESULTS: StudentResult[] = [
     company: 'Aon',
     companyLogo: '/logos/aon.svg',
     logoH: 22,
+    role: 'Analyst',
     badge: 'OFFER',   // offer in hand — switch to PLACED once she joins
     domain: 'other',
   },
