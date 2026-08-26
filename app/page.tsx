@@ -6,21 +6,47 @@ import Image from 'next/image'
 import Link from 'next/link'
 import LeadCapturePopup from './components/LeadCapturePopup'
 import { track } from '@/lib/analytics'
+import { RESULTS } from '@/lib/results'
 
 // Feature flag — flip to true when Mission Control / Phase 1B is ready to ship
 const SHOW_COMMUNITY = false
 
+// Every file here must be a transparent-background mask — the strip paints them white with
+// brightness(0) invert(1), so any solid background renders as a white box. Raw sources live in
+// /_raw-logos (gitignored); see the prep recipe before adding a new one. Filenames stay
+// all-lowercase: Windows is case-insensitive, Vercel is not.
 const COMPANY_LOGOS = [
-  { name: 'BCG',           src: '/logos/bcg.svg',          h: 22 },
-  { name: 'Bain & Company',src: '/logos/bain.svg',         h: 14 },
-  { name: 'Deloitte',      src: '/logos/Deloitte.png',     h: 22 },
-  { name: 'EY',            src: '/logos/EY.png',           h: 22 },
-  { name: 'Citi',          src: '/logos/citi.svg',         h: 18 },
-  { name: 'Aon',           src: '/logos/aon.svg',          h: 16 },
-  { name: 'Razorpay',      src: '/logos/razorpay.svg',     h: 16 },
-  { name: 'Zomato',        src: '/logos/zomato.svg',       h: 14 },
-  { name: 'Blinkit',       src: '/logos/blinkit.png',      h: 22 },
-  { name: 'Urban Company', src: '/logos/urbancompany.png', h: 22 },
+  { name: 'BCG',              src: '/logos/bcg.svg',              h: 22 },
+  { name: 'Bain & Company',   src: '/logos/bain.svg',             h: 14 },
+  { name: 'Deloitte',         src: '/logos/Deloitte.png',         h: 22 },
+  { name: 'EY',               src: '/logos/EY.png',               h: 22 },
+  { name: 'KPMG',             src: '/logos/kpmg.png',             h: 18 },
+  { name: 'Goldman Sachs',    src: '/logos/goldman-sachs.png',    h: 20 },
+  { name: 'D. E. Shaw & Co',  src: '/logos/de-shaw.png',          h: 14 },
+  { name: 'Citi',             src: '/logos/citi.svg',             h: 18 },
+  { name: 'HSBC',             src: '/logos/hsbc.png',             h: 15 },
+  { name: 'American Express', src: '/logos/american-express.png', h: 21 },
+  { name: 'Macquarie Group',  src: '/logos/macquarie.png',        h: 30 },
+  { name: 'Kroll',            src: '/logos/kroll.png',            h: 15 },
+  { name: 'TresVista',        src: '/logos/tresvista.png',        h: 15 },
+  { name: 'Everest Group',    src: '/logos/everest-group.png',    h: 16 },
+  { name: 'Redseer',          src: '/logos/redseer.png',          h: 13 },
+  { name: 'Takshashila',      src: '/logos/takshashila.png',      h: 17 },
+  { name: 'Aon',              src: '/logos/aon.svg',              h: 16 },
+  { name: 'HP',               src: '/logos/hp.png',               h: 20 },
+  { name: 'Razorpay',         src: '/logos/razorpay.svg',         h: 16 },
+  { name: 'PhonePe',          src: '/logos/phonepe.png',          h: 15 },
+  { name: 'IAC',              src: '/logos/iac.png',              h: 20 },
+  { name: 'Zomato',           src: '/logos/zomato.svg',           h: 14 },
+  { name: 'District by Zomato', src: '/logos/district.png',       h: 20 },
+  { name: 'Blinkit',          src: '/logos/blinkit.png',          h: 16 },
+  { name: 'Nykaa',            src: '/logos/nykaa.png',            h: 16 },
+  { name: 'Tata 1mg',         src: '/logos/tata-1mg.png',         h: 22 },
+  { name: 'Urban Company',    src: '/logos/urbancompany.png',     h: 28 },
+  { name: 'MyGate',           src: '/logos/mygate.png',           h: 16 },
+  { name: 'Plum',             src: '/logos/plum.png',             h: 17 },
+  { name: 'Pocket FM',        src: '/logos/pocket-fm.png',        h: 26 },
+  { name: 'Snabbit',          src: '/logos/snabbit.png',          h: 13 },
 ]
 
 const TRUST_ITEMS = ['Personalized Mentorship', 'Weekly Accountability', 'Resume & LinkedIn Reviews', 'Internship & Placement Support']
@@ -409,7 +435,7 @@ export default function Home() {
         .nav-links { display: flex; align-items: center; gap: 22px; }
         @media(max-width:900px) { .nav-links .nav-hide-mobile { display: none; } }
 
-        .logo-strip { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px 44px; max-width: 880px; margin: 0 auto; }
+        .logo-strip { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 18px 36px; max-width: 980px; margin: 0 auto; }
         .logo-item { display: inline-flex; align-items: center; flex-shrink: 0; filter: brightness(0) invert(1); opacity: 0.5; transition: opacity 0.25s ease, transform 0.25s ease; }
         .logo-item img { display: block; width: auto; max-width: 130px; object-fit: contain; }
         .logo-item:hover { opacity: 1; transform: translateY(-2px); }
@@ -990,35 +1016,71 @@ export default function Home() {
       </section>
 
       {/* ───────────────── Nº 04 — THE RECEIPTS ───────────────── */}
-      {/* PLACEHOLDER: Replace cards with real named students, photos, LinkedIn links once collected */}
+      {/* Named students only, straight from lib/results.ts — /results renders the same list. */}
       <section style={{ padding: '110px 24px', maxWidth: 1100, margin: '0 auto' }}>
         <Ledger no="Nº 04" label="The receipts" />
         <h2 className="section-title" data-reveal style={{ marginBottom: 12 }}>
           Students who <em>made it work</em>
         </h2>
-        <p data-reveal style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 48 }}>Consulting, finance, startups — different paths, same starting point.</p>
+        <p data-reveal style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 48 }}>
+          Real names, real companies, real offers. Every one of them started off-campus, with no referral.
+        </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
-          {[
-            { initial: 'P', name: 'Commerce student, Delhi', role: 'Marketing Intern at a D2C Startup', quote: 'I had zero replies for months. After week 2 of the cohort, I got 3 responses from cold emails. Got my internship offer shortly after.', color: '#4F7CFF', result: 'Internship secured' },
-            { initial: 'A', name: 'BBA student, Tier-2 college', role: 'Analyst at a Big 4 Firm', quote: 'My mentor rebuilt my resume and gave me a target company list. Best investment I ever made.', color: '#7B61FF', result: 'Big 4 offer without referral' },
-            { initial: 'S', name: 'BCom student, Tier-3 college', role: 'BD Intern at a Series B Startup', quote: 'Nobody from my college had ever cracked a startup this good. The LinkedIn outreach strategy completely changed things for me.', color: '#06b6d4', result: '3 competing offers' },
-            { initial: 'R', name: 'BBA graduate, Tier-2 college', role: "Founder's Office at a Leading Startup", quote: 'No campus placements, no referrals. But with the right outreach strategy, I landed my dream role.', color: '#10b981', result: "Founder's Office role" },
-            { initial: 'A', name: 'MBA student, Delhi', role: 'Consulting Intern at a Boutique Firm', quote: 'I switched my target from finance to consulting through this cohort. The mentor connections and the strategy made it happen.', color: '#f59e0b', result: 'Career pivot successful' },
-            { initial: 'M', name: 'Commerce graduate, Tier-2 college', role: 'Finance Intern at a Fast-Growing Fintech', quote: "This company wasn't even on my radar. My mentor pushed me to apply and helped me prep. The call came through.", color: '#ec4899', result: 'Dream company cracked' },
-          ].map((t, i) => (
-            <div key={i} className="proof-card" data-reveal style={{ transitionDelay: `${(i % 3) * 0.08}s` }}>
-              <div style={{ fontFamily: 'var(--serif)', fontSize: 40, lineHeight: 0.6, color: `${t.color}66`, marginBottom: 14 }}>&ldquo;</div>
-              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: 24, fontStyle: 'italic' }}>{t.quote}</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg, ${t.color}, #0B0B0F)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, flexShrink: 0 }}>{t.initial}</div>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 13 }}>{t.name}</div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>{t.role}</div>
+          {RESULTS.slice(0, 6).map((r, i) => (
+            <div key={r.slug} className="proof-card" data-reveal style={{ transitionDelay: `${(i % 3) * 0.08}s`, display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
+                {r.photo ? (
+                  <Image src={r.photo} alt={r.name} width={52} height={52} quality={85}
+                    style={{ width: 52, height: 52, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, boxShadow: '0 0 0 2px rgba(79,124,255,0.28)' }} />
+                ) : (
+                  <div aria-hidden style={{ width: 52, height: 52, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #4F7CFF, #7B61FF)', fontFamily: 'var(--serif)', fontSize: 21, color: 'white' }}>
+                    {r.name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()}
+                  </div>
+                )}
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 20, lineHeight: 1.2 }}>{r.name}</div>
+                  {r.college && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{r.college}</div>}
                 </div>
               </div>
-              <div style={{ marginTop: 16, padding: '7px 14px', background: `${t.color}15`, border: `1px solid ${t.color}30`, borderRadius: 100, fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 500, letterSpacing: 0.5, color: t.color, display: 'inline-block' }}>{t.result}</div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: r.quote ? 16 : 0 }}>
+                {r.companyLogo ? (
+                  <span className="logo-item" style={{ opacity: 0.85 }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={r.companyLogo} alt={r.company} style={{ height: Math.round((r.logoH || 20) * 0.8) }} />
+                  </span>
+                ) : (
+                  <span style={{ fontSize: 15, fontWeight: 800, color: 'white' }}>{r.company}</span>
+                )}
+                {r.role && <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>{r.role}</span>}
+              </div>
+
+              {r.alsoOffers && (
+                <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)', marginBottom: 4 }}>
+                  Also offered: <span style={{ color: 'rgba(255,255,255,0.7)' }}>{r.alsoOffers}</span>
+                </div>
+              )}
+
+              {r.quote && (
+                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.75, fontStyle: 'italic' }}>
+                  &ldquo;{r.quote.length > 165 ? `${r.quote.slice(0, 162).trimEnd()}…` : r.quote}&rdquo;
+                </p>
+              )}
+
+              <div style={{ marginTop: 'auto', paddingTop: 18 }}>
+                <span style={{ padding: '6px 13px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.28)', borderRadius: 100, fontFamily: 'var(--mono)', fontSize: 10.5, fontWeight: 700, letterSpacing: 1.2, color: '#4ade80' }}>
+                  ✓ {r.badge || `PLACED${r.daysToOffer ? ` IN ${r.daysToOffer} DAYS` : ''}`}
+                </span>
+              </div>
             </div>
           ))}
+        </div>
+
+        <div data-reveal style={{ textAlign: 'center', marginTop: 40 }}>
+          <Link href="/results" onClick={cta('see_all_results', 'receipts')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 12, background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.32)', color: '#93BBFF', fontSize: 14, fontWeight: 700 }}>
+            See all {RESULTS.length} placements →
+          </Link>
         </div>
       </section>
 

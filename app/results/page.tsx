@@ -79,8 +79,13 @@ export default function ResultsPage() {
                 ) : (
                   <span style={{ fontSize: 17, fontWeight: 800, letterSpacing: 0.3, color: 'white' }}>{r.company}</span>
                 )}
-                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>{r.role}</span>
+                {r.role && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>{r.role}</span>}
               </div>
+              {r.alsoOffers && (
+                <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)', marginTop: 6 }}>
+                  Also offered: <span style={{ color: 'rgba(255,255,255,0.7)' }}>{r.alsoOffers}</span>
+                </div>
+              )}
               {r.location && (
                 <div style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: 1.5, color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>
                   {r.location.toUpperCase()}
