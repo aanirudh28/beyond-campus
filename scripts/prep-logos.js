@@ -35,6 +35,7 @@ const JOBS = [
   { src: 'Plum.png',                    out: 'plum.png',             mode: 'white' },
   { src: 'Pocket FM.png',               out: 'pocket-fm.png',        mode: 'white', dropTagline: true },
   { src: 'Redseer Consulting.png',      out: 'redseer.png',          mode: 'white', dropTagline: true },
+  { src: 'S&P Global.jpg',              out: 'snp-global.png',       mode: 'white' },
   { src: 'Snabbit.png',                 out: 'snabbit.png',          mode: 'card',  tol: 140, inset: 3 },
   // the tall 't' mark spans the full height, so look for the tagline band right of it only
   { src: 'Takshashila Consulting.png',  out: 'takshashila.png',      mode: 'white', dropTagline: true, bandFromX: 0.3 },

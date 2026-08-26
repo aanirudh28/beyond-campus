@@ -26,6 +26,7 @@ const COMPANY_LOGOS = [
   { name: 'Citi',             src: '/logos/citi.svg',             h: 18 },
   { name: 'HSBC',             src: '/logos/hsbc.png',             h: 15 },
   { name: 'American Express', src: '/logos/american-express.png', h: 21 },
+  { name: 'S&P Global',       src: '/logos/snp-global.png',       h: 13 },
   { name: 'Macquarie Group',  src: '/logos/macquarie.png',        h: 30 },
   { name: 'Kroll',            src: '/logos/kroll.png',            h: 15 },
   { name: 'TresVista',        src: '/logos/tresvista.png',        h: 15 },

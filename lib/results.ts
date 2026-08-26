@@ -107,6 +107,8 @@ export const RESULTS: StudentResult[] = [
     name: 'Aman Sharma',
     photo: '/results/aman.webp',
     company: 'S&P Global',
+    companyLogo: '/logos/snp-global.png',
+    logoH: 20,
     role: 'FinOps',
     domain: 'finance',
   },
