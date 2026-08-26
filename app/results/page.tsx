@@ -1,11 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { RESULTS } from '@/lib/results'
+import { RESULTS, PLACED_COUNT } from '@/lib/results'
 import { PageShell, SiteNav, HeroGlow } from '../components/SiteChrome'
 
 const STATS = [
-  { num: String(RESULTS.length), label: 'students placed' },
+  { num: String(PLACED_COUNT), label: 'students placed' },
   { num: String(new Set(RESULTS.map(r => r.company)).size), label: 'companies' },
   { num: '100%', label: 'off-campus — zero referrals' },
 ]

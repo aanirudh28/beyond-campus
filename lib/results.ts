@@ -180,7 +180,7 @@ export const RESULTS: StudentResult[] = [
     companyLogo: '/logos/aon.svg',
     logoH: 22,
     role: 'Analyst',
-    badge: 'OFFER',   // offer in hand — switch to PLACED once she joins
+    badge: 'OFFER',   // offer in hand, hasn't joined — keeps her out of PLACED_COUNT
     domain: 'other',
   },
   {
@@ -221,3 +221,7 @@ export const RESULTS: StudentResult[] = [
     domain: 'operations',
   },
 ]
+
+// A student holding an offer they haven't taken up is on the wall, but is not
+// a placement — don't let them inflate the headline number.
+export const PLACED_COUNT = RESULTS.filter(r => r.badge !== 'OFFER').length
