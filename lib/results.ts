@@ -180,7 +180,6 @@ export const RESULTS: StudentResult[] = [
     companyLogo: '/logos/aon.svg',
     logoH: 22,
     role: 'Analyst',
-    badge: 'OFFER',   // offer in hand, hasn't joined — keeps her out of PLACED_COUNT
     domain: 'other',
   },
   {
@@ -222,6 +221,8 @@ export const RESULTS: StudentResult[] = [
   },
 ]
 
-// A student holding an offer they haven't taken up is on the wall, but is not
-// a placement — don't let them inflate the headline number.
-export const PLACED_COUNT = RESULTS.filter(r => r.badge !== 'OFFER').length
+// Fastest offer on the wall, for the results-page stat. Derived so it keeps
+// itself honest as students are added.
+export const FASTEST_DAYS = Math.min(
+  ...RESULTS.map(r => r.daysToOffer).filter((d): d is number => typeof d === 'number')
+)

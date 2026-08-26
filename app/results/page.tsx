@@ -1,13 +1,15 @@
 'use client'
 
 import Image from 'next/image'
-import { RESULTS, PLACED_COUNT } from '@/lib/results'
+import { RESULTS, FASTEST_DAYS } from '@/lib/results'
 import { PageShell, SiteNav, HeroGlow } from '../components/SiteChrome'
 
+// Headcounts stay off this page. The wall is a growing list, and a raw count of
+// it reads smaller than the work behind it — speed and the calibre of the
+// companies carry more weight than "n students".
 const STATS = [
-  { num: String(PLACED_COUNT), label: 'students placed' },
-  { num: String(new Set(RESULTS.map(r => r.company)).size), label: 'companies' },
-  { num: '100%', label: 'off-campus — zero referrals' },
+  { num: `${FASTEST_DAYS} days`, label: 'fastest offer' },
+  { num: '100%', label: 'off-campus, zero referrals' },
 ]
 
 export default function ResultsPage() {
@@ -34,8 +36,9 @@ export default function ResultsPage() {
             Students who made it.<br /><em style={{ fontStyle: 'italic', color: '#93BBFF' }}>Receipts attached.</em>
           </h1>
           <p data-reveal style={{ fontSize: 16.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, maxWidth: 540, marginBottom: 40 }}>
-            Real students, real companies, real offers — every one of them landed off-campus,
-            without a placement cell making introductions.
+            Real students, real companies, real offers. From Big 4 and bulge-bracket banks to
+            unicorn Founder&apos;s Offices, every one of them landed off-campus, without a
+            placement cell making introductions.
           </p>
           <div data-reveal style={{ display: 'flex', gap: 40, flexWrap: 'wrap' }}>
             {STATS.map(s => (

@@ -1080,7 +1080,7 @@ export default function Home() {
         <div data-reveal style={{ textAlign: 'center', marginTop: 40 }}>
           <Link href="/results" onClick={cta('see_all_results', 'receipts')}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 12, background: 'rgba(79,124,255,0.1)', border: '1px solid rgba(79,124,255,0.32)', color: '#93BBFF', fontSize: 14, fontWeight: 700 }}>
-            See all {RESULTS.length} results →
+            See more placements →
           </Link>
         </div>
       </section>
