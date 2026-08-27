@@ -76,6 +76,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
         <div style={{ maxWidth: 720, margin: '0 auto', position: 'relative' }}>
           <p className="mono-label" style={{ marginBottom: 14, fontSize: 11 }}>
             <Link href="/aptitude" style={{ color: 'var(--blue-soft)' }}>Aptitude</Link>
+            {' '}· <Link href="/aptitude/companies" style={{ color: 'var(--blue-soft)' }}>Companies</Link>
             {' '}· {TIER_LABELS[company.tier] ?? company.tier}
           </p>
           <h1 style={{ fontFamily: 'var(--serif)', fontWeight: 400, fontSize: 'clamp(30px, 5vw, 46px)', lineHeight: 1.15, margin: '0 0 14px', letterSpacing: -0.8 }}>

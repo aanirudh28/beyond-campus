@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getPublicTopics, DOMAIN_LABELS } from '@/lib/apti-public'
+import { COMPANIES } from '@/lib/apti-companies'
 import { VENDORS } from '@/lib/apti-vendors'
 import { PageShell, SiteNav, SiteFooter, HeroGlow } from '@/app/components/SiteChrome'
 
@@ -250,6 +251,31 @@ export default async function AptitudeLanding() {
           </div>
         </section>
       )}
+
+      {/* Company patterns — the highest-intent SEO cluster, one click from the hub */}
+      <section style={{ padding: '0 24px 70px' }}>
+        <div data-reveal style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <h2 style={{ fontFamily: 'var(--serif)', fontWeight: 400, fontSize: 'clamp(24px, 4vw, 34px)', textAlign: 'center', margin: '0 0 8px', letterSpacing: -0.5 }}>
+            Know the company&apos;s pattern
+          </h2>
+          <p style={{ color: 'var(--muted)', fontSize: 14.5, lineHeight: 1.7, textAlign: 'center', maxWidth: 600, margin: '0 auto 28px' }}>
+            Sections, clock, cutoffs and the skills each one quietly leans on. Pick your target and drill
+            what it actually tests instead of aptitude in general.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
+            {COMPANIES.map(c => (
+              <Link key={c.slug} href={`/aptitude/companies/${c.slug}`} className="bc-card" style={{ fontSize: 14, fontWeight: 600, padding: '10px 18px', borderRadius: 100, color: 'rgba(255,255,255,0.85)' }}>
+                {c.name} →
+              </Link>
+            ))}
+          </div>
+          <p style={{ textAlign: 'center', marginTop: 22 }}>
+            <Link href="/aptitude/companies" style={{ color: 'var(--blue-soft)', fontSize: 14, fontWeight: 600 }}>
+              All company test patterns →
+            </Link>
+          </p>
+        </div>
+      </section>
 
       {/* Know your test vendor — the vendor decoder SEO cluster */}
       <section style={{ padding: '0 24px 70px' }}>

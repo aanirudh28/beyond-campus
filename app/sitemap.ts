@@ -71,6 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const t of await getPublicTopics()) {
     entries.push({ url: `${BASE}/aptitude/${t.slug}`, changeFrequency: 'weekly', priority: 0.8 })
   }
+  entries.push({ url: `${BASE}/aptitude/companies`, changeFrequency: 'weekly', priority: 0.7 })
   for (const c of COMPANIES) {
     entries.push({ url: `${BASE}/aptitude/companies/${c.slug}`, changeFrequency: 'weekly', priority: 0.8 })
   }
